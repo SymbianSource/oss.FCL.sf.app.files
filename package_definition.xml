@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SystemDefinition schema="3.0.0">
+  <package id="files" name="File Manager Apps" levels="support apps">
+    <collection id="filemanager" name="File Manager" level="apps">
+      <component id="filemanager_help" filter="s60" name="File Manager Help">
+        <unit bldFile="filemanager/help/group"/>
+      </component>
+      <component id="filemanager_build" filter="s60" name="File Manager Build">
+        <unit bldFile="filemanager/group"/>
+      </component>
+    </collection>
+    <collection id="filesystemuis" name="File System UIs" level="support">
+      <component id="memscaneng" filter="s60" name="Memory Scan Server">
+        <unit bldFile="filesystemuis/memscaneng/group"/>
+      </component>
+      <component id="memstatepopup" filter="s60" name="Memory State Popup">
+        <unit bldFile="filesystemuis/memstatepopup/group"/>
+      </component>
+    </collection>
+    <collection id="files_info" name="File Manager Apps Info" level="apps">
+      <component id="files_plat" filter="s60" name="File Manager Apps Platform Interfaces" class="api">
+        <unit bldFile="files_plat/group"/>
+      </component>
+    </collection>
+  </package>
+</SystemDefinition>

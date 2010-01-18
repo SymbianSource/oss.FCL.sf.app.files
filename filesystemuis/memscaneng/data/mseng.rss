@@ -1,0 +1,807 @@
+/*
+* Copyright (c) 2005-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains all the resources for the module.
+*
+*/
+
+
+#include "mseng.hrh"
+#include "mseng.rh"
+#include <mseng.loc>
+#include <eikon.rh>
+#include <pathconfiguration.hrh>
+
+NAME MENG
+
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE TBUF { buf="mseng"; }
+
+/**
+* The directories that are scanned on internal drive (C:).
+*/
+RESOURCE DIRECTORYARRAY c_directories
+    {
+    directories=
+        {
+        text_phone_memory_root_path
+        };
+    }
+
+/**
+* The directories that are scanned on removable drive.
+*/
+RESOURCE DIRECTORYARRAY e_directories
+    {
+    directories=
+        {
+        text_memory_card_root_path
+        };
+    }
+
+/**
+* The directories that are recursively NOT scanned on internal drive,
+* even if they are subdirectories of a root directory
+*/
+RESOURCE DIRECTORYARRAY c_excluded_directories
+    {
+    directories=
+        {
+        // Not really needed since this is not under scanning root dir,
+        // but BAFL panics if the array is left empty...
+        "?:\\private\\",
+        "?:\\resource\\",
+        "?:\\sys\\",
+        "?:\\system\\"
+        };
+    }
+
+/**
+* The directories that are recursively NOT scanned on removable drive.
+* These directories will be set to hidden.
+*/
+RESOURCE DIRECTORYARRAY e_excluded_directories
+    {
+    directories=
+        {
+        "?:\\private\\",
+        "?:\\resource\\",
+        "?:\\sys\\",
+        "?:\\system\\"
+        };
+    }
+
+/**
+* The files on internal drive (C:) that are not scanned by uid or ext,
+* for example because they are located outside the
+* normally scanned filesystem part (directoryarray).
+*/
+RESOURCE EXTRADATAFILES c_extradatafiles
+    {
+    extradatafile=
+        {
+        EXTRADATAFILE
+            {
+            datagroup=EGroupDocuments;
+            filepath="?:\\private\\100012a5\\DBS_101F8878_Notepad.dat";
+            // Note: Documents created outside Notepad 
+            // are scanned separately by extensions.
+            },
+            
+        EXTRADATAFILE
+            {
+            datagroup=EGroupCalendar;
+            filepath="?:\\private\\10003a5b\\calendar";
+            },
+        EXTRADATAFILE
+            {
+            datagroup=EGroupContacts;
+            filepath="?:\\private\\10003a73\\Contacts.cdb";
+            }
+        };
+    }
+
+/**
+* The files on E drive that are not scanned by uid or ext,
+* for example because they are located outside the
+* normally scanned filesystem part (directoryarray).
+*/
+RESOURCE EXTRADATAFILES e_extradatafiles
+    {
+    extradatafile=
+        {
+        // No current database files on E drive
+        };
+    }
+
+/**
+* Another special case are the directories on internal (C:) drive, where all files,
+* regardless of their type, belong to the same data group.
+*/
+RESOURCE SPECIAL_DATADIRS c_special_datadirs
+    {
+    special_datadir=
+        {
+        SPECIAL_DATADIR
+            {
+            datagroup=EGroupMessages;
+            path="?:\\private\\1000484b\\Mail2\\";
+            excludeddatafiles=
+                {
+                "Index",
+                "00100000",
+                "00001000"
+                };
+            },
+        SPECIAL_DATADIR
+            {
+            datagroup=EGroupMidpJava;
+            path="?:\\private\\102033E6\\MIDlets\\";
+            // Note: Midlets outside private dirs are scanned by extensions
+            excludeddatafiles=
+                {
+                };
+            },
+        SPECIAL_DATADIR
+            {
+            datagroup=EGroupNativeApps;
+            path="?:\\private\\10202dce\\";
+            // Note: Sis-packages outside private dirs are scanned by extensions
+            excludeddatafiles=
+                {
+                "preInstalledAppsCache.dat"
+                };
+            }
+        };
+    }
+
+/**
+* Another special case are the directories on removable drive, where all 
+* files regardless of their type, belong to the same data group. 
+*/
+RESOURCE SPECIAL_DATADIRS e_special_datadirs
+    {
+    special_datadir=
+        {
+        SPECIAL_DATADIR
+            {
+            datagroup=EGroupContacts;
+            path=text_memory_card_contacts_path;
+            excludeddatafiles=
+                {
+                };
+            },
+        SPECIAL_DATADIR
+            {
+            datagroup=EGroupMessages;
+            path="?:\\private\\1000484b\\Mail2\\";
+            excludeddatafiles=
+                {
+                "Index",
+                "00100000",
+                "00001000"
+                };
+            },
+        SPECIAL_DATADIR
+            {
+            datagroup=EGroupMidpJava;
+            path="?:\\private\\102033E6\\MIDlets\\";
+            // Note: Midlets outside private dirs are scanned by extensions
+            excludeddatafiles=
+                {
+                };
+            },
+        SPECIAL_DATADIR
+            {
+            datagroup=EGroupNativeApps;
+            path="?:\\private\\10202dce\\";
+            // Note: Sis-packages outside private dirs are scanned by extensions
+            excludeddatafiles=
+                {
+                "preInstalledAppsCache.dat"
+                };
+            }
+        };
+    }
+
+/**
+* The resources for UIDs.
+* This array creates the mapping between TUidTypes enumeration
+* and the actual application UIDs.
+* Take care that all UIDs from TUidTypes are handled here.
+*
+* These MUST be in the same order as in enum TUidTypes!
+* Otherwise will panic on construction.
+*
+*/
+RESOURCE UIDARRAY uidarray
+    {
+    uidtypeelements=
+        {
+        UIDTYPEELEMENT
+            {
+            uidtype=EUidMsgTypeMultimedia;
+            uid=0x100058E1; // from mmsconst.h
+            },
+        UIDTYPEELEMENT
+            {
+            uidtype=EUidMsgTypeSMTP;
+            uid=0x10001028; // from miutset.h
+            },
+        UIDTYPEELEMENT
+            {
+            uidtype=EUidMsgTypePOP3;
+            uid=0x10001029; // from miutset.h
+            },
+        UIDTYPEELEMENT
+            {
+            uidtype=EUidMsgTypeIMAP4;
+            uid=0x1000102A; // from miutset.h
+            },
+        UIDTYPEELEMENT
+            {
+            uidtype=EUidMsgTypeSMS;
+            uid=0x1000102C; // from miutset.h
+            },
+        UIDTYPEELEMENT
+            {
+            uidtype=EUidMsgTypeFax;
+            uid=0x1000102B; // from miutset.h
+            },
+        UIDTYPEELEMENT
+            {
+            uidtype=EUidMsgTypeIr;
+            uid=0x100053A4; // from irobutil.h
+            },
+        UIDTYPEELEMENT
+            {
+            uidtype=EUidMsgTypeBt;
+            uid=0x10009ED5; // from btmsgtypeuid.h
+            },
+        UIDTYPEELEMENT
+            {
+            uidtype=EUidTest1;
+            uid=0x0123456A; // TEST
+            },
+        UIDTYPEELEMENT
+            {
+            uidtype=EUidTest2;
+            uid=0x0123456B; // TEST
+            }
+        };
+    }
+
+/**
+* The resources for filename extensions.
+* This array creates the mapping between TExtTypes enumeration
+* and the actual filename extensions.
+* Take care that all extensions from TExtTypes are handled here.
+*
+* These MUST be in the same order as in enum TExtTypes!
+* Otherwise will panic on construction.
+*
+*/
+RESOURCE EXTARRAY extarray
+    {
+    exttypeelements=
+        {
+
+        // ---------- Image types ----------
+        
+        EXTTYPEELEMENT          
+            {
+            exttype=EExtBmp;
+            extension="*.bmp";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtGif;
+            extension="*.gif";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtJpe;
+            extension="*.jpe";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtJpeg;
+            extension="*.jpeg";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtJpg;
+            extension="*.jpg";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtOta;
+            extension="*.ota";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtPng;
+            extension="*.png";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtTif;
+            extension="*.tif";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtTiff;
+            extension="*.tiff";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtWbmp;
+            extension="*.wbmp";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtWmf;
+            extension="*.wmf";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtJp2;
+            extension="*.jp2";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtJpg2;
+            extension="*.jpg2";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtJp3;
+            extension="*.jp3";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtIco;
+            extension="*.ico";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtVcf;
+            extension="*.vcf";
+            },
+
+        // ---------- Sound types ----------
+
+        EXTTYPEELEMENT          
+            {
+            exttype=EExtAac;
+            extension="*.aac";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtAmr;
+            extension="*.amr";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtAu;
+            extension="*.au";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtAwb;
+            extension="*.awb";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtMid;
+            extension="*.mid";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtMp3;
+            extension="*.mp3";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtRa;
+            extension="*.ra";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtRmf;
+            extension="*.rmf";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtRng;
+            extension="*.rng";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtSnd;
+            extension="*.snd";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtWav;
+            extension="*.wav";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtWve;
+            extension="*.wve";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtWma;
+            extension="*.wma";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtM4a;
+            extension="*.m4a";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtOtt;
+            extension="*.ott";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtMxmf;
+            extension="*.mxmf";
+            },
+
+        // ---------- Java file types -----
+
+        EXTTYPEELEMENT
+            {
+            exttype=EExtJad;
+            extension="*.jad";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtJar;
+            extension="*.jar";
+            },
+
+        // ---------- Native file types -----
+
+        EXTTYPEELEMENT
+            {
+            exttype=EExtSis;
+            extension="*.sis";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtSisx;
+            extension="*.sisx";
+            },
+
+        // ---------- Video types ----------
+
+        EXTTYPEELEMENT
+            {
+            exttype=EExt3gp;
+            extension="*.3gp";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtMp4;
+            extension="*.mp4";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtNim;
+            extension="*.nim";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtRm;
+            extension="*.rm";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtRv;
+            extension="*.rv";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtWmv;
+            extension="*.wmv";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExt3g2;
+            extension="*.3g2";
+            },
+
+        // ---------- Document types ----------
+
+        EXTTYPEELEMENT
+            {
+            exttype=EExtDoc;
+            extension="*.doc";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtPdf;
+            extension="*.pdf";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtPps;
+            extension="*.pps";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtPpt;
+            extension="*.ppt";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtTxt;
+            extension="*.txt";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtXls;
+            extension="*.xls";
+            },
+
+        // ---------- Calendar types ----------
+
+        EXTTYPEELEMENT
+            {
+            exttype=EExtVcs;
+            extension="*.vcs";
+            }
+        };
+    }
+
+/**
+* The data group names.
+* This array creates the mapping between TDataGroups enumeration
+* and the localized strings that are displayed to the user.
+* Take care that all groups from TDataGroups are handled here.
+* The localized strings are in the localization file mseng.loc.
+*
+* These MUST be in the same order as in enum TDataGroups!
+* Otherwise mseng will panic on construction.
+*
+*/
+RESOURCE DATAGROUPNAMEARRAY datagroupnamearray
+    {
+    datagroupnameelements=
+        {
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupAllDeviceData;
+            groupname=qtn_swins_ls1_memory_all;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupFreeMemory;
+            groupname=qtn_swins_ls1_memory_free;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupCalendar;
+            groupname=qtn_swins_ls1_memory_calendar;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupContacts;
+            groupname=qtn_swins_ls1_memory_contacts;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupMessages;
+            groupname=qtn_swins_ls1_memory_msgs;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupImages;
+            groupname=qtn_swins_ls1_memory_imgs;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupSoundFiles;
+            groupname=qtn_swins_ls1_memory_souds;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupVideos;
+            groupname=qtn_swins_ls1_memory_videos;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupDocuments;
+            groupname=qtn_swins_ls1_memory_docs;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupMidpJava;
+            groupname=qtn_swins_ls1_memory_midpjava;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupNativeApps;
+            groupname=qtn_swins_ls1_memory_sis;
+            },
+        DATAGROUPNAMEELEMENT
+            {
+            grouptype=EGroupOthers;
+            groupname=qtn_swins_ls1_memory_others;
+            }
+        };
+    }
+
+/**
+* List of UIDs belonging to each data group.
+*
+* This array includes for, each data group 
+* (enum TDataGroups), the list of UIDs (enum TUidTypes)
+* belonging to that data group.
+*/
+RESOURCE DATAGROUPUIDARRAY datagroupuidarray
+    {
+    datagroupuids=
+        {
+        DATAGROUPUIDS
+            {
+            datagroup=EGroupMessages;
+            uids=
+                {
+                EUidMsgTypeMultimedia,
+                EUidMsgTypeSMTP,
+                EUidMsgTypePOP3,
+                EUidMsgTypeIMAP4,
+                EUidMsgTypeSMS,
+                EUidMsgTypeFax,
+                EUidMsgTypeIr,
+                EUidMsgTypeBt
+                };
+            },
+        DATAGROUPUIDS
+            {
+            datagroup=EGroupDocuments;
+            uids=
+                {
+                EUidTest1,
+                EUidTest2
+                };
+            }
+        };
+    }
+
+/**
+* List of extension belonging to each data group.
+*
+* This array includes for, each data group 
+* (enum TDataGroups),the list of filename extensions 
+* (enum TExtTypes) belonging to that data group.
+*/
+RESOURCE DATAGROUPEXTARRAY datagroupextarray
+    {
+    datagroupexts=
+        {
+        DATAGROUPEXTS
+            {
+            datagroup=EGroupImages;
+            exts=
+                {
+                EExtBmp,
+                EExtGif,
+                EExtJpe,
+                EExtJpeg,
+                EExtJpg,
+                EExtOta,
+                EExtPng,
+                EExtTif,
+                EExtTiff,
+                EExtWbmp,
+                EExtWmf,
+                EExtJp2,
+                EExtJpg2,
+                EExtJp3,
+                EExtIco,
+                EExtVcf
+                };
+            },
+        DATAGROUPEXTS
+            {
+            datagroup=EGroupSoundFiles;
+            exts=
+                {
+                EExtAac,
+                EExtAmr,
+                EExtAu,
+                EExtAwb,
+                EExtMid,
+                EExtMp3,
+                EExtRa,
+                EExtRmf,
+                EExtRng,
+                EExtSnd,
+                EExtWav,
+                EExtWve,
+                EExtWma,
+                EExtM4a,
+                EExtOtt,
+                EExtMxmf
+                };
+            },
+        DATAGROUPEXTS
+            {
+            // Note: Midlet installation folder scanned separately.
+            datagroup=EGroupMidpJava;
+            exts=
+                {
+                EExtJad,
+                EExtJar
+                };
+            },
+        DATAGROUPEXTS
+            {
+            // Note: Sis pre-installation folder and registry scanned separately.
+            datagroup=EGroupNativeApps;
+            exts=
+                {
+                EExtSis,
+                EExtSisx
+                };
+            },
+        DATAGROUPEXTS
+            {
+            datagroup=EGroupVideos;
+            exts=
+                {
+                EExt3gp,
+                EExtMp4,
+                EExtNim,
+                EExtRm,
+                EExtRv,
+                EExtWmv,
+                EExt3g2
+                };
+            },    
+        DATAGROUPEXTS
+            {
+            // Note: Notepad database scanned separately.
+            datagroup=EGroupDocuments;
+            exts=
+                {
+                EExtDoc,
+                EExtPdf,
+                EExtPps,
+                EExtPpt,
+                EExtTxt,
+                EExtXls
+                };
+            },
+        DATAGROUPEXTS
+            {
+            // Note: Calendar private-folder scanned separately.
+            datagroup=EGroupCalendar;
+            exts=
+                {
+                EExtVcs
+                };
+            }
+        };
+    }
+
+// End of File

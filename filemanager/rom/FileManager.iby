@@ -1,0 +1,42 @@
+/*
+* Copyright (c) 2002-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Image description file for project File Manager
+*
+*/
+
+
+#ifndef __FILEMANAGER_IBY__
+#define __FILEMANAGER_IBY__
+
+S60_APP_EXE(FileManager)
+S60_APP_AIF_ICONS(FileManager)
+S60_APP_AIF_RSC(FileManager)
+
+ECOM_PLUGIN(filemanagerbkupplugin.dll, 0x10205078.rsc)
+ECOM_PLUGIN(filemanageraiwprovider.dll, 0x200110F8.rsc)
+
+file=ABI_DIR\BUILD_DIR\FILEMANAGERENGINE.DLL            SHARED_LIB_DIR\FileManagerEngine.dll
+file=ABI_DIR\BUILD_DIR\FILEMANAGERVIEW.DLL              SHARED_LIB_DIR\FileManagerView.dll
+SCALABLE_IMAGE(APP_BITMAP_DIR,APP_BITMAP_DIR,FileManager)
+file=ABI_DIR\BUILD_DIR\GFLM.dll                         SHARED_LIB_DIR\GFLM.dll
+data=DATAZ_\RESOURCE_FILES_DIR\GflmFileExtensionMimeTypes.rsc RESOURCE_FILES_DIR\GflmFileExtensionMimeTypes.rsc
+
+file=ABI_DIR\BUILD_DIR\filemanagerbkupengine.dll       SHARED_LIB_DIR\filemanagerbkupengine.dll
+#ifdef RD_FILE_MANAGER_BACKUP
+ file=ABI_DIR\BUILD_DIR\filemanagerschbkup.exe         SHARED_LIB_DIR\filemanagerschbkup.exe
+#endif // RD_FILE_MANAGER_BACKUP
+
+data=DATAZ_\private\101F84EB\backup_registration.xml  private\101F84EB\backup_registration.xml
+
+#endif // __FILEMANAGER_IBY__

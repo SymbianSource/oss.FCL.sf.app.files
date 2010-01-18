@@ -1,0 +1,40 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Provides the information required for building all
+*               Device Encryption components.
+*
+*/
+
+#include <ProductVariant.hrh>
+#include <platform_paths.hrh>
+
+PRJ_EXPORTS
+
+// ROM files
+../rom/DevEnc.iby CORE_APP_LAYER_IBY_EXPORT_PATH(DevEncryption.iby)
+../rom/DevEncResources.iby	LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(DevEncResources.iby)
+
+// Exported headers
+../common/DevEncDef.h				APP_LAYER_PLATFORM_EXPORT_PATH(DevEncDef.h)
+
+PRJ_MMPFILES
+
+#include "../DevEncNotifPlugin/group/bld.inf"
+#include "../DevEncUi/group/bld.inf"
+#include "../DevEncDmAdapter/group/bld.inf"
+#include "../DevEncGsPlugin/group/bld.inf"
+#include "../help/group/bld.inf"
+
+
+// End of file

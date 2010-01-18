@@ -1,0 +1,45 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for project FileManagerSchBkup
+*
+*/
+
+
+#include <platform_paths.hrh>
+#include "FileManagerUID.h"
+MACRO _F32_STRICT_64_BIT_MIGRATION
+TARGET          filemanagerschbkup.exe
+TARGETTYPE      exe
+UID             KEPOCAppUID2 KFileManagerSchBkupUID3
+
+VENDORID        VID_DEFAULT
+CAPABILITY      CAP_APPLICATION
+
+SOURCEPATH      ../schbkup/src
+SOURCE          filemanagerschbackupmain.cpp
+SOURCE          filemanagerschbackuptask.cpp
+SOURCE          filemanagerschsubscriber.cpp
+
+USERINCLUDE     . ../schbkup/inc ../Engine/inc
+
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY         euser.lib
+LIBRARY	        efsrv.lib
+LIBRARY         estor.lib
+LIBRARY         schsvr.lib
+LIBRARY         ws32.lib
+LIBRARY         apgrfx.lib
+LIBRARY         apparc.lib
+LIBRARY         centralrepository.lib

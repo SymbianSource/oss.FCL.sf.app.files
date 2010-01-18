@@ -1,0 +1,69 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project specification of GFLM
+*
+*/
+
+
+
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+#include "../GFLM/inc/GFLMUid.h"
+MACRO _F32_STRICT_64_BIT_MIGRATION
+
+TARGET          gflm.dll
+TARGETTYPE      DLL
+UID             KSymbianDLLUid2 KGflmUid3
+
+VENDORID        VID_DEFAULT
+CAPABILITY      CAP_GENERAL_DLL
+
+
+SOURCEPATH      ../GFLM/src
+SOURCE          CGflmNavigatorModel.cpp
+SOURCE          CGflmFileListModel.cpp
+SOURCE          CGflmItemGroupImpl.cpp
+SOURCE          CGflmItemLocalizer.cpp
+SOURCE          CGflmGroupItem.cpp
+SOURCE          CGflmGlobalActionItem.cpp
+SOURCE          CGflmFileSystemItem.cpp
+SOURCE          CGflmDirectoryListingCache.cpp
+SOURCE          CGflmFileRecognizer.cpp
+SOURCE          CGflmDriveResolver.cpp
+SOURCE          GflmUtils.cpp
+SOURCE          CGflmDriveItem.cpp
+SOURCE          CGflmFileFinder.cpp
+SOURCE          CGflmFileFinderItem.cpp
+
+SOURCEPATH      ../GFLM/data
+START RESOURCE  GflmFileExtensionMimeTypes.rss
+HEADER
+TARGETPATH      RESOURCE_FILES_DIR
+END
+
+USERINCLUDE     ../GFLM/inc
+USERINCLUDE     ../Engine/inc // For debug definitions
+
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY         apgrfx.lib  // RApaLsSession
+LIBRARY         apmime.lib  // TDataType
+LIBRARY         bafl.lib
+LIBRARY         efsrv.lib
+LIBRARY         euser.lib
+LIBRARY         directorylocalizer.lib
+
+#ifdef RD_MULTIPLE_DRIVE
+LIBRARY         platformenv.lib
+#endif // RD_MULTIPLE_DRIVE

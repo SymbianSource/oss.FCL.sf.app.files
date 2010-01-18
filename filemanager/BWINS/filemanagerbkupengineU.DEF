@@ -1,0 +1,36 @@
+EXPORTS
+	??1CMMCScBkupDriveAndOperationTypeManager@@UAE@XZ @ 1 NONAME ; CMMCScBkupDriveAndOperationTypeManager::~CMMCScBkupDriveAndOperationTypeManager(void)
+	??1CMMCScBkupEngine@@UAE@XZ @ 2 NONAME ; CMMCScBkupEngine::~CMMCScBkupEngine(void)
+	??1CMMCScBkupOpParamsBackupFull@@UAE@XZ @ 3 NONAME ; CMMCScBkupOpParamsBackupFull::~CMMCScBkupOpParamsBackupFull(void)
+	??1CMMCScBkupOpParamsBase@@UAE@XZ @ 4 NONAME ; CMMCScBkupOpParamsBase::~CMMCScBkupOpParamsBase(void)
+	??1CMMCScBkupOpParamsRestoreFull@@UAE@XZ @ 5 NONAME ; CMMCScBkupOpParamsRestoreFull::~CMMCScBkupOpParamsRestoreFull(void)
+	?ActiveTransferType@CMMCScBkupOpParamsBackupFull@@UBE?AW4TTransferDataType@conn@@XZ @ 6 NONAME ; enum conn::TTransferDataType CMMCScBkupOpParamsBackupFull::ActiveTransferType(void) const
+	?ActiveTransferType@CMMCScBkupOpParamsRestoreFull@@UBE?AW4TTransferDataType@conn@@XZ @ 7 NONAME ; enum conn::TTransferDataType CMMCScBkupOpParamsRestoreFull::ActiveTransferType(void) const
+	?AssociatedOpType@CMMCScBkupOpParamsBackupFull@@UBE?AW4TMMCScBkupOperationType@@XZ @ 8 NONAME ; enum TMMCScBkupOperationType CMMCScBkupOpParamsBackupFull::AssociatedOpType(void) const
+	?AssociatedOpType@CMMCScBkupOpParamsRestoreFull@@UBE?AW4TMMCScBkupOperationType@@XZ @ 9 NONAME ; enum TMMCScBkupOperationType CMMCScBkupOpParamsRestoreFull::AssociatedOpType(void) const
+	?CancelOperation@CMMCScBkupEngine@@QAEXXZ @ 10 NONAME ; void CMMCScBkupEngine::CancelOperation(void)
+	?Category@CMMCScBkupArchiveInfo@@QBE?AV?$TBitFlagsT@K@@XZ @ 11 NONAME ; class TBitFlagsT<unsigned long> CMMCScBkupArchiveInfo::Category(void) const
+	?Close@RMMCScBkupArchiveBuf@@QAEXXZ @ 12 NONAME ; void RMMCScBkupArchiveBuf::Close(void)
+	?DateTime@CMMCScBkupArchiveInfo@@QBEABVTTime@@XZ @ 13 NONAME ; class TTime const & CMMCScBkupArchiveInfo::DateTime(void) const
+	?Drive@CMMCScBkupArchiveInfo@@QBE?AW4TDriveNumber@@XZ @ 14 NONAME ; enum TDriveNumber CMMCScBkupArchiveInfo::Drive(void) const
+	?DriveAndOperations@CMMCScBkupOpParamsBase@@QBEABVCMMCScBkupDriveAndOperationTypeManager@@XZ @ 15 NONAME ; class CMMCScBkupDriveAndOperationTypeManager const & CMMCScBkupOpParamsBase::DriveAndOperations(void) const
+	?FileName@CMMCScBkupArchiveInfo@@QBEABVTDesC16@@XZ @ 16 NONAME ; class TDesC16 const & CMMCScBkupArchiveInfo::FileName(void) const
+	?IncrementType@CMMCScBkupOpParamsBackupFull@@UBE?AW4TBackupIncType@conn@@XZ @ 17 NONAME ; enum conn::TBackupIncType CMMCScBkupOpParamsBackupFull::IncrementType(void) const
+	?IncrementType@CMMCScBkupOpParamsRestoreFull@@UBE?AW4TBackupIncType@conn@@XZ @ 18 NONAME ; enum conn::TBackupIncType CMMCScBkupOpParamsRestoreFull::IncrementType(void) const
+	?ListArchivesL@CMMCScBkupEngine@@QBEXAAV?$RPointerArray@VCMMCScBkupArchiveInfo@@@@PAVCMMCScBkupOpParamsBase@@KH@Z @ 19 NONAME ; void CMMCScBkupEngine::ListArchivesL(class RPointerArray<class CMMCScBkupArchiveInfo> &, class CMMCScBkupOpParamsBase *, unsigned long, int) const
+	?NewL@CMMCScBkupDriveAndOperationTypeManager@@SAPAV1@AAVTResourceReader@@@Z @ 20 NONAME ; class CMMCScBkupDriveAndOperationTypeManager * CMMCScBkupDriveAndOperationTypeManager::NewL(class TResourceReader &)
+	?NewL@CMMCScBkupEngine@@SAPAV1@AAVRFs@@@Z @ 21 NONAME ; class CMMCScBkupEngine * CMMCScBkupEngine::NewL(class RFs &)
+	?NewL@CMMCScBkupOpParamsBackupFull@@SAPAV1@AAVTResourceReader@@0W4TDriveNumber@@V?$TBitFlagsT@K@@@Z @ 22 NONAME ; class CMMCScBkupOpParamsBackupFull * CMMCScBkupOpParamsBackupFull::NewL(class TResourceReader &, class TResourceReader &, enum TDriveNumber, class TBitFlagsT<unsigned long>)
+	?NewL@CMMCScBkupOpParamsRestoreFull@@SAPAV1@AAVTResourceReader@@V?$TBitFlagsT@K@@@Z @ 23 NONAME ; class CMMCScBkupOpParamsRestoreFull * CMMCScBkupOpParamsRestoreFull::NewL(class TResourceReader &, class TBitFlagsT<unsigned long>)
+	?PackageTransferType@CMMCScBkupOpParamsBackupFull@@UBE?AW4TPackageDataType@conn@@XZ @ 24 NONAME ; enum conn::TPackageDataType CMMCScBkupOpParamsBackupFull::PackageTransferType(void) const
+	?PackageTransferType@CMMCScBkupOpParamsRestoreFull@@UBE?AW4TPackageDataType@conn@@XZ @ 25 NONAME ; enum conn::TPackageDataType CMMCScBkupOpParamsRestoreFull::PackageTransferType(void) const
+	?PartType@CMMCScBkupOpParamsBackupFull@@UBE?AW4TBURPartType@conn@@XZ @ 26 NONAME ; enum conn::TBURPartType CMMCScBkupOpParamsBackupFull::PartType(void) const
+	?PartType@CMMCScBkupOpParamsRestoreFull@@UBE?AW4TBURPartType@conn@@XZ @ 27 NONAME ; enum conn::TBURPartType CMMCScBkupOpParamsRestoreFull::PartType(void) const
+	?PassiveTransferType@CMMCScBkupOpParamsBackupFull@@UBE?AW4TTransferDataType@conn@@XZ @ 28 NONAME ; enum conn::TTransferDataType CMMCScBkupOpParamsBackupFull::PassiveTransferType(void) const
+	?PassiveTransferType@CMMCScBkupOpParamsRestoreFull@@UBE?AW4TTransferDataType@conn@@XZ @ 29 NONAME ; enum conn::TTransferDataType CMMCScBkupOpParamsRestoreFull::PassiveTransferType(void) const
+	?RebootRequired@CMMCScBkupEngine@@QBEHXZ @ 30 NONAME ; int CMMCScBkupEngine::RebootRequired(void) const
+	?SetArchiveInfosL@CMMCScBkupOpParamsBase@@QAEXAAV?$RPointerArray@VCMMCScBkupArchiveInfo@@@@@Z @ 31 NONAME ; void CMMCScBkupOpParamsBase::SetArchiveInfosL(class RPointerArray<class CMMCScBkupArchiveInfo> &)
+	?StartOperationL@CMMCScBkupEngine@@QAEXW4TMMCScBkupOperationType@@AAVMMMCScBkupEngineObserver@@PAVCMMCScBkupOpParamsBase@@@Z @ 32 NONAME ; void CMMCScBkupEngine::StartOperationL(enum TMMCScBkupOperationType, class MMMCScBkupEngineObserver &, class CMMCScBkupOpParamsBase *)
+	?TotalOperationSizeL@CMMCScBkupEngine@@QBE_JXZ @ 33 NONAME ; long long CMMCScBkupEngine::TotalOperationSizeL(void) const
+	?ValidArchiveForRestore@CMMCScBkupEngine@@QAEHABVTDesC16@@@Z @ 34 NONAME ; int CMMCScBkupEngine::ValidArchiveForRestore(class TDesC16 const &)
+

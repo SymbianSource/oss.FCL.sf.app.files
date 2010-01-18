@@ -1,0 +1,140 @@
+EXPORTS
+	??0TFileManagerDriveInfo@@QAE@XZ @ 1 NONAME ; TFileManagerDriveInfo::TFileManagerDriveInfo(void)
+	??1CFileManagerActiveDelete@@UAE@XZ @ 2 NONAME ; CFileManagerActiveDelete::~CFileManagerActiveDelete(void)
+	??1CFileManagerActiveExecute@@UAE@XZ @ 3 NONAME ; CFileManagerActiveExecute::~CFileManagerActiveExecute(void)
+	??1CFileManagerEngine@@UAE@XZ @ 4 NONAME ; CFileManagerEngine::~CFileManagerEngine(void)
+	??1CFileManagerIRReceiver@@UAE@XZ @ 5 NONAME ; CFileManagerIRReceiver::~CFileManagerIRReceiver(void)
+	??1CFileManagerItemProperties@@UAE@XZ @ 6 NONAME ; CFileManagerItemProperties::~CFileManagerItemProperties(void)
+	?AllowedDriveAttMatchMask@CFileManagerBackupSettings@@QBEKXZ @ 7 NONAME ; unsigned long CFileManagerBackupSettings::AllowedDriveAttMatchMask(void) const
+	?AnyEjectableDrivePresent@CFileManagerEngine@@QBEHXZ @ 8 NONAME ; int CFileManagerEngine::AnyEjectableDrivePresent(void) const
+	?BackstepL@CFileManagerEngine@@QAEXXZ @ 9 NONAME ; void CFileManagerEngine::BackstepL(void)
+	?BackupSettingsL@CFileManagerEngine@@QAEAAVCFileManagerBackupSettings@@XZ @ 10 NONAME ; class CFileManagerBackupSettings & CFileManagerEngine::BackupSettingsL(void)
+	?CancelExecution@CFileManagerActiveExecute@@QAEXXZ @ 11 NONAME ; void CFileManagerActiveExecute::CancelExecution(void)
+	?CancelProcess@CFileManagerEngine@@QAEXW4TFileManagerProcess@MFileManagerProcessObserver@@@Z @ 12 NONAME ; void CFileManagerEngine::CancelProcess(enum MFileManagerProcessObserver::TFileManagerProcess)
+	?CancelRefresh@CFileManagerEngine@@QAEHXZ @ 13 NONAME ; int CFileManagerEngine::CancelRefresh(void)
+	?ContainsAnyFilesOrFolders@CFileManagerItemProperties@@QAEHXZ @ 14 NONAME ; int CFileManagerItemProperties::ContainsAnyFilesOrFolders(void)
+	?Content@CFileManagerBackupSettings@@QBEKXZ @ 15 NONAME ; unsigned long CFileManagerBackupSettings::Content(void) const
+	?CreateActiveDeleteL@CFileManagerEngine@@QAEPAVCFileManagerActiveDelete@@AAV?$CArrayFixFlat@H@@@Z @ 16 NONAME ; class CFileManagerActiveDelete * CFileManagerEngine::CreateActiveDeleteL(class CArrayFixFlat<int> &)
+	?CurrentDirectory@CFileManagerEngine@@QBE?AVTPtrC16@@XZ @ 17 NONAME ; class TPtrC16 CFileManagerEngine::CurrentDirectory(void) const
+	?CurrentDrive@CFileManagerEngine@@QAEHXZ @ 18 NONAME ; int CFileManagerEngine::CurrentDrive(void)
+	?CurrentDriveName@CFileManagerEngine@@QAE?AVTPtrC16@@XZ @ 19 NONAME ; class TPtrC16 CFileManagerEngine::CurrentDriveName(void)
+	?CurrentIndex@CFileManagerEngine@@QAEHXZ @ 20 NONAME ; int CFileManagerEngine::CurrentIndex(void)
+	?Day@CFileManagerBackupSettings@@QBEHXZ @ 21 NONAME ; int CFileManagerBackupSettings::Day(void) const
+	?DeleteRemoteDrive@CFileManagerEngine@@QAEHH@Z @ 22 NONAME ; int CFileManagerEngine::DeleteRemoteDrive(int)
+	?DeletedDrmItems@CFileManagerActiveDelete@@QAEHAAH@Z @ 23 NONAME ; int CFileManagerActiveDelete::DeletedDrmItems(int &)
+	?DriveId@CFileManagerItemProperties@@QBEHXZ @ 24 NONAME ; int CFileManagerItemProperties::DriveId(void) const
+	?DriveName@CFileManagerEngine@@QAE?AVTPtrC16@@H@Z @ 25 NONAME ; class TPtrC16 CFileManagerEngine::DriveName(int)
+	?DriveName@CFileManagerItemProperties@@QBE?AVTPtrC16@@XZ @ 26 NONAME ; class TPtrC16 CFileManagerItemProperties::DriveName(void) const
+	?DriveRootDirectory@CFileManagerEngine@@QBE?AVTPtrC16@@H@Z @ 27 NONAME ; class TPtrC16 CFileManagerEngine::DriveRootDirectory(int) const
+	?DriveState@CFileManagerEngine@@QBEHAAKABVTDesC16@@@Z @ 28 NONAME ; int CFileManagerEngine::DriveState(unsigned long &, class TDesC16 const &) const
+	?DriveState@CFileManagerEngine@@QBEHAAKH@Z @ 29 NONAME ; int CFileManagerEngine::DriveState(unsigned long &, int) const
+	?EnoughSpaceL@CFileManagerEngine@@QBEHABVTDesC16@@_JW4TFileManagerProcess@MFileManagerProcessObserver@@@Z @ 30 NONAME ; int CFileManagerEngine::EnoughSpaceL(class TDesC16 const &, long long, enum MFileManagerProcessObserver::TFileManagerProcess) const
+	?EnsureFinalBackslash@CFileManagerUtils@@SAXAAVTDes16@@@Z @ 31 NONAME ; void CFileManagerUtils::EnsureFinalBackslash(class TDes16 &)
+	?ExecuteL@CFileManagerActiveExecute@@QAEXW4TFileManagerSwitch@1@@Z @ 32 NONAME ; void CFileManagerActiveExecute::ExecuteL(enum CFileManagerActiveExecute::TFileManagerSwitch)
+	?Ext@CFileManagerItemProperties@@QBE?AVTPtrC16@@XZ @ 33 NONAME ; class TPtrC16 CFileManagerItemProperties::Ext(void) const
+	?FeatureManager@CFileManagerEngine@@QBEAAVCFileManagerFeatureManager@@XZ @ 34 NONAME ; class CFileManagerFeatureManager & CFileManagerEngine::FeatureManager(void) const
+	?FileList@CFileManagerEngine@@QBEPAVMDesC16Array@@XZ @ 35 NONAME ; class MDesC16Array * CFileManagerEngine::FileList(void) const
+	?FileSystemEvent@CFileManagerEngine@@QAEXH@Z @ 36 NONAME ; void CFileManagerEngine::FileSystemEvent(int)
+	?FileTypeL@CFileManagerEngine@@QBEKABVTDesC16@@@Z @ 37 NONAME ; unsigned long CFileManagerEngine::FileTypeL(class TDesC16 const &) const
+	?FileTypeL@CFileManagerEngine@@QBEKH@Z @ 38 NONAME ; unsigned long CFileManagerEngine::FileTypeL(int) const
+	?FilesContainedL@CFileManagerItemProperties@@QAEHXZ @ 39 NONAME ; int CFileManagerItemProperties::FilesContainedL(void)
+	?FilesInFolderL@CFileManagerEngine@@QAEHXZ @ 40 NONAME ; int CFileManagerEngine::FilesInFolderL(void)
+	?FolderLevel@CFileManagerEngine@@QAEHXZ @ 41 NONAME ; int CFileManagerEngine::FolderLevel(void)
+	?FoldersContainedL@CFileManagerItemProperties@@QAEHXZ @ 42 NONAME ; int CFileManagerItemProperties::FoldersContainedL(void)
+	?ForcedRefreshDirectory@CFileManagerEngine@@QAEXXZ @ 43 NONAME ; void CFileManagerEngine::ForcedRefreshDirectory(void)
+	?FullPath@CFileManagerItemProperties@@QBE?AVTPtrC16@@XZ @ 44 NONAME ; class TPtrC16 CFileManagerItemProperties::FullPath(void) const
+	?GetDriveInfoL@CFileManagerEngine@@QAEXAAVTFileManagerDriveInfo@@@Z @ 45 NONAME ; void CFileManagerEngine::GetDriveInfoL(class TFileManagerDriveInfo &)
+	?GetDriveInfoL@CFileManagerEngine@@QBEXHAAVTFileManagerDriveInfo@@@Z @ 46 NONAME ; void CFileManagerEngine::GetDriveInfoL(int, class TFileManagerDriveInfo &) const
+	?GetError@CFileManagerActiveDelete@@QAEHAAVTDes16@@@Z @ 47 NONAME ; int CFileManagerActiveDelete::GetError(class TDes16 &)
+	?GetFileSizesL@CFileManagerEngine@@QAE_JABV?$CArrayFixFlat@H@@@Z @ 48 NONAME ; long long CFileManagerEngine::GetFileSizesL(class CArrayFixFlat<int> const &)
+	?GetFormattedDriveNameLC@CFileManagerEngine@@QBEPAVHBufC16@@HHH@Z @ 49 NONAME ; class HBufC16 * CFileManagerEngine::GetFormattedDriveNameLC(int, int, int) const
+	?GetItemInfoL@CFileManagerEngine@@QAEPAVCFileManagerItemProperties@@H@Z @ 50 NONAME ; class CFileManagerItemProperties * CFileManagerEngine::GetItemInfoL(int)
+	?GetItemInfoLC@CFileManagerEngine@@QAEPAVCFileManagerItemProperties@@H@Z @ 51 NONAME ; class CFileManagerItemProperties * CFileManagerEngine::GetItemInfoLC(int)
+	?GetMMCInfoL@CFileManagerEngine@@QBE?AVTFileManagerDriveInfo@@XZ @ 52 NONAME ; class TFileManagerDriveInfo CFileManagerEngine::GetMMCInfoL(void) const
+	?GetRestoreInfoArrayL@CFileManagerEngine@@QBEXAAV?$RArray@VTInfo@CFileManagerRestoreSettings@@@@H@Z @ 53 NONAME ; void CFileManagerEngine::GetRestoreInfoArrayL(class RArray<class CFileManagerRestoreSettings::TInfo> &, int) const
+	?HasFinalBackslash@CFileManagerUtils@@SAHABVTDesC16@@@Z @ 54 NONAME ; int CFileManagerUtils::HasFinalBackslash(class TDesC16 const &)
+	?IconIdL@CFileManagerEngine@@QBEHH@Z @ 55 NONAME ; int CFileManagerEngine::IconIdL(int) const
+	?IllegalChars@CFileManagerEngine@@QBEHABVTDesC16@@@Z @ 56 NONAME ; int CFileManagerEngine::IllegalChars(class TDesC16 const &) const
+	?IndexToFullPathL@CFileManagerEngine@@QBEPAVHBufC16@@H@Z @ 57 NONAME ; class HBufC16 * CFileManagerEngine::IndexToFullPathL(int) const
+	?IndexToFullPathLC@CFileManagerEngine@@QBEPAVHBufC16@@H@Z @ 58 NONAME ; class HBufC16 * CFileManagerEngine::IndexToFullPathLC(int) const
+	?IsDistributableFile@CFileManagerEngine@@QBEHABVTDesC16@@AAH@Z @ 59 NONAME ; int CFileManagerEngine::IsDistributableFile(class TDesC16 const &, int &) const
+	?IsDrive@CFileManagerItemProperties@@QBEHXZ @ 60 NONAME ; int CFileManagerItemProperties::IsDrive(void) const
+	?IsDrmFullSupported@CFileManagerFeatureManager@@QBEHXZ @ 61 NONAME ; int CFileManagerFeatureManager::IsDrmFullSupported(void) const
+	?IsFeatureSupported@CFileManagerFeatureManager@@QBEHH@Z @ 62 NONAME ; int CFileManagerFeatureManager::IsFeatureSupported(int) const
+	?IsFolder@CFileManagerEngine@@QBEHH@Z @ 63 NONAME ; int CFileManagerEngine::IsFolder(int) const
+	?IsFromInternalToRemovableDrive@CFileManagerUtils@@SAHAAVRFs@@ABVTDesC16@@1@Z @ 64 NONAME ; int CFileManagerUtils::IsFromInternalToRemovableDrive(class RFs &, class TDesC16 const &, class TDesC16 const &)
+	?IsHelpSupported@CFileManagerFeatureManager@@QBEHXZ @ 65 NONAME ; int CFileManagerFeatureManager::IsHelpSupported(void) const
+	?IsIrdaSupported@CFileManagerFeatureManager@@QBEHXZ @ 66 NONAME ; int CFileManagerFeatureManager::IsIrdaSupported(void) const
+	?IsMmcPassWdSupported@CFileManagerFeatureManager@@QBEHXZ @ 67 NONAME ; int CFileManagerFeatureManager::IsMmcPassWdSupported(void) const
+	?IsMmcSwEjectSupported@CFileManagerFeatureManager@@QBEHXZ @ 68 NONAME ; int CFileManagerFeatureManager::IsMmcSwEjectSupported(void) const
+	?IsNameFoundL@CFileManagerEngine@@QAEHABVTDesC16@@@Z @ 69 NONAME ; int CFileManagerEngine::IsNameFoundL(class TDesC16 const &)
+	?IsRemoteDrive@CFileManagerItemProperties@@QBEHXZ @ 70 NONAME ; int CFileManagerItemProperties::IsRemoteDrive(void) const
+	?IsRemoteDrive@CFileManagerUtils@@SAHAAVRFs@@ABVTDesC16@@@Z @ 71 NONAME ; int CFileManagerUtils::IsRemoteDrive(class RFs &, class TDesC16 const &)
+	?IsRemoteStorageFwSupported@CFileManagerFeatureManager@@QBEHXZ @ 72 NONAME ; int CFileManagerFeatureManager::IsRemoteStorageFwSupported(void) const
+	?IsSystemFolder@CFileManagerEngine@@QBEHABVTDesC16@@@Z @ 73 NONAME ; int CFileManagerEngine::IsSystemFolder(class TDesC16 const &) const
+	?IsValidName@CFileManagerEngine@@QBEHABVTDesC16@@0H@Z @ 74 NONAME ; int CFileManagerEngine::IsValidName(class TDesC16 const &, class TDesC16 const &, int) const
+	?IsWesternVariant@CFileManagerFeatureManager@@QBEHXZ @ 75 NONAME ; int CFileManagerFeatureManager::IsWesternVariant(void) const
+	?LocalizedName@CFileManagerEngine@@QBE?AVTPtrC16@@ABVTDesC16@@@Z @ 76 NONAME ; class TPtrC16 CFileManagerEngine::LocalizedName(class TDesC16 const &) const
+	?LocalizedName@CFileManagerItemProperties@@QBE?AVTPtrC16@@XZ @ 77 NONAME ; class TPtrC16 CFileManagerItemProperties::LocalizedName(void) const
+	?LocalizedNameOfCurrentDirectory@CFileManagerEngine@@QBE?AVTPtrC16@@XZ @ 78 NONAME ; class TPtrC16 CFileManagerEngine::LocalizedNameOfCurrentDirectory(void) const
+	?Memory@CFileManagerEngine@@QBE?AW4TFileManagerMemory@@XZ @ 79 NONAME ; enum TFileManagerMemory CFileManagerEngine::Memory(void) const
+	?MimeTypeL@CFileManagerItemProperties@@QAE?AVTPtrC16@@XZ @ 80 NONAME ; class TPtrC16 CFileManagerItemProperties::MimeTypeL(void)
+	?ModifiedDate@CFileManagerItemProperties@@QBE?AVTTime@@XZ @ 81 NONAME ; class TTime CFileManagerItemProperties::ModifiedDate(void) const
+	?ModifiedLocalDate@CFileManagerItemProperties@@QBEHAAVTTime@@@Z @ 82 NONAME ; int CFileManagerItemProperties::ModifiedLocalDate(class TTime &) const
+	?Name@CFileManagerItemProperties@@QBE?AVTPtrC16@@XZ @ 83 NONAME ; class TPtrC16 CFileManagerItemProperties::Name(void) const
+	?NameAndExt@CFileManagerItemProperties@@QBE?AVTPtrC16@@XZ @ 84 NONAME ; class TPtrC16 CFileManagerItemProperties::NameAndExt(void) const
+	?NavigationLevel@CFileManagerEngine@@QBEHXZ @ 85 NONAME ; int CFileManagerEngine::NavigationLevel(void) const
+	?NewFolderL@CFileManagerEngine@@QAEXABVTDesC16@@@Z @ 86 NONAME ; void CFileManagerEngine::NewFolderL(class TDesC16 const &)
+	?NewL@CFileManagerActiveExecute@@SAPAV1@AAVCFileManagerEngine@@W4TFileManagerProcess@MFileManagerProcessObserver@@AAV4@AAV?$CArrayFixFlat@H@@ABVTDesC16@@@Z @ 87 NONAME ; class CFileManagerActiveExecute * CFileManagerActiveExecute::NewL(class CFileManagerEngine &, enum MFileManagerProcessObserver::TFileManagerProcess, class MFileManagerProcessObserver &, class CArrayFixFlat<int> &, class TDesC16 const &)
+	?NewL@CFileManagerEngine@@SAPAV1@AAVRFs@@@Z @ 88 NONAME ; class CFileManagerEngine * CFileManagerEngine::NewL(class RFs &)
+	?NewL@CFileManagerIRReceiver@@SAPAV1@AAVMFileManagerProcessObserver@@ABVTDesC16@@AAVCFileManagerEngine@@@Z @ 89 NONAME ; class CFileManagerIRReceiver * CFileManagerIRReceiver::NewL(class MFileManagerProcessObserver &, class TDesC16 const &, class CFileManagerEngine &)
+	?OpenFilesL@CFileManagerItemProperties@@QAEHXZ @ 90 NONAME ; int CFileManagerItemProperties::OpenFilesL(void)
+	?OpenL@CFileManagerEngine@@QAEXH@Z @ 91 NONAME ; void CFileManagerEngine::OpenL(int)
+	?ReceiveFileL@CFileManagerIRReceiver@@QAEXXZ @ 92 NONAME ; void CFileManagerIRReceiver::ReceiveFileL(void)
+	?RefreshDirectory@CFileManagerEngine@@QAEXXZ @ 93 NONAME ; void CFileManagerEngine::RefreshDirectory(void)
+	?RefreshL@CFileManagerBackupSettings@@QAEXXZ @ 94 NONAME ; void CFileManagerBackupSettings::RefreshL(void)
+	?RefreshL@CFileManagerRestoreSettings@@QAEXXZ @ 95 NONAME ; void CFileManagerRestoreSettings::RefreshL(void)
+	?RefreshSort@CFileManagerEngine@@QAEXXZ @ 96 NONAME ; void CFileManagerEngine::RefreshSort(void)
+	?RemoveDrivePassword@CFileManagerEngine@@QAEHHABV?$TBuf8@$0BA@@@@Z @ 97 NONAME ; int CFileManagerEngine::RemoveDrivePassword(int, class TBuf8<16> const &)
+	?RenameDrive@CFileManagerEngine@@QAEHHABVTDesC16@@@Z @ 98 NONAME ; int CFileManagerEngine::RenameDrive(int, class TDesC16 const &)
+	?RenameL@CFileManagerEngine@@QAEXHABVTDesC16@@@Z @ 99 NONAME ; void CFileManagerEngine::RenameL(int, class TDesC16 const &)
+	?Reset@TFileManagerDriveInfo@@QAEXXZ @ 100 NONAME ; void TFileManagerDriveInfo::Reset(void)
+	?RestoreSettingsL@CFileManagerEngine@@QAEAAVCFileManagerRestoreSettings@@XZ @ 101 NONAME ; class CFileManagerRestoreSettings & CFileManagerEngine::RestoreSettingsL(void)
+	?SaveL@CFileManagerBackupSettings@@QAEXXZ @ 102 NONAME ; void CFileManagerBackupSettings::SaveL(void)
+	?Scheduling@CFileManagerBackupSettings@@QBEHXZ @ 103 NONAME ; int CFileManagerBackupSettings::Scheduling(void) const
+	?SearchString@CFileManagerEngine@@QBE?AVTPtrC16@@XZ @ 104 NONAME ; class TPtrC16 CFileManagerEngine::SearchString(void) const
+	?SetContent@CFileManagerBackupSettings@@QAEXK@Z @ 105 NONAME ; void CFileManagerBackupSettings::SetContent(unsigned long)
+	?SetCurrentIndex@CFileManagerEngine@@QAEXH@Z @ 106 NONAME ; void CFileManagerEngine::SetCurrentIndex(int)
+	?SetDay@CFileManagerBackupSettings@@QAEXH@Z @ 107 NONAME ; void CFileManagerBackupSettings::SetDay(int)
+	?SetDirectoryWithBackstepsL@CFileManagerEngine@@QAEXABVTDesC16@@@Z @ 108 NONAME ; void CFileManagerEngine::SetDirectoryWithBackstepsL(class TDesC16 const &)
+	?SetDrivePassword@CFileManagerEngine@@QAEHHABV?$TBuf8@$0BA@@@0@Z @ 109 NONAME ; int CFileManagerEngine::SetDrivePassword(int, class TBuf8<16> const &, class TBuf8<16> const &)
+	?SetMemoryL@CFileManagerEngine@@QAEHW4TFileManagerMemory@@@Z @ 110 NONAME ; int CFileManagerEngine::SetMemoryL(enum TFileManagerMemory)
+	?SetObserver@CFileManagerEngine@@QAEXPAVMFileManagerProcessObserver@@@Z @ 111 NONAME ; void CFileManagerEngine::SetObserver(class MFileManagerProcessObserver *)
+	?SetRemoteDriveConnection@CFileManagerEngine@@QAEHHH@Z @ 112 NONAME ; int CFileManagerEngine::SetRemoteDriveConnection(int, int)
+	?SetScheduling@CFileManagerBackupSettings@@QAEXH@Z @ 113 NONAME ; void CFileManagerBackupSettings::SetScheduling(int)
+	?SetSearchFolderL@CFileManagerEngine@@QAEXABVTDesC16@@@Z @ 114 NONAME ; void CFileManagerEngine::SetSearchFolderL(class TDesC16 const &)
+	?SetSearchStringL@CFileManagerEngine@@QAEXABVTDesC16@@@Z @ 115 NONAME ; void CFileManagerEngine::SetSearchStringL(class TDesC16 const &)
+	?SetSelection@CFileManagerRestoreSettings@@QAEXAB_K@Z @ 116 NONAME ; void CFileManagerRestoreSettings::SetSelection(unsigned long long const &)
+	?SetSortMethod@CFileManagerEngine@@QAEXW4TSortMethod@1@@Z @ 117 NONAME ; void CFileManagerEngine::SetSortMethod(enum CFileManagerEngine::TSortMethod)
+	?SetState@CFileManagerEngine@@QAEXW4TState@1@@Z @ 118 NONAME ; void CFileManagerEngine::SetState(enum CFileManagerEngine::TState)
+	?SetTargetDrive@CFileManagerBackupSettings@@QAEXH@Z @ 119 NONAME ; void CFileManagerBackupSettings::SetTargetDrive(int)
+	?SetTime@CFileManagerBackupSettings@@QAEXABVTTime@@@Z @ 120 NONAME ; void CFileManagerBackupSettings::SetTime(class TTime const &)
+	?SettingAt@CFileManagerBackupSettings@@QAEHH@Z @ 121 NONAME ; int CFileManagerBackupSettings::SettingAt(int)
+	?SizeL@CFileManagerItemProperties@@QAE_JXZ @ 122 NONAME ; long long CFileManagerItemProperties::SizeL(void)
+	?SortMethod@CFileManagerEngine@@QBE?AW4TSortMethod@1@XZ @ 123 NONAME ; enum CFileManagerEngine::TSortMethod CFileManagerEngine::SortMethod(void) const
+	?StartBackupProcessL@CFileManagerEngine@@QAEXW4TFileManagerProcess@MFileManagerProcessObserver@@@Z @ 124 NONAME ; void CFileManagerEngine::StartBackupProcessL(enum MFileManagerProcessObserver::TFileManagerProcess)
+	?StartEjectProcessL@CFileManagerEngine@@QAEXH@Z @ 125 NONAME ; void CFileManagerEngine::StartEjectProcessL(int)
+	?StartFormatProcessL@CFileManagerEngine@@QAEXH@Z @ 126 NONAME ; void CFileManagerEngine::StartFormatProcessL(int)
+	?State@CFileManagerEngine@@QBE?AW4TState@1@XZ @ 127 NONAME ; enum CFileManagerEngine::TState CFileManagerEngine::State(void) const
+	?StopReceiving@CFileManagerIRReceiver@@QAEXXZ @ 128 NONAME ; void CFileManagerIRReceiver::StopReceiving(void)
+	?StripFinalBackslash@CFileManagerUtils@@SA?AVTPtrC16@@ABVTDesC16@@@Z @ 129 NONAME ; class TPtrC16 CFileManagerUtils::StripFinalBackslash(class TDesC16 const &)
+	?TargetDrive@CFileManagerBackupSettings@@QBEHXZ @ 130 NONAME ; int CFileManagerBackupSettings::TargetDrive(void) const
+	?Time@CFileManagerBackupSettings@@QBEABVTTime@@XZ @ 131 NONAME ; class TTime const & CFileManagerBackupSettings::Time(void) const
+	?TypeL@CFileManagerItemProperties@@QAEKXZ @ 132 NONAME ; unsigned long CFileManagerItemProperties::TypeL(void)
+	?UnlockDrive@CFileManagerEngine@@QAEHHABV?$TBuf8@$0BA@@@@Z @ 133 NONAME ; int CFileManagerEngine::UnlockDrive(int, class TBuf8<16> const &)
+	?IsEmbedded@CFileManagerFeatureManager@@QBEHXZ @ 134 NONAME ; int CFileManagerFeatureManager::IsEmbedded(void) const
+	?ToFolder@CFileManagerActiveExecute@@QAE?AVTPtrC16@@XZ @ 135 NONAME ; class TPtrC16 CFileManagerActiveExecute::ToFolder(void)
+	?SetCurrentItemName@CFileManagerEngine@@QAEXABVTDesC16@@@Z @ 136 NONAME ; void CFileManagerEngine::SetCurrentItemName(class TDesC16 const &)
+	?SetAppExitOb@CFileManagerEngine@@QAEXPAVMAknServerAppExitObserver@@@Z @ 137 NONAME ; void CFileManagerEngine::SetAppExitOb(class MAknServerAppExitObserver *)
+	?DeleteBackupsL@CFileManagerEngine@@QAEXXZ @ 138 NONAME ; void CFileManagerEngine::DeleteBackupsL(void)
+

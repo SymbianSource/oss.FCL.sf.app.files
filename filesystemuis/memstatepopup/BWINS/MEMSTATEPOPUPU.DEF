@@ -1,0 +1,5 @@
+EXPORTS
+	?GetUtilL@CMemStatePopup@@SAXAAPAVCMSPUtil@@@Z @ 1 NONAME ; void CMemStatePopup::GetUtilL(class CMSPUtil * &)
+	?RunLD@CMemStatePopup@@SAXW4TDriveNumber@@AAVTDesC16@@@Z @ 2 NONAME ; void CMemStatePopup::RunLD(enum TDriveNumber, class TDesC16 &)
+	?SolveUnitAndSize@CMSPUtil@@QAE?AVTPtrC16@@AA_J@Z @ 3 NONAME ; class TPtrC16 CMSPUtil::SolveUnitAndSize(long long &)
+

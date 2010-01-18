@@ -1,0 +1,11 @@
+EXPORTS
+	??1CMseng@@UAE@XZ @ 1 NONAME ; CMseng::~CMseng(void)
+	?CancelL@CMseng@@QAEXXZ @ 2 NONAME ; void CMseng::CancelL(void)
+	?DataGroupsL@CMseng@@QBEPAVCDesC16Array@@XZ @ 3 NONAME ; class CDesC16Array * CMseng::DataGroupsL(void) const
+	?DiskInfoL@CMseng@@QBEXAA_J0W4TDriveNumber@@@Z @ 4 NONAME ; void CMseng::DiskInfoL(long long &, long long &, enum TDriveNumber) const
+	?MemInfoL@CMseng@@SAXAA_J0@Z @ 5 NONAME ; void CMseng::MemInfoL(long long &, long long &)
+	?NewL@CMseng@@SAPAV1@AAVMMsengUIHandler@@@Z @ 6 NONAME ; class CMseng * CMseng::NewL(class MMsengUIHandler &)
+	?ScanInProgress@CMseng@@QBEHXZ @ 7 NONAME ; int CMseng::ScanInProgress(void) const
+	?ScanL@CMseng@@QAEXW4TDriveNumber@@@Z @ 8 NONAME ; void CMseng::ScanL(enum TDriveNumber)
+	?ScanResultL@CMseng@@QBEPAV?$CArrayFix@_J@@XZ @ 9 NONAME ; class CArrayFix<long long> * CMseng::ScanResultL(void) const
+
