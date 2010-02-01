@@ -37,7 +37,7 @@ CMSPUtil* CMSPUtil::NewL( CDesCArrayFlat* aArray )
 
 CMSPUtil::~CMSPUtil( )
 	{
-	if(!iUnitArray)
+	if( iUnitArray )
 	    {
 	    iUnitArray->Delete( 0, iUnitArray->Count( ) );
 	    }

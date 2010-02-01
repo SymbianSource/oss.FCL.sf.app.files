@@ -187,8 +187,14 @@ void CFileManagerDocHandler::OpenFileL(
 void CFileManagerDocHandler::OpenShareableFileL(
         RFile64& aShareableFile, const TDesC8& aMime )
     {
+    // Check if iFileFullPath is NULL
+    if ( !iFileFullPath )
+        {
+        User::Leave( KErrNotFound );
+        }
+    
     // Check if file open is denied
-    if ( iObserver && iFileFullPath )
+    if ( iObserver )
         {
         if ( iObserver->NotifyL(
                 MFileManagerProcessObserver::ENotifyFileOpenDenied,

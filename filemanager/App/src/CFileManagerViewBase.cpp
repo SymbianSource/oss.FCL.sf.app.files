@@ -3319,19 +3319,6 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
             dimSend = ETrue;
             }
 
-        /* Codes below will cause trouble for large amount file selection
-        if ( !dimSend )
-            {
-            // Check if there are files to send
-            TInt dummy( 0 );
-            CArrayFixFlat< TInt >* files = GetSendFilesLC( dummy );
-            if ( !files->Count() )
-                {
-                dimSend = ETrue;
-                }
-            CleanupStack::PopAndDestroy( files );
-            }
-        */
 
         // Hide empty details if no item or memory specific details 
         // can be shown.
@@ -3340,12 +3327,17 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
             {
             aMenuPane.SetItemDimmed( EFileManagerDetails, ETrue );
             }
-        if ( ( drvInfo.iState & TFileManagerDriveInfo::EDriveRemote ) &&
-             !( drvInfo.iState & TFileManagerDriveInfo::EDriveConnected ) )
-            {
-            // Handle disconnected remote drive
-            dimSend = ETrue;
-            }
+        
+        if ( !( drvInfo.iState & TFileManagerDriveInfo::EDrivePresent ) || 
+        	 ( ( drvInfo.iState & TFileManagerDriveInfo::EDriveRemote ) &&
+             !( drvInfo.iState & TFileManagerDriveInfo::EDriveConnected ) ) )
+           {
+           // Handle unavailable drive OR  disconnected remote drive
+           dimSend = ETrue;
+           aMenuPane.SetItemDimmed( EFileManagerSort, ETrue );
+           aMenuPane.SetItemDimmed( EFileManagerOrganise, ETrue );
+           aMenuPane.SetItemDimmed( EFileManagerMark, ETrue );             
+           }
         }
     else if ( iContainer->ListBoxNumberOfItems() )
         {

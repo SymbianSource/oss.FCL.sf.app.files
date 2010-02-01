@@ -209,17 +209,15 @@ TBool CFileManagerMemoryStoreView::DriveAvailableL(
     {
     HBufC* error = NULL;
     TFileManagerDriveInfo& drvInfo( DriveInfo() );
-    TInt usb_err( KErrNone );    
     if ( drvInfo.iState & (
             TFileManagerDriveInfo::EDriveRemovable |
             TFileManagerDriveInfo::EDriveRemote ) )
         {
-        TRAP( usb_err , RefreshDriveInfoL() );
+        TRAP_IGNORE( RefreshDriveInfoL() );
         }    
-	if( usb_err != KErrNone )
-		{
-		error = StringLoader::LoadLC( R_QTN_MEMC_MAINPAGE_ERROR1 );
-        }
+
+    TInt drvNum = drvInfo.iDrive;
+    iEngine.GetDriveInfoL(drvNum,drvInfo);
 
     INFO_LOG1( "CFileManagerMemoryStoreView::DriveAvailableL-drvState=%d",
         drvInfo.iState )
