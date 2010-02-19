@@ -32,8 +32,9 @@
 #include "CFileManagerAppUi.h"
 #include "FileManager.hrh"
 #include "CFileManagerIconArray.h"
-
-
+#include <aknview.h>
+#include <eikmenub.h>
+#include <eikmenup.h> // CEikMenuPane
 // CONSTANTS
 const TInt KTouchGestureThreshold = 30; // Threshold could be stored in CenRep
 
@@ -199,27 +200,38 @@ TKeyResponse CFileManagerFileListContainer::OfferKeyEventL(
         const TKeyEvent& aKeyEvent, TEventCode aType )
     {
     TKeyResponse response = OfferSearchKeyEventL( aKeyEvent, aType );
+    if ( response == EKeyWasConsumed )
+       {
+       return response;
+       }   
     
-    response = ListBox().OfferKeyEventL( aKeyEvent, aType );
-   /* if ( response == EKeyWasConsumed )
-            {
-            return response;
-            }*/
+    TVwsViewId enabledViewId = TVwsViewId( KNullUid, KNullUid );
+    iAppUi->GetActiveViewId( enabledViewId );
+             
+    TUid enabledViewUid = enabledViewId.iViewUid;
+    CAknView* enabledView = iAppUi->View( enabledViewUid );
+    CEikMenuBar* menuBar = enabledView->MenuBar();
+    
     switch( aKeyEvent.iCode )
         {
         case EKeyEnter: // FALLTHROUH
         case EKeyOK:
             {
-          /*  indexOfMSK++;
-            iAppUi->ProcessCommandL( EFileManagerSelectionKey );
-            response = EKeyWasConsumed;*/
+            if ( menuBar->ItemSpecificCommandsEnabled() )
+                {
+                iAppUi->ProcessCommandL( EFileManagerSelectionKey );
+                response = EKeyWasConsumed;
+                }
             break;
             }
         case EKeyDelete:    // FALLTHROUGH
         case EKeyBackspace:
             {
-            iAppUi->ProcessCommandL( EFileManagerDelete );
-            response = EKeyWasConsumed;
+            if ( menuBar->ItemSpecificCommandsEnabled() )
+                {
+                iAppUi->ProcessCommandL( EFileManagerDelete );
+                response = EKeyWasConsumed;
+                }
             break;
             }
         case EKeyLeftArrow: // FALLTHROUGH
@@ -254,7 +266,7 @@ TKeyResponse CFileManagerFileListContainer::OfferKeyEventL(
             }
         default:
             {
-         //   response = ListBox().OfferKeyEventL( aKeyEvent, aType );
+            response = ListBox().OfferKeyEventL( aKeyEvent, aType );
             break;
             }
         }

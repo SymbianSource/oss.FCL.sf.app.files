@@ -179,16 +179,19 @@ RESOURCE MENU_PANE r_filemanager_main_view_menu
             {
             command = EFileManagerConnectRemoveDrive;
             txt = qtn_rd_opt_connect;
+            flags = EEikMenuItemDimmed;
             },
         MENU_ITEM 
             {
             command = EFileManagerDisconnectRemoveDrive;
             txt = qtn_rd_opt_disconnect;
+            flags = EEikMenuItemDimmed;
             },
         MENU_ITEM 
             {
             command = EFileManagerEject;
             txt = qtn_fmgr_options_eject;
+            flags = EEikMenuItemSpecific;
             },
 #ifndef RD_FILE_MANAGER_BACKUP
         MENU_ITEM 
@@ -202,27 +205,32 @@ RESOURCE MENU_PANE r_filemanager_main_view_menu
             txt = qtn_memc_options_restore;
             },
 #endif // !RD_FILE_MANAGER_BACKUP
-		MENU_ITEM
-			{
-			command = EFileManagerFindFile;
-			txt = qtn_fmgr_options_find_file;
-			},
-		MENU_ITEM
-			{
-			command = EFileManagerMemoryStorage;
-			cascade = r_filemanager_memory_storage_menu;
-			txt = qtn_fmgr_options_memory_sub;
-			flags = EEikMenuItemSpecific;
-			},
-		MENU_ITEM
-			{
-			command = EFileManagerRemoveDrives;
-			cascade = r_filemanager_remote_drives_menu;
-			txt = qtn_fmgr_opt_remote_drives;
-			flags = EEikMenuItemSpecific;
-			},
-		MENU_ITEM
-			{
+        MENU_ITEM
+            {
+            command = EFileManagerFindFile;
+            txt = qtn_fmgr_options_find_file;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorage;
+            cascade = r_filemanager_memory_storage_menu;
+            txt = qtn_fmgr_options_memory_sub;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerRemoveDrives;
+            cascade = r_filemanager_remote_drives_menu;
+            txt = qtn_fmgr_opt_remote_drives;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerRemoveDrivesMapDrive;
+            txt = qtn_fmgr_opt_rd_new_drive;
+            },
+        MENU_ITEM
+            {
             command = EAknCmdHelp;
             txt = qtn_options_help;
             },
@@ -248,19 +256,16 @@ RESOURCE MENU_PANE r_filemanager_memory_store_view_menu
             {
             command = EFileManagerConnectRemoveDrive;
             txt = qtn_rd_opt_connect;
-            flags = EEikMenuItemSpecific;
             },
         MENU_ITEM 
             {
             command = EFileManagerDisconnectRemoveDrive;
             txt = qtn_rd_opt_disconnect;
-            flags = EEikMenuItemSpecific;
             },
         MENU_ITEM 
             {
             command = EFileManagerRefreshRemoteDrive;
             txt = qtn_fmgr_rd_opt_refresh;
-            flags = EEikMenuItemSpecific;
             },
         MENU_ITEM
             {
@@ -507,12 +512,6 @@ RESOURCE MENU_PANE r_filemanager_remote_drives_menu
             {
             command = EFileManagerRemoveDrivesSettings;
             txt = qtn_fmgr_opt_rd_settings;
-            flags = EEikMenuItemSpecific;
-            },
-        MENU_ITEM
-            {
-            command = EFileManagerRemoveDrivesMapDrive;
-            txt = qtn_fmgr_opt_rd_new_drive;
             flags = EEikMenuItemSpecific;
             },
         MENU_ITEM

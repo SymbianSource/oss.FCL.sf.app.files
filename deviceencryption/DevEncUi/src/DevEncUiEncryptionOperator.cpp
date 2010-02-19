@@ -40,8 +40,8 @@
 #include <f32file.h>
 #include <gsfwviewuids.h> // For general settings view UIDs (autolock)
 #include <hwrmpowerstatesdkpskeys.h> // For power state
-#include <SecUiSecuritySettings.h> // for autolock
-#include <SettingsInternalCRKeys.h>
+#include <secuisecuritysettings.h> // for autolock
+#include <settingsinternalcrkeys.h>
 #include <StringLoader.h>
 #include <utf.h> // For character conversion
 #include <TerminalControl3rdPartyAPI.h>

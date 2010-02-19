@@ -22,7 +22,7 @@
 #include <aknnavi.h>    // CAknNavigationControlContainer 
 #include <aknnavide.h>  // CAknNavigationDecorator
 #include <sendui.h>     // CSendAppUi
-#include <sendnorm.rsg>
+#include <Sendnorm.rsg>
 #include <avkon.rsg>
 #include <barsread.h>
 #include <hlplch.h>     // HlpLauncher

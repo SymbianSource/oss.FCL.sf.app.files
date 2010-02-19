@@ -114,7 +114,7 @@ EXPORT_C void CFileManagerActiveExecute::ExecuteL( TFileManagerSwitch aOverWrite
         iItemIterator->CurrentL( &iSrc, &iDst, iItemType );
         }
 
-    if ( ( iDst && iDst->Length() > KMaxFileName ) || !iDst )
+    if ( iDst && iDst->Length() > KMaxFileName )
         {
         error = KErrBadName;
         TRequestStatus* status = &iStatus;
