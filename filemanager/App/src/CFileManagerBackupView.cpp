@@ -112,10 +112,7 @@ void CFileManagerBackupView::DirectoryChangedL()
     {
     FUNC_LOG
 
-    if ( iContainer )
-        {
-        iContainer->RefreshListL( iIndex );
-        }
+    TRAP_IGNORE( RefreshSettingsL() );
     }
 
 // ----------------------------------------------------------------------------

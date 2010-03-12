@@ -160,15 +160,16 @@ TBool CFileManagerFileNameQueryDlg::DoOkToExitL( TInt aButtonId )
         TUint32 fileType( 0 );
 
         TRAPD( err, fileType = iEngine.FileTypeL( ptrUserTextFullPath ) );
-        if ( err != KErrNone && err != KErrAccessDenied )
+        if ( err != KErrNone && err != KErrNotFound && err != KErrAccessDenied )
             {
             User::Leave( err );
             }
 
-        if( ( fileType & ( CFileManagerItemProperties::EOpen |
+        if( ( err == KErrNotFound ) ||
+            ( err == KErrAccessDenied ) ||
+            ( fileType & ( CFileManagerItemProperties::EOpen |
                            CFileManagerItemProperties::EReadOnly |
-                           CFileManagerItemProperties::EFolder ) ) ||
-            ( err == KErrAccessDenied ) )
+                           CFileManagerItemProperties::EFolder ) ) )
             {
             FileManagerDlgUtils::ShowInfoNoteL(
                 R_QTN_FLDR_NAME_ALREADY_USED, Text() );

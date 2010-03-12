@@ -210,14 +210,18 @@ TKeyResponse CFileManagerFileListContainer::OfferKeyEventL(
              
     TUid enabledViewUid = enabledViewId.iViewUid;
     CAknView* enabledView = iAppUi->View( enabledViewUid );
-    CEikMenuBar* menuBar = enabledView->MenuBar();
+    CEikMenuBar* menuBar = NULL;
     
+    if ( iAppUi->IsFileManagerView( enabledViewUid ) )
+        {
+        menuBar = enabledView->MenuBar();
+        }
     switch( aKeyEvent.iCode )
         {
         case EKeyEnter: // FALLTHROUH
         case EKeyOK:
             {
-            if ( menuBar->ItemSpecificCommandsEnabled() )
+            if ( ( menuBar != NULL ) && menuBar->ItemSpecificCommandsEnabled() )
                 {
                 iAppUi->ProcessCommandL( EFileManagerSelectionKey );
                 response = EKeyWasConsumed;
@@ -227,7 +231,7 @@ TKeyResponse CFileManagerFileListContainer::OfferKeyEventL(
         case EKeyDelete:    // FALLTHROUGH
         case EKeyBackspace:
             {
-            if ( menuBar->ItemSpecificCommandsEnabled() )
+            if ( ( menuBar != NULL ) && menuBar->ItemSpecificCommandsEnabled() )
                 {
                 iAppUi->ProcessCommandL( EFileManagerDelete );
                 response = EKeyWasConsumed;
