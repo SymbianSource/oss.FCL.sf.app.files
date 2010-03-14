@@ -920,74 +920,40 @@ void CFileManagerRemovableDriveHandler::EndFormatProcessL( TInt aErr )
 // 
 void CFileManagerRemovableDriveHandler::StartFormatProcessL()
     {
-    RDebug::Printf(">> CFileManagerRemovableDriveHandler::StartFormatProcessL() 1 ");
     // Store the current volume name over format operation.
     TRAPD( err, StoreVolumeNameL( iDrive ) );
     LOG_IF_ERROR1(
         err,
         "FileManagerRemovableDriveHandler::StartFormatProcessL-StoreVolumeName %d",
         err );
-
     TDriveName driveName( TDriveUnit( iDrive ).Name() );
-    RDebug::Printf(">> CFileManagerRemovableDriveHandler::StartFormatProcessL() 2");
     // Resolve drive character and open formatter
     iFormatter.Close();
-    RDebug::Printf(">> CFileManagerRemovableDriveHandler::StartFormatProcessL() 2.1");
     err = iFormatter.Open(
         iFs, driveName, EFullFormat, iFinalValue );
-    RDebug::Printf(">> CFileManagerRemovableDriveHandler::StartFormatProcessL() 2.2 RFormat::Open full err=%d", err);
-
     // Forced format for locked card
     if ( err == KErrLocked )
         {
         // Erase password and try again
         err = iFs.ErasePassword( iDrive );
-        INFO_LOG1( "FileManagerRemovableDriveHandler::StartFormatProcessL-ErasePassword result=%d", err);
-
         if (err == KErrNone)
         	{
-        	err = iFormatter.Open(iFs, driveName, EFullFormat , iFinalValue );
-        	RDebug::Printf(">> CFileManagerRemovableDriveHandler::StartFormatProcessL() RFormat::Open again err=%d", err);
+        	err = iFormatter.Open(iFs, driveName, EFullFormat , iFinalValue );        
         	}
         }
-
     if (err == KErrInUse)
-    	{
-    	RDebug::Printf(">> CFileManagerRemovableDriveHandler::StartFormatProcessL KErrInUse try force format err=%d", err);
-
-    	// There are still files open on the drive being formatted, prompt the user to
-    	// ask if they want to format anyway.
-    	//
-    	// formatting.
-    	//TBool reallyFormat = FileManagerDlgUtils::ShowConfirmQueryWithYesNoL(_L("There are files open on this drive, continue with format?"));
-    	TBool reallyFormat = ETrue; // TEMP! - should ask the user to confirm Yes / No
-
+    	{    
+    	TBool reallyFormat = ETrue;
     	if (reallyFormat)
-    		{
-    		// Open the RFormat sub-session with force format flags
-    		RDebug::Printf( "FileManagerRemovableDriveHandler::StartFormatProcessL-******force format*****");
+    		{    	
     		err = iFormatter.Open(
-    				iFs, driveName, EFullFormat | EForceFormat, iFinalValue );
-    		RDebug::Printf( "FileManagerRemovableDriveHandler::StartFormatProcessL-******force format***** err = %d", err);
+    				iFs, driveName, EFullFormat | EForceFormat, iFinalValue );    		
     		}
     	}
-
-    // By the time we get here, one of three things could have happened:
-    // 1.  	RFormat has been opened with standard full format flag with no error
-    // 2.  	Some other app still has files opened so full format cannot be used.
-    //		A second attempt has been made to open the format sub-session with
-    //		full format flags and this has succeeded.
-    // 3.	As 2 but for some other reason (corrupt card perhaps?), force format
-    // 		does not work in which case abort format.
-
-
    TFullName fsName;
    if (err == KErrNone)
 	   {
-	   err = iFs.FileSystemName( fsName, iDrive );
-
-	   RDebug::Printf( "FileManagerRemovableDriveHandler::StartFormatProcessL-fsName=%S, result=%d",
-			   &fsName, err );
+	   err = iFs.FileSystemName( fsName, iDrive );			  
 
 	   if ( err == KErrNone && fsName.Length() > 0 )
 		   {
@@ -1012,20 +978,16 @@ void CFileManagerRemovableDriveHandler::StartFormatProcessL()
         {
         TRAP( err, InformStartL( iFinalValue ) );
         if ( err == KErrNone )
-            {
-            RDebug::Printf(">> CFileManagerRemovableDriveHandler::StartFormatProcessL() RFormat::Next err = %d, tracks left=%d", err, iFinalValue);
+            {           
             iFormatCountBuf = iFinalValue;
             iFormatter.Next( iFormatCountBuf, iStatus );
             SetActive();
             }
         }
     if ( !iFinalValue || err != KErrNone )
-        {
-        RDebug::Printf(">> CFileManagerRemovableDriveHandler::StartFormatProcessL() 6 err = %d", err);
-        EndFormatProcessL( err );
-        RDebug::Printf(">> CFileManagerRemovableDriveHandler::StartFormatProcessL() 7 err = %d", err);
+        {   
+        EndFormatProcessL( err );     
         }
-    RDebug::Printf("<< CFileManagerRemovableDriveHandler::StartFormatProcessL() 8 err=%d", err);
     }
 // ---------------------------------------------------------------------------
 // CFileManagerRemovableDriveHandler::CloseAppsL

@@ -18,12 +18,12 @@
 
 // User includes
 #include    "devencgsplugin.h"
-#include    <GSParentPlugin.h>
-#include    <GSCommon.hrh>
+#include    <gsparentplugin.h>
+#include    <gscommon.hrh>
 #include    <devencgspluginrsc.rsg> // GUI Resource
 //#include    <DevEncUi.rsg>
 #include    <devencgsplugin.mbg>
-#include    <GSPrivatePluginProviderIds.h>
+#include    <gsprivatepluginproviderids.h>
 #include    <hwrmvibrasdkcrkeys.h>
 #include    <AknLaunchAppService.h>
 #include    <AiwCommon.h>

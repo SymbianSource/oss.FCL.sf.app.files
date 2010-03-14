@@ -26,7 +26,7 @@
 #include <CAknMemorySelectionDialog.h>
 #include <CAknFileSelectionDialog.h>
 #include <sendui.h>
-#include <sendnorm.rsg>
+#include <Sendnorm.rsg>
 #include <SenduiMtmUids.h>
 #include <AknProgressDialog.h>
 #include <eikprogi.h>
@@ -586,20 +586,22 @@ void CFileManagerViewBase::SendUiQueryL()
 void CFileManagerViewBase::MarkMenuFilteringL( CEikMenuPane& aMenuPane )
     {
     TInt index( iContainer->ListBoxCurrentItemIndex() );
-    if ( iContainer->ListBoxIsItemSelected( index ) )
-        {
-        aMenuPane.SetItemDimmed( EFileManagerMarkOne, ETrue );
-        }
-    else
-        {
-        aMenuPane.SetItemDimmed( EFileManagerUnmarkOne, ETrue );
-        }
 
     if ( iEngine.IsFolder( index ) )
         {
         aMenuPane.SetItemDimmed( EFileManagerMarkOne, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerUnmarkOne, ETrue );
-        aMenuPane.SetItemDimmed( EFileManagerMarkAll, ETrue );
+        }
+    else
+        {
+        if ( iContainer->ListBoxIsItemSelected( index ) )
+            {
+            aMenuPane.SetItemDimmed( EFileManagerMarkOne, ETrue );
+            }
+        else
+            {
+            aMenuPane.SetItemDimmed( EFileManagerUnmarkOne, ETrue );
+            }
         }
 
     TInt files( iEngine.FilesInFolderL() );
@@ -613,7 +615,6 @@ void CFileManagerViewBase::MarkMenuFilteringL( CEikMenuPane& aMenuPane )
         {
         aMenuPane.SetItemDimmed( EFileManagerUnmarkAll, ETrue );
         }
-
     }
 
 // -----------------------------------------------------------------------------
@@ -3341,6 +3342,14 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
         }
     else if ( iContainer->ListBoxNumberOfItems() )
         {
+        // Check if there is files on the list
+        TInt files( iEngine.FilesInFolderL() );
+        if ( !files ) 
+            {
+            dimSend = ETrue;
+            aMenuPane.SetItemDimmed( EFileManagerMark, ETrue );
+            }
+        
         // There is items in list, check selection type
         TUint32 fileType( iEngine.FileTypeL(
             iContainer->ListBoxCurrentItemIndex() ) );
@@ -3348,13 +3357,11 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
             {
             dimSend = ETrue;
             aMenuPane.SetItemDimmed( EFileManagerDelete, ETrue );
-            aMenuPane.SetItemDimmed( EFileManagerMark, ETrue );
             aMenuPane.SetItemDimmed( EFileManagerRename, ETrue );
             }
         else if ( fileType & CFileManagerItemProperties::EFolder )
             {
             dimSend = ETrue;
-            aMenuPane.SetItemDimmed( EFileManagerMark, ETrue );
             }
 
         if ( fileType & CFileManagerItemProperties::EPlaylist )

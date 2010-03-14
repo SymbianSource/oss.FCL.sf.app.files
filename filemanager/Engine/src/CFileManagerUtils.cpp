@@ -226,18 +226,17 @@ TBool CFileManagerUtils::IsDrmProtectedFile( const TDesC& aFullPath ) const
    
     RFile64 drmFile;
     
-       User::LeaveIfError( drmFile.Open( 
-               iFs, aFullPath, EFileRead | EFileShareReadersOrWriters ) );
-       CleanupClosePushL( drmFile );
-       DRM::CDrmUtility *drmCheck = DRM::CDrmUtility::NewLC();
+    User::LeaveIfError( drmFile.Open( 
+        iFs, aFullPath, EFileRead | EFileShareReadersOrWriters ) );
+    CleanupClosePushL( drmFile );
+    DRM::CDrmUtility *drmCheck = DRM::CDrmUtility::NewLC();
        
-       TBool isProtected( EFalse );
-       if ( drmCheck->IsProtectedL(drmFile) )
-    	   {
-    	              isProtected = ETrue;
-    	   }
-       CleanupStack::PopAndDestroy(drmCheck);
-       CleanupStack::PopAndDestroy( &drmFile );
+    TBool isProtected( EFalse );        
+    TRAP_IGNORE( isProtected = drmCheck->IsProtectedL( drmFile ) ); 
+    
+    CleanupStack::PopAndDestroy( drmCheck );
+    CleanupStack::PopAndDestroy( &drmFile );
+       
     return isProtected;
 #endif
     }
