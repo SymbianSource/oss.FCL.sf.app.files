@@ -18,10 +18,9 @@
 
 
 // INCLUDE FILES
-#include <StringLoader.h>
-#include <akntitle.h> 
-#include <aknnavi.h> 
-#include <aknnavide.h> 
+#include <akntitle.h>
+#include <aknnavi.h>
+#include <aknnavide.h>
 #include <barsread.h>
 #include <aknlists.h>
 #include <AknsConstants.h>
@@ -257,51 +256,27 @@ void CFileManagerFoldersView::DirectoryChangedL()
             {
             appUi->ExitEmbeddedAppIfNeededL();
             }
-		TInt usb_err(KErrNone);
-			TRAP( usb_err,RefreshDriveInfoL() );
-		if (usb_err != KErrNone)
-			{
-			usbWrongRemoved = ETrue;
-			HBufC* error = StringLoader::LoadLC(R_QTN_SELEC_EMPTY_LIST);
-
-			if (iContainer)
-				{
-				iContainer->ListBoxSetTextL(*error);
-				}
-			CleanupStack::PopAndDestroy(error);
-			}
-		else
-			{
-				TFileManagerDriveInfo& drvInfo( DriveInfo() );
-				if ( !( drvInfo.iState & TFileManagerDriveInfo::EDrivePresent ) )
-				{
-					//User::Leave(KErrPathNotFound);
-					HBufC* error = StringLoader::LoadLC(R_QTN_SELEC_EMPTY_LIST);
-
-					if (iContainer)
-						{
-						iContainer->ListBoxSetTextL(*error);
-						}
-					CleanupStack::PopAndDestroy(error);
-				}
-			else
-				{
-				usbWrongRemoved = EFalse;
-				TInt index( iEngine.CurrentIndex() );
-				if ( index != KErrNotFound )
-					{
-					iContainer->RefreshListL( index );
-					}
-				else
-					{
-					iContainer->RefreshListL( iIndex );
-					}
-        
-				} 			
-			}
-		RefreshTitleL();	
-		iFolderDepth = iEngine.FolderLevel();
-		}
+            TRAP_IGNORE( RefreshDriveInfoL() );
+            TFileManagerDriveInfo& drvInfo( DriveInfo() );
+            if ( !( drvInfo.iState & TFileManagerDriveInfo::EDrivePresent ) )
+                {
+                User::Leave(KErrPathNotFound);
+                }
+            else
+                {
+                TInt index( iEngine.CurrentIndex() );
+                if ( index != KErrNotFound )
+                    {
+                    iContainer->RefreshListL( index );
+                    }
+                else
+                    {
+                    iContainer->RefreshListL( iIndex );
+                    }
+                RefreshTitleL();
+                }
+        iFolderDepth = iEngine.FolderLevel();
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -335,28 +310,13 @@ void CFileManagerFoldersView::UpdateCbaL()
 void CFileManagerFoldersView::BackstepL(
        TInt aBacksteps )
     {
-	
-
-	
-	if ( usbWrongRemoved )
-		{
-		CFileManagerAppUi* appUi = static_cast<CFileManagerAppUi*> (AppUi());	 
-		usbWrongRemoved = EFalse;
-		iFolderDepth = 0;
-		iIndex = 0;
-		appUi->CloseFoldersViewL();
-		}
-	else
-		{
-		if (iActiveProcess != ENoProcess)
-				{
-				return; // Ignore to avoid container mess up
-				}
-
-			iPopupController->HideInfoPopupNote();
-			CFileManagerAppUi* appUi = static_cast<CFileManagerAppUi*> (AppUi());
-			TInt level(iEngine.FolderLevel());
-
+    if (iActiveProcess != ENoProcess)
+        {
+        return; // Ignore to avoid container mess up
+        }
+    iPopupController->HideInfoPopupNote();
+    CFileManagerAppUi* appUi = static_cast<CFileManagerAppUi*> (AppUi());
+    TInt level(iEngine.FolderLevel());
     while ( aBacksteps > 0 )
         {
         if ( level < iInitialFolderDepth )
@@ -373,19 +333,18 @@ void CFileManagerFoldersView::BackstepL(
         appUi->ExitEmbeddedAppIfNeededL();
         }
 
-		if (level < iInitialFolderDepth)
-			{
-			iFolderDepth = 0;
-			iIndex = 0;
-			appUi->CloseFoldersViewL();
-			}
-		else
-			{
-			iEngine.SetObserver(this);
-			iEngine.RefreshDirectory();
-			}
-		}
-	}
+    if (level < iInitialFolderDepth)
+        {
+        iFolderDepth = 0;
+        iIndex = 0;
+        appUi->CloseFoldersViewL();
+        }
+    else
+        {
+        iEngine.SetObserver(this);
+        iEngine.RefreshDirectory();
+        }
+    }
 
 // ------------------------------------------------------------------------------
 // CFileManagerFoldersView::FolderName

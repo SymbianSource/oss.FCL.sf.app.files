@@ -176,8 +176,6 @@ class CFileManagerFoldersView : public CFileManagerViewBase,
 
         // Own: For showing info popups
         CAknInfoPopupNoteController* iPopupController;
-        // Own:	Indicate USB storage was removed
-        TBool usbWrongRemoved;
 
     };
 

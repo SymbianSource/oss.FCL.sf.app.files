@@ -244,17 +244,21 @@ void CFileManagerBackupView::CmdBackupL()
     StoreIndex();
     CFileManagerBackupSettings& settings( iEngine.BackupSettingsL() );
     TInt drive( settings.TargetDrive() );
-    TInt MemoryCardDriveF( KFmgrMemoryCardDrive + 1 );
-    //KFmgrMemoryCardDrive has been changed as Mass memory,MemoryCard is changed to F
-    
-    if( drive != MemoryCardDriveF && !IsDriveAvailable( drive ) )
-    	{
-    	drive = MemoryCardDriveF;
-    	settings.SetTargetDrive( drive );
-    	settings.SaveL();    	
-    	}
-    TFileManagerDriveInfo drvInfo;
-    iEngine.GetDriveInfoL( drive, drvInfo );
+    TFileManagerDriveInfo drvInfo;    
+    if( !IsDriveAvailable( drive ) )
+        {
+            for( TInt i ( EDriveA ) ; i <= EDriveZ ; i++ )
+                {
+                iEngine.GetDriveInfoL( i , drvInfo );
+                if( ( IsDriveAvailable( i ) ) && ( drvInfo.iState & TFileManagerDriveInfo::EDriveEjectable ) )
+                    {
+                    drive = i;
+                    settings.SetTargetDrive( drive );
+                    settings.SaveL();
+                    break;
+                    }
+                }
+        }
     RArray< CFileManagerRestoreSettings::TInfo > info;
     CleanupClosePushL( info );
     iEngine.GetRestoreInfoArrayL( info, drive );

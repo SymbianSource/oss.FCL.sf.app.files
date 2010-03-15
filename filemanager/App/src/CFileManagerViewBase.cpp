@@ -86,7 +86,7 @@ const TInt64 KMSecToMicroSecMultiplier = 1000000;
 const TInt64 KMinToMicroSecMultiplier = KMSecToMicroSecMultiplier * 60;
 const TInt64 KHourToMicroSecMultiplier = KMinToMicroSecMultiplier * 60;
 const TUint KProgressBarAsyncStartDelay = 1500000; // microseconds
-
+const TInt KMinificationFactor = 1024; // Used to zoom processbar's proportion
 
 // ============================ LOCAL FUNCTIONS ================================
 
@@ -2352,7 +2352,7 @@ void CFileManagerViewBase::DoUpdateProgressBar()
     // Update progress indicator
     if ( iProgressDialog && iProgressInfo )
         {
-          iProgressInfo->SetAndDraw( iTotalTransferredBytes/1024 );
+          iProgressInfo->SetAndDraw( iTotalTransferredBytes / KMinificationFactor );
         }
     }
 
@@ -3187,6 +3187,29 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
     // Common remote drive filtering
     RemoteDriveCommonFilteringL( aMenuPane );
     
+    if ( iContainer->ListBoxNumberOfItems() )
+        {
+        if ( !iContainer->ListBoxSelectionIndexesCount() )
+            {
+            TUint32 fileType( iEngine.FileTypeL(
+                iContainer->ListBoxCurrentItemIndex() ) );
+            if ( ( fileType & KDefaultFolderMask ) == KDefaultFolderMask )
+                {
+                aMenuPane.SetItemDimmed( EFileManagerMoveToFolder, ETrue );
+                }
+            }
+        }
+    else
+        {
+        aMenuPane.SetItemDimmed( EFileManagerMoveToFolder, ETrue );
+        aMenuPane.SetItemDimmed( EFileManagerCopyToFolder, ETrue );
+        }
+    TInt index(iContainer->ListBoxCurrentItemIndex());
+    TUint32 fileType(iEngine.FileTypeL(index));
+    if (!(fileType & CFileManagerItemProperties::EFolder))
+        {
+        aMenuPane.SetItemDimmed(EFileManagerMoveToFolder, ETrue);
+        }
     CFileManagerFeatureManager& featureManager( FeatureManager() );
     
 #ifdef RD_MULTIPLE_DRIVE
@@ -3478,23 +3501,6 @@ void CFileManagerViewBase::OrganiseMenuFilteringL( CEikMenuPane& aMenuPane )
     {
 //    CEikListBox& listBox( iContainer->ListBox() );
 
-    if ( iContainer->ListBoxNumberOfItems() )
-        {
-        if ( !iContainer->ListBoxSelectionIndexesCount() )
-            {
-            TUint32 fileType( iEngine.FileTypeL(
-                iContainer->ListBoxCurrentItemIndex() ) );
-            if ( ( fileType & KDefaultFolderMask ) == KDefaultFolderMask )
-                {
-                aMenuPane.SetItemDimmed( EFileManagerMoveToFolder, ETrue );
-                }
-            }
-        }
-    else
-        {
-        aMenuPane.SetItemDimmed( EFileManagerMoveToFolder, ETrue );
-        aMenuPane.SetItemDimmed( EFileManagerCopyToFolder, ETrue );
-        }
 
     // Search view item dimming
     if( iEngine.State() == CFileManagerEngine::ESearch )
@@ -3507,13 +3513,7 @@ void CFileManagerViewBase::OrganiseMenuFilteringL( CEikMenuPane& aMenuPane )
         {
         // Write protected item dimming
         aMenuPane.SetItemDimmed( EFileManagerNewFolder, ETrue );
-		}
 
-	TInt index(iContainer->ListBoxCurrentItemIndex());
-	TUint32 fileType(iEngine.FileTypeL(index));
-	if (!(fileType & CFileManagerItemProperties::EFolder))
-		{
-		aMenuPane.SetItemDimmed(EFileManagerMoveToFolder, ETrue);
         }
     }
 
@@ -4216,8 +4216,8 @@ void CFileManagerViewBase::LaunchProgressBarL(
     iProgressInfo = iProgressDialog->GetProgressInfoL();
     if ( iProgressInfo )
         {
-        iProgressInfo->SetFinalValue( static_cast<TInt>( aFinalValue/1024 ) ); 
-        iProgressInfo->SetAndDraw( static_cast<TInt>( aInitialValue/1024 ) );
+        iProgressInfo->SetFinalValue( static_cast<TInt>( aFinalValue / KMinificationFactor ) ); 
+        iProgressInfo->SetAndDraw( static_cast<TInt>( aInitialValue / KMinificationFactor ) );
         }
     iProgressDialog->RunLD();
     }
@@ -4770,8 +4770,8 @@ TBool CFileManagerViewBase::StopProgressDialogAndStoreValues()
     if ( iProgressDialog && iProgressInfo )
         {
         CEikProgressInfo::SInfo info( iProgressInfo->Info() );
-        iProgressFinalValue = info.iFinalValue;
-        iProgressCurrentValue = iProgressInfo->CurrentValue();
+        iProgressFinalValue = ( info.iFinalValue ) * KMinificationFactor;
+        iProgressCurrentValue = ( iProgressInfo->CurrentValue() ) * KMinificationFactor;
         if ( !iProgressCurrentValue && iTotalTransferredBytes <= iProgressFinalValue )
             {
             iProgressCurrentValue = iTotalTransferredBytes;
