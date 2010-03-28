@@ -410,10 +410,10 @@ class CDevEncAdapter : public CSmlDmAdapter
                             MSmlDmDDFObject::TOccurence aOccurence,
                             const TDesC8& aDescription,
                             const TDesC8& aMIMEType );
-        
-        TPtrC8 CDevEncAdapter::LastURISeg( const TDesC8& aURI );
 
-        HBufC8* CDevEncAdapter::AskPassWordL();
+        TPtrC8 LastURISeg( const TDesC8& aURI );
+
+        HBufC8* AskPassWordL();
         
         TBool CheckBatteryL();
 

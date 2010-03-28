@@ -45,8 +45,7 @@ class CFileManagerFileListContainer : public CFileManagerContainerBase,
             EListFolder // Folder layout
             };
 
-        static CFileManagerFileListContainer*
-            CFileManagerFileListContainer::NewL(
+        static CFileManagerFileListContainer* NewL(
                 const TRect& aRect,
                 const TInt aFocusedIndex,
                 const TListType aType,
