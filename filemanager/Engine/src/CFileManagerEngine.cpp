@@ -77,8 +77,8 @@ const TUint16 KIllegalChars[] = {
     0x21B2, // Downwards arrow with tip leftwards
     0, // Array terminator
 };
+const TUint KDiskEventCheckInterval = 100000; // microseconds
 
-//const TInt KMGFileArrayGranularity = 32;
 
 
 // ============================ LOCAL FUNCTIONS ================================
@@ -122,7 +122,7 @@ const TUint16 KIllegalChars[] = {
 // -----------------------------------------------------------------------------
 //
 CFileManagerEngine::CFileManagerEngine( RFs& aFs ) :
-		iFs( aFs ), iObserver( NULL ), iSisFile( EFalse )
+		iFs( aFs ), iObserver( NULL ), iSisFile( EFalse ),iDelayedDiskEventNotify( NULL )
     {
     FUNC_LOG
     }
@@ -222,6 +222,11 @@ EXPORT_C CFileManagerEngine::~CFileManagerEngine()
     delete iUtils;
     delete iDriveName;
     delete iFeatureManager;
+    if( iDelayedDiskEventNotify != NULL )
+        {
+        iDelayedDiskEventNotify->Cancel();
+        delete iDelayedDiskEventNotify;
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -1156,6 +1161,20 @@ EXPORT_C TBool CFileManagerEngine::CancelRefresh()
     }
 
 // ------------------------------------------------------------------------------
+// CFileManagerEngine::DriveAddedOrChangeAsyncL
+//
+// ------------------------------------------------------------------------------
+//
+TInt CFileManagerEngine::DriveAddedOrChangeAsyncL( TAny* aPtr )
+    {
+    static_cast<CFileManagerEngine*>( aPtr )->DriveAddedOrChangedL();
+
+    //return value will be ignored by CPeriodic that calls this function
+    //following line keeps the compiler happy
+    return 0;
+    }
+
+// ------------------------------------------------------------------------------
 // CFileManagerEngine::DriveAddedOrChangedL
 //
 // ------------------------------------------------------------------------------
@@ -1187,6 +1206,7 @@ void CFileManagerEngine::DriveAddedOrChangedL()
              !iWaitDialogOn &&
              !iRefresher->IsActive() )
             {
+            StopDiskEventNotifyTimerAsync();
             TPtrC dir( iNavigator->CurrentDirectory() );
             if ( dir.Length() )
                 {
@@ -1220,6 +1240,22 @@ void CFileManagerEngine::DriveAddedOrChangedL()
                 // Notify always when no folder is opened
                 iProcessObserver->NotifyL(
                     MFileManagerProcessObserver::ENotifyDisksChanged, 0 );
+                }
+            }
+        else
+            {
+            if( ( iProcessObserver == NULL ) || iEmbeddedApplicationOn )
+                {
+                //Do not refresh while embedded application is running or process observer is not set
+                StopDiskEventNotifyTimerAsync();
+                }
+            else
+                {
+                if( iRefresher->IsActive() )
+                   {
+                   //start Timer and notify disk event until current disk refresh finishes
+                   StartDiskEventNotifyTimerAsyncL();
+                   }
                 }
             }
         }
@@ -2217,5 +2253,38 @@ EXPORT_C void CFileManagerEngine::DeleteBackupsL()
     iRemovableDrvHandler->DeleteBackupsL();
     }
 
+// ---------------------------------------------------------------------------
+// CFileManagerEngine::StartDiskEventNotifyTimerAsyncL()
+// ---------------------------------------------------------------------------
+//
+void CFileManagerEngine::StartDiskEventNotifyTimerAsyncL()
+    {
+    if ( iDelayedDiskEventNotify == NULL )
+        {
+        iDelayedDiskEventNotify = CPeriodic::NewL( CActive::EPriorityStandard );
+        }
+    if ( !iDelayedDiskEventNotify->IsActive() )
+        {
+       //ignore disk event notification while timer is already active
+       iDelayedDiskEventNotify->Start( KDiskEventCheckInterval,
+           KDiskEventCheckInterval,
+           TCallBack( DriveAddedOrChangeAsyncL, this ) );
+        }
+    }
 
-//  End of File  
+// ---------------------------------------------------------------------------
+// CFileManagerEngine::StopDiskEventNotifyTimerAsync()
+// ---------------------------------------------------------------------------
+//
+void CFileManagerEngine::StopDiskEventNotifyTimerAsync()
+    {
+    if ( iDelayedDiskEventNotify != NULL )
+        {
+        iDelayedDiskEventNotify->Cancel();
+        delete iDelayedDiskEventNotify;
+        iDelayedDiskEventNotify = NULL;
+        }
+    }
+
+
+//  End of File

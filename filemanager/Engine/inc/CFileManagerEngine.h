@@ -380,6 +380,14 @@ NONSHARABLE_CLASS(CFileManagerEngine) : public CBase
         IMPORT_C TBool IsFolder( const TInt aIndex ) const;
 
         /**
+        * Asynchronous notifies about drive added or changed
+        * @since 5.2
+        * @param aPtr Pointer to an instance of this class
+        * @return 0
+        */
+        static TInt DriveAddedOrChangeAsyncL( TAny* aPtr );
+
+        /**
         * Notifies about drive added or changed
         * @since 3.1
         */
@@ -790,6 +798,18 @@ NONSHARABLE_CLASS(CFileManagerEngine) : public CBase
         // Checks is current drive available
         TBool CurrentDriveAvailable();
 
+        /**
+        * Start asynchronous disk event notification timer
+        * @since 5.2
+        */
+        void StartDiskEventNotifyTimerAsyncL();
+
+        /**
+        * Stop asynchronous disk event notification timer
+        * @since 5.2
+        */
+        void StopDiskEventNotifyTimerAsync();
+
     private:
 
         // Own: General File List Model is used via this object.
@@ -890,6 +910,9 @@ NONSHARABLE_CLASS(CFileManagerEngine) : public CBase
         
         //Own: Whether the file was a sis type
         TBool iSisFile;
+
+        //Own: postpone disk event notification while disk refresh is ongoing
+        CPeriodic* iDelayedDiskEventNotify;
     };
 
 #endif      // CFILEMANAGERENGINE_H

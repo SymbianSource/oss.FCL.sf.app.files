@@ -1556,11 +1556,12 @@ void CFileManagerViewBase::DoProcessFinishedL( TInt aError, const TDesC& aName )
             }
         case EFormatProcess:
             {
-            RefreshDriveInfoL();
+            TFileManagerDriveInfo drvInfo;
+            DriveInfoAtCurrentPosL( drvInfo );
             if ( aError == KErrNone )
                 {
 #ifdef RD_MULTIPLE_DRIVE
-                if ( DriveInfo().iState & TFileManagerDriveInfo::EDriveMassStorage )
+                if ( drvInfo.iState & TFileManagerDriveInfo::EDriveMassStorage )
                     {
                     FileManagerDlgUtils::ShowInfoNoteL(
                         R_QTN_FMGR_MASS_FORMAT_COMPLETED );
@@ -2196,6 +2197,11 @@ TBool CFileManagerViewBase::ProcessQueryRenameL
             {
             // User cancelled rename
             aNewName.Zero();
+            }
+        else
+            {
+            //file server doesn't support the space in the end of the folder/file name
+            aNewName.TrimRight();
             }
         }
 
@@ -4007,6 +4013,7 @@ TInt CFileManagerViewBase::UnlockRemovePasswordL(
             {
             pwdGiven = FileManagerDlgUtils::ShowSimplePasswordQueryL( res, oldPwd );
             }
+        
         if( pwdGiven )
             {
             ConvertCharsToPwd( oldPwd, pwd );
@@ -4023,9 +4030,19 @@ TInt CFileManagerViewBase::UnlockRemovePasswordL(
                 {
                 isDone = ETrue;
                 }
-            else
+            else if ( err == KErrAccessDenied )
                 {
                 FileManagerDlgUtils::ShowErrorNoteL( resWrong );
+                }
+            else if ( err = KErrNotReady )
+                {
+                isDone = ETrue;
+                FileManagerDlgUtils::ShowErrorNoteL( R_QTN_MEMC_NOT_AVAILABLE );
+                }
+            else
+                {
+                isDone = ETrue;
+                FileManagerDlgUtils::ShowErrorNoteL( R_QTN_CRITICAL_ERROR );
                 }
             }
         else
@@ -4034,6 +4051,7 @@ TInt CFileManagerViewBase::UnlockRemovePasswordL(
             isDone = ETrue;
             }
         }
+
     if ( text )
         {
         CleanupStack::PopAndDestroy( text );

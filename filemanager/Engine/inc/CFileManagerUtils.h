@@ -84,7 +84,7 @@ NONSHARABLE_CLASS(CFileManagerUtils) : public CBase
         * @param aFullPath file name with full path
         * @return ETrue if file is drm protected, EFalse if not.
         */
-        TBool IsDrmProtectedFile( const TDesC& aFullPath) const;
+        TBool IsDrmProtectedFileL( const TDesC& aFullPath ) const;
         
         /**
         * Gets the icon id of the item

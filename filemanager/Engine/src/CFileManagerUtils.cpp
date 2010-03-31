@@ -208,7 +208,7 @@ TBool CFileManagerUtils::IsForwardLockedFile( const TDesC& aFullPath )
 // CFileManagerUtils::IsDrmProtectedFile
 // -----------------------------------------------------------------------------
 //
-TBool CFileManagerUtils::IsDrmProtectedFile( const TDesC& aFullPath ) const
+TBool CFileManagerUtils::IsDrmProtectedFileL( const TDesC& aFullPath ) const
     {
     if ( !iDrmFullSupported )
         {
@@ -226,8 +226,14 @@ TBool CFileManagerUtils::IsDrmProtectedFile( const TDesC& aFullPath ) const
    
     RFile64 drmFile;
     
-    User::LeaveIfError( drmFile.Open( 
-        iFs, aFullPath, EFileRead | EFileShareReadersOrWriters ) );
+    TInt err = drmFile.Open( 
+        iFs, aFullPath, EFileRead | EFileShareReadersOrWriters );
+    if( err != KErrNone )
+        {
+        // Just assume it is not protected when we fail to open it.
+        drmFile.Close();
+        return EFalse;
+        }
     CleanupClosePushL( drmFile );
     DRM::CDrmUtility *drmCheck = DRM::CDrmUtility::NewLC();
        
@@ -355,7 +361,7 @@ TUint32 CFileManagerUtils::FileTypeL( const TDesC& aFullPath )
             {
             fileType |= CFileManagerItemProperties::EFile;
 
-            if ( IsDrmProtectedFile( aFullPath) )
+            if ( IsDrmProtectedFileL( aFullPath) )
                 {
                 fileType |= CFileManagerItemProperties::EDrmProtected;
                 if ( IsDrmLocalDataFile( aFullPath ) )
@@ -402,7 +408,7 @@ TUint32 CFileManagerUtils::FileTypeL( const TDesC& aFullPath )
         else
             {
             fileType |= CFileManagerItemProperties::EFile;
-            if ( IsDrmProtectedFile( aFullPath) )
+            if ( IsDrmProtectedFileL( aFullPath) )
                 {
                 fileType |= CFileManagerItemProperties::EDrmProtected;
                 }
