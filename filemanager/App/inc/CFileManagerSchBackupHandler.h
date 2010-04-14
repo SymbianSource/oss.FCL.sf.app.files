@@ -116,7 +116,7 @@ private:
 
     TBool IsPowerSavingModeOnL();
 
-    TBool IsTargetDriveAvailableL();
+    TBool IsTargetDriveAvailableL( const TFileManagerDriveInfo& aDrvInfo );
 
 private: // Data
     /**

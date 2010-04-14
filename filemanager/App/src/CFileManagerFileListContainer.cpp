@@ -875,5 +875,18 @@ void CFileManagerFileListContainer::ListBoxDeselectItem( TInt aIndex )
     aIndex = ListToSearchFieldIndex( aIndex );
     CFileManagerContainerBase::ListBoxDeselectItem( aIndex );
     }
-
+	
+// -----------------------------------------------------------------------------
+// CFileManagerFileListContainer::SearchFieldToListBoxIndex
+// 
+// -----------------------------------------------------------------------------
+//
+TInt CFileManagerFileListContainer::SearchFieldToListBoxIndex( TInt aIndex )
+    {
+    if ( !iSearchField || !iSearchField->IsVisible() )
+       {
+       return 0;
+       }
+    return SearchFieldToListIndex( aIndex );
+    }
 //  End of File  

@@ -227,7 +227,12 @@ class CFileManagerContainerBase : public CCoeControl,
          */
         virtual void ListBoxSetSelectionIndexesL(const CArrayFixFlat<TInt>* 
                                                           aSelectionIndexes);
-
+        /**
+         * search filed index to listbox index
+         * @param aIndex index in search filed
+         * @return index in listbox
+         */
+        virtual TInt SearchFieldToListBoxIndex( TInt aIndex );
     protected:
         /**
          * Standard C++ constructor.

@@ -603,8 +603,15 @@ void CFileManagerViewBase::MarkMenuFilteringL( CEikMenuPane& aMenuPane )
             aMenuPane.SetItemDimmed( EFileManagerUnmarkOne, ETrue );
             }
         }
-
-    TInt files( iEngine.FilesInFolderL() );
+    TInt files( 0 );
+    if( iContainer->IsSearchFieldVisible() )
+        {
+        files = FilesCountInSearchField();
+        }
+    else
+        {
+        files = iEngine.FilesInFolderL();
+        }  
     TInt count( iContainer->ListBoxSelectionIndexesCount() );
     if ( count == files )
         {
@@ -712,7 +719,15 @@ void CFileManagerViewBase::CmdDeleteL()
     User::LeaveIfError( err );
     if ( ret )
         {
-        DeleteItemsL( index );
+        if( IsDriveAvailable( DriveInfo().iDrive ) )
+            {
+            DeleteItemsL( index );
+            }
+        else
+            {
+            FileManagerDlgUtils::ShowInfoNoteL( R_QTN_MEMC_NOT_AVAILABLE );
+            CheckPostponedDirectoryRefresh();
+            }
         }
     else
         {
@@ -3192,7 +3207,11 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
 
     // Common remote drive filtering
     RemoteDriveCommonFilteringL( aMenuPane );
-    
+    if( iContainer->IsSearchFieldVisible() && 
+            !FilesCountInSearchField() )
+        {
+        aMenuPane.SetItemDimmed( EFileManagerMark, ETrue );
+        }
     if ( iContainer->ListBoxNumberOfItems() )
         {
         if ( !iContainer->ListBoxSelectionIndexesCount() )
@@ -5048,6 +5067,30 @@ TInt CFileManagerViewBase::LaunchProgressDialogAsync( TAny* aPtr )
     {
     static_cast< CFileManagerViewBase* >( aPtr )->DoLaunchProgressDialogAsync();
     return KErrNone;
+    }
+
+// -----------------------------------------------------------------------------
+// CFileManagerViewBase::FilesCountInSearchField()
+// 
+// -----------------------------------------------------------------------------
+//
+TInt CFileManagerViewBase::FilesCountInSearchField()
+    {
+    TInt count = 0;
+    
+    if( iContainer->IsSearchFieldVisible() )
+        {
+        TInt listBoxIndex =0;
+        for(TInt i(0); i<iContainer->ListBoxNumberOfItems();i++ )
+            {
+            listBoxIndex = iContainer->SearchFieldToListBoxIndex( i );
+            if( !iEngine.IsFolder( listBoxIndex ) )
+                {
+                count++;
+                }
+            }
+        }
+    return count;
     }
 
 // -----------------------------------------------------------------------------

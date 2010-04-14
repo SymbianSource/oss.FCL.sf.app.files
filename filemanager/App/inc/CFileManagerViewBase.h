@@ -648,6 +648,7 @@ class CFileManagerViewBase : public CAknView,
 
         static TInt LaunchProgressDialogAsync( TAny* aPtr );
 
+        TInt FilesCountInSearchField();
 
     protected:    // Data
         /// Own: Container that this view handles.

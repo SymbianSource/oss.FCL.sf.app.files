@@ -578,5 +578,14 @@ void CFileManagerContainerBase::ListBoxSetSelectionIndexesL(const CArrayFixFlat<
 	{
 	iListBox->View()->SetSelectionIndexesL( aSelectionIndexes );
 	}
-
+	
+// -----------------------------------------------------------------------------
+// CFileManagerContainerBase::SearchFieldToListBoxIndex
+// 
+// -----------------------------------------------------------------------------
+//
+TInt CFileManagerContainerBase::SearchFieldToListBoxIndex( TInt aIndex )
+    {
+    return 0;
+    }
 //  End of File  

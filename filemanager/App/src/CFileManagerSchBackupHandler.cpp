@@ -16,7 +16,7 @@
 */
 
 
-// #define FILE_MANAGER_POWER_SAVING_MODE
+ #define FILE_MANAGER_POWER_SAVING_MODE
 
 // INCLUDE FILES
 #include <StringLoader.h>
@@ -175,9 +175,30 @@ void CFileManagerSchBackupHandler::StartBackupWithConfirmL()
 //
 void CFileManagerSchBackupHandler::StartBackupL()
     {
-    TBool drvAvailable( ETrue );
-    TRAPD( err, drvAvailable = IsTargetDriveAvailableL() );
-    if ( !drvAvailable && err == KErrNone )
+    CFileManagerBackupSettings& settings( iEngine.BackupSettingsL() );
+    TFileManagerDriveInfo drvInfo;
+    iEngine.GetDriveInfoL( settings.TargetDrive(), drvInfo );
+    TBool drvAvailable( EFalse );
+
+    if( !IsTargetDriveAvailableL(drvInfo ) )
+        {
+        for( TInt i ( EDriveA ); i <= EDriveZ; i++ )
+            {
+            iEngine.GetDriveInfoL( i , drvInfo );
+            if( ( IsTargetDriveAvailableL( drvInfo ) ) && ( drvInfo.iState & TFileManagerDriveInfo::EDriveEjectable ) )
+                {
+                 settings.SetTargetDrive( i );
+                 settings.SaveL();
+                 drvAvailable = ETrue;
+                 break;
+                }
+            }
+        }
+    else
+        {
+        drvAvailable = ETrue;
+        }
+    if ( !drvAvailable )
         {
         iGlobalDlg->ShowDialogL(
             CFileManagerGlobalDlg::EQueryWithWarningIcon,
@@ -187,7 +208,6 @@ void CFileManagerSchBackupHandler::StartBackupL()
         return;
         }
 
-    CFileManagerBackupSettings& settings( iEngine.BackupSettingsL() );
     HBufC* text = StringLoader::LoadLC(
         R_QTN_FMGR_SCHEDULED_BACKUP_PROGRESS,
         iEngine.DriveName( settings.TargetDrive() ) );
@@ -380,24 +400,21 @@ TBool CFileManagerSchBackupHandler::IsPowerSavingModeOnL()
 // CFileManagerSchBackupHandler::IsTargetDriveAvailableL
 // ----------------------------------------------------------------------------
 //
-TBool CFileManagerSchBackupHandler::IsTargetDriveAvailableL()
+TBool CFileManagerSchBackupHandler::IsTargetDriveAvailableL( const TFileManagerDriveInfo& aDrvInfo )
     {
     // Start backup with cancelable global progress dialog
-    CFileManagerBackupSettings& settings( iEngine.BackupSettingsL() );
 
     // Check is target drive available
     TBool ret( ETrue );
-    TFileManagerDriveInfo info;
-    iEngine.GetDriveInfoL( settings.TargetDrive(), info );
-    if ( !( info.iState & TFileManagerDriveInfo::EDrivePresent ) ||
-         ( info.iState &
+    if ( !( aDrvInfo.iState & TFileManagerDriveInfo::EDrivePresent ) ||
+         ( aDrvInfo.iState &
             ( TFileManagerDriveInfo::EDriveLocked |
               TFileManagerDriveInfo::EDriveCorrupted |
               TFileManagerDriveInfo::EDriveWriteProtected ) ) )
         {
         ERROR_LOG1(
             "CFileManagerSchBackupHandler::IsTargetDriveAvailableL-DrvState=%d",
-            info.iState )
+            aDrvInfo.iState )
         ret = EFalse;
         }
     return ret;

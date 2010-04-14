@@ -105,6 +105,8 @@ class CFileManagerFileListContainer : public CFileManagerContainerBase,
         void ListBoxSelectItemL( TInt aIndex );
 
         void ListBoxDeselectItem( TInt aIndex );
+        
+        TInt SearchFieldToListBoxIndex(TInt aIndex );
 
     private: // From MCoeFocusObserver
         void HandleChangeInFocus();
