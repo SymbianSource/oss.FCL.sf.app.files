@@ -1,13 +1,18 @@
 <?xml version="1.0"?>
-<!DOCTYPE SystemDefinition SYSTEM "sysdef_1_4_0.dtd" [
+<!DOCTYPE SystemDefinition SYSTEM "sysdef_1_5_1.dtd" [
   <!ENTITY layer_real_source_path "sf/app/files" >
 ]>
 
-<SystemDefinition name="files" schema="1.4.0">
+<SystemDefinition name="files" schema="1.5.1">
   <systemModel>
+    <layer name="bldfirst_app_layer">
+      <module name="fmbkupengine">
+        <unit name="fmbkupengine" unitID="presdo.fmbkupengine" bldFile="&layer_real_source_path;/filemanager/src/fmbkupengine/group" mrp="" />
+      </module>
+    </layer>
     <layer name="app_layer">
-      <module name="files">
-        <unit name="files" unitID="presdo.files" bldFile="&layer_real_source_path;/group" mrp="" />
+      <module name="filemanager">
+        <unit unitID="filemanager" mrp="" bldFile="&layer_real_source_path;/filemanager" name="filemanager" proFile="filemanager.pro" qmakeArgs="-r -config rom"/>
       </module>
     </layer>
   </systemModel>

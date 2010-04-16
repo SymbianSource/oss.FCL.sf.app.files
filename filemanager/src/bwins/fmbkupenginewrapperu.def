@@ -1,0 +1,64 @@
+EXPORTS
+	?cancelBackup@FmBkupEngine@@QAEXXZ @ 1 NONAME ; void FmBkupEngine::cancelBackup(void)
+	?notifyUpdate@FmBkupEngine@@IAEXH@Z @ 2 NONAME ; void FmBkupEngine::notifyUpdate(int)
+	?save@FmBackupSettings@@QAEXXZ @ 3 NONAME ; void FmBackupSettings::save(void)
+	??0FmRestoreSettings@@QAE@AAVFmBkupEngine@@@Z @ 4 NONAME ; FmRestoreSettings::FmRestoreSettings(class FmBkupEngine &)
+	?restoreEntryList@FmRestoreSettings@@QAE?AV?$QList@PAVFmRestoreEntry@@@@XZ @ 5 NONAME ; class QList<class FmRestoreEntry *> FmRestoreSettings::restoreEntryList(void)
+	??_EFmBkupEngine@@UAE@I@Z @ 6 NONAME ; FmBkupEngine::~FmBkupEngine(unsigned int)
+	?tr@FmBkupEngine@@SA?AVQString@@PBD0@Z @ 7 NONAME ; class QString FmBkupEngine::tr(char const *, char const *)
+	?getStaticMetaObject@FmBkupEngine@@SAABUQMetaObject@@XZ @ 8 NONAME ; struct QMetaObject const & FmBkupEngine::getStaticMetaObject(void)
+	?createTimeEntry@FmBackupSettings@@AAEPAVFmBackupEntry@@XZ @ 9 NONAME ; class FmBackupEntry * FmBackupSettings::createTimeEntry(void)
+	?weekday@FmBackupSettings@@QBE?AW4TFileManagerBackupWeekday@1@XZ @ 10 NONAME ; enum FmBackupSettings::TFileManagerBackupWeekday FmBackupSettings::weekday(void) const
+	?trUtf8@FmBkupEngine@@SA?AVQString@@PBD0H@Z @ 11 NONAME ; class QString FmBkupEngine::trUtf8(char const *, char const *, int)
+	?deleteBackup@FmBkupEngine@@QAEHV?$QList@PAVFmBkupDrivesAndOperation@@@@@Z @ 12 NONAME ; int FmBkupEngine::deleteBackup(class QList<class FmBkupDrivesAndOperation *>)
+	??1FmBackupSettings@@QAE@XZ @ 13 NONAME ; FmBackupSettings::~FmBackupSettings(void)
+	?setTime@FmBackupSettings@@QAEXABVQTime@@@Z @ 14 NONAME ; void FmBackupSettings::setTime(class QTime const &)
+	?GetRestoreInfoArray@FmBkupEngine@@QAEXAAV?$QList@PAVFmBkupDrivesAndOperation@@@@AAV?$QList@VFmRestoreInfo@@@@H@Z @ 15 NONAME ; void FmBkupEngine::GetRestoreInfoArray(class QList<class FmBkupDrivesAndOperation *> &, class QList<class FmRestoreInfo> &, int)
+	?error@FmBkupEngine@@QBEHXZ @ 16 NONAME ; int FmBkupEngine::error(void) const
+	?backupEntryList@FmBackupSettings@@QAE?AV?$QList@PAVFmBackupEntry@@@@XZ @ 17 NONAME ; class QList<class FmBackupEntry *> FmBackupSettings::backupEntryList(void)
+	?trUtf8@FmBkupEngine@@SA?AVQString@@PBD0@Z @ 18 NONAME ; class QString FmBkupEngine::trUtf8(char const *, char const *)
+	?refreshList@FmBackupSettings@@AAEXXZ @ 19 NONAME ; void FmBackupSettings::refreshList(void)
+	?contentsSelected@FmBackupSettings@@ABEHXZ @ 20 NONAME ; int FmBackupSettings::contentsSelected(void) const
+	?GetSelectionL@FmRestoreSettings@@QBEXAAV?$QList@VFmRestoreInfo@@@@@Z @ 21 NONAME ; void FmRestoreSettings::GetSelectionL(class QList<class FmRestoreInfo> &) const
+	?CreateEntry@FmBackupSettings@@AAEPAVFmBackupEntry@@ABVQString@@0W4TSettingType@2@@Z @ 22 NONAME ; class FmBackupEntry * FmBackupSettings::CreateEntry(class QString const &, class QString const &, enum FmBackupEntry::TSettingType)
+	?content@FmBackupSettings@@QBEIXZ @ 23 NONAME ; unsigned int FmBackupSettings::content(void) const
+	?targetDrive@FmBackupSettings@@QBE?AVQString@@XZ @ 24 NONAME ; class QString FmBackupSettings::targetDrive(void) const
+	??0FmBkupEngine@@QAE@PAVQObject@@@Z @ 25 NONAME ; FmBkupEngine::FmBkupEngine(class QObject *)
+	?notifyPreparing@FmBkupEngine@@IAEX_N@Z @ 26 NONAME ; void FmBkupEngine::notifyPreparing(bool)
+	?setWeekday@FmBackupSettings@@QAEXW4TFileManagerBackupWeekday@1@@Z @ 27 NONAME ; void FmBackupSettings::setWeekday(enum FmBackupSettings::TFileManagerBackupWeekday)
+	?load@FmRestoreSettings@@QAEXV?$QList@PAVFmBkupDrivesAndOperation@@@@@Z @ 28 NONAME ; void FmRestoreSettings::load(class QList<class FmBkupDrivesAndOperation *>)
+	?resetAndDestoryRestoreEntry@FmRestoreSettings@@AAEXXZ @ 29 NONAME ; void FmRestoreSettings::resetAndDestoryRestoreEntry(void)
+	?targetDriveToString@FmBackupSettings@@QAE?AVQString@@ABV2@@Z @ 30 NONAME ; class QString FmBackupSettings::targetDriveToString(class QString const &)
+	?setScheduling@FmBackupSettings@@QAEXW4TFileManagerBackupSchedule@1@@Z @ 31 NONAME ; void FmBackupSettings::setScheduling(enum FmBackupSettings::TFileManagerBackupSchedule)
+	??1FmRestoreSettings@@QAE@XZ @ 32 NONAME ; FmRestoreSettings::~FmRestoreSettings(void)
+	?notifyFinish@FmBkupEngine@@IAEXH@Z @ 33 NONAME ; void FmBkupEngine::notifyFinish(int)
+	?createContentsEntry@FmBackupSettings@@AAEPAVFmBackupEntry@@XZ @ 34 NONAME ; class FmBackupEntry * FmBackupSettings::createContentsEntry(void)
+	?qt_metacast@FmBkupEngine@@UAEPAXPBD@Z @ 35 NONAME ; void * FmBkupEngine::qt_metacast(char const *)
+	?SetSelection@FmRestoreSettings@@QAEXAB_K@Z @ 36 NONAME ; void FmRestoreSettings::SetSelection(unsigned long long const &)
+	?createSchedulingEntry@FmBackupSettings@@AAEPAVFmBackupEntry@@XZ @ 37 NONAME ; class FmBackupEntry * FmBackupSettings::createSchedulingEntry(void)
+	?metaObject@FmBkupEngine@@UBEPBUQMetaObject@@XZ @ 38 NONAME ; struct QMetaObject const * FmBkupEngine::metaObject(void) const
+	?startBackup@FmBkupEngine@@QAE_NV?$QList@PAVFmBkupDrivesAndOperation@@@@V?$QList@PAVFmBkupBackupCategory@@@@VQString@@I@Z @ 39 NONAME ; bool FmBkupEngine::startBackup(class QList<class FmBkupDrivesAndOperation *>, class QList<class FmBkupBackupCategory *>, class QString, unsigned int)
+	?createTargetDriveEntry@FmBackupSettings@@AAEPAVFmBackupEntry@@XZ @ 40 NONAME ; class FmBackupEntry * FmBackupSettings::createTargetDriveEntry(void)
+	?load@FmBackupSettings@@QAEXXZ @ 41 NONAME ; void FmBackupSettings::load(void)
+	?notifyMemoryLow@FmBkupEngine@@IAEXHAAH@Z @ 42 NONAME ; void FmBkupEngine::notifyMemoryLow(int, int &)
+	??1FmBkupEngine@@UAE@XZ @ 43 NONAME ; FmBkupEngine::~FmBkupEngine(void)
+	??0FmBackupSettings@@QAE@XZ @ 44 NONAME ; FmBackupSettings::FmBackupSettings(void)
+	?CreateEntry@FmRestoreSettings@@AAEPAVFmRestoreEntry@@ABVFmRestoreInfo@@@Z @ 45 NONAME ; class FmRestoreEntry * FmRestoreSettings::CreateEntry(class FmRestoreInfo const &)
+	?startRestore@FmBkupEngine@@QAE_NV?$QList@PAVFmBkupDrivesAndOperation@@@@@Z @ 46 NONAME ; bool FmBkupEngine::startRestore(class QList<class FmBkupDrivesAndOperation *>)
+	?resetAndDestoryBackupEntry@FmBackupSettings@@AAEXXZ @ 47 NONAME ; void FmBackupSettings::resetAndDestoryBackupEntry(void)
+	?BackupSettingsL@FmBkupEngine@@QAEPAVFmBackupSettings@@XZ @ 48 NONAME ; class FmBackupSettings * FmBkupEngine::BackupSettingsL(void)
+	?setContent@FmBackupSettings@@QAEXI@Z @ 49 NONAME ; void FmBackupSettings::setContent(unsigned int)
+	?staticMetaObject@FmBkupEngine@@2UQMetaObject@@B @ 50 NONAME ; struct QMetaObject const FmBkupEngine::staticMetaObject
+	?setTargetDrive@FmBackupSettings@@QAEXABVQString@@@Z @ 51 NONAME ; void FmBackupSettings::setTargetDrive(class QString const &)
+	?schedulingToString@FmBackupSettings@@QAE?AVQString@@W4TFileManagerBackupSchedule@1@@Z @ 52 NONAME ; class QString FmBackupSettings::schedulingToString(enum FmBackupSettings::TFileManagerBackupSchedule)
+	?refreshList@FmRestoreSettings@@AAEXAAV?$QList@PAVFmBkupDrivesAndOperation@@@@@Z @ 53 NONAME ; void FmRestoreSettings::refreshList(class QList<class FmBkupDrivesAndOperation *> &)
+	?weekdayToString@FmBackupSettings@@SA?AVQString@@W4TFileManagerBackupWeekday@1@@Z @ 54 NONAME ; class QString FmBackupSettings::weekdayToString(enum FmBackupSettings::TFileManagerBackupWeekday)
+	?tr@FmBkupEngine@@SA?AVQString@@PBD0H@Z @ 55 NONAME ; class QString FmBkupEngine::tr(char const *, char const *, int)
+	?contentToString@FmBackupSettings@@SA?AVQString@@I@Z @ 56 NONAME ; class QString FmBackupSettings::contentToString(unsigned int)
+	?RestoreSettingsL@FmBkupEngine@@QAEPAVFmRestoreSettings@@XZ @ 57 NONAME ; class FmRestoreSettings * FmBkupEngine::RestoreSettingsL(void)
+	?time@FmBackupSettings@@QBEABVQTime@@XZ @ 58 NONAME ; class QTime const & FmBackupSettings::time(void) const
+	?notifyStart@FmBkupEngine@@IAEX_NH@Z @ 59 NONAME ; void FmBkupEngine::notifyStart(bool, int)
+	?scheduling@FmBackupSettings@@QBE?AW4TFileManagerBackupSchedule@1@XZ @ 60 NONAME ; enum FmBackupSettings::TFileManagerBackupSchedule FmBackupSettings::scheduling(void) const
+	?qt_metacall@FmBkupEngine@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 61 NONAME ; int FmBkupEngine::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?createWeekdayEntry@FmBackupSettings@@AAEPAVFmBackupEntry@@XZ @ 62 NONAME ; class FmBackupEntry * FmBackupSettings::createWeekdayEntry(void)
+

@@ -1,0 +1,81 @@
+/*
+ * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
+ *
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ * 
+ * Contributors:
+ *     
+ * 
+ * Description:
+ *     The header file of the back up widget of file manager
+ */
+
+#ifndef FMBACKUPWIDGET_H
+#define FMBACKUPWIDGET_H
+
+#include <hbwidget.h>
+
+class FmBackupSettings;
+
+class HbDataForm;
+class HbDataFormModel;
+class HbDataFormModelItem;
+class FmBackupConfigLoader;
+
+class FmBackupWidget : public HbWidget
+{
+    Q_OBJECT
+
+public:
+	FmBackupWidget( QGraphicsItem *parent = 0  );
+	~FmBackupWidget();
+
+signals:
+    void doModelRefresh();
+
+private slots:
+    void on_list_released( const QModelIndex &index );
+    void on_list_pressed( const QModelIndex &index );
+    void on_list_scrollingStarted();
+
+    void refreshModel();
+
+private:
+
+    void initModel();
+    void init();
+    void expandAllGroup();
+	
+	void ChangeContents();
+    void ChangeScheduling();
+	void ChangeWeekday();
+    void ChangeTime();
+    void ChangeTargetDrive();
+
+private:
+
+    HbDataForm *mDataForm;
+    HbDataFormModel *mModel;
+    HbDataFormModelItem *mContentsGroup;
+    HbDataFormModelItem *mSchedulingGroup;
+
+    HbDataFormModelItem *mContentsItem;
+    HbDataFormModelItem *mTargetItem;
+    HbDataFormModelItem *mSchedulingItem;
+    HbDataFormModelItem *mWeekdayItem;
+    HbDataFormModelItem *mTimeItem;
+
+	FmBackupSettings        *mBackupSettings;
+	FmBackupConfigLoader    *mBackupConfigLoader;
+    HbDataFormModelItem     *mLastPressedItem;
+
+    bool mScrolled;
+};
+
+#endif // FMBACKUPWIDGET_H
