@@ -177,8 +177,8 @@ CEikTextListBox* CFileManagerSettingListContainer::CreateRestoreListBoxL()
 
     icon = CFileManagerIconArray::LoadIconL(
         KFileManagerBitmapFile,
-        EMbmFilemanagerQgn_indi_mmc_add,
-        EMbmFilemanagerQgn_indi_mmc_add_mask,
+        EMbmFilemanagerQgn_indi_usb_memc,
+        EMbmFilemanagerQgn_indi_usb_memc_mask,
         KAknsIIDQgnIndiMmcAdd.iMajor,
         KAknsIIDQgnIndiMmcAdd.iMinor,
         ETrue );

@@ -4053,7 +4053,7 @@ TInt CFileManagerViewBase::UnlockRemovePasswordL(
                 {
                 FileManagerDlgUtils::ShowErrorNoteL( resWrong );
                 }
-            else if ( err = KErrNotReady )
+            else if ( err == KErrNotReady )
                 {
                 isDone = ETrue;
                 FileManagerDlgUtils::ShowErrorNoteL( R_QTN_MEMC_NOT_AVAILABLE );

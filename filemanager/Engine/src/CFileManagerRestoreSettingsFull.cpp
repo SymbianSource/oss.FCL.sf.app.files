@@ -121,9 +121,9 @@ EXPORT_C void CFileManagerRestoreSettings::RefreshL()
     iList.ResetAndDestroy();
 
     RArray< TInfo > infoArray;
-    iEngine.GetRestoreInfoArrayL( infoArray );
     CleanupClosePushL( infoArray );
-
+    iEngine.GetRestoreInfoArrayL( infoArray );
+ 
     TInt count( infoArray.Count() );
     TUint32 mask( EFileManagerBackupContentFirst);
     while ( mask <= EFileManagerBackupContentLast )

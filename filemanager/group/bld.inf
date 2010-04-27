@@ -47,7 +47,8 @@ START EXTENSION s60/mifconv
 	  -c8,8 qgn_prop_fmgr_mmc_sub -c8,8 qgn_prop_fmgr_mmc_no_sub -c8,8 qgn_prop_fmgr_backup_sub \
 	  -c8,8 qgn_indi_connection_on_add -c8,8 qgn_menu_fmgr_remote_drive -c8,8 qgn_prop_fmgr_remote_drive_tab \
 	  -c8,8 qgn_prop_folder_empty -c8,8 qgn_indi_mmc_add -c8,8 qgn_prop_fmgr_ms_sub \
-	  -c8,8 qgn_prop_memc_ms_tab -c8,8 qgn_prop_usb_memc_sub.svg -c8,8 qgn_prop_usb_memc_tab
+	  -c8,8 qgn_prop_memc_ms_tab -c8,8 qgn_prop_usb_memc_sub.svg -c8,8 qgn_prop_usb_memc_tab \
+	  -c8,8 qgn_indi_usb_memc.svg
 #else
   OPTION SOURCES \
     -c8,1 qgn_prop_mmc_memc -c8,1 qgn_prop_phone_memc -c8,1 qgn_prop_memc_phone_tab \
@@ -55,7 +56,7 @@ START EXTENSION s60/mifconv
 	  -c8,1 qgn_prop_memc_mmc_tab2 -c8,8 qgn_prop_file_swf_small -c8,8 qgn_prop_fmgr_phone_memc_sub \
 	  -c8,8 qgn_prop_fmgr_mmc_sub -c8,8 qgn_prop_fmgr_mmc_no_sub -c8,8 qgn_prop_fmgr_backup_sub \
 	  -c8,8 qgn_indi_connection_on_add -c8,8 qgn_menu_fmgr_remote_drive -c8,8 qgn_prop_fmgr_remote_drive_tab \
-	  -c8,8 qgn_prop_folder_empty -c8,8 qgn_indi_mmc_add  	  
+	  -c8,8 qgn_prop_folder_empty -c8,8 qgn_indi_mmc_add -c8,8 qgn_indi_usb_memc.svg  	  
 #endif	  
 END
 

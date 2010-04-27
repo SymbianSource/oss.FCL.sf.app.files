@@ -154,6 +154,9 @@ TBool CFileManagerFolderNameQueryDlg::DoOkToExitL( TInt aButtonId )
 
     // Strip any directionality markers to get pure name
     AknTextUtils::StripCharacters( ptrUserText, KFmgrDirectionalChars );
+    
+    // Remove white spaces from end, file server also ignores those
+    ptrUserText.TrimRight();
 
     // Check folder name
     TBool isValidName( EFalse );
