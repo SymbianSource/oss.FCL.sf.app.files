@@ -37,15 +37,15 @@ private:
 
 };
 
-class FmOperationFormat : public FmOperationBase
-{
-public:
-    explicit FmOperationFormat( QObject *parent, QString mDriverName );
-    virtual ~FmOperationFormat();
-    QString driverName();
-private:
-    QString mDriverName;
-};
+//class FmOperationFormat : public FmOperationBase
+//{
+//public:
+//    explicit FmOperationFormat( QObject *parent, QString mDriverName );
+//    virtual ~FmOperationFormat();
+//    QString driverName();
+//private:
+//    QString mDriverName;
+//};
 
 class FmOperationDriveDetails : public FmOperationBase
 {

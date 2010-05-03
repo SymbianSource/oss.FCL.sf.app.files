@@ -33,7 +33,7 @@
 
 FmRestoreView::FmRestoreView(): FmViewBase( ERestoreView )
 {
-	setTitle( tr( "Restore" ) );
+	setTitle( hbTrId( "Restore" ) );
 
 	initMainWidget();
 	initToolBar();
@@ -55,13 +55,13 @@ void FmRestoreView::initMenu()
     HbAction *action = 0;
 	action = new HbAction( this );
     action->setObjectName( "rotateAction" );
-    action->setText( tr( "Change orientation" ) );
+    action->setText( hbTrId( "Change orientation" ) );
     menu()->addAction( action );
 #endif
 
 	mRestoreAction = new HbAction( this );
     mRestoreAction->setObjectName( "restoreAction" );
-    mRestoreAction->setText( tr( "Restore data" ) );
+    mRestoreAction->setText( hbTrId( "Restore data" ) );
     menu()->addAction( mRestoreAction );
 }
 
@@ -77,7 +77,7 @@ void FmRestoreView::initToolBar()
 {
 	mLeftAction = new HbAction( this );
     mLeftAction->setObjectName( "leftAction" );
-    mLeftAction->setText( tr( "Restore" ) );
+    mLeftAction->setText( hbTrId( "Restore" ) );
     toolBar()->addAction( mLeftAction );
     
     toolBar()->setOrientation( Qt::Horizontal );
@@ -92,7 +92,21 @@ void FmRestoreView::on_leftAction_triggered()
        selection |= ( ( quint64 ) 1 ) << ( items[ i ] );
        }
                    
-    mOperationService->asyncRestore( selection );
+    int ret = mOperationService->asyncRestore( selection );
+    switch( ret )
+    {
+    case FmErrNone:
+        break;
+    case FmErrWrongParam:
+        HbMessageBox::information( QString( hbTrId("Operation canceled with wrong param!") ) );
+        break;
+    case FmErrAlreadyStarted:
+        HbMessageBox::information( QString( hbTrId("Operation canceled because already started!") ) );
+        break;
+    default:
+        HbMessageBox::information(tr("restore failed"));
+        break;
+    }
 }
 
 #ifdef FM_CHANGE_ORIENT_ENABLE

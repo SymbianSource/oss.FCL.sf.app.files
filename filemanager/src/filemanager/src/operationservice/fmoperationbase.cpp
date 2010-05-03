@@ -35,20 +35,20 @@ FmOperationService::TOperationType FmOperationBase::operationType()
 
 
 //FmOperationFormat
-FmOperationFormat::FmOperationFormat( QObject *parent, QString mDriverName ) : FmOperationBase( parent, FmOperationService::EOperationTypeFormat ),
-    mDriverName( mDriverName )
-{
-}
-FmOperationFormat::~FmOperationFormat()
-{
-}
+//FmOperationFormat::FmOperationFormat( QObject *parent, QString mDriverName ) : FmOperationBase( parent, FmOperationService::EOperationTypeFormat ),
+//    mDriverName( mDriverName )
+//{
+//}
+//FmOperationFormat::~FmOperationFormat()
+//{
+//}
+//
+//QString FmOperationFormat::driverName()
+//{
+//    return mDriverName;
+//}
 
-QString FmOperationFormat::driverName()
-{
-    return mDriverName;
-}
-
-//FmOperationFormat
+//FmOperationDriveDetails
 FmOperationDriveDetails::FmOperationDriveDetails( QObject *parent, QString driverName ) :
         FmOperationBase( parent, FmOperationService::EOperationTypeDriveDetails ),
         mDriverName( driverName )

@@ -179,7 +179,6 @@ int FmFolderDetails::queryDetailOfContentList( const QStringList folderPathList,
     numofFolders = 0;
     numofFiles = 0;
     totalSize = 0;
-    totalSize = 0;
 
     int tempNumofFolders = 0;
     int tempNumofFiles = 0;

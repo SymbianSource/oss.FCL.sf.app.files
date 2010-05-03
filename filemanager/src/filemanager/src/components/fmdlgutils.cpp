@@ -22,6 +22,7 @@
 #include "fmsingletextquery.h"
 #include "fmmultitextquery.h"
 #include "fmutils.h"
+#include "fmviewmanager.h"
 
 #include <QString>
 #include <QStringList>
@@ -38,11 +39,29 @@ FmDlgUtils::FmDlgUtils( void )
 FmDlgUtils::~FmDlgUtils( void )
 {
 }
+HbAction *FmDlgUtils::executeDialog( HbDialog *dialog, const QString &associatedDrives )
+{
+    for( int i = 0; i < associatedDrives.length(); i++ ) {
+        QString drive( associatedDrives[i] + QString( ":/" ) );
+        if( !FmUtils::isDriveAvailable( drive ) ) {
+            FmLogger::log( "executeDialog return 0_ " + associatedDrives );
+            return 0;
+        }
+    }
+    
+	FmDlgCloseUnit dlgCloseUnit( dialog );
+	dlgCloseUnit.addAssociatedDrives( associatedDrives );
+
+	FmViewManager::viewManager()->addDlgCloseUnit( &dlgCloseUnit );
+    HbAction* action = dialog->exec();
+	FmViewManager::viewManager()->removeDlgCloseUnit( &dlgCloseUnit );
+	return action;
+}
 
 bool FmDlgUtils::showSingleSettingQuery(
         const QString &title,
         const QStringList &textList,
-        int &selectedIndex )
+        int &selectedIndex, const QString &associatedDrives )
 {
    bool ret( false );
 
@@ -66,21 +85,23 @@ bool FmDlgUtils::showSingleSettingQuery(
     QString sk1 ( tr ( "ok" ) );
     QString sk2 ( tr ("cancel" ) );
 
-    if(sk1.isEmpty() == false) {
+    if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
         cQuery->setPrimaryAction( primary );
     }
 
-    if( sk2.isEmpty() == false ) {
+    if( !sk2.isEmpty() ) {
         HbAction *secondary = new HbAction( sk2 );
         cQuery->setSecondaryAction( secondary );
     }
-    HbAction* action = cQuery->exec();
-    if( action == cQuery->secondaryAction() ){
-        ok = false;
+
+    //HbAction* action = cQuery->exec();
+	HbAction* action = executeDialog( cQuery, associatedDrives );
+    if( action == cQuery->primaryAction() ){
+        ok = true;
     }
     else{
-        ok = true;
+        ok = false;
     }
     if( ok ){
         //get selected key list.
@@ -110,7 +131,7 @@ bool FmDlgUtils::showMultiSettingQuery(
         const QString &title,
         const QStringList &textList,
         quint32 &selection,
-        int dominantIndex )
+        int dominantIndex, const QString &associatedDrives )
 {
     bool ret( false );
 
@@ -137,24 +158,25 @@ bool FmDlgUtils::showMultiSettingQuery(
     }
 
 
-    QString sk1 ( tr( "ok" ) );
-    QString sk2 ( tr( "cancel" ) );
+    QString sk1 ( hbTrId( "ok" ) );
+    QString sk2 ( hbTrId( "cancel" ) );
 
-    if(sk1.isEmpty() == false) {
+    if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
         cQuery->setPrimaryAction( primary );
     }
 
-    if( sk2.isEmpty() == false ) {
+    if( !sk2.isEmpty() ) {
         HbAction *secondary = new HbAction( sk2 );
         cQuery->setSecondaryAction( secondary );
     }
-    HbAction* action = cQuery->exec();
-    if( action == cQuery->secondaryAction() ){
-        ok = false;
+
+    HbAction* action = executeDialog( cQuery, associatedDrives );
+    if( action == cQuery->primaryAction() ){
+        ok = true;
     }
     else{
-        ok = true;
+        ok = false;
     }
     if( ok )
     {
@@ -181,7 +203,7 @@ bool FmDlgUtils::showMultiSettingQuery(
 }
 
 bool FmDlgUtils::showTimeSettingQuery(
-        const QString &title, QTime &time )
+        const QString &title, QTime &time, const QString &associatedDrives )
 {
     bool ret( false );
     bool ok ( false );                // SK return (out parameter)
@@ -190,24 +212,25 @@ bool FmDlgUtils::showTimeSettingQuery(
     cQuery->setHeadingWidget( new HbLabel( title ) );
     cQuery->setTime( time );
 
-    QString sk1 ( tr( "ok" ) );
-    QString sk2 ( tr( "cancel" ) );
+    QString sk1 ( hbTrId( "ok" ) );
+    QString sk2 ( hbTrId( "cancel" ) );
 
-    if(sk1.isEmpty() == false) {
+    if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
         cQuery->setPrimaryAction( primary );
     }
 
-    if( sk2.isEmpty() == false ) {
+    if( !sk2.isEmpty() ) {
         HbAction *secondary = new HbAction( sk2 );
         cQuery->setSecondaryAction( secondary );
     }
-    HbAction* action = cQuery->exec();
-    if( action == cQuery->secondaryAction() ){
-        ok = false;
+
+	HbAction* action = executeDialog( cQuery, associatedDrives );
+    if( action == cQuery->primaryAction() ){
+        ok = true;
     }
     else{
-        ok = true;
+        ok = false;
     }
     if( ok )
     {
@@ -220,42 +243,51 @@ bool FmDlgUtils::showTimeSettingQuery(
     delete cQuery;
     return ret;
 }
+
 bool FmDlgUtils::showTextQuery(
-        const QString& title, QString& driveName )
+        const QString& title, QString& text, bool isDimPrimaryActionWhenEmpty, int maxLength,
+		const QString &associatedDrives )
 {
     bool ret( false );
     bool ok ( true );                // SK return (out parameter)
 
-    FmSingleTextQuery *cQuery=new FmSingleTextQuery;
+    FmSingleTextQuery::Options options( 0 );
+    if( isDimPrimaryActionWhenEmpty ) {
+        options = FmSingleTextQuery::DimPrimereActionWhenEmpty;
+    }
+    FmSingleTextQuery *cQuery = new FmSingleTextQuery( options );
+    if( maxLength != -1 ){
+        cQuery->setLineEditMaxLength( maxLength );
+    }
     cQuery->setHeadingWidget( new HbLabel( title ) );
 
-    QString sk1 ( tr ( "ok" ) );
-    QString sk2 ( tr ( "cancel" ) );
+    QString sk1 ( hbTrId ( "ok" ) );
+    QString sk2 ( hbTrId ( "cancel" ) );
 
-    if(sk1.isEmpty() == false) {
+    if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
         cQuery->setPrimaryAction( primary );
     }
 
-    if( sk2.isEmpty() == false ) {
+    if( !sk2.isEmpty() ) {
         HbAction *secondary = new HbAction( sk2 );
         cQuery->setSecondaryAction( secondary );
     }
-    cQuery->setLineEditText( driveName );
+    cQuery->setLineEditText( text );
     cQuery->checkActions();
     
-    HbAction* action = cQuery->exec();
-    if( action == cQuery->secondaryAction() ){
-        ok = false;
+	HbAction* action = executeDialog( cQuery, associatedDrives );
+    if( action == cQuery->primaryAction() ){
+        ok = true;
     }
     else{
-        ok = true;
+        ok = false;
     }
 
     if( ok ){
         QString newName = cQuery->getLineEditText();
-        if ( newName != driveName ){
-            driveName = newName;
+        if ( newName != text ){
+            text = newName;
             ret = true;
         }
     }
@@ -263,106 +295,77 @@ bool FmDlgUtils::showTextQuery(
     return ret;
 }
 
-bool FmDlgUtils::showConfirmPasswordQuery(
-        const QString &title, const QString &driveName, QString &pwd )
+bool FmDlgUtils::showSinglePasswordQuery( const QString &title, QString &pwd, const QString &associatedDrives )
 {
     bool ret( false );
-    bool ok ( true );               // SK return (out parameter)
 
-    FmSingleTextQuery *cQuery = new FmSingleTextQuery( HbLineEdit::Password );
+    FmSingleTextQuery *cQuery = new FmSingleTextQuery( FmSingleTextQuery::DimPrimereActionWhenEmpty,
+            HbLineEdit::Password );
     cQuery->setHeadingWidget( new HbLabel( title ) );
 
     QString sk1 ( tr ("ok" ) );
     QString sk2 ( tr ("cancel" ) );
 
-    if(sk1.isEmpty() == false) {
+    if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
         cQuery->setPrimaryAction( primary );
     }
 
-    if( sk2.isEmpty() == false ) {
+    if( !sk2.isEmpty() ) {
         HbAction *secondary = new HbAction( sk2 );
         cQuery->setSecondaryAction( secondary );
     }
     cQuery->checkActions();
-    HbAction* action = 0;
-    
-    bool pwdOk( false );
-    
-    while( ok && !pwdOk ){
-        action = cQuery->exec();
-        if( action == cQuery->secondaryAction() ){
-            ok = false;
-        }
-        else{
-            ok = true;
-        }
 
-        if( ok ){
-            QString inputPwd = cQuery->getLineEditText();
-            if ( FmUtils::setDrivePwd( driveName, inputPwd, inputPwd ) == 0 ){
-                pwd = inputPwd;
-                pwdOk = true;
-                ret = true;
-            }
-            else{
-                HbMessageBox::information( tr( "The password is incorrect, try again!" ) );
-            }
-         }
+    HbAction* action = executeDialog( cQuery, associatedDrives );
+    if( action == cQuery->primaryAction() ){
+        ret = true;
+        pwd = cQuery->getLineEditText();
     }
+    else{
+        ret = false;
+    }
+
     delete cQuery;
     return ret;
 }
 
-bool FmDlgUtils::showChangePasswordQuery(     
-       const QString &firstLabel, const QString &secondLabel, QString& newPassword )
+bool FmDlgUtils::showMultiPasswordQuery(     
+   const QString &firstLabel, const QString &secondLabel, QString &pwd, const QString &associatedDrives )
 {
     bool ret( false );
-    bool ok ( true );                // SK return (out parameter)
 
     FmMultiTextQuery *cQuery = new FmMultiTextQuery( HbLineEdit::Password );
     cQuery->setFirstLabelText( firstLabel );
     cQuery->setSecondLabelText( secondLabel );
 
-    QString sk1 = ( tr( "ok" ) );
-    QString sk2 = ( tr( "cancel" ) );
+    QString sk1 = ( hbTrId( "ok" ) );
+    QString sk2 = ( hbTrId( "cancel" ) );
 
-    if(sk1.isEmpty() == false) {
+    if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
         cQuery->setPrimaryAction( primary );
     }
 
-    if( sk2.isEmpty() == false ) {
+    if( !sk2.isEmpty() ) {
         HbAction *secondary = new HbAction( sk2 );
         cQuery->setSecondaryAction( secondary );
     }
     cQuery->checkActions();
-    HbAction* action = 0;
     
-    bool pwdOk( false );
-    
-    while( ok && !pwdOk ){
-        action = cQuery->exec();
-        if( action == cQuery->secondaryAction() ){
-            ok = false;
+	HbAction* action = executeDialog( cQuery, associatedDrives );
+    if( action == cQuery->primaryAction() ){
+        QString firstPwd = cQuery->getFirstEditText();
+        QString secondPwd = cQuery->getSecondEditText();
+        if ( firstPwd == secondPwd ){
+            pwd = secondPwd;
+            ret = true;
         }
-        else{
-            ok = true;
-        }
-
-        if( ok ){
-            QString firstPwd = cQuery->getFirstEditText();
-            QString secondPwd = cQuery->getSecondEditText();
-            if ( firstPwd == secondPwd ){
-                newPassword = secondPwd;
-                pwdOk = true;
-                ret = true;
-            }
-            else{
-                HbMessageBox::information( tr( "The passwords do not match, try again!" ) );
-            }
-         }
     }
+    else{
+        ret = false;
+    }
+
     delete cQuery;
     return ret;
 }

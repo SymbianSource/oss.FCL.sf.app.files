@@ -60,6 +60,8 @@ public:
 private:
     int DriverNameToNumber( QString driverName );
     QString NumberToDriverName( int driver );
+    
+    TBool HasMultipleBackupTargets();
 
 signals:
     void notifyPreparing( bool cancelable );

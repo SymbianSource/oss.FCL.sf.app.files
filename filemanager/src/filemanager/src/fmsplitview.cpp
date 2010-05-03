@@ -59,13 +59,13 @@ void FmSplitView::initMenu()
 #ifdef FM_CHANGE_ORIENT_ENABLE
 	action = new HbAction( this );
 	action->setObjectName( "rotateAction" );
-	action->setText( tr( "Change orientation" ) );
+	action->setText( hbTrId( "Change orientation" ) );
 	menu()->addAction( action );
 #endif
 
 	action = new HbAction( this );
 	action->setObjectName( "normalViewAction" );
-	action->setText( tr( "Switch to normal view" ) );
+	action->setText( hbTrId( "Switch to normal view" ) );
 	menu()->addAction( action );
 }
 

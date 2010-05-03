@@ -17,13 +17,17 @@
  */
 
 #include "fmbackupsettings.h"
+#include "fmbkupengine.h"
+#include "fmcommon.h"
 
 #include <QString>
+#include <QStringList>
 #include <QTime>
 #include <QSettings>
 
-FmBackupSettings::FmBackupSettings( void )
+FmBackupSettings::FmBackupSettings( FmBkupEngine *aFmBkupEngine ) : mBkupEngine( aFmBkupEngine )
 {
+    
 }
 
 FmBackupSettings::~FmBackupSettings( void )
@@ -219,6 +223,9 @@ QString FmBackupSettings::weekdayToString( const TFileManagerBackupWeekday weekd
     case EFileManagerBackupWeekdayFriday:
         ret = constFileManagerBackupWeekdayFirday;
         break;
+    case EFileManagerBackupWeekdaySaturday:
+        ret = constFileManagerBackupWeekdaySaturday;
+        break;
     case EFileManagerBackupWeekdaySunday:
         ret = constFileManagerBackupWeekdaySunday;
         break;
@@ -280,8 +287,13 @@ void FmBackupSettings::refreshList()
         mBackupEntryList.push_back( entry );
     }
 
-    entry = createTargetDriveEntry();
-    mBackupEntryList.push_back( entry );
+    QStringList driveList;
+    mBkupEngine->getBackupDriveList( driveList );
+
+    if( driveList.count() > 1 ) {
+        entry = createTargetDriveEntry();
+        mBackupEntryList.push_back( entry );
+    }
 }
 
 void FmBackupSettings::resetAndDestoryBackupEntry()
@@ -299,6 +311,12 @@ void FmBackupSettings::resetAndDestoryBackupEntry()
 
 void FmBackupSettings::load()
 {
+   
+    QStringList driveList;
+    mBkupEngine->getBackupDriveList( driveList );
+    QString defaultDrive( driveList.first() );
+   
+    
     QSettings settings("Nokia", "FileManager");
 
     settings.beginGroup("BackupConfigure");
@@ -307,7 +325,7 @@ void FmBackupSettings::load()
     mScheduling = (TFileManagerBackupSchedule)(settings.value("scheduling", EFileManagerBackupScheduleNever ).toInt()); // Never schedule for default value
     mWeekday = (TFileManagerBackupWeekday)(settings.value("weekday", EFileManagerBackupWeekdayMonday ).toInt()); // monday for default value
     mTime = (settings.value("time", QTime::currentTime() ).toTime()); // empty for default
-    mTargetDrive = (settings.value("targetDrive", "c:") ).toString();  // C for default
+    mTargetDrive = (settings.value("targetDrive", defaultDrive ) ).toString();  // C for default
 
     settings.endGroup();
     refreshList();

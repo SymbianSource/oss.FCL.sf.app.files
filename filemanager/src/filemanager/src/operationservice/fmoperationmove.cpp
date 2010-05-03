@@ -19,6 +19,7 @@
 #include "fmcommon.h"
 #include "fmoperationbase.h"
 #include "fmdrivedetailstype.h"
+#include "fmutils.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -79,15 +80,39 @@ int FmOperationMove::start(  volatile bool *isStopped, QString *errString )
             return ret;
         }
         QString newName;
+        bool isAcceptReplace = false;
         QFileInfo destFi( mTargetPath + fi.fileName() );
+        // while for duplicated file/dir
         while( destFi.exists() ) {
-            emit askForRename( destFi.absoluteFilePath(), &newName );
-            if( newName.isEmpty() ) {
-                ret = FmErrCancel;
-                break;
+            if( destFi.isFile() && destFi.absoluteFilePath().compare( fi.absoluteFilePath(), Qt::CaseInsensitive ) != 0  ) {
+                emit askForReplace( destFi.absoluteFilePath(), fi.absoluteFilePath(), &isAcceptReplace );
+                if( isAcceptReplace ) {
+                    //delete src file
+                    if( !QFile::remove( destFi.absoluteFilePath() ) ) {
+                        *mErrString = destFi.absoluteFilePath();
+                        ret = FmErrCannotRemove;
+                        break;
+                    }
+                    destFi.setFile( destFi.absoluteFilePath() );
+                } else {
+                    emit askForRename( destFi.absoluteFilePath(), &newName );
+                    if( newName.isEmpty() ) {
+                        ret = FmErrCancel;
+                        break;
+                    }
+                    QString targetName = mTargetPath + newName;
+                    destFi.setFile( targetName );
+                }
+            } else{
+                // destination is dir
+                emit askForRename( destFi.absoluteFilePath(), &newName );
+                if( newName.isEmpty() ) {
+                    ret = FmErrCancel;
+                    break;
+                }
+                QString targetName = mTargetPath + newName;
+                destFi.setFile( targetName );
             }
-            QString targetName = mTargetPath + newName;
-            destFi.setFile( targetName );
         }
         if( ret != FmErrNone ) {
             return ret;
@@ -132,7 +157,13 @@ int FmOperationMove::move( const QString &source, const QString &targetPath, con
         }
         IncreaseProgress( fileSize );
     } else if (fi.isDir()) {
-        ret = moveDirInsideContent( source, newName );
+        if( FmUtils::isDefaultFolder( source ) ){
+            ret = FmErrRemoveDefaultFolder;
+        }
+        else{
+            ret = moveDirInsideContent( source, newName );
+        }
+        
         if( ret!= FmErrNone ) {
             return ret;
         }
@@ -227,6 +258,9 @@ int FmOperationMove::moveDirInsideContent( const QString &srcPath, const QString
 
 void FmOperationMove::IncreaseProgress( quint64 size )
 {
+    if( mTotalSize <=0 ) {
+        return;
+    }
     mMovedSize += size;
     int step = ( mMovedSize * 100 ) / mTotalSize;
     if( step > mCurrentStep ) {

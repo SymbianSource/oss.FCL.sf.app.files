@@ -33,8 +33,6 @@ class FmBackupRestoreHandler;
 class FmDriveDetailsSize;
 class FmOperationResultProcesser;
 
-class HbProgressNote;
-
 class FmOperationService : public QObject
 {
     Q_OBJECT
@@ -95,6 +93,7 @@ public slots:
     void on_backupRestore_notifyCanceled();
     
     void on_operationThread_askForRename( const QString &srcFile, QString *destFile );
+    void on_operationThread_askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted );
     void on_operationThread_refreshModel( const QString &path );
     void on_operationThread_notifyWaiting( bool cancelable );
     void on_operationThread_notifyPreparing( bool cancelable );

@@ -20,6 +20,8 @@
 #define FMVIEWMANAGER_H
 
 #include <QObject>
+#include <QList>
+#include "fmcommon.h"
 
 class FmMainWindow;
 class HbView;
@@ -28,6 +30,23 @@ class FmOperationService;
 class FmOperationBase;
 class QFileSystemWatcher;
 class FmDriveWatcher;
+class HbDialog;
+
+class FmDlgCloseUnit
+{
+public:
+	FmDlgCloseUnit( HbDialog *dialog );
+	~FmDlgCloseUnit();
+
+	void addAssociatedDrives( QString drives );
+	void removeAssociatedDrives( QString drives );
+	QString associatedDrives();
+	HbDialog *dialog();
+
+private:
+	HbDialog *mDialog;
+	QString mAssociatedDrives;
+};
 
 class FmViewManager : public QObject
 {
@@ -54,6 +73,18 @@ public:
     void addWatchPath( const QString &path );
     void removeWatchPath( const QString &path );
 
+	// dialog close utils:
+	void addDlgCloseUnit( FmDlgCloseUnit* unit )
+	{
+		FmLogger::log( "FmViewManager::addDlgCloseUnit_" + unit->associatedDrives() );
+		mDlgCloseUnitList.append( unit );
+	}
+	void removeDlgCloseUnit( FmDlgCloseUnit* unit )
+	{
+		FmLogger::log( "FmViewManager::removeDlgCloseUnit_" + unit->associatedDrives() );
+		mDlgCloseUnitList.removeOne( unit );
+	}
+
 protected:
     explicit FmViewManager( FmMainWindow* mainWindow );
     ~FmViewManager();
@@ -73,6 +104,8 @@ private:
   //  HbView *createView( FmViewType viewType );
 
   //  void adjustSecondarySoftKey();
+
+	void checkDlgCloseUnit();
     
 private:
      static FmViewManager *mViewManager;
@@ -82,6 +115,8 @@ private:
     FmOperationService  *mOperationService;
     QFileSystemWatcher  *mFsWatcher;
     FmDriveWatcher  *mDriveWatcher;
+
+	QList<FmDlgCloseUnit*> mDlgCloseUnitList;
 };
 
 

@@ -18,16 +18,6 @@ INCLUDEPATH += ./src
 INCLUDEPATH += ./src/components
 INCLUDEPATH += ./src/backuprestore
 INCLUDEPATH += ./src/operationservice
-INCLUDEPATH += ./src/fmdrivewatcher
-
-win32 {
-    INCLUDEPATH += ./src/fmdrivewatcher/private/win32
-}
-
-
-symbian {
-    INCLUDEPATH += ./src/fmdrivewatcher/private/symbian
-}
 
 HEADERS += src/fmdriverlistwidget.h \
            src/listviewitems.h \
@@ -49,6 +39,7 @@ HEADERS += src/fmdriverlistwidget.h \
            src/operationservice/fmoperationcopy.h \
            src/operationservice/fmoperationmove.h \
            src/operationservice/fmoperationremove.h \
+           src/operationservice/fmoperationformat.h \
            src/backuprestore/fmbackupview.h \
            src/backuprestore/fmbackupwidget.h \
            src/backuprestore/fmrestoreview.h \
@@ -67,16 +58,6 @@ HEADERS += src/fmdriverlistwidget.h \
            src/components/fmviewdetailsdialog.h \
            src/components/fmviewdetailsitem.h \
            src/components/fmdrivedetailstype.h \
-           src/fmdrivewatcher/fmdrivewatcher.h \
-
-win32 {
-    HEADERS += src/fmdrivewatcher/private/win32/fmdrivewatcherprivate.h \
-
-}
-symbian {
-    HEADERS += src/fmdrivewatcher/private/symbian/fmdrivewatcherprivate.h \
-               src/fmdrivewatcher/private/symbian/fmdriveevent.h
-}         
 
 SOURCES += src/main.cpp \
            src/fmdriverlistwidget.cpp \
@@ -116,14 +97,11 @@ SOURCES += src/main.cpp \
            src/components/fmmultitextquery.cpp \
            src/components/fmviewdetailsdialog.cpp \
            src/components/fmviewdetailsitem.cpp \
-           src/components/fmdrivedetailstype.cpp \
-           src/fmdrivewatcher/fmdrivewatcher.cpp
-
+           src/components/fmdrivedetailstype.cpp
 
 win32 {
-    SOURCES += src/fmdrivewatcher/private/win32/fmdrivewatcherprivate.cpp
+    SOURCES += src/operationservice/fmoperationformat_win.cpp
 }
 symbian {
-    SOURCES += src/fmdrivewatcher/private/symbian/fmdrivewatcherprivate.cpp \
-               src/fmdrivewatcher/private/symbian/fmdriveevent.cpp
+    SOURCES += src/operationservice/fmoperationformat_s60.cpp
 }

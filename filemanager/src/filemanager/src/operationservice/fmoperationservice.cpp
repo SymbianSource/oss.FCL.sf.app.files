@@ -26,8 +26,8 @@
 #include "fmoperationcopy.h"
 #include "fmoperationmove.h"
 #include "fmoperationremove.h"
+#include "fmoperationformat.h"
 
-#include <hbprogressnote.h>
 #include <hbaction.h>
 #include <hbmessagebox.h>
 
@@ -282,6 +282,13 @@ void FmOperationService::on_operationThread_askForRename( const QString &srcFile
     mOperationResultProcesser->onAskForRename(
         mCurrentOperation, srcFile, destFile );
 }
+
+void FmOperationService::on_operationThread_askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted )
+{
+    mOperationResultProcesser->onAskForReplace(
+        mCurrentOperation, srcFile, destFile, isAccepted );
+}
+
 void FmOperationService::on_operationThread_refreshModel( const QString &path )
 {
     emit refreshModel( mCurrentOperation, path );

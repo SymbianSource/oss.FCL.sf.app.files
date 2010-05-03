@@ -47,6 +47,7 @@ public:
     int deleteBackup( quint64 selection );
     FmBkupEngine *bkupEngine();
     FmBackupConfigLoader *backupConfigLoader();
+    void getBackupDriveList( QStringList &driveList );
 
 signals:
     void notifyPreparing( bool cancelable );
@@ -64,6 +65,8 @@ public slots:
     void onNotifyStart( bool cancelable, int maxSteps );
     void onNotifyUpdate( int currentStep );
     void onNotifyFinish( int err );
+    
+    void onNotifyBackupFilesExist( bool &isContinue );
 private:
     enum Process{
 		ProcessNone = 0,

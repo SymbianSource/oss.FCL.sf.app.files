@@ -35,6 +35,7 @@ FmDriverView::FmDriverView() : FmViewBase( EDriverView )
     initMenu(); 
     initToolBar();
     initDiskListWidget();
+
     QMetaObject::connectSlotsByName( this );
 }
 
@@ -50,28 +51,28 @@ void FmDriverView::initMenu()
 #ifdef FM_CHANGE_ORIENT_ENABLE
     action = new HbAction( this );
     action->setObjectName( "rotateAction" );
-    action->setText( tr( "Change orientation" ) );
+    action->setText( hbTrId( "Change orientation" ) );
     menu()->addAction( action );
 #endif
 
     action = new HbAction( this );
     action->setObjectName( "findAction" );
-    action->setText( tr( "Find" ) );
+    action->setText( hbTrId( "txt_fmgr_opt_find" ) );
     menu()->addAction( action );
 
     action = new HbAction( this );
     action->setObjectName( "backupAction" );
-    action->setText( tr( "Backup" ) );
+    action->setText( hbTrId( "txt_fmgr_opt_backup" ) );
     menu()->addAction( action );
 
     action = new HbAction( this );
     action->setObjectName( "restoreAction" );
-    action->setText( tr( "Restore" ) );
+    action->setText( hbTrId( "txt_fmgr_opt_restore" )  );
     menu()->addAction( action );
    
     action = new HbAction( this );
     action->setObjectName( "exitAction" );
-    action->setText( tr( "Exit" ) );
+    action->setText( hbTrId( "Exit" ) );
     menu()->addAction( action );
 
 }

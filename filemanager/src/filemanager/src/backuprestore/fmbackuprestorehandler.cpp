@@ -40,6 +40,8 @@ FmBackupRestoreHandler::FmBackupRestoreHandler( QObject *parent ) : QObject( par
         this, SLOT( onNotifyFinish(int) ), Qt::QueuedConnection );
     connect( mBkupEngine, SIGNAL( notifyMemoryLow(int, int& ) ), 
         this, SLOT( onNotifyMemoryLow(int, int&) ) );
+    connect( mBkupEngine, SIGNAL( notifyBackupFilesExist( bool& )), this, SLOT( onNotifyBackupFilesExist( bool& )));
+    
 }
 FmBackupRestoreHandler::~FmBackupRestoreHandler()
 {
@@ -74,10 +76,8 @@ bool FmBackupRestoreHandler::startBackup( FmOperationBackup *operationBackup )
         mBkupEngine->BackupSettingsL()->targetDrive(),
         mBkupEngine->BackupSettingsL()->content() );
 
-    if( !ret )
-        {
+    if( !ret ) {
         mCurrentProcess = ProcessNone;
-        HbMessageBox::information(tr("backup failed"));
         }
     return ret;
 }
@@ -90,10 +90,8 @@ bool FmBackupRestoreHandler::startRestore( FmOperationRestore *operationRestore 
     mCurrentProcess = ProcessRestore;
     mBkupEngine->RestoreSettingsL()->SetSelection( operationRestore->selection() );
     bool ret = mBkupEngine->startRestore( backupConfigLoader()->driversAndOperationList() );
-    if( !ret )
-        {
+    if( !ret ) {
         mCurrentProcess = ProcessNone;
-        HbMessageBox::information(tr("restore failed"));
         }
     return ret;
 }
@@ -116,6 +114,17 @@ void FmBackupRestoreHandler::onNotifyMemoryLow( int memoryValue, int &userError 
         }
     }
 }
+void FmBackupRestoreHandler::onNotifyBackupFilesExist( bool &isContinue )
+    {
+    if ( HbMessageBox::question( "some bacup files exist, continue?" ) )
+        {
+        isContinue = true;
+        }
+    else
+        {
+        isContinue = false;
+        }
+    }
 
 
 void FmBackupRestoreHandler::onNotifyPreparing( bool cancelable )
@@ -139,4 +148,9 @@ void FmBackupRestoreHandler::onNotifyFinish( int err )
     } else {
         emit notifyError( err, QString("") );
     }
+}
+
+void FmBackupRestoreHandler::getBackupDriveList( QStringList &driveList )
+{
+    mBkupEngine->getBackupDriveList( driveList );
 }

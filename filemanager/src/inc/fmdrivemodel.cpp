@@ -16,6 +16,7 @@
 */
 
 #include "fmdrivemodel.h"
+#include "fmfileiconprovider.h"
 #include "fmutils.h"
 
 #include <QDir>
@@ -24,11 +25,11 @@
 FmDriveModel::FmDriveModel( QObject *parent, Options options ) :
     QAbstractListModel( parent ), mOptions( options )
 {
-    mIconProvider = new QFileIconProvider();
+    mIconProvider = new FmFileIconProvider();
     refresh();
 }
 
-FmDriveModel::~FmDriveModel(void)
+FmDriveModel::~FmDriveModel()
 {
     delete mIconProvider;
 }
@@ -39,8 +40,10 @@ void FmDriveModel::refresh()
 
     mDriveList.clear();
     if( mOptions & HideUnAvailableDrive ) {
+        FmLogger::log( QString( "FmDriveModel::refresh HideUnAvailableDrive_true" ) );
         FmUtils::getDriveList( mDriveList, true );
     } else {
+        FmLogger::log( QString( "FmDriveModel::refresh HideUnAvailableDrive_false" ) );
         FmUtils::getDriveList( mDriveList, false );
     }
     emit layoutChanged();

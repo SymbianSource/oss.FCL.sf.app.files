@@ -18,7 +18,7 @@
 CONFIG      += hb
 TEMPLATE    = app
 TARGET = filemngr
-
+RESOURCES += filemanager.qrc
 INCLUDEPATH += ../fmbkupenginewrapper/inc
 # remove this path when export plat header to app layer path
 INCLUDEPATH += ../../filemanager_plat/inc
@@ -37,7 +37,11 @@ symbian {
             -lapmime \
             -lxqservice \
             -lxqutils \
-            -lshareui
+            -lshareui \
+            -lefsrv \
+            -lapgrfx \
+	    -lcone \
+            -ldirectorylocalizer
 
     TARGET.UID3 = 0x2002BCC0
     TARGET.EPOCHEAPSIZE = 0x020000 0x1000000

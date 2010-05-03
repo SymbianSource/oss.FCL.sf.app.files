@@ -23,7 +23,8 @@
 #include "fmcommon.h"
 #include "fmviewbase.h"
 
-class HbProgressNote;
+class HbProgressDialog;
+class HbMenu;
 class FmFindWidget;
 
 class FmFindView : public FmViewBase
@@ -41,6 +42,7 @@ public slots:
 
 private slots:
     void findFinished();
+    void on_findAction_triggered();
     void on_sortNameAction_triggered();
     void on_sortTimeAction_triggered();
     void on_sortSizeAction_triggered();
@@ -48,13 +50,16 @@ private slots:
     
     void startSearch( const QString &targetPath, const QString &criteria );
     
+    void on_findWidget_setEmptyMenu( bool isMenuEmpty );
+    
 private:
     void initMenu();
     void initMainWidget();
     void initToolBar();
 
     FmFindWidget *mFindWidget;
-    HbProgressNote *mWaitNote;
+    HbProgressDialog *mWaitNote;
+    HbMenu *mMenu;
 };
 
 #endif

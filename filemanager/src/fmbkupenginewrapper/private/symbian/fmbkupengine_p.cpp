@@ -19,12 +19,6 @@
 #include "fmbkupengine_p.h"
 
 // INCLUDE FILES
-/*#include <filemanagerengine.rsg>
-#include "cfilemanagerremovabledrivehandler.h"
-#include "mfilemanagerprocessobserver.h"
-#include "cfilemanagerutils.h"
-#include "cfilemanagerengine.h"
-*/
 #include <coreapplicationuisdomainpskeys.h>
 #include <coemain.h>
 #include <apgwgnam.h>
@@ -48,6 +42,8 @@
 #include <eikenv.h>
 
 #include "fmcommon.h"
+
+#include <f32file.h>
 
 /*
 #include "cfilemanageritemproperties.h"
@@ -102,6 +98,10 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
 	    QList<FmBkupBackupCategory*> backupCategoryList,
 	    QString drive, quint32 content)
 {
+    if( drive.isEmpty() ) {
+        iError = KErrPathNotFound;
+        return false;
+    }
     QString logString;
     logString = "startBackup";
     FmLogger::log( logString );
@@ -182,6 +182,31 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
     logString = "startBackup_StartOperationL";
     FmLogger::log( logString );
 
+    QList< FmRestoreInfo > restoreInfoList;
+    TInt driveNumber = DriverNameToNumber( drive );
+    GetRestoreInfoArray( drivesAndOperationList, restoreInfoList, driveNumber );
+    
+    for ( TInt i( 0 ); i < restoreInfoList.count(); i++ )
+        {        
+        bool toContinue = false;
+        FmRestoreInfo &info = restoreInfoList[ i ];
+        TUint32 existContent( FmgrToBkupMask( info.content() ) );
+        if ( bkupContent & existContent )
+            {            
+            notifyBackupFilesExistInternal( toContinue );
+            if (!toContinue)
+                {
+                iError = KErrAlreadyExists;
+                return false;
+                }
+            else
+                {
+                break;
+                }
+            }
+        }
+    
+    
     TRAPD( err, iBkupEngine->StartOperationL(
         EMMCScBkupOperationTypeFullBackup, *this, params ) );
 
@@ -277,6 +302,11 @@ void FmBkupEnginePrivate::notifyMemoryLowInternal( int memoryValue, int &userErr
 	emit notifyMemoryLow( memoryValue, userError );
 	}
 
+void FmBkupEnginePrivate::notifyBackupFilesExistInternal( bool &isContinue )
+    {
+    emit notifyBackupFilesExist( isContinue );
+    }
+
 TInt FmBkupEnginePrivate::HandleBkupEngineEventL(
         MMMCScBkupEngineObserver::TEvent aEvent, TInt aAssociatedData )
     {
@@ -332,7 +362,7 @@ TInt FmBkupEnginePrivate::HandleBkupEngineEventL(
             }
         case MMMCScBkupEngineObserver::ECommonOperationError:
             {
-            logString  = "ECommonOperationError:" + QString::number(aAssociatedData);
+            logString  = "ECommonOperationError";
             iError = aAssociatedData;
             break;
             }
@@ -387,6 +417,8 @@ int FmBkupEnginePrivate::error()
         return FmErrAlreadyExists;
     case KErrCancel:
         return FmErrCancel;
+    case KErrPathNotFound:
+        return FmErrPathNotFound;
     default: 
         return FmErrUnKnown;
     }    
@@ -713,7 +745,7 @@ void FmBkupEnginePrivate::ResetAndDestroyArchives( TAny* aPtr )
 
 TUint32 FmBkupEnginePrivate::AllowedDriveAttMatchMask() const
     {
-    return KDriveAttRemovable | KDriveAttInternal;//KDriveAttRemovable;
+    return KDriveAttRemovable;//KDriveAttRemovable;
     }
 
 TInt FmBkupEnginePrivate::DriverNameToNumber( QString driverName )
@@ -727,6 +759,33 @@ QString FmBkupEnginePrivate::NumberToDriverName( TInt driver )
         QChar driverChar( driver - EDriveA + 'A' );
         QString driverName = QString( driverChar ) + ':';
         return driverName;
+    }
+
+void FmBkupEnginePrivate::getBackupDriveList( QStringList &driveList )
+    {
+    TUint32 driveAttMask( AllowedDriveAttMatchMask() );
+    RFs fs;
+    fs.Connect();
+    for ( TInt i( 0 ); i < KMaxDrives; ++i )
+        {
+        TDriveInfo driveInfo;
+        if ( fs.Drive( driveInfo, i ) == KErrNone )
+            {
+            // Do not allow backup for internal drives
+            TUint driveStatus( 0 );
+            DriveInfo::GetDriveStatus( fs, i, driveStatus );
+            if ( driveStatus & DriveInfo::EDriveInternal )
+                {
+                continue;
+                }
+            if ( driveInfo.iDriveAtt & driveAttMask )
+                {
+                driveList.append( NumberToDriverName( i ) );
+                }
+            }
+        }
+    
+    fs.Close();
     }
 
 // -----------------------------------------------------------------------------

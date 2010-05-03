@@ -21,12 +21,13 @@
 #include "fmfindwidget.h"
 #include "fmviewmanager.h"
 
-#include <hbprogressnote.h>
+#include <hbprogressdialog.h>
 #include <hbaction.h>
 #include <hbmenu.h>
 
 FmFindView::FmFindView() : FmViewBase( EFindView ),
-                           mWaitNote( 0 )
+                           mWaitNote( 0 ),
+                           mMenu( 0 )
 {
     initMenu();
     initMainWidget();
@@ -43,6 +44,7 @@ FmFindView::~FmFindView()
 
 void FmFindView::activated( const QString& pathName )
 {
+    FmLogger::log( QString( "activate path from findview:" ) + pathName );
     FmViewManager::viewManager()->createFileView( pathName, true, true );
 }
 
@@ -68,30 +70,37 @@ void FmFindView::findFinished()
 
 void FmFindView::initMenu()
 {
-    HbMenu *subMenu = new HbMenu( "Sort" );
+    HbAction *findAction = new HbAction( this );
+    findAction->setObjectName( "findAction" );
+    findAction->setText( hbTrId( "Find" ) );
+    menu()->addAction( findAction ); 
+    
+    HbMenu *subMenu = new HbMenu( hbTrId( "Sort" ) );
     
     HbAction *sortNameAction = new HbAction( subMenu );
     sortNameAction->setObjectName( "sortNameAction" );
-    sortNameAction->setText( tr( "Sort by name" ) );
+    sortNameAction->setText( hbTrId( "Sort by name" ) );
     subMenu->addAction( sortNameAction );
     
     HbAction *sortTimeAction = new HbAction( subMenu );
     sortTimeAction->setObjectName( "sortTimeAction" );
-    sortTimeAction->setText( tr( "Sort by time" ) );
+    sortTimeAction->setText( hbTrId( "Sort by time" ) );
     subMenu->addAction( sortTimeAction );
     
     HbAction *sortSizeAction = new HbAction( subMenu );
     sortSizeAction->setObjectName( "sortSizeAction" );
-    sortSizeAction->setText( tr( "Sort by size" ) );
+    sortSizeAction->setText( hbTrId( "Sort by size" ) );
     subMenu->addAction( sortSizeAction );
     
     HbAction *sortTypeAction = new HbAction( subMenu );
     sortTypeAction->setObjectName( "sortTypeAction" );
-    sortTypeAction->setText( tr( "Sort by type" ) );
+    sortTypeAction->setText( hbTrId( "Sort by type" ) );
     subMenu->addAction( sortTypeAction );
     
     menu()->addMenu( subMenu );
     
+    connect( findAction, SIGNAL( triggered() ),
+             this, SLOT( on_findAction_triggered() ) );
     connect( sortNameAction, SIGNAL( triggered() ),
              this, SLOT( on_sortNameAction_triggered() ) );
     connect( sortTimeAction, SIGNAL( triggered() ),
@@ -100,6 +109,8 @@ void FmFindView::initMenu()
              this, SLOT( on_sortSizeAction_triggered() ) );
     connect( sortTypeAction, SIGNAL( triggered() ),
              this, SLOT( on_sortTypeAction_triggered() ) );
+    
+    mMenu = takeMenu();
 }
 
 void FmFindView::initMainWidget()
@@ -109,13 +120,15 @@ void FmFindView::initMainWidget()
     setWidget( mFindWidget );
 
     if( !mWaitNote ){
-        mWaitNote = new HbProgressNote( HbProgressNote::WaitNote );
-        mWaitNote->setText( tr( "Finding..." ) );
+        mWaitNote = new HbProgressDialog( HbProgressDialog::WaitDialog );
+        mWaitNote->setText( hbTrId( "Finding..." ) );
     }
     connect( mWaitNote, SIGNAL(cancelled()), this, SLOT(stopFind()) );
     connect( mFindWidget, SIGNAL(activated( const QString&)), this, SLOT( activated(const QString&)) );
     connect( mFindWidget, SIGNAL( startSearch( const QString&,  const QString& ) ),
              this, SLOT( startSearch( const QString&, const QString& ) ) );
+    connect( mFindWidget, SIGNAL( setEmptyMenu( bool ) ),
+             this, SLOT( on_findWidget_setEmptyMenu( bool ) ) );
 }
 
 void FmFindView::initToolBar()
@@ -146,5 +159,25 @@ void FmFindView::startSearch( const QString &targetPath, const QString &criteria
 {  
     if ( !criteria.isEmpty( ) ) {
         find( criteria, targetPath );  
+    }
+}
+
+void FmFindView::on_findAction_triggered()
+{
+    mFindWidget->activeSearchPanel();
+}
+
+void FmFindView::on_findWidget_setEmptyMenu( bool isMenuEmpty )
+{
+    if( isMenuEmpty ){
+        if( !mMenu ) {
+            mMenu = takeMenu();
+        }
+    }
+    else{ 
+        if( mMenu ) {
+            setMenu( mMenu );
+            mMenu = 0;
+        }
     }
 }

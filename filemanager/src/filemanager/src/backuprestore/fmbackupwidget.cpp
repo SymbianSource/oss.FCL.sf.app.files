@@ -115,20 +115,27 @@ void FmBackupWidget::init()
 
 void FmBackupWidget::expandAllGroup()
 {
+    FmLogger::log( QString( "function expandAllGroup start" ) );
+    
     mDataForm->setModel( 0 );
     mDataForm->setModel( mModel );
 
     HbDataFormViewItem *itemScheduling = 
         (HbDataFormViewItem *)(mDataForm->itemByIndex(mModel->indexFromItem(mSchedulingGroup)));
     if( itemScheduling ){
+        FmLogger::log( QString( "expand itemScheduling start" ) );
         itemScheduling->setExpanded( true );
+        FmLogger::log( QString( "expand itemScheduling end" ) );
     }
 
     HbDataFormViewItem *itemGroup = 
         (HbDataFormViewItem *)(mDataForm->itemByIndex(mModel->indexFromItem(mContentsGroup)));
     if( itemGroup ){
+        FmLogger::log( QString( "expand itemGroup start" ) );
         itemGroup->setExpanded( true );
+        FmLogger::log( QString( "expand itemGroup end" ) );
     }
+    FmLogger::log( QString( "function expandAllGroup end" ) );
 }
 
 void FmBackupWidget::initModel()
@@ -167,8 +174,25 @@ void FmBackupWidget::refreshModel()
 
     mBackupSettings->load();
     
-    bool isWeekdayExist = false;
-    bool isTimeExist = false;
+    int index = 0;
+
+    index = mSchedulingGroup->indexOf(  mWeekdayItem );
+    if( index >=0 ){
+        mSchedulingGroup->removeChild( index );
+        mWeekdayItem = 0;
+    }
+
+    index = mSchedulingGroup->indexOf(  mTimeItem );
+    if( index >=0 ){
+        mSchedulingGroup->removeChild( index );
+        mTimeItem = 0;
+    }
+    
+    index = mContentsGroup->indexOf(  mTargetItem );
+    if( index >=0 ){
+        mContentsGroup->removeChild( index );
+        mTargetItem = 0;
+    }
    
     QList< FmBackupEntry* > backupEntryList = mBackupSettings->backupEntryList();
 
@@ -191,6 +215,9 @@ void FmBackupWidget::refreshModel()
             }
         case FmBackupEntry::ETarget:
             {
+            mTargetItem = mModel->appendDataFormItem(
+                HbDataFormModelItem::TextItem, QString( "" ), mContentsGroup );
+            mTargetItem->setContentWidgetData( QString("readOnly"), QString("true") );        
             mTargetItem->setLabel(title);
             mTargetItem->setContentWidgetData( QString("text"), tips );
             break;
@@ -203,39 +230,24 @@ void FmBackupWidget::refreshModel()
             }
         case FmBackupEntry::EWeekday:
             {
+            mWeekdayItem = mModel->appendDataFormItem(
+                HbDataFormModelItem::TextItem, QString( "" ), mSchedulingGroup );
+            mWeekdayItem->setContentWidgetData( QString("readOnly"), QString("true") );
             mWeekdayItem->setLabel(title);
             mWeekdayItem->setContentWidgetData( QString("text"), tips );
-            isWeekdayExist = true;
             break;
             }
         case FmBackupEntry::ETime:
             {
+            mTimeItem = mModel->appendDataFormItem(
+                HbDataFormModelItem::TextItem, QString( "" ), mSchedulingGroup );
+            mTimeItem->setContentWidgetData( QString("readOnly"), QString("true") );
             mTimeItem->setLabel(title);
             mTimeItem->setContentWidgetData( QString("text"), tips );
-            isTimeExist = true;
             break;
             }
         }
     }
-    int index = 0;
-
-    index = mSchedulingGroup->indexOf(  mWeekdayItem );
-    if( index >=0 ){
-        mSchedulingGroup->removeChild( index );
-    }
-
-    index = mSchedulingGroup->indexOf(  mTimeItem );
-    if( index >=0 ){
-        mSchedulingGroup->removeChild( index );
-    }
-
-    if( isWeekdayExist ) {
-            mSchedulingGroup->appendChild( mWeekdayItem );
-        }
-
-    if( isTimeExist ){
-            mSchedulingGroup->appendChild( mTimeItem );
-        }
 
     mDataForm->setModel( mModel );
 
@@ -329,11 +341,13 @@ void FmBackupWidget::ChangeTargetDrive()
     QStringList driveStringList;
 
     QStringList driveList;
-    FmUtils::getDriveList( driveList, true );
+    //FmUtils::getDriveList( driveList, true );
+    FmViewManager::viewManager()->operationService()->backupRestoreHandler()->getBackupDriveList( driveList );
     QString targetDrive =  mBackupSettings->targetDrive();
     int selectIndex = -1;
 
     int currentIndex = 0;
+    QString associatedDrives;
     for( QStringList::const_iterator it = driveList.begin(); it != driveList.end(); ++it )
     {
         QString drive = (*it);
@@ -342,7 +356,7 @@ void FmBackupWidget::ChangeTargetDrive()
 
         driveStringList.push_back( drive );
         queryStringList.push_back( driveWithVolume );
-
+        associatedDrives += FmUtils::getDriveLetterFromPath(drive);
 
         if( drive == targetDrive )
         {
@@ -352,7 +366,7 @@ void FmBackupWidget::ChangeTargetDrive()
         ++currentIndex;
     }
     
-    if( FmDlgUtils::showSingleSettingQuery( title, queryStringList, selectIndex ) )
+    if( FmDlgUtils::showSingleSettingQuery( title, queryStringList, selectIndex, associatedDrives ) )
     {
         mBackupSettings->setTargetDrive( driveStringList.at( selectIndex ) );
         emit doModelRefresh();

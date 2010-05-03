@@ -55,18 +55,18 @@ void FmBackupView::initMenu()
 #ifdef FM_CHANGE_ORIENT_ENABLE
 	action = new HbAction( this );
     action->setObjectName( "rotateAction" );
-    action->setText( tr( "Change orientation" ) );
+    action->setText( hbTrId( "Change orientation" ) );
     menu()->addAction( action );
 #endif
 
 	action = new HbAction( this );
     action->setObjectName( "backupAction" );
-    action->setText( tr( "Start backup" ) );
+    action->setText( hbTrId( "Start backup" ) );
     menu()->addAction( action );
 
 	action = new HbAction( this );
     action->setObjectName( "deleteBackupAction" );
-    action->setText( tr( "Delete backup" ) );
+    action->setText( hbTrId( "Delete backup" ) );
     menu()->addAction( action );
 
 }
@@ -96,13 +96,19 @@ void FmBackupView::on_leftAction_triggered()
     case FmErrNone:
         break;
     case FmErrWrongParam:
-        HbMessageBox::information( QString( tr("Operation canceled with wrong param!") ) );
+        HbMessageBox::information( QString( hbTrId("Operation canceled with wrong param!") ) );
         break;
     case FmErrAlreadyStarted:
-        HbMessageBox::information( QString( tr("Operation canceled because already started!") ) );
+        HbMessageBox::information( QString( hbTrId("Operation canceled because already started!") ) );
+        break;
+    case FmErrPathNotFound:
+        HbMessageBox::information( QString( hbTrId("Operation canceled because can not find target drive!") ) );
+        break;
+    case FmErrAlreadyExists:
+        HbMessageBox::information( QString( hbTrId("backup canceled") ) );
         break;
     default:
-        HbMessageBox::information( QString( tr("Operation canceled with error!") ) );
+        HbMessageBox::information( QString( hbTrId("backup failed") ) );
         break;
     }
 }
@@ -120,21 +126,7 @@ void FmBackupView::on_rotateAction_triggered()
 
 void FmBackupView::on_backupAction_triggered()
 {
-    int ret = mOperationService->asyncBackup();
-    switch( ret )
-    {
-    case FmErrNone:
-        break;
-    case FmErrWrongParam:
-        HbMessageBox::information( QString( tr("Operation canceled with wrong param!") ) );
-        break;
-    case FmErrAlreadyStarted:
-        HbMessageBox::information( QString( tr("Operation canceled because already started!") ) );
-        break;
-    default:
-        HbMessageBox::information( QString( tr("Operation canceled with error!") ) );
-        break;
-    }
+    on_leftAction_triggered();
 }
 
 void FmBackupView::on_deleteBackupAction_triggered()

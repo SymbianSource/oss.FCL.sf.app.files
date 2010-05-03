@@ -35,6 +35,14 @@ QString FmUtils::getDriveNameFromPath( const QString &path )
     return path.left( 3 );
 }
 
+QString FmUtils::getDriveLetterFromPath( const QString &path )
+{
+	if( path.length() <3 ) {
+        return QString();
+    }
+    return path.left( 1 );
+}
+
 FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
 {
     quint64 size = 0;
@@ -60,7 +68,12 @@ FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
                           0,
                           0 );
 
-    return FmDriverInfo( size, freeSize, driverName, QString::fromWCharArray( &volumeName[0] ) );
+    quint32 state( 0 );
+    quint32 drvStatus = GetDriveType( (LPCWSTR)driver.constData() );
+    if ( drvStatus == DRIVE_REMOVABLE  ) {
+        state |= FmDriverInfo::EDriveRemovable;
+    }
+    return FmDriverInfo( size, freeSize, driverName, QString::fromWCharArray( &volumeName[0] ), state );
 }
 
 QString FmUtils::formatStorageSize( quint64 size )
@@ -75,7 +88,7 @@ QString FmUtils::formatStorageSize( quint64 size )
 	    return QString::number( size / ( 1024.0 * 1024.0 * 1024.0 ), 'f', 1 ) + " GB";	    
 	}
 }
-
+/*
 quint32 FmUtils::getDriverState( const QString &driverName )
 {
     quint32 state( 0 );
@@ -96,7 +109,7 @@ quint32 FmUtils::getDriverState( const QString &driverName )
     return state;
 
 }
-
+*/
 int FmUtils::removeDrivePwd( const QString &driverName,  const QString &Pwd )
 {
     Q_UNUSED( driverName );
@@ -108,6 +121,13 @@ int FmUtils::unlockDrive( const QString &driverName,  const QString &Pwd )
 {
     Q_UNUSED( driverName );
     Q_UNUSED( Pwd );
+    return 0;
+}
+
+int FmUtils::checkDrivePwd( const QString &driverName, const QString &pwd)
+{
+    Q_UNUSED( driverName );
+    Q_UNUSED( pwd );
     return 0;
 }
 
@@ -127,19 +147,20 @@ void FmUtils::emptyPwd( QString &pwd )
 int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeName)
 {
     Q_UNUSED( driverName );
-    Q_UNUSED( newVolumeName );
+    foreach( QChar ch, newVolumeName )
+    {
+        // If not alphadigit or space, return error
+        if( !ch.isLetterOrNumber() && !ch.isSpace() )
+        {
+            return FmErrBadName;
+        }   
+    }
     return 0;
 }
 
-int FmUtils::ejectDrive( const QString &driverName )
+void FmUtils::ejectDrive( const QString &driverName )
 {
     Q_UNUSED( driverName );
-    return 0;
-}
-int FmUtils::formatDrive( const QString &driverName )
-{
-    Q_UNUSED( driverName );
-    return 0;
 }
 
 QString FmUtils::getFileType( const QString &filePath  )
@@ -159,6 +180,16 @@ bool FmUtils::isDriveC( const QString &driverName )
 {
     Q_UNUSED( driverName );
     return false;
+}
+
+bool FmUtils::isDrive( const QString &path )
+{
+   bool ret( false );
+   if( path.length() <= 3 && path.length() >=2 ) {
+       ret = true;
+   }
+   
+   return ret;   
 }
 
 void FmUtils::createDefaultFolders( const QString &driverName )
@@ -304,7 +335,7 @@ QString FmUtils::fillDriveVolume( QString driveName, bool isFillWithDefaultVolum
     QString volumeName = driverInfo.volumeName();
 
     if( volumeName.isEmpty() && isFillWithDefaultVolume ){
-        quint32 driveState = FmUtils::getDriverState( tempDriveName );
+        FmDriverInfo::DriveState driveState = FmUtils::queryDriverInfo( tempDriveName ).FmDriverInfo::driveState();
         if( !( driveState & FmDriverInfo::EDriveNotPresent ) ){
             if( driveState & FmDriverInfo::EDriveRemovable ) {
                 if( driveState & FmDriverInfo::EDriveMassStorage ) {
@@ -333,9 +364,9 @@ int FmUtils::launchFile( const QString &filePath )
     }
 }
 
-void FmUtils::sendFiles( QList<QVariant> filePathList )
+void FmUtils::sendFiles( QStringList &filePathList )
 {
-    Q_UNUSED( filePathList );
+
 }
 
 QString FmUtils::getBurConfigPath( QString appPath )
@@ -346,4 +377,26 @@ QString FmUtils::getBurConfigPath( QString appPath )
     path = path + QString( "src/filemanager/" );
     path = path + QString( BURCONFIGFILE );
     return path;
+}
+
+bool FmUtils::isPathEqual( const QString &pathFst, const QString &pathLast )
+{
+    QString fst( fillPathWithSplash( pathFst ) );
+    QString last( fillPathWithSplash( pathLast ) );
+    if( fst.compare( last, Qt::CaseInsensitive ) == 0 ) {
+        return true;
+    }
+    return false;
+}
+
+bool FmUtils::isDefaultFolder( const QString &folderPath  )
+{
+    Q_UNUSED( folderPath );
+    return false;
+}
+
+QString FmUtils::formatPath( const QString &path  )
+{
+    Q_UNUSED( path );
+    return false;
 }

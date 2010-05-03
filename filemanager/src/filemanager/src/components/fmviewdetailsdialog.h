@@ -73,11 +73,12 @@ public:
     virtual ~FmViewDetailsDialog();
     
     static void showDriveViewDetailsDialog( const QString &driverName, 
-                                            QList<FmDriveDetailsSize*> detailsSizeList );
+                                            QList<FmDriveDetailsSize*> detailsSizeList,
+											const QString& associatedDrives = QString() );
     static void showFolderViewDetailsDialog( const QString &folderPath,
                                              int numofSubFolders, int numofFiles, 
-                                             quint64 sizeofFolder);
-    static void showFileViewDetailsDialog( const QString &filePath );
+                                             quint64 sizeofFolder, const QString& associatedDrives = QString() );
+    static void showFileViewDetailsDialog( const QString &filePath, const QString& associatedDrives = QString() );
     
 private:
     FmViewDetailsDialog( QGraphicsItem *parent = 0 );
@@ -89,6 +90,7 @@ private:
     void setNumofSubfolders( int numofSubFolders, int numofFiles, quint64 sizeofFolder );
     void setSizeofContent( QList<FmDriveDetailsSize*> detailsSizeList );
     
+	static HbAction *executeDialog( HbDialog *dialog, const QString &associatedDrives );
 private:
     HbListView *mListView;
     HbLabel *mHeaderLabel;  

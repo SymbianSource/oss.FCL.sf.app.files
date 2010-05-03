@@ -30,6 +30,7 @@
 #include <f32file.h>
 #include <apgcli.h>
 #include <pathinfo.h>
+#include <CDirectoryLocalizer.h>
 #include <XQConversions>
 #include <QStringList>
 #include <QFileInfoList>
@@ -51,19 +52,95 @@ QString FmUtils::getDriveNameFromPath( const QString &path )
     return path.left( 3 );
 }
 
+QString FmUtils::getDriveLetterFromPath( const QString &path )
+{
+	if( path.length() <2 ) {
+        return QString();
+    }
+    return path.left( 1 );
+}
+
 FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
 {
-	CCoeEnv *env = CCoeEnv::Static();
-	RFs& fs = env->FsSession();
+    CCoeEnv *env = CCoeEnv::Static();
+    RFs& fs = env->FsSession();
 
-	TVolumeInfo volumeInfo;
-	TInt drive = 0;
-	drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
+    TVolumeInfo volumeInfo;
+    TInt drive = 0;
+    drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
 
-	fs.Volume( volumeInfo, drive );
+    quint32 state( 0 );
+    int err = fs.Volume( volumeInfo, drive );
     QString volumeName( (QChar*)( volumeInfo.iName.Des().Ptr() ), volumeInfo.iName.Length() );
-	
-	return FmDriverInfo( volumeInfo.iSize, volumeInfo.iFree, driverName, volumeName );
+
+    if( err == KErrNone ) {
+        TDriveInfo driveInfo = volumeInfo.iDrive;
+    
+        quint32 drvStatus( 0 );
+        err = DriveInfo::GetDriveStatus( fs, drive, drvStatus );
+        if( err == KErrNone ) {
+            QString logString = driverName +':'+ QString::number( drvStatus);
+            FmLogger::log(logString);
+            
+            if ( ( drvStatus & DriveInfo::EDriveInternal ) &&
+                 ( drvStatus & DriveInfo::EDriveExternallyMountable ) ){
+                // Handle mass storage bits here
+        
+                state |= FmDriverInfo::EDriveMassStorage | FmDriverInfo::EDriveRemovable;
+            }
+        
+            
+            if ( drvStatus & DriveInfo::EDriveRom ){
+                state |= FmDriverInfo::EDriveRom;  
+            }
+            
+            if ( drvStatus & DriveInfo::EDriveRam ){
+                state |= FmDriverInfo::EDriveRam;  
+            }
+        
+            if ( driveInfo.iMediaAtt & KMediaAttFormattable ){
+                state |= FmDriverInfo::EDriveFormattable;
+            }
+            if ( driveInfo.iMediaAtt & KMediaAttWriteProtected ){
+                state |= FmDriverInfo::EDriveWriteProtected;
+            }
+            if ( driveInfo.iMediaAtt & KMediaAttHasPassword ){
+                state |= FmDriverInfo::EDrivePasswordProtected;
+            }    
+            if ( driveInfo.iMediaAtt & KMediaAttLocked ){
+                state |= FmDriverInfo::EDriveLocked;
+            }
+        
+            if ( driveInfo.iDriveAtt & KDriveAttRemovable ){
+                state |= FmDriverInfo::EDriveRemovable;
+        
+                if ( drvStatus & DriveInfo::EDriveSwEjectable ){
+                    state |= FmDriverInfo::EDriveEjectable;
+                }
+            }
+            
+            if( driveInfo.iType == EMediaNotPresent ){
+                state |= FmDriverInfo::EDriveNotPresent;    
+            }
+        }
+    }
+    //handle error code
+    switch( err )
+    {
+    case KErrNone:
+        state |= FmDriverInfo::EDriveAvailable;
+        break;
+    case KErrLocked:
+        state |= FmDriverInfo::EDriveLocked;
+        break;
+    case KErrCorrupt:
+        state |= FmDriverInfo::EDriveCorrupted;
+        break;
+    default: // other errors
+        state |= FmDriverInfo::EDriveNotPresent;
+        break;
+    }
+    return FmDriverInfo( volumeInfo.iSize, volumeInfo.iFree, driverName, volumeName, state );
 }
 
 QString FmUtils::formatStorageSize( quint64 size )
@@ -78,19 +155,21 @@ QString FmUtils::formatStorageSize( quint64 size )
 	    return QString::number( size / ( 1024.0 * 1024.0 * 1024.0 ), 'f', 1 ) + " GB";	    
 	}
 }
+/*
 quint32 FmUtils::getDriverState( const QString &driverName )
 {    
-    quint32 state( 0 );
     CCoeEnv *env = CCoeEnv::Static();
-	RFs& fs = env->FsSession();
+    RFs& fs = env->FsSession();
 
-	TVolumeInfo volumeInfo;
-	TInt drive = 0;
-	drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
+    TVolumeInfo volumeInfo;
+    TInt drive = 0;
+    drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
 
-	int err = fs.Volume( volumeInfo, drive );
+    quint32 state( 0 );
+    int err = fs.Volume( volumeInfo, drive );
+    QString volumeName( (QChar*)( volumeInfo.iName.Des().Ptr() ), volumeInfo.iName.Length() );
 
-	//handle error code
+    //handle error code
 	if( err != KErrNone ) {
             state |= FmDriverInfo::EDriveNotPresent;
 	}
@@ -150,6 +229,7 @@ quint32 FmUtils::getDriverState( const QString &driverName )
     return state;
 
 }
+*/
 
 int FmUtils::removeDrivePwd( const QString &driverName,  const QString &Pwd )
 {
@@ -178,7 +258,15 @@ int FmUtils::removeDrivePwd( const QString &driverName,  const QString &Pwd )
     logString = "Clear password error:" + QString::number( err );
     FmLogger::log( logString );
 
-    return err;
+    if( err == KErrNone ){
+        return FmErrNone;   
+    }
+    else if( err == KErrAccessDenied ){
+        return FmErrAccessDenied;
+    }
+    else{
+        return FmErrUnKnown;
+    }
 }
 
 int FmUtils::unlockDrive( const QString &driverName,  const QString &Pwd )
@@ -206,16 +294,37 @@ int FmUtils::unlockDrive( const QString &driverName,  const QString &Pwd )
     logString = "Unlock drive error:" + QString::number( err );
     FmLogger::log( logString );
 
-    return err;
+    if( err == KErrNone ){
+        return FmErrNone;   
+    }
+    else if( err == KErrAccessDenied ){
+        return FmErrAccessDenied;
+    }
+    else if( err == KErrAlreadyExists ){
+        return FmErrAlreadyExists;
+    }
+    else if( err == KErrNotSupported ){
+        return FmErrNotSupported;
+    }
+    else{
+        return FmErrUnKnown;
+    }
+}
+
+int FmUtils::checkDrivePwd( const QString &driverName, const QString &pwd )
+{
+    QString logString = "checkDrivePwd Drive name:" + driverName;
+    logString += " password:" + pwd;
+    FmLogger::log( logString );
+
+    return setDrivePwd( driverName, pwd, pwd );
 }
 
 int FmUtils::setDrivePwd( const QString &driverName, const QString &oldPwd, const QString &newPwd)
 {
-    QString logString = "Drive name:" + driverName;
-    FmLogger::log( logString );
-    logString = "Old password:" + oldPwd;
-    FmLogger::log( logString );
-    logString = "New password:" + newPwd;
+    QString logString = "setDrivePwd Drive name:" + driverName ;
+    logString += " Old password:" + oldPwd;
+    logString += " New password:" + newPwd;
     FmLogger::log( logString );
 
     CCoeEnv *env = CCoeEnv::Static();
@@ -236,10 +345,6 @@ int FmUtils::setDrivePwd( const QString &driverName, const QString &oldPwd, cons
     FmS60Utils::ConvertCharsToPwd( ptrNewPassword16, newPassword );
     FmS60Utils::ConvertCharsToPwd( ptrOldPassword16, oldPassword );
 
-    //oldPassword.FillZ(oldPassword.MaxLength());
-    //oldPassword.Zero();
-    //newPassword.Copy(_L8("A"));
-
     int err( fs.LockDrive( drive, oldPassword, newPassword, ETrue ) );
 
     logString = "Drive:" + QString::number( drive );
@@ -247,7 +352,15 @@ int FmUtils::setDrivePwd( const QString &driverName, const QString &oldPwd, cons
     logString = "Password set error:" + QString::number( err );
     FmLogger::log( logString );
 
-    return err;
+    if( err == KErrNone ){
+        return FmErrNone;   
+    }
+    else if( err == KErrNotSupported ){
+        return FmErrNotSupported;
+    }
+    else{
+        return FmErrUnKnown;
+    }
 }
 
 void FmUtils::emptyPwd( QString &pwd )
@@ -260,6 +373,17 @@ void FmUtils::emptyPwd( QString &pwd )
 
 int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeName)
 {
+    foreach( QChar ch, newVolumeName )
+    {
+        bool a = ch.isSpace();
+        bool b = ch.isLetterOrNumber();
+        // If not alphadigit or space, return error
+        if( !ch.isLetterOrNumber() && !ch.isSpace() )
+        {
+            return FmErrBadName;
+        }   
+    }
+        
     CCoeEnv *env = CCoeEnv::Static();
 	RFs& fs = env->FsSession();
 
@@ -273,154 +397,33 @@ int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeNam
     QString logString = "Rename error:" + QString::number( err );
     FmLogger::log( logString );
 
-    return err;
+    if( err == KErrNone ){
+        return FmErrNone;   
+    }
+    else if( err == KErrNotReady ){
+        return FmErrNotReady;
+    }
+    else{
+        return FmErrUnKnown;
+    }
 }
 
-int FmUtils::ejectDrive( const QString &driverName )
+void FmUtils::ejectDrive( const QString &driverName )
 {
-    CCoeEnv *env = CCoeEnv::Static();
-    RFs& fs = env->FsSession();
+    QString logString = "FmUtils::ejectDrive start";
+    FmLogger::log( logString );
 
     TInt drive = 0;
 	drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
 
     const int KDriveShift = 16;
-    
-    TFileName fileSystemName;
-    TInt err = fs.FileSystemName( fileSystemName, drive );
 
+    // Let SysAp handle eject
     RProperty::Set(
         KPSUidCoreApplicationUIs,
         KCoreAppUIsMmcRemovedWithoutEject,
         ECoreAppUIsEjectCommandUsedToDrive | ( drive << KDriveShift )
         );
-    
-    err = fs.DismountFileSystem( fileSystemName, drive );
-    
-    if (err == KErrNone){
-        // remount the file system
-        err = fs.MountFileSystem( fileSystemName, drive );
-        
-        if (err == KErrInUse){
-            // try to remount after a while if locked
-            User::After(1000000);
-            err = fs.MountFileSystem( fileSystemName, drive );
-        }                
-    }
-    
-    return err;
-}
-
-int FmUtils::formatDrive( const QString &driverName )
-{
-    RFormat format;
-
-//    CCoeEnv *env = CCoeEnv::Static();
-//	RFs& fs = env->FsSession();
-    
-    RFs fs;
-    int err = fs.Connect();
-    
-    if( err != KErrNone ){
-        return FmErrTypeFormatFailed;
-    }
-
-    TInt drive = 0;
-	drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
-
-    TDriveName formatDriveName( TDriveUnit( drive ).Name() );
-
-    int finalValue = 0;
-    
-    format.Close();
-
-    err = format.Open(
-        fs, formatDriveName, EFullFormat | ESpecialFormat, finalValue );
-    
-    QString logString = "Format open error:" + QString::number( err );
-    FmLogger::log( logString );
-    
-    if( err == KErrLocked ){
-        err = fs.ErasePassword( drive );
-        
-        logString = "ErasePassword error:" + QString::number( err );
-        FmLogger::log( logString );
-        
-        if( err == KErrNone ){
-            err = format.Open(
-               fs, formatDriveName, EFullFormat, finalValue ); 
-            
-            logString = "Second format open error:" + QString::number( err );
-            FmLogger::log( logString );
-        }
-    }
-    
-    if (err == KErrInUse){
-        TBool reallyFormat = ETrue;
-        if (reallyFormat)
-            {
-            err = format.Open(
-                    fs, formatDriveName, EFullFormat | EForceFormat, finalValue );
-            
-            logString = "Reallyformat open error:" + QString::number( err );
-            FmLogger::log( logString );
-            }
-    }
-    
-    TFullName fsName;
-    if ( err == KErrNone )
-        {
-        err = fs.FileSystemName( fsName, drive  );
-        
-        logString = "FileSystemName error:" + QString::number( err );
-        FmLogger::log( logString );
-
-        if ( err == KErrNone && fsName.Length() > 0 )
-            {
-            // Prevent SysAp shutting down applications
-            RProperty::Set(
-                    KPSUidCoreApplicationUIs,
-                    KCoreAppUIsMmcRemovedWithoutEject,
-                    ECoreAppUIsEjectCommandUsed );
-            
-            logString = "Prevent SysAp shutting down applications" ;
-            FmLogger::log( logString );
-            }
-        else
-            {
-            // Don't continue with format if there is no file system name
-            // or file system name could not be obtained.
-            err = KErrCancel;
-            
-            logString = "Format cancel:" + QString::number( err );
-            FmLogger::log( logString );
-            }
-        }
-    
-    if( err == KErrNone &&  finalValue ){
-    
-        while ( finalValue ){        
-            logString = "Format tracks:" + QString::number( finalValue );
-            FmLogger::log( logString );
-            
-            err = format.Next( finalValue );
-            
-            if( err != KErrNone ){ 
-                logString = "Format error:" + QString::number( err );
-                FmLogger::log( logString );
-                break; 
-            }
-        }
-    }
-    
-    if( !finalValue || err != KErrNone ){
-        format.Close();        
-        fs.Close();
-        
-        createDefaultFolders( driverName );
-    }
-
-    return FmErrNone;
 }
 
 QString FmUtils::getFileType( const QString &filePath  )
@@ -449,20 +452,11 @@ QString FmUtils::getFileType( const QString &filePath  )
 quint64 FmUtils::getDriveDetailsResult( const QString &folderPath, const QString &extension )
 {
     int err;
-//    CCoeEnv *env = CCoeEnv::Static();
-//    RFs& fs = env->FsSession();
     
     RFs fs;
     err = fs.Connect();
     
-    QString string( folderPath );
-    
-    QRegExp regExp( "/" );
-    string.replace( regExp, "\\" );
-    
-    if( string.right( 1 )!= "\\"){
-        string.append( "\\" );
-    }
+    QString string( formatPath( folderPath ) );
 
     TPtrC desFolderPath( XQConversions::qStringToS60Desc( string )->Des() );
     TPtrC ptrExtension( XQConversions::qStringToS60Desc( extension )->Des() );
@@ -521,6 +515,16 @@ bool FmUtils::isDriveC( const QString &driverName )
         return false;
     }
    
+}
+
+bool FmUtils::isDrive( const QString &path )
+{
+   bool ret( false );
+   if( path.length() <= 3 && path.length() >=2 ) {
+       ret = true;
+   }
+   
+   return ret;   
 }
 
 void FmUtils::createDefaultFolders( const QString &driverName )
@@ -613,6 +617,7 @@ QString FmUtils::removePathSplash( const QString &filePath )
     return newFilePath;
 }
 
+// used to filter drive which need be hide.
 bool FmUtils::checkDriveFilter( const QString &driveName )
 {
     if( driveName.contains( "D:" ) || driveName.contains( "Z:" ) ) {
@@ -623,11 +628,12 @@ bool FmUtils::checkDriveFilter( const QString &driveName )
 
 QString FmUtils::checkDriveToFolderFilter( const QString &path )
 {
+    /*
     QFileInfo fileInfo( path );
     if( !fileInfo.exists() ) {
             return QString();
         }
-
+    */
     QString checkedPath = fillPathWithSplash( path );
     if( checkedPath.compare( QString( "C:/"), Qt::CaseInsensitive ) == 0 ) {
         checkedPath += QString( "data/" );
@@ -657,34 +663,53 @@ QString FmUtils::checkFolderToDriveFilter( const QString &path )
 
 bool FmUtils::isPathAccessabel( const QString &path )
 {
+    FmLogger::log( QString( "isPathAccessabel:" ) + path );
+    if( path.length() <= 3 && !isDriveAvailable( path ) ) { //used to filter locked drive
+        FmLogger::log( QString( "isPathAccessabel false: path is drive and not available" ) );
+        return false;
+    }
     QFileInfo fileInfo( path );
     if( fileInfo.absoluteFilePath().contains( QString( Drive_C ), Qt::CaseInsensitive ) &&
         !fileInfo.absoluteFilePath().contains( QString( Folder_C_Data ), Qt::CaseInsensitive ) ) {
+        FmLogger::log( QString( "isPathAccessabel false: path contain C and not in data folder" ) );
         return false;
     }
     if( fileInfo.absoluteFilePath().contains( QString( Drive_D ), Qt::CaseInsensitive ) ) {
+        FmLogger::log( QString( "isPathAccessabel false: path contain D" ) );
         return false;
     }
     if( fileInfo.absoluteFilePath().contains( QString( Drive_Z ), Qt::CaseInsensitive ) ) {
+        FmLogger::log( QString( "isPathAccessabel false: path contain Z" ) );
         return false;
     }
     if( !fileInfo.exists() ) {
+        FmLogger::log( QString( "isPathAccessabel false: path not exist" ) );
         return false;
     }
+    FmLogger::log( QString( "isPathAccessabel true" ) );
     return true;
 }
 
+// only used to check drive, when MMC is not inserted, also return false
 bool FmUtils::isDriveAvailable( const QString &path )
 {
-    QFileInfo fileInfo( path );
-    if( !fileInfo.exists() ) {
-        return false;
+    FmLogger::log( QString( "isDriveAvailable:" ) + path );
+    FmDriverInfo::DriveState driveState = queryDriverInfo( path ).driveState();
+    if( ( driveState & FmDriverInfo::EDriveAvailable ) ) {
+        FmLogger::log( QString( "isDriveAvailable true" ) );
+        return true;
     }
-    return true;
+    FmLogger::log( QString( "isDriveAvailable false" ) );
+    return false;
 }
 
 void FmUtils::getDriveList( QStringList &driveList, bool isHideUnAvailableDrive )
 {
+    if( isHideUnAvailableDrive ) {
+        FmLogger::log( QString( "getDriveList HideUnAvailableDrive_true" ) );
+    } else {
+        FmLogger::log( QString( "getDriveList HideUnAvailableDrive_false" ) );
+    }
     QFileInfoList infoList = QDir::drives();
 
     foreach( QFileInfo fileInfo, infoList ) {
@@ -712,8 +737,8 @@ QString FmUtils::fillDriveVolume( QString driveName, bool isFillWithDefaultVolum
     QString volumeName = driverInfo.volumeName();
 
     if( volumeName.isEmpty() && isFillWithDefaultVolume ){
-        quint32 driveState = FmUtils::getDriverState( tempDriveName );
-        if( !( driveState & FmDriverInfo::EDriveNotPresent ) ){
+    FmDriverInfo::DriveState driveState = queryDriverInfo( tempDriveName ).driveState();
+        if( driveState & FmDriverInfo::EDriveAvailable ){
             if( driveState & FmDriverInfo::EDriveRemovable ) {
                 if( driveState & FmDriverInfo::EDriveMassStorage ) {
                     volumeName.append( QObject::tr( "Mass Storage" ) );  
@@ -762,10 +787,10 @@ int FmUtils::launchFile( const QString &filePath )
     return FmErrNone;
 }
 
-void FmUtils::sendFiles( QList<QVariant> filePathList )
+void FmUtils::sendFiles( QStringList &filePathList )
 {
     ShareUi shareui;
-    shareui.init( filePathList, false );
+    shareui.send( filePathList, false );
 }
 
 QString FmUtils::getBurConfigPath( QString appPath )
@@ -773,4 +798,66 @@ QString FmUtils::getBurConfigPath( QString appPath )
     Q_UNUSED( appPath );
     QString path( BURCONFIGFILE );
     return path;
+}
+
+bool FmUtils::isPathEqual( const QString &pathFst, const QString &pathLast )
+{
+    QString fst( fillPathWithSplash( pathFst ) );
+    QString last( fillPathWithSplash( pathLast ) );
+    if( fst.compare( last, Qt::CaseInsensitive ) == 0 ) {
+        return true;
+    }
+    return false;
+}
+
+bool FmUtils::isDefaultFolder( const QString &folderPath  )
+{
+    TPtrC desFolderPath( XQConversions::qStringToS60Desc( folderPath )->Des() );
+    
+    TInt pathType( PathInfo::PathType( desFolderPath ) );
+    switch( pathType ){
+       case PathInfo::ENotSystemPath:{
+           QString locString( Localize( folderPath ) );
+            if ( locString.isEmpty() ){
+                return false;
+            }
+            return true;
+            }
+        case PathInfo::EPhoneMemoryRootPath: // FALL THROUGH
+        case PathInfo::EMemoryCardRootPath: // FALL THROUGH
+        case PathInfo::ERomRootPath:{
+            return false;
+        }
+        // Accept other folders
+        default:{
+            return true;
+        }
+    }
+}
+
+QString FmUtils::Localize( const QString &path )
+{
+    QString locPath = formatPath( path );
+
+    TPtrC desPath( XQConversions::qStringToS60Desc( locPath )->Des() );
+    CDirectoryLocalizer *localizer = CDirectoryLocalizer::NewL();
+
+    localizer->SetFullPath( desPath );
+    if( localizer->IsLocalized() ){   
+        return XQConversions::s60DescToQString( localizer->LocalizedName() );
+    }
+    
+    return QString();
+}
+
+QString FmUtils::formatPath( const QString &path  )
+{
+    QString formatPath = path;
+    QRegExp regExp( "/" );
+    formatPath.replace( regExp, "\\" );
+    
+    if( path.right( 1 )!= "\\"){
+        formatPath.append( "\\" );
+    }
+    return formatPath;
 }

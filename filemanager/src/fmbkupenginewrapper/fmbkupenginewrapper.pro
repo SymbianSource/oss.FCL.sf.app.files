@@ -35,5 +35,6 @@ symbian {
     LIBS += -leikcore
     LIBS += -lcone
     LIBS += -lsysutil
+    LIBS +=	-lplatformenv
 }
 

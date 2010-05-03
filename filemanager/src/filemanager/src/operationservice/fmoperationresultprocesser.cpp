@@ -17,10 +17,12 @@
 #include "fmoperationresultprocesser.h"
 #include "fmoperationbase.h"
 #include "fmoperationservice.h"
+#include "fmoperationformat.h"
 #include "fmviewdetailsdialog.h"
 #include "fmdlgutils.h"
+#include "fmutils.h"
 
-#include <hbprogressnote.h>
+#include <hbprogressdialog.h>
 #include <hbaction.h>
 #include <hbmessagebox.h>
 
@@ -41,8 +43,23 @@ void FmOperationResultProcesser::onAskForRename(
     QString questionText = QString( "file " ) +
         srcFile + QString( " already exist, please rename:" );
     QString value;
-    FmDlgUtils::showTextQuery( questionText, value );
+    FmDlgUtils::showTextQuery( questionText, value, true );
     *destFile = value;
+}
+
+void FmOperationResultProcesser::onAskForReplace(
+    FmOperationBase* operationBase, const QString &srcFile, const QString &destFile, bool *isAccepted )
+{
+    Q_UNUSED( operationBase );
+    Q_UNUSED( destFile );
+    
+    QString questionText = QString( "file " ) +
+        srcFile + QString( " already exist, replace it?" );
+    if( HbMessageBox::question( questionText ) ) {
+        *isAccepted = true;
+    } else {
+        *isAccepted = false;
+    }
 }
 
 void FmOperationResultProcesser::onNotifyWaiting( FmOperationBase* operationBase, bool cancelable )
@@ -51,17 +68,17 @@ void FmOperationResultProcesser::onNotifyWaiting( FmOperationBase* operationBase
     switch( operationBase->operationType() )
     {
     case FmOperationService::EOperationTypeBackup:
-        title = tr("backuping");
+        title = hbTrId("backuping");
         break;
     case FmOperationService::EOperationTypeRestore:
-        title = tr("restoring");
+        title = hbTrId("restoring");
         break;
       case FmOperationService::EOperationTypeDriveDetails:
-          title = tr( "Scaning memory..." );
+          title = hbTrId( "Scaning memory..." );
         break;
         
     case FmOperationService::EOperationTypeFolderDetails:
-        title = tr( "Scaning folder..." );
+        title = hbTrId( "Scaning folder..." );
         break;
     default:
         break;
@@ -72,23 +89,26 @@ void FmOperationResultProcesser::onNotifyWaiting( FmOperationBase* operationBase
 
 void FmOperationResultProcesser::onNotifyPreparing( FmOperationBase* operationBase, bool cancelable )
 {
-    QString title = tr("Operation");
+    QString title = hbTrId("Operation");
     switch( operationBase->operationType() )
     {
     case FmOperationService::EOperationTypeBackup:
-        title = tr("backup preparing");
+        title = hbTrId("backup preparing");
         break;
     case FmOperationService::EOperationTypeRestore:
-        title = tr("restore preparing");
+        title = hbTrId("restore preparing");
         break;
     case FmOperationService::EOperationTypeCopy:
-        title = tr("copy preparing");
+        title = hbTrId("copy preparing");
         break;
     case FmOperationService::EOperationTypeMove:
-        title = tr("move preparing");
+        title = hbTrId("move preparing");
         break;
     case FmOperationService::EOperationTypeRemove:
-        title = tr("delete preparing");
+        title = hbTrId("delete preparing");
+        break;
+    case FmOperationService::EOperationTypeFormat:
+        title = hbTrId("format preparing");
         break;
     default:
         break;
@@ -103,19 +123,22 @@ void FmOperationResultProcesser::onNotifyStart( FmOperationBase* operationBase, 
     switch( operationBase->operationType() )
     {
     case FmOperationService::EOperationTypeBackup:
-        title = tr("backup...");
+        title = hbTrId("backup...");
         break;
     case FmOperationService::EOperationTypeRestore:
-        title = tr("restore...");
+        title = hbTrId("restore...");
         break;
     case FmOperationService::EOperationTypeCopy:
-        title = tr("copy...");
+        title = hbTrId("copy...");
         break;
     case FmOperationService::EOperationTypeMove:
-        title = tr("move...");
+        title = hbTrId("move...");
         break;
     case FmOperationService::EOperationTypeRemove:
-        title = tr("delete...");
+        title = hbTrId("delete...");
+        break;
+    case FmOperationService::EOperationTypeFormat:
+        title = hbTrId("formating...");
         break;
     default:
         break;
@@ -140,7 +163,8 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
         {
             FmOperationDriveDetails *paramDriveDetails = static_cast<FmOperationDriveDetails*>( operationBase );
             QString diskName = paramDriveDetails->driverName();
-            FmViewDetailsDialog::showDriveViewDetailsDialog( diskName, paramDriveDetails->detailsSizeList() );
+            FmViewDetailsDialog::showDriveViewDetailsDialog( diskName, paramDriveDetails->detailsSizeList(),
+				FmUtils::getDriveLetterFromPath( diskName ) );
             break;
         }
     case FmOperationService::EOperationTypeFolderDetails:
@@ -149,26 +173,44 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
             FmViewDetailsDialog::showFolderViewDetailsDialog( paramFolderDetails->folderPath(),
                 paramFolderDetails->numofSubFolders(),
                 paramFolderDetails->numofFiles(),
-                paramFolderDetails->sizeofFolder() );
+                paramFolderDetails->sizeofFolder(), 
+				FmUtils::getDriveLetterFromPath( paramFolderDetails->folderPath() ) );
             break;
         }
     case FmOperationService::EOperationTypeFormat:
         {
-            HbMessageBox::information( QString( tr("Format succeed!")) );
+            HbMessageBox::information( QString( hbTrId("Format succeed!")) );
+            FmOperationFormat *paramFormat = static_cast<FmOperationFormat*>( operationBase );
+            QString title( tr( "Drive name ") );  
+            QString driveName( paramFormat->driverName() );
+            QString volumeName;
+            while( FmDlgUtils::showTextQuery( title, volumeName, false, FmMaxLengthofDriveName ) ){
+                    int err = FmUtils::renameDrive( driveName, volumeName );
+                    if ( err == FmErrNone ){
+                        HbMessageBox::information( hbTrId( "The name has been changed!" ) );
+                        mOperationService->on_operationThread_refreshModel( driveName );
+                        break;
+                    } else if( err == FmErrBadName ) {
+                        HbMessageBox::information( hbTrId( "Illegal characters! Use only letters and numbers." ) );
+                    } else{
+                        HbMessageBox::information( hbTrId( "Error occurred, operation cancelled!" ) );
+                        break;
+                    }                
+                }
             break;
         }
     case FmOperationService::EOperationTypeBackup:
         {
-            HbMessageBox::information( QString( tr("Backup succeed!")) );
+            HbMessageBox::information( QString( hbTrId("Backup succeed!")) );
             break;
         }
     case FmOperationService::EOperationTypeRestore:
         {
-            HbMessageBox::information( QString( tr("Restore succeed!")) );
+            HbMessageBox::information( QString( hbTrId("Restore succeed!")) );
             break;
         }
     default:
-        HbMessageBox::information( QString( tr("Operation finished")) );
+        HbMessageBox::information( QString( hbTrId("Operation finished")) );
 
     }
 }
@@ -178,28 +220,54 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
     failAndCloseProgress();
     switch( error )
     {
-    case FmErrAlreadyStarted:
-        HbMessageBox::information( QString( tr("Operation already started!")) );
-        return;
-    case FmErrDiskFull:
-        HbMessageBox::information( QString( tr("Not enough space. Operation cancelled.!")) );
-        return;
-    case FmErrCopyDestToSubFolderInSrc:
-        HbMessageBox::information( QString( tr("Can not copy to sub folder!")) );
-        return;
-    case FmErrMoveDestToSubFolderInSrc:
-        HbMessageBox::information( QString( tr("Can not move to sub folder!")) );
-        return;
+        case FmErrAlreadyStarted:
+            HbMessageBox::information( QString( hbTrId("Operation already started!")) );
+            return;
+        case FmErrDiskFull:
+            HbMessageBox::information( QString( hbTrId("Not enough space. Operation cancelled.!")) );
+            return;
+        case FmErrCopyDestToSubFolderInSrc:
+            HbMessageBox::information( QString( hbTrId("Can not copy to sub folder!")) );
+            return;
+        case FmErrMoveDestToSubFolderInSrc:
+            HbMessageBox::information( QString( hbTrId("Can not move to sub folder!")) );
+            return;
+        case FmErrCannotRemove:{
+            if( operationBase->operationType() == FmOperationService::EOperationTypeCopy ) {
+                // when copy a file/dir to same name destination, and delete dest fail, this error will occur
+                HbMessageBox::information( QString( hbTrId( "Can not copy because %1 can not be deleted!" ).arg( errString ) ) );
+                return;
+            }
+            else if( operationBase->operationType() == FmOperationService::EOperationTypeMove ) {
+                // when move a file/dir to same name destination, and delete dest fail, this error will occur
+                HbMessageBox::information( QString( hbTrId( "Can not move because %1 can not be deleted!" ).arg( errString ) ) );
+                return;
+            }
+            // when delete file/dir fail, this error will occur
+            HbMessageBox::information( QString( hbTrId( "Can not delete %1!" ).arg( errString ) ) );
+            return; 
+        }      
+        case FmErrRemoveDefaultFolder:{
+            if( operationBase->operationType() == FmOperationService::EOperationTypeMove ) {
+                // when move a default folder
+                HbMessageBox::information( QString( hbTrId( "Could not move because the default folder %1 can not be deleted!" ).arg( errString ) ) );
+                return;
+            }
+            else {
+               // when delete the default folder
+               HbMessageBox::information( QString( hbTrId( "Could not remove the default folder %1 " ).arg( errString ) ) );
+               return;
+            }
+        }
     }
-
 
     switch( operationBase->operationType() )
     {
     case FmOperationService::EOperationTypeFormat:
-        HbMessageBox::information( QString( tr("Format failed!")) );
+        HbMessageBox::information( QString( hbTrId("Format failed!")) );
         break;
     default:
-        HbMessageBox::information( QString( tr("Operation failed")) );
+        HbMessageBox::information( QString( hbTrId("Operation failed")) );
     }
 
 }
@@ -208,7 +276,7 @@ void FmOperationResultProcesser::onNotifyCanceled( FmOperationBase* operationBas
 {
     Q_UNUSED( operationBase );
     cancelProgress();
-    HbMessageBox::information( QString( tr("Operation Canceled!") ) );
+    HbMessageBox::information( QString( hbTrId("Operation Canceled!") ) );
 }
 
 
@@ -227,13 +295,13 @@ void FmOperationResultProcesser::showWaiting( QString title, bool cancelable )
         delete mNote;        
     }
     
-    mNote = new HbProgressNote( HbProgressNote::WaitNote );
+    mNote = new HbProgressDialog( HbProgressDialog::WaitDialog );
     connect( mNote, SIGNAL( cancelled() ), this, SLOT(onProgressCancelled() ) );
 //    if( !mNote ) {
-//        mNote = new HbProgressNote( HbProgressNote::WaitNote );
+//        mNote = new HbProgressDialog( HbProgressDialog::WaitNote );
 //        connect( mNote, SIGNAL( cancelled() ), this, SLOT(onProgressCancelled() ) );
 //    } else {
-//        mNote->setProgressNoteType( HbProgressNote::WaitNote );
+//        mNote->setProgressDialogType( HbProgressDialog::WaitNote );
 //    }
     mNote->setText( title );
     if( !cancelable )
@@ -253,22 +321,24 @@ void FmOperationResultProcesser::showPreparing( QString title, bool cancelable )
         delete mNote;        
     }
     
-    mNote = new HbProgressNote( HbProgressNote::ProgressNote );
+    mNote = new HbProgressDialog( HbProgressDialog::ProgressDialog );
     connect( mNote, SIGNAL( cancelled() ), this, SLOT(onProgressCancelled() ) );
 //    if( !mNote ) {
-//        mNote = new HbProgressNote( HbProgressNote::ProgressNote );
+//        mNote = new HbProgressDialog( HbProgressDialog::ProgressDialog );
 //        connect( mNote, SIGNAL( cancelled() ), this, SLOT(onProgressCancelled() ) );
 //    } else {
-//        mNote->setProgressNoteType( HbProgressNote::ProgressNote );
+//        mNote->setProgressDialogType( HbProgressDialog::ProgressDialog );
 //    }
     mNote->setMinimum(0);
     mNote->setMaximum( 65535 );
     mNote->setProgressValue( 0 );
     mNote->setText( title );
-    if( !cancelable )
-        mNote->primaryAction()->setDisabled( true );
-    else
-        mNote->primaryAction()->setDisabled( false );
+    if( !cancelable ){
+        mNote->primaryAction()->setDisabled( true );  
+    }
+    else{
+        mNote->primaryAction()->setDisabled( false );       
+    }
     mNote->exec();
 }
 
@@ -281,13 +351,13 @@ void FmOperationResultProcesser::showProgress( QString title, bool cancelable, i
         delete mNote;        
     }
     
-    mNote = new HbProgressNote( HbProgressNote::ProgressNote );
+    mNote = new HbProgressDialog( HbProgressDialog::ProgressDialog );
     connect( mNote, SIGNAL( cancelled() ), this, SLOT(onProgressCancelled() ) );
 //    if( !mNote ) {
-//        mNote = new HbProgressNote( HbProgressNote::ProgressNote );
+//        mNote = new HbProgressDialog( HbProgressDialog::ProgressDialog );
 //        connect( mNote, SIGNAL( cancelled() ), this, SLOT(onProgressCancelled() ) );
 //    } else {
-//        mNote->setProgressNoteType( HbProgressNote::ProgressNote );
+//        mNote->setProgressDialogType( HbProgressDialog::ProgressDialog );
 //    }
     mNote->setText( title );
 
@@ -296,10 +366,12 @@ void FmOperationResultProcesser::showProgress( QString title, bool cancelable, i
 
     mNote->setProgressValue( 0 );
 
-    if( !cancelable )
+    if( !cancelable ){
         mNote->primaryAction()->setDisabled( true );
-    else
+    }
+    else{
         mNote->primaryAction()->setDisabled( false );
+    }
 
     mNote->exec();
 }

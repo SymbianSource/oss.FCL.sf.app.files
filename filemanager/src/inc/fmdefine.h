@@ -1,4 +1,4 @@
-#/*
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -40,7 +40,13 @@
 #define  FmErrDestPathDoNotExist        -19
 #define  FmErrCopyDestToSubFolderInSrc  -20
 #define  FmErrMoveDestToSubFolderInSrc  -21
-
+#define  FmErrNotSupported              -22
+#define  FmErrNotReady                  -23
+#define  FmErrInUse                     -24
+#define  FmErrPermissionDenied          -25
+#define  FmErrBadName                   -26
+#define  FmErrPathNotFound              -27
+#define  FmErrRemoveDefaultFolder       -28
 
 #define FmEstimateUpperLimit 90 // available mem/backup size*100%=90%, User selectable continuation
 #define FmEstimateLowerLimit 10 // available mem/backup size*100%=10%, Backup will be interrupted
@@ -52,4 +58,6 @@
 #define Drive_Z "Z:/"
 #define Folder_C_Data "C:/Data"
 
-#endif
+#define FmMaxLengthofDriveName           11
+
+#endif 

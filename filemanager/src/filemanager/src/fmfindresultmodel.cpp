@@ -26,7 +26,8 @@ FmFindResultModel::FmFindResultModel( QObject *parent )
     : QAbstractListModel( parent )
 {
     init();
-	QMetaObject::connectSlotsByName( this );
+    connect( mFindThread, SIGNAL(finished()), this, SIGNAL(finished()) );
+	connect( mFindThread, SIGNAL(found(int)), this, SLOT(on_findThread_found( int) ), Qt::BlockingQueuedConnection ); 
 }
 
 FmFindResultModel::~FmFindResultModel()
@@ -187,6 +188,7 @@ bool FmFindResultModel::isFinding() const
 
 void FmFindResultModel::on_findThread_found( int count )
 {
+    int size = mFindResult.size();
     insertRows( mFindResult.size() - count, count );
     emit modelCountChanged( mFindResult.size() );
 }
@@ -201,9 +203,6 @@ void FmFindResultModel::init()
 {
     mFindThread = new FmFindThread( &mFindResult, this );
     mFindThread->setObjectName( "findThread" );
-
-    connect( mFindThread, SIGNAL(finished()), this, SIGNAL(finished()) );
-
     mIconProvider = new QFileIconProvider();
 }
 
@@ -235,29 +234,37 @@ bool FmFindResultModel::caseTypeLessThan(const QString &s1, const QString &s2)
 {
     QFileInfo info1( s1 );
     QFileInfo info2( s2 );
-
-    return info1.suffix().toLower() < info2.suffix().toLower();
+    
+    if( info1.isDir() != info2.isDir() ){
+        return info1.isDir();
+    }
+    else{
+        return info1.suffix().toLower() < info2.suffix().toLower();   
+    }
 }
 
 
 void FmFindResultModel::sort ( int column, Qt::SortOrder order )
 {  
     Q_UNUSED( order );
+           
+//    emit  layoutAboutToBeChanged();
     
     switch( ( SortFlag )column )
     {
     case Name:
-        qSort(mFindResult.begin(), mFindResult.end(), caseNameLessThan);
+        qSort( mFindResult.begin(), mFindResult.end(), caseNameLessThan );
         break;
     case Time:
-        qSort(mFindResult.begin(), mFindResult.end(), caseTimeLessThan);
+        qSort( mFindResult.begin(), mFindResult.end(), caseTimeLessThan );
         break;
     case Size:
-        qSort(mFindResult.begin(), mFindResult.end(), caseSizeLessThan);
+        qSort( mFindResult.begin(), mFindResult.end(), caseSizeLessThan );
         break;
     case Type:
-        qSort(mFindResult.begin(), mFindResult.end(), caseTypeLessThan);
+        qSort( mFindResult.begin(), mFindResult.end(), caseTypeLessThan );
         break;
     }
-    emit layoutChanged();
+//    emit layoutChanged();
+    emit refresh();
 }

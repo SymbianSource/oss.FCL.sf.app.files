@@ -79,8 +79,8 @@ void DiskListViewItem::updateChildItems()
 	FmDriverInfo driverInfo = FmUtils::queryDriverInfo( diskName );
 
     mDiskNameLabel->setPlainText( displayString );
-	mSizeLabel->setPlainText( tr ( "Size: " ) + FmUtils::formatStorageSize( driverInfo.size() ) );
-	mFreeLabel->setPlainText( tr ( "Free: " ) + FmUtils::formatStorageSize( driverInfo.freeSize() ) );
+    mSizeLabel->setPlainText( hbTrId ( "Size: " ) + FmUtils::formatStorageSize( driverInfo.size() ) );
+    mFreeLabel->setPlainText( hbTrId ( "Free: " ) + FmUtils::formatStorageSize( driverInfo.freeSize() ) );
 
 //    mCheckBox->setCheckState( checkState() );
 }

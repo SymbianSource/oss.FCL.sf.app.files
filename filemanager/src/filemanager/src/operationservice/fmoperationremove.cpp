@@ -19,6 +19,7 @@
 #include "fmcommon.h"
 #include "fmoperationbase.h"
 #include "fmdrivedetailstype.h"
+#include "fmutils.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -93,7 +94,14 @@ int FmOperationRemove::remove( const QString &fileName )
         }
         IncreaseProgressOnce();
     } else if (fi.isDir()) {
-       ret = recursiveRemoveDir( fileName );
+       if( FmUtils::isDefaultFolder( fileName ) ){
+           ret = FmErrRemoveDefaultFolder;
+       }
+       else{
+           ret = recursiveRemoveDir( fileName );
+       }
+
+
     } else {
         qWarning( "Things other than file and directory are not copied" );
         ret = FmErrIsNotFileOrFolder;
@@ -147,6 +155,8 @@ int FmOperationRemove::recursiveRemoveDir( const QString &pathName )
 
 void FmOperationRemove::IncreaseProgressOnce()
 {
+    if( mTotalCount <= 0 )
+        return;
     mRemovedCount++;
     int step = ( mRemovedCount * 100 ) / mTotalCount;
     if( step > mCurrentStep ) {

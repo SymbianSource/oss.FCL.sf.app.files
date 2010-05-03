@@ -110,15 +110,16 @@ void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
     HbMenu *contextMenu = new HbMenu();
 
     mCurrentItem = item;
-    QString diskName = mCurrentItem->modelIndex().data( Qt::DisplayRole ).toString();
-
-    quint32 state = FmUtils::getDriverState( diskName );
+    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
+    
     FmDriverInfo driverInfo = FmUtils::queryDriverInfo( diskName );
+    FmDriverInfo::DriveState state = driverInfo.driveState();
 
-    if( !( state & FmDriverInfo::EDriveNotPresent ) ) {
+    if( !( state & FmDriverInfo::EDriveNotPresent ) && !( state & FmDriverInfo::EDriveLocked ) &&
+            !( state & FmDriverInfo::EDriveCorrupted ) ) {
         HbAction *viewAction = new HbAction();
         viewAction->setObjectName( "viewAction" );
-        viewAction->setText( tr( "View details" ) );
+        viewAction->setText( hbTrId( "txt_fmgr_menu_view_details_memory" ) );
         contextMenu->addAction( viewAction );
 
         //state = 0x210;
@@ -127,13 +128,12 @@ void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         this, SLOT( on_viewAction_triggered() ) );
     }
 
-    HbMenu *subMenu = new HbMenu( "Memory name" );
     if( ( state & FmDriverInfo::EDriveRemovable ) && !( state & FmDriverInfo::EDriveMassStorage ) ){
         if ( driverInfo.volumeName().length() ){
             HbAction *renameAction = new HbAction();
             renameAction->setObjectName( "renameAction" );
-            renameAction->setText( tr( "Rename" ) );
-            subMenu->addAction( renameAction );
+            renameAction->setText( hbTrId( "txt_fmgr_menu_rename" ) );
+            contextMenu->addAction( renameAction );
 
             connect( renameAction, SIGNAL( triggered() ),
 		     this, SLOT( on_renameAction_triggered() ) );
@@ -141,25 +141,23 @@ void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         else{
             HbAction *nameAction = new HbAction();
             nameAction->setObjectName( "nameAction" );
-            nameAction->setText( tr( "Name" ) );
-            subMenu->addAction( nameAction );
+            nameAction->setText( hbTrId( "txt_fmgr_menu_name" ) );
+            contextMenu->addAction( nameAction );
 
             connect( nameAction, SIGNAL( triggered() ),
 		     this, SLOT( on_nameAction_triggered() ) );
         }
-        contextMenu->addMenu( subMenu );
 
-        subMenu = new HbMenu( "Memory password" );
         if( state & FmDriverInfo::EDrivePasswordProtected ){
             HbAction *changePwdAction = new HbAction();
             changePwdAction->setObjectName( "changePwdAction" );
-            changePwdAction->setText( tr( "Change Password" ) );
-            subMenu->addAction( changePwdAction );
+            changePwdAction->setText( hbTrId( "txt_fmgr_menu_change_password" ) );
+            contextMenu->addAction( changePwdAction );
 
             HbAction *removePwdAction = new HbAction();
             removePwdAction->setObjectName( "removePwdAction" );
-            removePwdAction->setText( tr( "Remove Password" ) );
-            subMenu->addAction( removePwdAction );
+            removePwdAction->setText( hbTrId( "txt_fmgr_menu_remove_password" ) );
+            contextMenu->addAction( removePwdAction );
 
             connect( changePwdAction, SIGNAL( triggered() ),
 		     this, SLOT( on_changePwdAction_triggered() ) );
@@ -169,18 +167,17 @@ void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         else{
             HbAction *setPwdAction = new HbAction();
             setPwdAction->setObjectName( "setPwdAction" );
-            setPwdAction->setText( tr( "Set Password" ) );
-            subMenu->addAction( setPwdAction );
+            setPwdAction->setText( hbTrId( "txt_fmgr_menu_set_password" ) );
+            contextMenu->addAction( setPwdAction );
 
             connect( setPwdAction, SIGNAL( triggered() ),
 		     this, SLOT( on_setPwdAction_triggered() ) );
         }
-        contextMenu->addMenu( subMenu );
          
         if( state & FmDriverInfo::EDriveEjectable ){
             HbAction *ejectAction = new HbAction();
             ejectAction->setObjectName( "ejectAction" );
-            ejectAction->setText( tr( "Eject" ) );
+            ejectAction->setText( hbTrId( "txt_fmgr_menu_eject" ) );
             contextMenu->addAction( ejectAction );
             
             connect( ejectAction, SIGNAL( triggered() ),
@@ -188,12 +185,13 @@ void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         }         
     }
 #ifndef _DEBUG_ENABLE_FORMATMENU_
-    if ( state & FmDriverInfo::EDriveRemovable ){
-        if( state & FmDriverInfo::EDriveFormattable ){
+if ( ( state & FmDriverInfo::EDriveRemovable ) || ( state & FmDriverInfo::EDriveCorrupted )
+         || ( state & FmDriverInfo::EDriveLocked ) ){
+        if( !( state & FmDriverInfo::EDriveNotPresent ) ){
 #endif
             HbAction *formatAction = new HbAction();
             formatAction->setObjectName( "formatAction" );
-            formatAction->setText( tr( "Format" ) );
+            formatAction->setText( hbTrId( "txt_fmgr_menu_format" ) );
             contextMenu->addAction( formatAction );
 
             connect( formatAction, SIGNAL( triggered() ),
@@ -206,7 +204,7 @@ void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
     if( state & FmDriverInfo::EDriveLocked ){
         HbAction *unLockedAction = new HbAction();
         unLockedAction->setObjectName( "unLockedAction" );
-        unLockedAction->setText( tr( "Unlock" ) );
+        unLockedAction->setText( hbTrId( "Unlock" ) );
         contextMenu->addAction( unLockedAction );
 
         connect( unLockedAction, SIGNAL( triggered() ),
@@ -218,33 +216,37 @@ void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
 
 void FmDriverListWidget::on_viewAction_triggered()
 {
-    QString diskName = mCurrentItem->modelIndex().data( Qt::DisplayRole ).toString();
+    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
     mOperationService->asyncViewDriveDetails( diskName );
 }
 
 void FmDriverListWidget::on_renameAction_triggered()
 {    
-    QString diskName = mCurrentItem->modelIndex().data( Qt::DisplayRole ).toString();
-
-    quint32 state = FmUtils::getDriverState( diskName );
+    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
+    
+    FmDriverInfo::DriveState state = FmUtils::queryDriverInfo( diskName ).driveState();
     FmDriverInfo driverInfo = FmUtils::queryDriverInfo( diskName );
 
     if ( state & FmDriverInfo::EDriveWriteProtected ){
-        HbMessageBox::information( tr( "Unable to perform operation. Memory card is read only." ) );
+        HbMessageBox::information( hbTrId( "Unable to perform operation. Memory card is read only." ) );
         return;
         }
 
     QString title( tr( "Drive name ") );  
     QString volumeName = driverInfo.volumeName();
 
-    if( FmDlgUtils::showTextQuery( title, volumeName ) ){
-
-        if ( FmUtils::renameDrive( diskName, volumeName ) == 0 ){
-             HbMessageBox::information( tr( "The name has been changed!" ) );
-             mModel->refresh();
-        }
-        else{
-             HbMessageBox::information( tr( "Error occurred, operation cancelled!" ) );
+    QString associatedDrives( FmUtils::getDriveLetterFromPath( diskName ) );
+    while( FmDlgUtils::showTextQuery( title, volumeName, false, FmMaxLengthofDriveName, associatedDrives ) ){
+        int err = FmUtils::renameDrive( diskName, volumeName );
+        if ( err == FmErrNone ){
+            HbMessageBox::information( hbTrId( "The name has been changed!" ) );
+            mModel->refresh();
+            break;
+        } else if( err == FmErrBadName ) {
+            HbMessageBox::information( hbTrId( "Illegal characters! Use only letters and numbers." ) );
+        } else{
+            HbMessageBox::information( hbTrId( "Error occurred, operation cancelled!" ) );
+            break;
         }                
     }
 }
@@ -254,110 +256,134 @@ void FmDriverListWidget::on_nameAction_triggered()
     on_renameAction_triggered();
 }
 
-void FmDriverListWidget::on_changePwdAction_triggered()
-{
-    QString title( tr( "Password: ")  );
-    QString firstLabel( tr( "New Password: ") );
-    QString secondLabel( tr( "Confirm new Password: ") );
-
-    QString oldPwd;
-    QString newPwd;
-
-    QString diskName = mCurrentItem->modelIndex().data( Qt::DisplayRole ).toString();
-
-    if( FmDlgUtils::showConfirmPasswordQuery( title, diskName, oldPwd ) ){
-        if( FmDlgUtils::showChangePasswordQuery( firstLabel, secondLabel, newPwd ) ){
-            if ( FmUtils::setDrivePwd( diskName, oldPwd, newPwd ) == 0 ){
-                HbMessageBox::information( tr( "The password has been changed!" ) );
-            }
-            else{
-                HbMessageBox::information( tr( "Error occurred, operation cancelled!" ) );
-            }
-        }
-    }
-}
-
-void FmDriverListWidget::on_removePwdAction_triggered()
-{
-    QString title( tr( "Password: ")  );
-
-    QString oldPwd;
-
-    QString diskName = mCurrentItem->modelIndex().data( Qt::DisplayRole ).toString();
-    //QString password( tr( "a ") );
-    if( HbMessageBox::question( tr( "Do you want to remove the password? Memory card becomes unlocked." ) ) ){
-        if( FmDlgUtils::showConfirmPasswordQuery( title, diskName, oldPwd ) ){
-
-            if ( FmUtils::removeDrivePwd( diskName, oldPwd ) == 0 ){
-                HbMessageBox::information( tr( "The password has been removed!" ) );
-            }
-            else{
-                HbMessageBox::information( tr( "Error occurred, operation cancelled!" ) );
-            }
-        }
-    }
-}
-
-void FmDriverListWidget::on_unLockedAction_triggered()
-{
-    QString title( tr( "Password: ")  );
-
-    QString oldPwd;
-
-    QString diskName = mCurrentItem->modelIndex().data( Qt::DisplayRole ).toString();
-    
-    if( FmDlgUtils::showConfirmPasswordQuery( title, diskName, oldPwd ) ){
-
-        if ( FmUtils::unlockDrive( diskName, oldPwd ) == 0 ){
-            HbMessageBox::information( tr( "The memory is unlocked!" ) );
-        }
-        else{
-            HbMessageBox::information( tr( "Error occurred, operation cancelled!" ) );
-        }
-    }
-}
-
 void FmDriverListWidget::on_setPwdAction_triggered()
 {
-    QString firstLabel( tr( "New Password: ") );
-    QString secondLabel( tr( "Confirm new Password: ") );
+    QString firstLabel( hbTrId( "New Password: ") );
+    QString secondLabel( hbTrId( "Confirm new Password: ") );
 
     QString oldPwd;
     QString newPwd;
 
     FmUtils::emptyPwd( oldPwd );
 
-    QString diskName = mCurrentItem->modelIndex().data( Qt::DisplayRole ).toString();
+    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
 
-    if( FmDlgUtils::showChangePasswordQuery( firstLabel, secondLabel, newPwd ) ){
-        if ( FmUtils::setDrivePwd( diskName, oldPwd, newPwd ) == 0 ){
-            HbMessageBox::information( tr( "The password has been set!" ) );
+    QString associatedDrives( FmUtils::getDriveLetterFromPath( diskName ) );
+    if( FmDlgUtils::showMultiPasswordQuery( firstLabel, secondLabel, newPwd, associatedDrives ) ) {
+       if ( FmUtils::setDrivePwd( diskName, oldPwd, newPwd ) == 0 ){
+            HbMessageBox::information( hbTrId( "The password has been set!" ) );
         }
         else{
-            HbMessageBox::information( tr( "Error occurred, operation cancelled!" ) );
+            HbMessageBox::information( hbTrId( "Error occurred, operation cancelled!" ) );
+        }
+    }
+}
+
+void FmDriverListWidget::on_changePwdAction_triggered()
+{
+    QString title( hbTrId( "Password: ")  );
+    QString firstLabel( hbTrId( "New Password: ") );
+    QString secondLabel( hbTrId( "Confirm new Password: ") );
+
+    QString oldPwd;
+    QString newPwd;
+
+    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
+    
+    QString associatedDrives( FmUtils::getDriveLetterFromPath( diskName ) );
+    while( FmDlgUtils::showSinglePasswordQuery( title, oldPwd, associatedDrives ) ) {
+       if ( FmUtils::checkDrivePwd( diskName, oldPwd ) == 0 ){
+            if( FmDlgUtils::showMultiPasswordQuery( firstLabel, secondLabel, newPwd ) ){
+                if ( FmUtils::setDrivePwd( diskName, oldPwd, newPwd ) == 0 ){
+                    HbMessageBox::information( hbTrId( "The password has been changed!" ) );
+                } else {
+                    HbMessageBox::information( hbTrId( "Error occurred, operation cancelled!" ) );
+                }
+                break;
+            } else {  
+                //cancel muti password query
+                break;
+            }
+       } else {
+            HbMessageBox::information( hbTrId( "The password is incorrect, try again!" ) );
+       }
+         
+    }
+}
+
+void FmDriverListWidget::on_removePwdAction_triggered()
+{
+    QString title( hbTrId( "Password: ")  );
+
+    QString oldPwd;
+
+    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
+    //QString password( tr( "a ") );
+    if( HbMessageBox::question( tr( "Do you want to remove the password? Memory card becomes unlocked." ) ) ){
+        QString associatedDrives( FmUtils::getDriveLetterFromPath( diskName ) );
+        while( FmDlgUtils::showSinglePasswordQuery( title, oldPwd, associatedDrives ) ) {
+            if ( FmUtils::checkDrivePwd( diskName, oldPwd ) == 0 ) {
+                if ( FmUtils::removeDrivePwd( diskName, oldPwd ) == 0 ){
+                    HbMessageBox::information( hbTrId( "The password has been removed!" ) );
+                }
+                else{
+                    HbMessageBox::information( hbTrId( "Error occurred, operation cancelled!" ) );
+                }
+                break;
+            }
+            else {
+                HbMessageBox::information( hbTrId( "The password is incorrect, try again!" ) );
+            }
+            
+        }
+    }
+}
+
+void FmDriverListWidget::on_unLockedAction_triggered()
+{
+    QString title( hbTrId( "Password: ")  );
+
+    QString oldPwd;
+
+    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
+    
+    //Do not add associatedDrives as Locked MMC is not available Drive but only present Drive
+    while( FmDlgUtils::showSinglePasswordQuery( title, oldPwd ) ) {
+        int err = FmUtils::unlockDrive( diskName, oldPwd );
+        if( err == FmErrNone ) {
+            HbMessageBox::information( hbTrId( "The memory is unlocked!" ) );
+            break;
+        } else if ( err == FmErrAccessDenied ) {
+            HbMessageBox::information( hbTrId( "The password is incorrect, try again!" ) );
+        } else if (err == FmErrAlreadyExists ) {
+            HbMessageBox::information( hbTrId( "The disk has already been unlocked!" ) );
+            break;
+        } else if( err == FmErrNotSupported ) {
+            HbMessageBox::information( hbTrId( "The media does not support password locking!" ) );
+            break;
+        } else {
+            HbMessageBox::information( hbTrId( "Error occurred, operation cancelled!" ) );
+            break;
         }
     }
 }
 
 void FmDriverListWidget::on_formatAction_triggered()
 {
-    QString diskName = mCurrentItem->modelIndex().data( Qt::DisplayRole ).toString();
-
-    if( HbMessageBox::question( tr( "Format? Data will be deleted during formatting." ) ) ){
+    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
+    
+    if( HbMessageBox::question( hbTrId( "Format? Data will be deleted during formatting." ) ) ){
         if( FmErrNone != mOperationService->asyncFormat( diskName ) )
-            HbMessageBox::information( tr( "Formatting failed." ) );
+            HbMessageBox::information( hbTrId( "Formatting failed." ) );
         }
-
 }
 
 void FmDriverListWidget::on_ejectAction_triggered()
 {
-    QString diskName = mCurrentItem->modelIndex().data( Qt::DisplayRole ).toString();
-
-    if( HbMessageBox::question( tr( "Eject memory card? Some applications will be closed." ) ) ){
-        if( !FmUtils::ejectDrive( diskName ) ){  
-            HbMessageBox::information( tr( "Error occurred, operation cancelled!") );
-        }
+    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
+    
+    if( HbMessageBox::question( hbTrId( "Eject memory card? Some applications will be closed." ) ) ){
+        FmUtils::ejectDrive( diskName );
     }
 }
 
@@ -376,7 +402,7 @@ void FmDriverListWidget::activeSearchPanel()
 
 void FmDriverListWidget::on_searchPanel_searchOptionsClicked()
 {
-    mFindTargetPath = FmFileDialog::getExistingDirectory( 0, tr( "Look in:" ),
+    mFindTargetPath = FmFileDialog::getExistingDirectory( 0, hbTrId( "Look in:" ),
         QString(""), QStringList() );
 }
 

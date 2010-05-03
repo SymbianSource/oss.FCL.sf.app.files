@@ -10,10 +10,10 @@
 * Nokia Corporation - initial contribution.
 *
 * Contributors:
-*     Zhiqiang Yang <zhiqiang.yang@nokia.com>
+* 
 * 
 * Description:
-*     The common header file of filemanager
+*     The header file of the file manager
 */
 
 #ifndef FMCOMMON_H

@@ -21,6 +21,7 @@
 #include "fmviewdetailsitem.h"
 #include "fmdatalistmodel.h"
 #include "fmdrivedetailstype.h"
+#include "fmviewmanager.h"
 
 #include <QDirModel>
 #include <QFileInfo>
@@ -83,7 +84,7 @@ void FmViewDetailsDialog::init()
 void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
 {
     const QString dataDir = "C:\\data";
-    mHeaderLabel->setPlainText( tr( "Memory details: ") );
+    mHeaderLabel->setPlainText( hbTrId( "txt_fmgr_title_memory_details" ) );
     
     quint64 sizeOfOthers = 0;
     
@@ -93,19 +94,17 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     mDataListModel->removeRows( 0, mDataListModel->rowCount() );
     mDataListModel->insertRows( 0, EDriveDetailEntryEnd );
     
-    detailString.append( tr ( "Memory name:" ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_memory_name" ) );
     QVariant variant( detailString ); 
     mDataListModel->setData(  mDataListModel->index( EMemoryName ), variant, Qt::DisplayRole );
 
     detailString.clear();
-    detailString.append( driverInfo.name() ); 
-    detailString.append( " " ); 
-    detailString.append( driverInfo.volumeName() ); 
+    detailString.append( FmUtils::fillDriveVolume( driverInfo.name(), true ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemoryName ), variant, Qt::UserRole );
     
     detailString.clear();
-    detailString.append( tr ( "Size:" ) ); 
+    detailString.append( hbTrId ( "txt_fmgr_dblist_size_memory" ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemorySize ), variant, Qt::DisplayRole );
 
@@ -115,7 +114,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     mDataListModel->setData(  mDataListModel->index( EMemorySize ), variant, Qt::UserRole );
 
     detailString.clear();
-    detailString.append( tr ( "Free:" ) ); 
+    detailString.append( hbTrId ( "txt_fmgr_dblist_free_memory" ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemoryFree ), variant, Qt::DisplayRole );
 
@@ -129,7 +128,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
 //    getContentDetails( dataDir );
     
     detailString.clear();
-    detailString.append( tr ( "Images:" ) ); 
+    detailString.append( hbTrId ( "Images:" ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemoryImages ), variant, Qt::DisplayRole );
     
@@ -141,7 +140,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     sizeOfOthers -= mSizeofImage;
     
     detailString.clear();
-    detailString.append( tr ( "Sounds:" ) ); 
+    detailString.append( hbTrId ( "Sounds:" ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemorySounds ), variant, Qt::DisplayRole );
     
@@ -153,7 +152,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     sizeOfOthers -= mSizeofSounds;
     
     detailString.clear();
-    detailString.append( tr ( "Video:" ) ); 
+    detailString.append( hbTrId ( "Video:" ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemoryVideos ), variant, Qt::DisplayRole );
     
@@ -165,7 +164,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     sizeOfOthers -= mSizeofVideo;
     
     detailString.clear();
-    detailString.append( tr ( "Java Files:" ) ); 
+    detailString.append( hbTrId ( "Java Files:" ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemoryMidpJava ), variant, Qt::DisplayRole );
     
@@ -177,7 +176,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     sizeOfOthers -= mSizeofJava;
     
     detailString.clear();
-    detailString.append( tr ( "Sis files:" ) ); 
+    detailString.append( hbTrId ( "Sis files:" ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemoryNativeApps ), variant, Qt::DisplayRole );
     
@@ -189,7 +188,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     sizeOfOthers -= mSizeofNativeFiles;
     
     detailString.clear();
-    detailString.append( tr ( "Documents:" ) ); 
+    detailString.append( hbTrId ( "Documents:" ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemoryDocuments ), variant, Qt::DisplayRole );
     
@@ -201,7 +200,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     sizeOfOthers -= mSizeofDocument;
     
     detailString.clear();
-    detailString.append( tr ( "Calendars:" ) ); 
+    detailString.append( hbTrId ( "Calendars:" ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemoryCalendar ), variant, Qt::DisplayRole );
     
@@ -213,7 +212,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     sizeOfOthers -= mSizeofCalendar;
     
     detailString.clear();
-    detailString.append( tr ( "Others:" ) ); 
+    detailString.append( hbTrId ( "Others:" ) ); 
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EMemoryOthers ), variant, Qt::DisplayRole );
     
@@ -225,7 +224,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
 
 void FmViewDetailsDialog::setFolderDetails( const QString &folderPath )
 {
-    mHeaderLabel->setPlainText( tr( "Folder details: ") );
+    mHeaderLabel->setPlainText( hbTrId( "txt_fmgr_title_folder_details" ) );
     
     QString detailString( "" );
     
@@ -234,7 +233,7 @@ void FmViewDetailsDialog::setFolderDetails( const QString &folderPath )
     mDataListModel->removeRows( 0, mDataListModel->rowCount() );
     mDataListModel->insertRows( 0, EFolderDetailEntryEnd );
     
-    detailString.append( tr ( "Name:" ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_name_folder" ) );
     QVariant variant( detailString ); 
     mDataListModel->setData(  mDataListModel->index( EFolderName ), variant, Qt::DisplayRole );
     
@@ -249,7 +248,7 @@ void FmViewDetailsDialog::setFolderDetails( const QString &folderPath )
     QTime modifiedTime = modifiedDateTime.time();
     
     detailString.clear();
-    detailString.append( tr ( "Date:" ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_date_folder" ) );
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EModifiedDate ), variant, Qt::DisplayRole );
     
@@ -259,7 +258,7 @@ void FmViewDetailsDialog::setFolderDetails( const QString &folderPath )
     mDataListModel->setData(  mDataListModel->index( EModifiedDate ), variant, Qt::UserRole );
 
     detailString.clear();
-    detailString.append( tr ( "Time:" ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_time_folder" ) );
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EModifiedTime ), variant, Qt::DisplayRole );
    
@@ -269,7 +268,7 @@ void FmViewDetailsDialog::setFolderDetails( const QString &folderPath )
     mDataListModel->setData(  mDataListModel->index( EModifiedTime ), variant, Qt::UserRole );
     
     detailString.clear();
-    detailString.append( tr ( "Size:" ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_size_folder" ) );
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EFolderSize ), variant, Qt::DisplayRole );
    
@@ -279,7 +278,7 @@ void FmViewDetailsDialog::setFolderDetails( const QString &folderPath )
     mDataListModel->setData(  mDataListModel->index( EFolderSize ), variant, Qt::UserRole );
 
     detailString.clear();
-    detailString.append( tr ( "Subfolders: " ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_subfolders" ) );
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( ENumofSubFolders ), variant, Qt::DisplayRole );
 
@@ -289,7 +288,7 @@ void FmViewDetailsDialog::setFolderDetails( const QString &folderPath )
     mDataListModel->setData(  mDataListModel->index( ENumofSubFolders ), variant, Qt::UserRole );
 
     detailString.clear();
-    detailString.append( tr ( "Files: " ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_files" ) );
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( ENumofFiles ), variant, Qt::DisplayRole );
     
@@ -301,7 +300,7 @@ void FmViewDetailsDialog::setFolderDetails( const QString &folderPath )
 
 void FmViewDetailsDialog::setFileDetails( const QString &filePath )
 {
-    mHeaderLabel->setPlainText( tr( "File details: ") );
+    mHeaderLabel->setPlainText( hbTrId( "txt_fmgr_title_file_details") );
     
     QString detailString( "" );
     
@@ -310,7 +309,7 @@ void FmViewDetailsDialog::setFileDetails( const QString &filePath )
     mDataListModel->removeRows( 0, mDataListModel->rowCount() );
     mDataListModel->insertRows( 0, EFileDetailEntryEnd );
     
-    detailString.append( tr ( "Name:" ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_name_file" ) );
     QVariant variant( detailString ); 
     mDataListModel->setData(  mDataListModel->index( EFileName ), variant, Qt::DisplayRole );
     
@@ -320,7 +319,7 @@ void FmViewDetailsDialog::setFileDetails( const QString &filePath )
     mDataListModel->setData(  mDataListModel->index( EFileName ), variant, Qt::UserRole );
     
     detailString.clear();
-    detailString.append( tr ( "Type:" ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_type_file" ) );
     variant = QVariant( detailString ); 
     mDataListModel->setData(  mDataListModel->index( EFileType ), variant, Qt::DisplayRole );
     
@@ -340,7 +339,7 @@ void FmViewDetailsDialog::setFileDetails( const QString &filePath )
     QTime modifiedTime = modifiedDateTime.time();
     
     detailString.clear();
-    detailString.append( tr ( "Date:" ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_date_file" ) );
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EFileModifiedDate ), variant, Qt::DisplayRole );
     
@@ -350,7 +349,7 @@ void FmViewDetailsDialog::setFileDetails( const QString &filePath )
     mDataListModel->setData(  mDataListModel->index( EFileModifiedDate ), variant, Qt::UserRole );
 
     detailString.clear();
-    detailString.append( tr ( "Time:" ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_time_file" ) );
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EFileModifiedTime ), variant, Qt::DisplayRole );
    
@@ -360,7 +359,7 @@ void FmViewDetailsDialog::setFileDetails( const QString &filePath )
     mDataListModel->setData(  mDataListModel->index( EFileModifiedTime ), variant, Qt::UserRole );
 
     detailString.clear();
-    detailString.append( tr ( "Size:" ) );
+    detailString.append( hbTrId ( "txt_fmgr_dblist_size_file" ) );
     variant = QVariant( detailString );
     mDataListModel->setData(  mDataListModel->index( EFileSize ), variant, Qt::DisplayRole );
    
@@ -438,32 +437,57 @@ void FmViewDetailsDialog::setSizeofContent( QList<FmDriveDetailsSize*> detailsSi
     }
 }
 
-void FmViewDetailsDialog::showDriveViewDetailsDialog( const QString &driverName, 
-            QList<FmDriveDetailsSize*> detailsSizeList )
+HbAction *FmViewDetailsDialog::executeDialog( HbDialog *dialog, const QString &associatedDrives )
 {
+    for( int i = 0; i < associatedDrives.length(); i++ ) {
+        QString drive( associatedDrives[i] + QString( ":/" ) );
+        if( !FmUtils::isDriveAvailable( drive ) ) {
+            FmLogger::log( "executeDialog return 0_ " + associatedDrives );
+            return 0;
+        }
+    }
+    
+	FmDlgCloseUnit dlgCloseUnit( dialog );
+	dlgCloseUnit.addAssociatedDrives( associatedDrives );
+
+	FmViewManager::viewManager()->addDlgCloseUnit( &dlgCloseUnit );
+	FmLogger::log( " Exec Dialog start " );
+    HbAction* action = dialog->exec();
+	FmLogger::log( " Exec Dialog end " );
+	FmViewManager::viewManager()->removeDlgCloseUnit( &dlgCloseUnit );
+	return action;
+}
+
+void FmViewDetailsDialog::showDriveViewDetailsDialog( const QString &driverName, 
+            QList<FmDriveDetailsSize*> detailsSizeList, const QString& associatedDrives )
+{
+	FmLogger::log( "showDriveViewDetailsDialog_" + associatedDrives );
     FmViewDetailsDialog viewDetailsDialog;
     
     viewDetailsDialog.setSizeofContent( detailsSizeList );
     viewDetailsDialog.setDriveDetails( driverName );
        
-    viewDetailsDialog.exec();
+    //viewDetailsDialog.exec();
+	executeDialog( &viewDetailsDialog , associatedDrives );
 }
 
 void FmViewDetailsDialog::showFolderViewDetailsDialog( const QString &folderPath,
-           int numofSubFolders, int numofFiles, quint64 sizeofFolder )
+           int numofSubFolders, int numofFiles, quint64 sizeofFolder, const QString& associatedDrives )
 {
     FmViewDetailsDialog viewDetailsDialog;
     
     viewDetailsDialog.setNumofSubfolders( numofSubFolders, numofFiles, sizeofFolder );
     viewDetailsDialog.setFolderDetails( folderPath );
     
-    viewDetailsDialog.exec();
+    //viewDetailsDialog.exec();
+	executeDialog( &viewDetailsDialog , associatedDrives );
 }
 
-void FmViewDetailsDialog::showFileViewDetailsDialog( const QString &filePath )
+void FmViewDetailsDialog::showFileViewDetailsDialog( const QString &filePath, const QString& associatedDrives )
 {
     FmViewDetailsDialog viewDetailsDialog;
     viewDetailsDialog.setFileDetails( filePath );
     
-    viewDetailsDialog.exec();
+    //viewDetailsDialog.exec();
+	executeDialog( &viewDetailsDialog , associatedDrives );
 }

@@ -55,6 +55,7 @@ signals:
     void activated( const QString &pathName );
     
     void startSearch( const QString &targetPath, const QString &criteria );
+    void setEmptyMenu( bool isMenuEmpty );
 
 private slots:
     void itemActivated(const QModelIndex &index);
@@ -64,6 +65,7 @@ private slots:
 
     void on_resultModel_finished();
     void on_resultModel_modelCountChanged( int count );
+    void on_resultModel_refresh();
         
 private:
     void init();

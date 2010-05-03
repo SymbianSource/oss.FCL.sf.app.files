@@ -19,9 +19,10 @@
 #include "fmfilewidget.h"
 #include "fmutils.h"
 #include "fmdrivemodel.h"
+#include "fmdrivewatcher.h"
 
-#include <hbstyle.h>
-#include <hbabstractitemview.h>
+#include "hbstyle.h"
+#include "hbabstractitemview.h"
 #include <hblistview.h>
 
 #include <QModelIndex>
@@ -43,6 +44,10 @@ FmFileWidget::~FmFileWidget()
     setModel( 0 );
     delete mDirModel;
     delete mDriveModel;
+    
+    mDriveWatcher->cancelWatch();
+    delete mDriveWatcher;
+    mDriveWatcher = 0;
 }
 
 QFileInfo FmFileWidget::currentPath() const
@@ -142,9 +147,18 @@ void FmFileWidget::init()
     qDebug("setmodel");
     qDebug( QTime::currentTime().toString().toUtf8().data() );
 
+    mDriveWatcher = new FmDriveWatcher( this );
+    mDriveWatcher->setObjectName( "driveWatcher" );
+    mDriveWatcher->startWatch();
+    
 //    QMetaObject::connectSlotsByName( this );
     connect( mListView, SIGNAL( activated( QModelIndex ) ),
         this, SLOT( on_list_activated( QModelIndex ) ) );
+    
+    connect( mDriveWatcher, SIGNAL( driveAddedOrChanged() ),
+            this, SLOT( on_driveWatcher_driveAddedOrChanged() ) );
+    
+
 }
 
 void FmFileWidget::setModel( QAbstractItemModel *model )
@@ -177,4 +191,24 @@ bool FmFileWidget::cdUp()
     }
     setRootPath( FmUtils::fillPathWithSplash( cdUpPath ) );
     return true;
+}
+
+void FmFileWidget::on_driveWatcher_driveAddedOrChanged()
+{
+    FmLogger::log( QString( "FmFileDialog_FmFileWidget::on_driveWatcher_driveAddedOrChanged start" ) );
+    mDriveModel->refresh();
+    if( currentViewType() == DriveView ) {
+        setModel( 0 );
+        setModel( mDriveModel );
+        emit pathChanged( QString() );
+    } else if( currentViewType() == DirView ) {
+        if( !FmUtils::isPathAccessabel( currentPath().absoluteFilePath() ) ) {
+            // path not available, set model to drive
+            FmLogger::log( QString( "FmFileDialog_FmFileWidget::on_driveWatcher_driveAddedOrChanged path not availeable, set drivemodel:"
+                    + currentPath().absoluteFilePath() ) );
+            setModel( mDriveModel );
+            emit pathChanged( QString() );
+        }
+    }
+    FmLogger::log( QString( "FmFileDialog_FmFileWidget::on_driveWatcher_driveAddedOrChanged end" ) );
 }

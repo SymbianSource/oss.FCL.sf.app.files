@@ -28,12 +28,20 @@ class FmSingleTextQuery : public HbDialog
 {
 Q_OBJECT
 public:
-    FmSingleTextQuery( HbLineEdit::EchoMode echoMode = HbLineEdit::Normal, QGraphicsItem *parent = 0 );
+    enum Option
+        {
+            DimPrimereActionWhenEmpty    = 0x00000001
+        };
+    Q_DECLARE_FLAGS(Options, Option)
+    
+    FmSingleTextQuery( Options options = 0,
+            HbLineEdit::EchoMode echoMode = HbLineEdit::Normal, QGraphicsItem *parent = 0 );
     ~FmSingleTextQuery();
 
 public:
     void setLineEditText( const QString &text );
     QString getLineEditText();
+    void setLineEditMaxLength( int length );
 
 public slots:
         void checkActions();
@@ -44,7 +52,8 @@ private:
 private:
     HbWidget *mContentWidget;
     HbLineEdit  *mTextEdit;
+    Options mOptions;
     HbLineEdit::EchoMode mEchoMode;
 };
-
+Q_DECLARE_OPERATORS_FOR_FLAGS(FmSingleTextQuery::Options)
 #endif

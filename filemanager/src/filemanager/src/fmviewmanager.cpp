@@ -33,8 +33,41 @@
 #include <hbmessagebox.h>
 #include <QFileSystemWatcher>
 #include <QFileInfo>
+#include <hbdialog.h>
 
 FmViewManager *FmViewManager::mViewManager = 0;
+
+
+FmDlgCloseUnit::FmDlgCloseUnit( HbDialog *dialog ) : mDialog( dialog )
+{
+}
+FmDlgCloseUnit::~FmDlgCloseUnit()
+{
+}
+
+void FmDlgCloseUnit::addAssociatedDrives( QString drives )
+{
+	for( int i = 0; i< drives.length(); ++i ) {
+		if( !mAssociatedDrives.contains( drives[i], Qt::CaseInsensitive ) ) {
+			mAssociatedDrives += drives[i];
+		}
+	}
+}
+void FmDlgCloseUnit::removeAssociatedDrives( QString drives )
+{
+	for( int i = 0; i < drives.length(); ++i ){
+		mAssociatedDrives.remove( drives[i], Qt::CaseInsensitive );
+	}
+}
+QString FmDlgCloseUnit::associatedDrives()
+{
+	return mAssociatedDrives;
+}
+
+HbDialog *FmDlgCloseUnit::dialog()
+{
+	return mDialog;
+}
 
 FmViewManager::FmViewManager( FmMainWindow* mainWindow )
 {
@@ -70,6 +103,7 @@ FmViewManager::~FmViewManager(void)
     mDriveWatcher->cancelWatch();
     delete mDriveWatcher;
     mDriveWatcher = 0;
+
 }
 
 FmViewManager *FmViewManager::CreateViewManager( FmMainWindow* mainWindow )
@@ -141,12 +175,15 @@ void FmViewManager::createFileView( const QString &path,
     QString absolutePath = fileInfo.absoluteFilePath();
 
     QString checkedPath = FmUtils::checkDriveToFolderFilter( absolutePath );
-    
-    if( !FmUtils::isPathAccessabel( checkedPath ) ) {
-        checkedPath.clear();
+    FmDriverInfo::DriveState driveState = FmUtils::queryDriverInfo( path ).driveState();
+    if( driveState & FmDriverInfo::EDriveAvailable ) {
+        if( !FmUtils::isPathAccessabel( checkedPath ) ) {
+            checkedPath.clear();
+        }
     }
+   
     if( checkedPath.isEmpty() ) {
-        HbMessageBox::information( QString( tr("Path: %1 is unavailable!").arg( path )) );
+        HbMessageBox::information( QString( hbTrId("Path: %1 is unavailable!").arg( path )) );
         return;
     }
 
@@ -242,7 +279,23 @@ void FmViewManager::on_driveWatcher_driveAddedOrChanged()
 {
     FmLogger::log( QString( "FmViewManager::on_driveWatcher_driveAddedOrChanged start" ) );
     emit refreshModel( QString("") );
+	checkDlgCloseUnit();
     FmLogger::log( QString( "FmViewManager::on_driveWatcher_driveAddedOrChanged end" ) );
 
 }
 
+
+void FmViewManager::checkDlgCloseUnit()
+{
+	foreach( FmDlgCloseUnit* unit, mDlgCloseUnitList ) {
+		QString drives( unit->associatedDrives() );
+		for( int i = 0; i < drives.length(); i++ ) {
+			QString drive( drives[i] + QString( ":/" ) );
+			if( !FmUtils::isDriveAvailable( drive ) ) {
+				FmLogger::log( " close Dialog start " );
+				unit->dialog()->close();
+				FmLogger::log( " close Dialog end " );
+			}
+		}
+	}
+}

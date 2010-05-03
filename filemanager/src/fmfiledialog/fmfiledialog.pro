@@ -14,6 +14,7 @@ TARGET =
 CONFIG += hb
 TEMPLATE = lib
 DEFINES += FMFILEDIALOG_LIBRARY
+RESOURCES += fmfiledialog.qrc
 include ( ../common.pri )
 include ( ../inc/commoninc.pri )
 include ( ../inc/commonutils.pri )
@@ -24,7 +25,12 @@ symbian {
             -lapmime \
             -lxqservice \
             -lxqutils \
-            -lshareui
+            -lshareui \
+            -lefsrv \
+            -lapgrfx \
+	    -lcone \
+            -ldirectorylocalizer
+            
     TARGET.UID3 = 0x2002BCC2
 
     # export headers to app

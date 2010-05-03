@@ -86,12 +86,15 @@ public:
             QList< FmRestoreInfo > &restoreInfoList,
             const int aDrive = FmErrNotFound );
     
+    void getBackupDriveList( QStringList &driveList );
+    
 signals:
     void notifyPreparing( bool cancelable );
 	void notifyStart( bool cancelable, int totalCount );
 	void notifyUpdate( int count );
 	void notifyFinish( int err );
 	void notifyMemoryLow( int memoryValue, int &userError );
+	void notifyBackupFilesExist( bool &isContinue );
     
 private:
     friend class FmBkupEnginePrivate;

@@ -61,6 +61,7 @@ void FmFindWidget::find( const QString &keyword, const QString &path )
     
     QRegExp regExp( '*' + keyword + '*' );
     regExp.setPatternSyntax( QRegExp::Wildcard );
+    regExp.setCaseSensitivity( Qt::CaseInsensitive );
     mModel->setPattern( regExp );
 
     mModel->find();
@@ -74,6 +75,8 @@ void FmFindWidget::stopFind()
 void FmFindWidget::on_resultModel_finished()
 {
     emit finished();
+    //Since layout problem is found, refresh it
+    on_resultModel_refresh();  
 }
 
 void FmFindWidget::on_resultModel_modelCountChanged( int count )
@@ -102,6 +105,7 @@ void FmFindWidget::activateContentWidget( ContentWidgetType contentWidgetType )
         mListView->hide();
         mEmptyTipWidget->show();
         deActiveSearchPanel();
+        emit setEmptyMenu( true );
         }
         break;
     case ResultListView:
@@ -117,6 +121,7 @@ void FmFindWidget::activateContentWidget( ContentWidgetType contentWidgetType )
         mEmptyTipWidget->hide();
         mListView->show();
         activeSearchPanel();
+        emit setEmptyMenu( false );
         }
         break;
     }
@@ -134,13 +139,16 @@ void FmFindWidget::init()
 
     connect( mModel, SIGNAL( modelCountChanged( int )),
         this, SLOT( on_resultModel_modelCountChanged( int )) );
+    
+    connect( mModel, SIGNAL( refresh()),
+        this, SLOT( on_resultModel_refresh()) );
 
     mListView = new HbListView( this );
     mListView->setModel( mModel );
 
     mEmptyTipWidget = new HbWidget( this );
     QGraphicsLinearLayout *emptyTipLayout = new QGraphicsLinearLayout( mEmptyTipWidget );
-    HbLabel *emptyTipLable = new HbLabel( tr( "No found files or folders" ), mEmptyTipWidget );
+    HbLabel *emptyTipLable = new HbLabel( hbTrId( "No found files or folders" ), mEmptyTipWidget );
     emptyTipLayout->addItem( emptyTipLable );
  
     initSearchPanel();
@@ -194,6 +202,12 @@ void FmFindWidget::deActiveSearchPanel()
     mSearchPanel->hide();
     mLayout->removeItem( mSearchPanel );
 
+}
+
+void FmFindWidget::on_resultModel_refresh()
+{
+    mListView->setModel( 0 );
+    mListView->setModel( mModel );  
 }
 
 

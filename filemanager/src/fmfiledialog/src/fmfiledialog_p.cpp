@@ -28,7 +28,7 @@
 #include <hblineedit.h>
 #include <QGraphicsLinearLayout>
 
-const char *backButtonIcon = "qtg_indi_status_back.png";
+#define backButtonIcon  ":image/qtg_indi_status_back.svg"
 
 /*!
     constructor
@@ -251,7 +251,9 @@ void FmFileDialogPrivate::checkBottomFileWidget()
     case GetDirMode:
         break;
     case GetFileMode:
-        mFileNameLineEdit->setReadOnly( true );
+        if( mFileNameLineEdit ){
+            mFileNameLineEdit->setReadOnly( true );
+        }
         break;
     case SaveFileMode:
         if( mFileWidget->currentPath().absoluteFilePath().isEmpty() ) {
@@ -277,7 +279,7 @@ void FmFileDialogPrivate::checkActions()
     case GetFileMode:
     case SaveFileMode:
         if( mFileWidget->currentPath().absoluteFilePath().isEmpty() ||
-            mFileNameLineEdit->text().isEmpty() ) {
+            ( mFileNameLineEdit && mFileNameLineEdit->text().isEmpty() ) ) {
             mOkAction->setDisabled( true );
         } else {
             mOkAction->setDisabled( false );

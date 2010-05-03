@@ -24,8 +24,9 @@
 #include <hblineedit.h>
 #include <hbaction.h>
 
-FmSingleTextQuery::FmSingleTextQuery( HbLineEdit::EchoMode echoMode, QGraphicsItem *parent  ) :
-    HbDialog( parent ), mEchoMode( echoMode )
+FmSingleTextQuery::FmSingleTextQuery( Options options,
+    HbLineEdit::EchoMode echoMode, QGraphicsItem *parent  ) :
+    HbDialog( parent ), mOptions( options ), mEchoMode( echoMode )
 {
     init();
 }
@@ -68,11 +69,18 @@ QString FmSingleTextQuery::getLineEditText()
     return text;
 }
 
+void FmSingleTextQuery::setLineEditMaxLength( int length )
+{
+    mTextEdit->setMaxLength( length );
+}
+
 void FmSingleTextQuery::checkActions()
 {
-    if( !mTextEdit->text().isEmpty() ){
-        this->primaryAction()->setEnabled( true );
-    } else {
-        this->primaryAction()->setEnabled( false );
+    if( mOptions & DimPrimereActionWhenEmpty ) {
+        if( !mTextEdit->text().isEmpty() ){
+            this->primaryAction()->setEnabled( true );
+        } else {
+            this->primaryAction()->setEnabled( false );
+        }
     }
 }

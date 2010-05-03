@@ -35,6 +35,7 @@ public:
 
 signals:
     void askForRename( const QString &srcFile, QString *destFile );
+    void askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted );
     void notifyPreparing( bool cancelable );
     void notifyStart( bool cancelable, int maxSteps );
     void notifyProgress( int currentStep );

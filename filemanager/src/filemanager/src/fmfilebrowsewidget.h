@@ -34,6 +34,7 @@ class HbListView;
 class HbTreeView;
 class HbAbstractViewItem;
 class HbSearchPanel;
+class HbLabel;
 
 class FmFileBrowseWidget : public HbWidget
 {
@@ -43,7 +44,8 @@ public:
     enum Style {
         NoStyle,
         ListStyle,
-        TreeStyle
+        TreeStyle,
+        LabelStyle
     };
     
     enum TSortType{
@@ -67,6 +69,7 @@ public:
     bool rename( const QString &oldName, const QString &newName );
     void setModelFilter( QDir::Filters filters );
     
+    bool checkPathAndSetStyle( const QString& path );
     void refreshModel( const QString& path );
     void sortFiles( TSortType sortType );
     void activeSearchPanel();
@@ -82,6 +85,8 @@ public slots:
 signals:
     void currentPathChanged( QString& );
     void startSearch( const QString &targetPath, const QString &criteria );
+    void setEmptyMenu( bool isMenuEmpty );
+    void setTitle( const QString &title );
 
 private slots:
     void on_list_activated( const QModelIndex &index );
@@ -102,6 +107,7 @@ private:
     void initFileModel();
 	void initLayout();
 	void initSearchPanel();
+	void initEmptyTipsLabel();
 
     void changeRootIndex( const QModelIndex &index );
 	bool isDriver(const QModelIndex &index) const;
@@ -113,13 +119,20 @@ private:
     QDirModel *mModel;
     
     bool mSelectable;
+    
+    //currentStyle
     Style mStyle;
+    //used to store orignal tree/list style
+    Style mFileBrowseStyle;
 
 	HbAbstractViewItem* mCurrentItem;	
 	FmOperationService *mOperationService;
     
     QString mFindTargetPath;
-    HbSearchPanel* mSearchPanel;
+    HbSearchPanel *mSearchPanel;
+    HbLabel *mEmptyTipLabel;
+    
+    QString mCurrentDrive;
 };
 
 #endif

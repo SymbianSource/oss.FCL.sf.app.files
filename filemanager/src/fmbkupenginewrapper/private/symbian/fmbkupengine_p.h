@@ -31,9 +31,11 @@
 #include "MMMCScBkupEngineObserver.h"
 #include <f32file.h>
 
+#include <QObject>
+#include <QStringList>
+
 class CMMCScBkupEngine;
 
-#include <QObject>
 NONSHARABLE_CLASS(TMaskLookup)
     {
     public:
@@ -76,6 +78,8 @@ public:
     void GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
             QList< FmRestoreInfo > &restoreInfoList,
             const TInt aDrive = KErrNotFound );
+    
+    void getBackupDriveList( QStringList &driveList );
 
 signals:
     void notifyPreparing( bool cancelable );
@@ -83,13 +87,14 @@ signals:
 	void notifyUpdate( int totalCount );
 	void notifyFinish( int err );
 	void notifyMemoryLow( int memoryValue, int &userError );
-	
+	void notifyBackupFilesExist( bool &isContinue );
 private:
     void notifyPreparingInternal();
 	void notifyStartInternal( int aTotalCount );
 	void notifyUpdateInternal( int aCount );
 	void notifyFinishInternal();
 	void notifyMemoryLowInternal( int memoryValue, int &userError );
+	void notifyBackupFilesExistInternal( bool &isContinue );
 
 private: // From MMMCScBkupEngineObserver
     TInt HandleBkupEngineEventL(

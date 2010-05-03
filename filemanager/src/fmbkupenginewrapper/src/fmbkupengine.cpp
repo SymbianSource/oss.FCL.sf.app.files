@@ -32,6 +32,7 @@ FmBkupEngine::FmBkupEngine(QObject* parent):
 	connect( d, SIGNAL( notifyFinish(int) ), 
 			this, SIGNAL( notifyFinish(int) ) );
 	connect( d, SIGNAL( notifyMemoryLow(int, int& ) ), this, SIGNAL( notifyMemoryLow(int, int&) ) );
+	connect( d, SIGNAL( notifyBackupFilesExist( bool& )), this, SIGNAL( notifyBackupFilesExist( bool&) ) );
 }
 
 
@@ -71,7 +72,7 @@ FmBackupSettings *FmBkupEngine::BackupSettingsL()
 {
     if ( !iBackupSettings )
         {
-        iBackupSettings = new FmBackupSettings();
+        iBackupSettings = new FmBackupSettings( this );
         }
     return iBackupSettings;
 }
@@ -88,13 +89,18 @@ FmRestoreSettings *FmBkupEngine::RestoreSettingsL()
 void FmBkupEngine::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > &drivesAndOperationList,
         QList< FmRestoreInfo > &restoreInfoList,
         const int aDrive )
-    {
+{
     d->GetRestoreInfoArray( drivesAndOperationList, restoreInfoList, aDrive );
-    }
+}
 
 int FmBkupEngine::deleteBackup( QList<FmBkupDrivesAndOperation* > drivesAndOperationList )
-    {
+{
     return d->deleteBackup( drivesAndOperationList );
-    }
+}
 
+
+void FmBkupEngine::getBackupDriveList( QStringList &driveList )
+{
+    d->getBackupDriveList( driveList );
+}
 

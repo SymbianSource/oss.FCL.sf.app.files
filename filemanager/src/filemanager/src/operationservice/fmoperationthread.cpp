@@ -23,7 +23,7 @@
 #include "fmoperationcopy.h"
 #include "fmoperationmove.h"
 #include "fmoperationremove.h"
-
+#include "fmoperationformat.h"
 
 #include <QDir>
 #include <QStack>
@@ -49,6 +49,8 @@ int FmOperationThread::asyncCopy( FmOperationBase* operationBase )
     QMetaObject::connectSlotsByName( this );
     connect( mOperationBase, SIGNAL( askForRename( QString, QString* ) ),
         this, SLOT( onAskForRename( QString, QString* )), Qt::BlockingQueuedConnection );
+    connect( mOperationBase, SIGNAL( askForReplace( QString, QString, bool* ) ),
+        this, SLOT( onAskForReplace( QString, QString, bool* )), Qt::BlockingQueuedConnection );
 
     start();
     return FmErrNone;
@@ -65,6 +67,9 @@ int FmOperationThread::asyncMove( FmOperationBase* operationBase )
     QMetaObject::connectSlotsByName( this );
     connect( mOperationBase, SIGNAL( askForRename( QString, QString* ) ),
         this, SLOT( onAskForRename( QString, QString* )), Qt::BlockingQueuedConnection );
+    connect( mOperationBase, SIGNAL( askForReplace( QString, QString, bool* ) ),
+        this, SLOT( onAskForReplace( QString, QString, bool* )), Qt::BlockingQueuedConnection );
+
 
     start();
     return FmErrNone;
@@ -134,6 +139,10 @@ void FmOperationThread::stop()
 void FmOperationThread::onAskForRename( const QString &srcFile, QString *destFile )
 {
     emit askForRename( srcFile, destFile );
+}
+void FmOperationThread::onAskForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted )
+{
+    emit askForReplace( srcFile, destFile, isAccepted );
 }
 void FmOperationThread::on_operationElement_notifyPreparing( bool cancelable )
 {
@@ -226,13 +235,14 @@ void FmOperationThread::run()
         }
     case FmOperationService::EOperationTypeFormat:
         {
-        emit notifyWaiting( false );
+//        emit notifyWaiting( false );
         FmLogger::log(QString("start format"));
         FmOperationFormat *operationFormat = static_cast<FmOperationFormat*>( mOperationBase );
         FmLogger::log(QString("get param and start format"));
 
         QString refreshSrcPath = operationFormat->driverName();
-        if ( FmErrNone != FmUtils::formatDrive( operationFormat->driverName() ) ) {
+//        if ( FmErrNone != FmUtils::formatDrive( operationFormat->driverName() ) ) {
+        if ( FmErrNone != operationFormat->start() ) {
             emit notifyError(  FmErrTypeFormatFailed, operationFormat->driverName() );
             return;
         }

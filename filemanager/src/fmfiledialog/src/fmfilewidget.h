@@ -26,6 +26,7 @@
 
 class QDirModel;
 class FmDriveModel;
+class FmDriveWatcher;
 class HbListView;
 class QGraphicsLinearLayout;
 
@@ -55,6 +56,7 @@ signals:
 
 private slots:
     void on_list_activated( const QModelIndex &index );
+    void on_driveWatcher_driveAddedOrChanged();
 
 private:
     void init();
@@ -68,6 +70,7 @@ private:
     FmDriveModel    *mDriveModel;
 
     QAbstractItemModel *mCurrentModel;
+    FmDriveWatcher  *mDriveWatcher;
 
 };
 

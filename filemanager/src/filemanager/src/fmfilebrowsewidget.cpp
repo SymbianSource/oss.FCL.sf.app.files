@@ -37,6 +37,7 @@
 #include <hbaction.h>
 #include <hbsearchpanel.h>
 #include <hbmessagebox.h>
+#include <hblabel.h>
 
 FmFileBrowseWidget::FmFileBrowseWidget( HbWidget *parent, FmFileBrowseWidget::Style style )
     : HbWidget( parent ),
@@ -46,15 +47,16 @@ FmFileBrowseWidget::FmFileBrowseWidget( HbWidget *parent, FmFileBrowseWidget::St
       mModel( 0 ),
       mSelectable( false ), 
       mStyle( NoStyle ), 
+      mFileBrowseStyle( style ),
       mCurrentItem( 0 ),
       mOperationService( 0 ),
       mSearchPanel( 0 )
-
 {
     initFileModel();
     initListView();
     initTreeView();
     initSearchPanel();
+    initEmptyTipsLabel();
     initLayout();
     
     mOperationService = FmViewManager::viewManager()->operationService();
@@ -68,10 +70,14 @@ FmFileBrowseWidget::~FmFileBrowseWidget()
     //since there is a thread running in background
     //if the model destroy later, the thread might not quit properly.
 
-    QFileInfo oldFileInfo = mModel->fileInfo( mListView->rootIndex() );
-    FmViewManager *viewManager = FmViewManager::viewManager();
-    if( viewManager ) {
-        viewManager->removeWatchPath( oldFileInfo.absoluteFilePath() );
+    if( mStyle == ListStyle || mStyle == TreeStyle ) {
+        QFileInfo oldFileInfo = mModel->fileInfo( mListView->rootIndex() );
+        if( oldFileInfo.exists() ) {
+            FmViewManager *viewManager = FmViewManager::viewManager();
+            if( viewManager ) {
+                viewManager->removeWatchPath( oldFileInfo.absoluteFilePath() );
+            }   
+        }
     }
 
     mTreeView->setModel( 0 );
@@ -117,35 +123,19 @@ void FmFileBrowseWidget::setRootPath( const QString &pathName )
     QString logString = "FmFileBrowseWidget::setRootPath(" + pathName + ')';
     FmLogger::log( logString );
 
-    QModelIndex modelIndex = mModel->index( pathName );
-    bool i = QFileInfo(pathName).exists();
-    QString string2; 
-    if( i )
-        {
-        string2 = QString( "true" ) ;
-        }
-    else
-        {
-        string2 = QString( "false" ) ;
-        }
-
-    logString = "FmFileBrowseWidget::setRootPath exists(" + string2 + ')';
-    FmLogger::log( logString );
-
-    mModel->refresh(modelIndex);
-    QString string = mModel->fileName( modelIndex );
-    logString = "FmFileBrowseWidget::setRootPath:filename(" + string + ')';
-    FmLogger::log( logString );
-
-    string  = mModel->filePath( modelIndex );
-    logString = "FmFileBrowseWidget::setRootPath:filepath(" + string + ')';
-    FmLogger::log( logString );
-
-
-    FmViewManager::viewManager()->addWatchPath( pathName );
-
-    mListView->setRootIndex( mModel->index( pathName ) );
-    mTreeView->setRootIndex( mModel->index( pathName ) );
+    if( checkPathAndSetStyle( pathName ) ) {
+        mListView->setModel(0);
+        mTreeView->setModel(0);
+        delete mModel;
+        mModel = new QDirModel(this);
+        mListView->setModel(mModel);
+        mTreeView->setModel(mModel);
+        
+        mListView->setRootIndex( mModel->index( pathName ) );
+        mTreeView->setRootIndex( mModel->index( pathName ) );
+        FmViewManager::viewManager()->addWatchPath( pathName );
+    }
+    mCurrentDrive = pathName.left( 3 );
 }
 
 void FmFileBrowseWidget::setStyle( FmFileBrowseWidget::Style style )
@@ -160,14 +150,22 @@ void FmFileBrowseWidget::setStyle( FmFileBrowseWidget::Style style )
     } else if ( mStyle == TreeStyle ) {
         mLayout->removeItem( mTreeView );
         mTreeView->hide();
-    } 
+    } else if( mStyle == LabelStyle ){
+        mLayout->removeItem( mEmptyTipLabel );
+        mEmptyTipLabel->hide();
+    }
 
     if ( style == ListStyle ) {
         mLayout->addItem( mListView );
         mListView->show();
+        mFileBrowseStyle = ListStyle;
     } else if ( style == TreeStyle ) {
         mLayout->addItem( mTreeView );
         mTreeView->show();
+        mFileBrowseStyle = TreeStyle;
+    } else if ( style == LabelStyle ){
+        mLayout->addItem( mEmptyTipLabel );
+        mEmptyTipLabel->show();
     }
     
     mStyle = style;
@@ -199,7 +197,10 @@ void FmFileBrowseWidget::clearSelection()
         selectionModel = mTreeView->selectionModel();
     }
 
-    selectionModel->clear();
+    if( selectionModel ){
+        selectionModel->clear();
+    }
+
 }
 
 
@@ -262,7 +263,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
     
     HbAction *viewAction = new HbAction();
     viewAction->setObjectName( "viewAction" );
-    viewAction->setText( tr( "View details" ) );
+    viewAction->setText( hbTrId( "txt_fmgr_menu_view_details_file" ) );
     contextMenu->addAction( viewAction );
 
     connect( viewAction, SIGNAL( triggered() ),
@@ -271,47 +272,55 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
     //copy
     HbAction *copyAction = new HbAction();
     copyAction->setObjectName( "copyAction" );
-    copyAction->setText( tr( "Copy" ) );
+    copyAction->setText( hbTrId( "txt_fmgr_menu_copy" ) );
     contextMenu->addAction( copyAction );
 
     connect( copyAction, SIGNAL( triggered() ),
     this, SLOT( on_copyAction_triggered() ) );
 
-    //Move
-    HbAction *moveAction = new HbAction();
-    moveAction->setObjectName( "moveAction" );
-    moveAction->setText( tr( "Move" ) );
-    contextMenu->addAction( moveAction );
-
-    connect( moveAction, SIGNAL( triggered() ),
-    this, SLOT( on_moveAction_triggered() ) );
-
-    //Delete
-    HbAction *deleteAction = new HbAction();
-    deleteAction->setObjectName( "deleteAction" );
-    deleteAction->setText( tr( "Delete" ) );
-    contextMenu->addAction( deleteAction );
-
-    connect( deleteAction, SIGNAL( triggered() ),
-    this, SLOT( on_deleteAction_triggered() ) );
-
-    //rename
-    HbAction *renameAction = new HbAction();
-    renameAction->setObjectName( "renameAction" );
-    renameAction->setText( tr( "Rename" ) );
-    contextMenu->addAction( renameAction );
-
-    connect( renameAction, SIGNAL( triggered() ),
-    this, SLOT( on_renameAction_triggered() ) );
     
-//remove send action as it can not be used
-//    HbAction *sendAction = new HbAction();
-//    sendAction->setObjectName( "sendAction" );
-//    sendAction->setText( tr( "Send" ) );
-//    contextMenu->addAction( sendAction );
-//    
-//    connect( sendAction, SIGNAL( triggered() ),
-//    this, SLOT( on_sendAction_triggered() ) );
+    QString filePath( mModel->filePath( item->modelIndex() ) );
+    QString formatFilePath( FmUtils::formatPath( filePath ) );
+    QFileInfo fileInfo( filePath );
+    
+    if( ( fileInfo.isFile() ) || ( fileInfo.isDir() && !( FmUtils::isDefaultFolder( formatFilePath ) ) ) ){
+        //Move
+        HbAction *moveAction = new HbAction();
+        moveAction->setObjectName( "moveAction" );
+        moveAction->setText( hbTrId( "txt_fmgr_menu_move" ) );
+        contextMenu->addAction( moveAction );
+    
+        connect( moveAction, SIGNAL( triggered() ),
+        this, SLOT( on_moveAction_triggered() ) );
+    
+        //Delete
+        HbAction *deleteAction = new HbAction();
+        deleteAction->setObjectName( "deleteAction" );
+        deleteAction->setText( hbTrId( "txt_fmgr_menu_delete" ) );
+        contextMenu->addAction( deleteAction );
+    
+        connect( deleteAction, SIGNAL( triggered() ),
+        this, SLOT( on_deleteAction_triggered() ) );
+    
+        //rename
+        HbAction *renameAction = new HbAction();
+        renameAction->setObjectName( "renameAction" );
+        renameAction->setText( hbTrId( "txt_fmgr_menu_rename" ) );
+        contextMenu->addAction( renameAction );
+    
+        connect( renameAction, SIGNAL( triggered() ),
+        this, SLOT( on_renameAction_triggered() ) );
+    }
+    
+//    if( fileInfo.isFile() ){
+//        HbAction *sendAction = new HbAction();
+//        sendAction->setObjectName( "sendAction" );
+//        sendAction->setText( hbTrId( "txt_fmgr_menu_send" ) );
+//        contextMenu->addAction( sendAction );
+//        
+//        connect( sendAction, SIGNAL( triggered() ),
+//        this, SLOT( on_sendAction_triggered() ) );
+//    }
     
     contextMenu->exec( coords );     
 }
@@ -397,6 +406,13 @@ void FmFileBrowseWidget::initSearchPanel()
         this, SLOT( on_searchPanel_exitClicked() ) );
 }
 
+void FmFileBrowseWidget::initEmptyTipsLabel()
+{
+    mEmptyTipLabel = new HbLabel( this );
+    mEmptyTipLabel->setObjectName( "searchPanel" );
+    mEmptyTipLabel->hide();
+}
+
 
 void FmFileBrowseWidget::changeRootIndex( const QModelIndex &index )
 {
@@ -437,9 +453,57 @@ void FmFileBrowseWidget::setModelFilter( QDir::Filters filters )
 
 void FmFileBrowseWidget::refreshModel( const QString& path )
 {
-    if( !path.isEmpty() ) {
-        mModel->refresh( mModel->index( path ) );
+    QString currPath( currentPath().absoluteFilePath() );
+    QString refreshPath( path );
+    
+    if( !currPath.isEmpty() ) {
+        if( refreshPath.isEmpty() ) {
+            refreshPath = currPath;
+        }
+        if(  !FmUtils::isPathEqual( refreshPath, currPath ) ) {
+            // no need refresh other path
+            return;
+        }
+        if( checkPathAndSetStyle( refreshPath ) ) {               
+            mModel->refresh( mModel->index( refreshPath ) );
+        } else {
+            FmViewManager *viewManager = FmViewManager::viewManager();
+            if( viewManager ) {
+                viewManager->removeWatchPath( currentPath().absoluteFilePath() );
+            } 
+        }
+    } else {
+        // current path is empty, so change root path to Drive root.
+        refreshPath = mCurrentDrive;
+        setRootPath( refreshPath );
+        emit setTitle( FmUtils::fillDriveVolume( mCurrentDrive, true ) );
     }
+}
+
+bool FmFileBrowseWidget::checkPathAndSetStyle( const QString& path )
+{
+    if( !FmUtils::isPathAccessabel( path ) ){
+        QString driveName = FmUtils::getDriveNameFromPath( path );
+        FmDriverInfo::DriveState state = FmUtils::queryDriverInfo( driveName ).driveState();
+        
+        if( state & FmDriverInfo::EDriveLocked ) {
+            mEmptyTipLabel->setPlainText( hbTrId( "Memory Card is locked" ) );       
+        } else if( state & FmDriverInfo::EDriveNotPresent ) {
+            mEmptyTipLabel->setPlainText( hbTrId( "Memory Card is not present" ) );
+        } else if( state & FmDriverInfo::EDriveCorrupted ) {
+            mEmptyTipLabel->setPlainText( hbTrId( "Drive is Corrupted" ) );
+        } else {
+            mEmptyTipLabel->setPlainText( hbTrId( "Drive can not be opened " ) );
+        }
+        setStyle( LabelStyle );
+        emit setEmptyMenu( true );
+        return false;
+    } else {
+        setStyle( mFileBrowseStyle );
+        emit setEmptyMenu( false );
+        return true;
+    }
+    
 }
 
 void FmFileBrowseWidget::sortFiles( TSortType sortType )
@@ -458,7 +522,7 @@ void FmFileBrowseWidget::sortFiles( TSortType sortType )
         }
             break;
         case ESortByType:{
-            mModel->setSorting( QDir::Type );
+            mModel->setSorting( QDir::Type | QDir::DirsFirst );
         }
             break;
         default:
@@ -475,7 +539,7 @@ void FmFileBrowseWidget::activeSearchPanel()
 
 void FmFileBrowseWidget::on_searchPanel_searchOptionsClicked()
 {
-    mFindTargetPath = FmFileDialog::getExistingDirectory( 0, tr( "Look in:" ), QString(""),
+    mFindTargetPath = FmFileDialog::getExistingDirectory( 0, hbTrId( "Look in:" ), QString(""),
         QStringList() );
 }
 
@@ -499,8 +563,8 @@ void FmFileBrowseWidget::on_searchPanel_exitClicked()
 void FmFileBrowseWidget::on_sendAction_triggered()
 {
     QString filePath = mModel->filePath( mCurrentItem->modelIndex() );
-    QList<QVariant> list;
-    list.append( QVariant(filePath ) );
+    QStringList list;
+    list.append( filePath );
     FmUtils::sendFiles( list );
 }
 
@@ -513,7 +577,7 @@ void FmFileBrowseWidget::on_viewAction_triggered()
         mOperationService->asyncViewFolderDetails( filePath );  
     }
     else if( fileInfo.isFile() ){
-        FmViewDetailsDialog::showFileViewDetailsDialog( filePath );
+		FmViewDetailsDialog::showFileViewDetailsDialog( filePath, FmUtils::getDriveLetterFromPath( filePath ) );
     } 
 }
 
@@ -521,7 +585,7 @@ void FmFileBrowseWidget::on_deleteAction_triggered()
 {
     QStringList fileList;
     fileList.push_back( mModel->filePath( mCurrentItem->modelIndex() ) );
-    if ( HbMessageBox::question( tr("Confirm Deletion?" ) )) {
+    if ( HbMessageBox::question( hbTrId("Confirm Deletion?" ) )) {
         int ret = mOperationService->asyncRemove( fileList );
         switch( ret ) {
             case FmErrNone:
@@ -529,13 +593,13 @@ void FmFileBrowseWidget::on_deleteAction_triggered()
                 break;
             case FmErrAlreadyStarted:
                 // last operation have not finished
-                HbMessageBox::information( tr( "Operatin already started!" ) );
+                HbMessageBox::information( hbTrId( "Operatin already started!" ) );
                 break;
             case FmErrWrongParam:
-                HbMessageBox::information( tr( "Wrong parameters!" ) );
+                HbMessageBox::information( hbTrId( "Wrong parameters!" ) );
                 break;
             default:
-                HbMessageBox::information( tr( "Operation fail to start!" ) );
+                HbMessageBox::information( hbTrId( "Operation fail to start!" ) );
         }
     }
 }
@@ -545,7 +609,7 @@ void FmFileBrowseWidget::on_copyAction_triggered()
     QStringList srcFileList;
     srcFileList.push_back( mModel->filePath( mCurrentItem->modelIndex() ) );
 
-    QString targetPathName = FmFileDialog::getExistingDirectory( 0, tr( "copy to" ),
+    QString targetPathName = FmFileDialog::getExistingDirectory( 0, hbTrId( "copy to" ),
     QString(""), QStringList() );
     if( !targetPathName.isEmpty() ) {
         targetPathName = FmUtils::fillPathWithSplash( targetPathName );
@@ -558,13 +622,13 @@ void FmFileBrowseWidget::on_copyAction_triggered()
                 break;
             case FmErrAlreadyStarted:
                 // last operation have not finished
-                HbMessageBox::information( tr( "Operatin already started!" ) );
+                HbMessageBox::information( hbTrId( "Operatin already started!" ) );
                 break;
             case FmErrWrongParam:
-                HbMessageBox::information( tr( "Wrong parameters!" ) );
+                HbMessageBox::information( hbTrId( "Wrong parameters!" ) );
                 break;
             default:
-                HbMessageBox::information( tr( "Operation fail to start!" ) );
+                HbMessageBox::information( hbTrId( "Operation fail to start!" ) );
         }
     }
 
@@ -588,13 +652,13 @@ void FmFileBrowseWidget::on_moveAction_triggered()
                 break;
             case FmErrAlreadyStarted:
                 // last operation have not finished
-                HbMessageBox::information( tr( "Operatin already started!" ) );
+                HbMessageBox::information( hbTrId( "Operatin already started!" ) );
                 break;
             case FmErrWrongParam:
-                HbMessageBox::information( tr( "Wrong parameters!" ) );
+                HbMessageBox::information( hbTrId( "Wrong parameters!" ) );
                 break;
             default:
-                HbMessageBox::information( tr( "Operation fail to start!" ) );
+                HbMessageBox::information( hbTrId( "Operation fail to start!" ) );
         }
     }
 }
@@ -607,20 +671,18 @@ void FmFileBrowseWidget::on_renameAction_triggered()
 
     QString newName( fileInfo.fileName() );
     
-    while( FmDlgUtils::showTextQuery( tr( "Enter new name for %1" ).arg( newName ), newName ) ){
+    while( FmDlgUtils::showTextQuery( hbTrId( "Enter new name for %1" ).arg( newName ), newName, true ) ){
         QString newTargetPath = FmUtils::fillPathWithSplash(
             fileInfo.absolutePath() ) + newName;
         QFileInfo newFileInfo( newTargetPath );
         if( newFileInfo.exists() ) {
-            HbMessageBox::information( tr( "%1 already exist!" ).arg( newName ) );
+            HbMessageBox::information( hbTrId( "%1 already exist!" ).arg( newName ) );
             continue;
         }
 
         if( !rename( fileInfo.absoluteFilePath(), newTargetPath ) ) {
-            HbMessageBox::information( tr("Rename failed!") );
+            HbMessageBox::information( hbTrId("Rename failed!") );
         }
         break;
-    }
-    
-   
+    }   
 }

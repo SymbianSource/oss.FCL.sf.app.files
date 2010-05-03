@@ -27,6 +27,7 @@
 
 class HbLineEdit;
 class HbPushButton;
+class HbMenu;
 class FmOperationService;
 
 class FmFileView : public FmViewBase
@@ -54,6 +55,7 @@ private slots:
 	void on_delete_triggered();
     void on_copy_triggered();
     void on_move_triggered();
+    void on_newFolder_triggered();
 	void on_upAction_triggered();
 	void on_leftAction_triggered();
 	void on_rightAction_triggered();
@@ -63,6 +65,8 @@ private slots:
 	void on_sortTypeAction_triggered();
 	
     void startSearch( const QString &targetPath, const QString &criteria );
+    void on_mainWidget_setEmptyMenu( bool isMenuEmpty );
+    void on_mainWidget_setTitle( const QString &title );
 
 #ifdef FM_CHANGE_ORIENT_ENABLE
     void on_rotateAction_triggered();
@@ -90,6 +94,7 @@ private:
     FmOperationService  *mOperationService;
     
     HbAction *mToolBarRightAction;
+    HbMenu *mMenu;
 };
 
 #endif

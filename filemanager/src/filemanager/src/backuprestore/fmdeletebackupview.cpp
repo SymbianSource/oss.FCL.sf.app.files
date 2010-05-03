@@ -33,7 +33,7 @@
 
 FmDeleteBackupView::FmDeleteBackupView() : FmViewBase( EDeleteBackupView )
 {
-	setTitle( tr( "Delete Backup" ) );
+	setTitle( hbTrId( "Delete Backup" ) );
 
 	initMainWidget();
 	initToolBar();
@@ -55,13 +55,13 @@ void FmDeleteBackupView::initMenu()
     HbAction *action = 0;
 	action = new HbAction( this );
     action->setObjectName( "rotateAction" );
-    action->setText( tr( "Change orientation" ) );
+    action->setText( hbTrId( "Change orientation" ) );
     menu()->addAction( action );
 #endif
 
 	mDeleteAction = new HbAction( this );
     mDeleteAction->setObjectName( "deleteAction" );
-    mDeleteAction->setText( tr( "Delete backups" ) );
+    mDeleteAction->setText( hbTrId( "Delete backups" ) );
     menu()->addAction( mDeleteAction );
 }
 
@@ -77,7 +77,7 @@ void FmDeleteBackupView::initToolBar()
 {
 	mLeftAction = new HbAction( this );
     mLeftAction->setObjectName( "leftAction" );
-    mLeftAction->setText( tr( "delete" ) );
+    mLeftAction->setText( hbTrId( "delete" ) );
     toolBar()->addAction( mLeftAction );
     
     toolBar()->setOrientation( Qt::Horizontal );

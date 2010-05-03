@@ -29,6 +29,7 @@ const QString constFileManagerBackupWeekdayTuesday = "Tuesday";
 const QString constFileManagerBackupWeekdayWednesday = "Wednesday";
 const QString constFileManagerBackupWeekdayThursday = "Thursday";
 const QString constFileManagerBackupWeekdayFirday = "Friday";
+const QString constFileManagerBackupWeekdaySaturday = "Saturday";
 const QString constFileManagerBackupWeekdaySunday = "Sunday";
 
 const QString constFileManagerBackupScheduleNever = "Never";
@@ -48,6 +49,8 @@ const QString constFileManagerBackupSettingsContentContacts = "Contacts";
 const QString constFileManagerBackupSettingsContentCalendar = "Calendar entries";
 const QString constFileManagerBackupSettingsContentBookmarks = "Bookmarks";
 const QString constFileManagerBackupSettingsContentUserFiles = "Files";
+
+class FmBkupEngine;
 
 // CLASS DECLARATION
 /**
@@ -167,11 +170,12 @@ public:
         EFileManagerBackupWeekdayWednesday,
         EFileManagerBackupWeekdayThursday,
         EFileManagerBackupWeekdayFriday,
+        EFileManagerBackupWeekdaySaturday,
         EFileManagerBackupWeekdaySunday,
     };
 
 public:
-    FmBackupSettings( void );
+    explicit FmBackupSettings( FmBkupEngine *aFmBkupEngine );
     ~FmBackupSettings( void );
 
 
@@ -347,6 +351,8 @@ private:
      * Backup setting list items
      */
     QList< FmBackupEntry* > mBackupEntryList;
+    
+    FmBkupEngine *mBkupEngine;
 };
 
 #endif //FMBACKUPSETTINGS_H

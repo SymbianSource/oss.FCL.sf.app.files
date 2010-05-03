@@ -80,15 +80,40 @@ int FmOperationCopy::start( volatile bool *isStopped, QString *errString )
             return ret;
         }
         QString newName;
+        bool    isAcceptReplace = false;
         QFileInfo destFi( mTargetPath + fi.fileName() );
+
+        // while for duplicated file/dir
         while( destFi.exists() ) {
-            emit askForRename( destFi.absoluteFilePath(), &newName );
-            if( newName.isEmpty() ) {
-                ret = FmErrCancel;
-                break;
+            if( destFi.isFile() && destFi.absoluteFilePath().compare( fi.absoluteFilePath(), Qt::CaseInsensitive ) != 0 ) {
+                emit askForReplace( destFi.absoluteFilePath(), fi.absoluteFilePath(), &isAcceptReplace );
+                if( isAcceptReplace ) {
+                    //delete src file
+                    if( !QFile::remove( destFi.absoluteFilePath() ) ) {
+                        *mErrString = destFi.absoluteFilePath();
+                        ret = FmErrCannotRemove;
+                        break;
+                    }
+                    destFi.setFile( destFi.absoluteFilePath() );
+                } else {
+                    emit askForRename( destFi.absoluteFilePath(), &newName );
+                    if( newName.isEmpty() ) {
+                        ret = FmErrCancel;
+                        break;
+                    }
+                    QString targetName = mTargetPath + newName;
+                    destFi.setFile( targetName );
+                }
+            } else{
+                // destination is dir
+                emit askForRename( destFi.absoluteFilePath(), &newName );
+                if( newName.isEmpty() ) {
+                    ret = FmErrCancel;
+                    break;
+                }
+                QString targetName = mTargetPath + newName;
+                destFi.setFile( targetName );
             }
-            QString targetName = mTargetPath + newName;
-            destFi.setFile( targetName );
         }
         if( ret != FmErrNone ) {
             return ret;
@@ -212,6 +237,9 @@ int FmOperationCopy::copyDirInsideContent( const QString &srcPath, const QString
 
 void FmOperationCopy::IncreaseProgress( quint64 size )
 {
+    if( mTotalSize <=0 ) {
+        return;
+    }
     mCopiedSize += size;
     int step = ( mCopiedSize * 100 ) / mTotalSize;
     if( step > mCurrentStep ) {

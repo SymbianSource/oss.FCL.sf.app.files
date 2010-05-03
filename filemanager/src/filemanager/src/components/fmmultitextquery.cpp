@@ -25,7 +25,7 @@
 #include <hblabel.h>
 #include <hbaction.h>
 
-FmMultiTextQuery::FmMultiTextQuery( HbLineEdit::EchoMode echoMode, QGraphicsItem *parent ) :\
+FmMultiTextQuery::FmMultiTextQuery( HbLineEdit::EchoMode echoMode, QGraphicsItem *parent ) :
     HbDialog( parent ), mEchoMode( echoMode )
 {
     init();

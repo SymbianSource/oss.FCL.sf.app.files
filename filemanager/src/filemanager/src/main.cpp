@@ -38,11 +38,9 @@ int main( int argc, char *argv[] )
     translator.load( path + "filemanager_" + lang ); 
     app.installTranslator(&translator);
 
-
     FmMainWindow mw;
 
     mw.show(); 
-
 
     return app.exec();
 }
