@@ -456,6 +456,7 @@ TInt64 CMMCScBkupDataTypeSizer::Size( TMMCScBkupOwnerDataType aDataType, TDriveN
 // ---------------------------------------------------------------------------
 void CMMCScBkupDataTypeSizer::GetSizesL( RArray<TMMCScBkupDriveAndSize>& aSizes ) const
     {
+    CleanupClosePushL( aSizes );
     aSizes.Reset();
     //
     for( TInt d = EDriveA; d<=EDriveZ; d++ )
@@ -479,6 +480,7 @@ void CMMCScBkupDataTypeSizer::GetSizesL( RArray<TMMCScBkupDriveAndSize>& aSizes 
             aSizes.AppendL( driveAndSize );
             }
         }
+    CleanupStack::Pop( &aSizes );
     }
 
 

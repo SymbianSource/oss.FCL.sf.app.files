@@ -859,14 +859,16 @@ EXPORT_C TBool CFileManagerEngine::IsValidName(
     const TUint16 KMinAllowedChar = 0x0020;
     const TUint16 KParagraphSeparator = 0x2029;
     const TUint16 KDot = '.';
-    TInt nameLen( aName.Length() );
+    TFileName nameAfterTrim( aName );
+    nameAfterTrim.TrimRight(); 
+    TInt nameLen( nameAfterTrim.Length() );
     if ( !nameLen )
         {
         return EFalse;
         }
     for ( TInt i( 0 ); i < nameLen; i++ )
         {
-        TUint16 ch( aName[ i ] );
+        TUint16 ch( nameAfterTrim[ i ] );
         if ( ch < KMinAllowedChar || ch == KParagraphSeparator )
             {
             return EFalse;
@@ -874,7 +876,7 @@ EXPORT_C TBool CFileManagerEngine::IsValidName(
         }
     // File system ignores totally dot in the end of name, so 
     // we set here as not valid name, so that user gets correctly informed
-    if ( aName[ nameLen - 1 ] == KDot || IllegalChars( aName ) )
+    if ( nameAfterTrim[ nameLen - 1 ] == KDot || IllegalChars( nameAfterTrim ) )
         {
         return EFalse;
         }
@@ -907,7 +909,7 @@ EXPORT_C TBool CFileManagerEngine::IsValidName(
             TPtr ptr( fullPath->Des() );
             ptr.Copy( pathPtr );
             CFileManagerUtils::EnsureFinalBackslash( ptr ); // Add backslash before name
-            ptr.Append( aName );
+            ptr.Append( nameAfterTrim );
             ret = iFs.IsValidName( ptr );
             delete fullPath;
             }

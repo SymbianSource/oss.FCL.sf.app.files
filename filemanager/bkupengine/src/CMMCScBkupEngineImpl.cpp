@@ -1007,6 +1007,18 @@ void CMMCScBkupEngineImpl::PrepareObjectsL()
     
     
 // ---------------------------------------------------------------------------
+// CMMCScBkupEngineImpl::ResetAndDestroyArchives
+// ---------------------------------------------------------------------------
+// 
+void CMMCScBkupEngineImpl::ResetAndDestroyArchives( TAny* aPtr )
+    {
+    RPointerArray< CMMCScBkupArchiveInfo >* archive = 
+        static_cast< RPointerArray< CMMCScBkupArchiveInfo >* >( aPtr );
+    archive->ResetAndDestroy();
+    archive->Close();
+    }
+
+// ---------------------------------------------------------------------------
 // CMMCScBkupEngineImpl::ListArchivesL()
 // 
 // Provide a list of valid (both content and category do match) archives 
@@ -1020,6 +1032,9 @@ void CMMCScBkupEngineImpl::ListArchivesL(
     {
     __LOG("CMMCScBkupEngineImpl::ListArchivesL() - START");
 
+    TCleanupItem cleanupItem( ResetAndDestroyArchives, &aArchives );
+    CleanupStack::PushL( cleanupItem );
+    
     for(TInt i = 0; i < KMaxDrives; i++)
         {
         // Check is drive number allowed
@@ -1097,7 +1112,7 @@ void CMMCScBkupEngineImpl::ListArchivesL(
             
         CleanupStack::PopAndDestroy(pFiles);
         }
-
+    CleanupStack::Pop( &aArchives );
     __LOG("CMMCScBkupEngineImpl::ListArchivesL() - END");
     }
 

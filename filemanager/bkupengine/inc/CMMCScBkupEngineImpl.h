@@ -212,9 +212,15 @@ NONSHARABLE_CLASS(CMMCScBkupEngineImpl) : public CActive, public MMMCScBkupDrive
         void ExecuteStateL();
 
         /**
-        *
+        * 
         */
         void PrepareObjectsL();
+        
+        /**
+        * Reset and Destroy the RPointArray of Archives
+        * 
+        */
+        static void ResetAndDestroyArchives( TAny* aPtr );
 
 #ifdef DEBUGGING_DATA_TRANSFER
 

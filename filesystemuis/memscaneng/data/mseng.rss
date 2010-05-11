@@ -463,6 +463,11 @@ RESOURCE EXTARRAY extarray
             exttype=EExtMxmf;
             extension="*.mxmf";
             },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtMka;
+            extension="*.mka";
+            },
 
         // ---------- Java file types -----
 
@@ -527,7 +532,21 @@ RESOURCE EXTARRAY extarray
             exttype=EExt3g2;
             extension="*.3g2";
             },
-
+        EXTTYPEELEMENT
+            {
+            exttype=EExtRmvb;
+            extension="*.rmvb";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtMkv;
+            extension="*.mkv";
+            },
+        EXTTYPEELEMENT
+            {
+            exttype=EExtAvi;
+            extension="*.avi";
+            },
         // ---------- Document types ----------
 
         EXTTYPEELEMENT
@@ -741,7 +760,8 @@ RESOURCE DATAGROUPEXTARRAY datagroupextarray
                 EExtWma,
                 EExtM4a,
                 EExtOtt,
-                EExtMxmf
+                EExtMxmf,
+                EExtMka
                 };
             },
         DATAGROUPEXTS
@@ -775,7 +795,10 @@ RESOURCE DATAGROUPEXTARRAY datagroupextarray
                 EExtRm,
                 EExtRv,
                 EExtWmv,
-                EExt3g2
+                EExt3g2,
+                EExtRmvb,
+                EExtMkv,
+                EExtAvi
                 };
             },    
         DATAGROUPEXTS

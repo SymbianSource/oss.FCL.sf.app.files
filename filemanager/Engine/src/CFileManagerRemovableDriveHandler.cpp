@@ -738,8 +738,10 @@ void CFileManagerRemovableDriveHandler::GetRestoreInfoArrayL(
         RArray< CFileManagerRestoreSettings::TInfo >& aArray,
         const TInt aDrive )
     {
+    
+    CleanupClosePushL( aArray );
+    
     CFileManagerBackupSettings& settings( iEngine.BackupSettingsL() );
-
     aArray.Reset();
 
     TResourceReader driveReader;
@@ -792,6 +794,8 @@ void CFileManagerRemovableDriveHandler::GetRestoreInfoArrayL(
     CleanupStack::PopAndDestroy( &tz );
     CleanupStack::PopAndDestroy( &archives );
     CleanupStack::PopAndDestroy( params );
+    CleanupStack::Pop( &aArray ) ;
+    
     }
 
 // ---------------------------------------------------------------------------

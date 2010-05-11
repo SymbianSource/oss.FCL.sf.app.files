@@ -233,6 +233,7 @@ CFileManagerRestoreSettings::CEntry::~CEntry()
 void CFileManagerRestoreSettings::GetSelectionL(
         RArray< TInfo >& aInfoArray ) const
     {
+    CleanupClosePushL( aInfoArray );
     aInfoArray.Reset();
 
     TInt count( iList.Count() );
@@ -244,6 +245,7 @@ void CFileManagerRestoreSettings::GetSelectionL(
             aInfoArray.AppendL( iList[ i ]->iInfo );
             }
         }
+    CleanupStack::Pop( &aInfoArray );
     }
 
 // ----------------------------------------------------------------------------

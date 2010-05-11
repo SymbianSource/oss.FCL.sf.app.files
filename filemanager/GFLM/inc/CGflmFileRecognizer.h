@@ -138,6 +138,12 @@ NONSHARABLE_CLASS(CGflmFileRecognizer) : public CBase
         *
         */
         TPtrC DoRecognizeL( const TDesC& aFilename );
+        
+        /**
+         * Reset and Destroy the RPointArray of CExtMimePair
+         * 
+         */
+        static void ResetAndDestroyExtMimePairs( TAny* aPtr );
 
     private:    // Data
         // Own: For using the apparc recognisers

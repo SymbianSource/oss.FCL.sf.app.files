@@ -102,6 +102,7 @@ TBool CFileManagerFileNameQueryDlg::DoOkToExitL( TInt aButtonId )
 
     HBufC* userText = Text().AllocLC();
     TPtr ptrUserText( userText->Des() );
+    ptrUserText.TrimRight();
 
     // Strip any directionality markers to get pure name
     AknTextUtils::StripCharacters( ptrUserText, KFmgrDirectionalChars );

@@ -132,18 +132,25 @@ class CMseng :public CBase
         
         /**
         * Check whether internal drive.
-        * @param aDrv Drive to be chanked.
+        * @param aDrv Drive to be checked.
         * @return ETrue if internal drive, otherwise EFalse.
         */
         static TBool IsInternalDrive( RFs& aFs, const TInt aDrv );
 
         /**
         * Check whether removable drive.
-        * @param aDrv Drive to be chanked.
+        * @param aDrv Drive to be checked.
         * @return ETrue if internal drive, otherwise EFalse.
         */
         static TBool IsRemovableDrive( RFs& aFs, const TInt aDrv );
-
+       
+        /**
+        * Check whether mass storage drive.
+        * @param aDrv Drive to be checked.
+        * @return ETrue if mass storage drive, otherwise EFalse.
+        */
+        static TBool IsMassStorageDrive( RFs& aFs, const TInt aDrv );
+        
     private:
 
         /**

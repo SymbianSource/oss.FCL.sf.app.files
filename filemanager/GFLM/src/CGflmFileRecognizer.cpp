@@ -96,7 +96,9 @@ void CGflmFileRecognizer::ConstructExtMimePairsL(
         RResourceFile& aResFile,
         TInt aResId,
         RPointerArray< CExtMimePair >& aPairs )
-    {
+    {   
+    TCleanupItem cleanupItem( ResetAndDestroyExtMimePairs, &aPairs );
+    CleanupStack::PushL( cleanupItem );
     // read the pairs
     HBufC8* resData = aResFile.AllocReadLC( aResId );
     TResourceReader reader;
@@ -115,6 +117,7 @@ void CGflmFileRecognizer::ConstructExtMimePairsL(
         CleanupStack::Pop( pair );
         }
     CleanupStack::PopAndDestroy( resData );
+    CleanupStack::Pop( &aPairs );
     }
 
 // -----------------------------------------------------------------------------
@@ -320,6 +323,21 @@ TPtrC CGflmFileRecognizer::DoRecognizeL( const TDesC& aFilename )
         return TPtrC( KNullDesC );
     }
 
+
+// -----------------------------------------------------------------------------
+//  CGflmFileRecognizer::ResetAndDestroyExtMimePairs( )
+// 
+// -----------------------------------------------------------------------------
+//
+void CGflmFileRecognizer::ResetAndDestroyExtMimePairs( TAny* aPtr )
+    {
+    RPointerArray< CExtMimePair >* extMimePairs = 
+        static_cast< RPointerArray< CExtMimePair >* >( aPtr );
+    extMimePairs->ResetAndDestroy();
+    extMimePairs->Close();
+    }
+ 
+ 
 // -----------------------------------------------------------------------------
 // CGflmFileRecognizer::FlushCache( )
 //

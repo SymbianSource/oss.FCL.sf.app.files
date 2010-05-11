@@ -781,8 +781,6 @@ void CFileManagerMainView::CmdRenameDriveL()
         return;
         }
     RenameDriveL( EFalse );
-    iEngine.SetObserver( this );
-    iEngine.RefreshDirectory();
     }
 
 // ------------------------------------------------------------------------------

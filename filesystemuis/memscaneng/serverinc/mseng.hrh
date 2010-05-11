@@ -99,6 +99,7 @@ enum TExtTypes
     EExtM4a,
     EExtOtt,
     EExtMxmf,
+    EExtMka,
     // Java file types
     EExtJad,
     EExtJar,
@@ -113,6 +114,9 @@ enum TExtTypes
     EExtRv,
     EExtWmv,
     EExt3g2,
+    EExtRmvb,
+    EExtMkv,
+    EExtAvi,
     // Document types
     EExtDoc,
     EExtPdf,

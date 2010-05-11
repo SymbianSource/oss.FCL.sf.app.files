@@ -55,7 +55,7 @@ LIBRARY         efsrv.lib
 LIBRARY         estor.lib
 LIBRARY         bafl.lib    // Resource files
 LIBRARY         sisregistryclient.lib
-                
+LIBRARY         platformenv.lib        
 //Uncomment this line to show the RDebug::Print()
 // MACRO __SHOW_RDEBUG_PRINT_
 

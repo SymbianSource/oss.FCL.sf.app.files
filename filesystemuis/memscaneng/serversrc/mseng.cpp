@@ -24,6 +24,7 @@
 // SYSTEM INCLUDES
 #include    <mseng.rsg>
 #include    <bautils.h>
+#include    <driveinfo.h>
 
 // USER INCLUDES
 #include    "mseng.h"
@@ -563,5 +564,26 @@ TBool CMseng::IsRemovableDrive( RFs& aFs, TInt aDrv )
     return ETrue;
     }
 
+// -----------------------------------------------------------------------------
+// CMseng::IsMassStorageDrive
+// -----------------------------------------------------------------------------
+//
+TBool CMseng::IsMassStorageDrive( RFs& aFs, TInt aDrv )
+    {
+    
+    TUint drvStatus( 0 );
+    TInt err( DriveInfo::GetDriveStatus( aFs, aDrv, drvStatus ) );
+    if ( err != KErrNone )
+        {
+        return EFalse;
+        }
+    
+    if ( ( drvStatus & DriveInfo::EDriveInternal ) &&
+        ( drvStatus & DriveInfo::EDriveExternallyMountable ) )
+        {
+        return ETrue;
+        }
+    return EFalse;
+    }
 
 //  End of File
