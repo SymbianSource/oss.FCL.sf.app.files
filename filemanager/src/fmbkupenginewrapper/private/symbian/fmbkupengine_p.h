@@ -77,7 +77,7 @@ public:
     bool StartRestoreL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList );
     void GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
             QList< FmRestoreInfo > &restoreInfoList,
-            const TInt aDrive = KErrNotFound );
+            const QString& aDrive );
     
     void getBackupDriveList( QStringList &driveList );
 

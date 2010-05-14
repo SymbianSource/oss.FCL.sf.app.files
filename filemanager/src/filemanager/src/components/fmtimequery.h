@@ -20,14 +20,13 @@
 #define FMTIMEQUERY_H
 
 #include "fmcommon.h"
+#include "fmdialog.h"
 
 #include <QTime>
 
-#include <hbdialog.h>
-
 class QGraphicsWidget;
 class HbDateTimeEdit;
-class FmTimeQuery : public HbDialog
+class FmTimeQuery : public FmDialog
 {
 public:
     FmTimeQuery(QGraphicsItem *parent=0);

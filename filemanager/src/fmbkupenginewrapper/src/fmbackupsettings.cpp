@@ -90,6 +90,21 @@ QString FmBackupSettings::targetDrive() const
     return mTargetDrive;
 }
 
+QString FmBackupSettings::availableTargetDrive() const
+{
+    QString targetDrive;
+    QStringList driveList;
+    mBkupEngine->getBackupDriveList( driveList );
+    if( !driveList.isEmpty() ) {
+        if( driveList.contains( mTargetDrive ) ) {
+            targetDrive =  mTargetDrive;
+        } else {
+            targetDrive = driveList.first();
+        }
+    }
+    return targetDrive;
+}
+
 int FmBackupSettings::contentsSelected() const
 {
     int ret( 0 );
@@ -175,6 +190,19 @@ FmBackupEntry* FmBackupSettings::createTargetDriveEntry()
     return CreateEntry( title, tips, FmBackupEntry::ETarget );
 }
 
+FmBackupEntry* FmBackupSettings::createBackupDateEntry()
+{
+    QString tips;
+    if( mDate.isNull() )
+        {
+        tips =  "No previous backups created" ;
+        }
+    else
+        {
+        tips = QString( "Backup Created " + mDate.toString( "dd.MM.yyyy" ) );
+        }    
+    return CreateEntry( QString(""), tips, FmBackupEntry::EBackupdate);
+}
 QString FmBackupSettings::contentToString( const quint32 content )
 {
     QString ret( constFileManagerBackupSettingsContentAll );
@@ -294,6 +322,9 @@ void FmBackupSettings::refreshList()
         entry = createTargetDriveEntry();
         mBackupEntryList.push_back( entry );
     }
+    
+    entry = createBackupDateEntry();
+    mBackupEntryList.push_back( entry );
 }
 
 void FmBackupSettings::resetAndDestoryBackupEntry()
@@ -316,7 +347,7 @@ void FmBackupSettings::load()
     mBkupEngine->getBackupDriveList( driveList );
     QString defaultDrive( driveList.first() );
    
-    
+    QDate date;
     QSettings settings("Nokia", "FileManager");
 
     settings.beginGroup("BackupConfigure");
@@ -326,7 +357,7 @@ void FmBackupSettings::load()
     mWeekday = (TFileManagerBackupWeekday)(settings.value("weekday", EFileManagerBackupWeekdayMonday ).toInt()); // monday for default value
     mTime = (settings.value("time", QTime::currentTime() ).toTime()); // empty for default
     mTargetDrive = (settings.value("targetDrive", defaultDrive ) ).toString();  // C for default
-
+    mDate = (settings.value("backupDate", date)).toDate();
     settings.endGroup();
     refreshList();
 }
@@ -343,8 +374,14 @@ void FmBackupSettings::save()
     settings.setValue( "weekday", mWeekday );
     settings.setValue( "time", mTime.toString() );
     settings.setValue( "targetDrive", mTargetDrive );
-
+    settings.setValue( "backupDate", mDate.toString( Qt::ISODate ) );
     settings.endGroup();
 
     refreshList();
+}
+
+void FmBackupSettings::updateBackupDate()
+{
+    mDate.setDate( QDate::currentDate().year(), QDate::currentDate().month(), QDate::currentDate().day() );
+    save();
 }

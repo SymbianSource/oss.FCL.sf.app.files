@@ -28,23 +28,24 @@ class FmDriverInfo
 public:
     enum driveState
     {
-        EDriveNotPresent = 0x1,
-        EDriveLocked = 0x2,
-        EDriveCorrupted = 0x4,
-        EDriveWriteProtected = 0x8,
-        EDriveRemovable = 0x10,
-        EDriveRom = 0x20,
-        EDriveFormattable = 0x40,
-        EDriveFormatted = 0x80,
-        EDriveLockable = 0x100,
-        EDrivePasswordProtected = 0x200,
-        EDriveBackupped = 0x400,
-        EDriveConnected = 0x800,
-        EDriveEjectable = 0x1000,
-        EDriveInUse = 0x2000,
-        EDriveMassStorage = 0x4000,
-        EDriveRam = 0x8000,
-        EDriveAvailable = 0x10000
+        EDriveNotPresent = 0x1, // true when Drive have not inserted, for example, MMC Card
+        EDriveAvailable = 0x2,  // false when drive is locked or corrupted, for example MMC Card
+        EDriveLocked = 0x4,
+        EDriveCorrupted = 0x8,
+        EDriveWriteProtected = 0x10,
+        EDriveRemovable = 0x20,
+        EDriveRom = 0x40,
+        EDriveFormattable = 0x80,
+        EDriveFormatted = 0x100,
+        EDriveLockable = 0x200,
+        EDrivePasswordProtected = 0x400,
+        EDriveBackupped = 0x800,
+        EDriveConnected = 0x1000,
+        EDriveEjectable = 0x2000,
+        EDriveInUse = 0x4000,
+        EDriveMassStorage = 0x8000,
+        EDriveRam = 0x10000,
+        EDriveUsbMemory = 0x20000,
      };
     Q_DECLARE_FLAGS( DriveState, driveState )
     
@@ -87,7 +88,6 @@ public:
 	static QString getDriveLetterFromPath( const QString &path );
     static FmDriverInfo queryDriverInfo( const QString &driverName );
     static QString formatStorageSize( quint64 size );
-    //static quint32 getDriverState( const QString &driverName );
     static int removeDrivePwd( const QString &driverName, const QString &Pwd );
     static int unlockDrive( const QString &driverName, const QString &Pwd );
     static int checkDrivePwd( const QString &driverName, const QString &pwd);
@@ -119,6 +119,10 @@ public:
     static QString getBurConfigPath( QString appPath );
     static bool isDefaultFolder( const QString &folderPath  );
     static QString Localize( const QString &path );
+    
+    static int getMaxFileNameLength();
+    static bool checkMaxPathLength( const QString& path );
+    static bool checkFolderFileName( const QString& name );
 
 };
 

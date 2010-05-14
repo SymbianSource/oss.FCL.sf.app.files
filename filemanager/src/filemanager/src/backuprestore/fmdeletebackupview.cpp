@@ -20,6 +20,7 @@
 #include "fmdeletebackupwidget.h"
 #include "fmviewmanager.h"
 #include "fmoperationbase.h"
+#include "fmdlgutils.h"
 
 #include <QApplication>
 
@@ -108,7 +109,7 @@ void FmDeleteBackupView::on_rotateAction_triggered()
 void FmDeleteBackupView::on_deleteAction_triggered()
 {
     QList<int > items = mDeleteBackupWidget->selectionIndexes();
-    if( items.count() <= 0 || !HbMessageBox::question( tr("Confirm Deletion?" ) ) ){
+    if( items.count() <= 0 || !FmDlgUtils::question( tr("Confirm Deletion?" ) ) ){
         return;
     }
 

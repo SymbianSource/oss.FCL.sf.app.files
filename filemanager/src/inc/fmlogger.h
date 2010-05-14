@@ -24,7 +24,7 @@
 #include <QString>
 #include <QFile>
 #include <QTextStream>
-
+#include <QDateTime>
 class FmLogger
 {
 public:
@@ -32,14 +32,14 @@ public:
     static bool log( const QString &log )
     {
 #ifdef _DEBUG_LOG_ENABLE_
+        QString logStr( QDateTime::currentDateTime().toString("hh:mm:ss:zzz") + " " + log + "\r\n" );    
         QFile file( FMLOG_PATH );
         if ( !file.open( QIODevice::WriteOnly | QIODevice::Append ) )
         {
             return false;
         }
         QTextStream out( &file );
-        out << log;
-        out << "\r\n";
+        out << logStr;
 #else
         Q_UNUSED( log );
 #endif

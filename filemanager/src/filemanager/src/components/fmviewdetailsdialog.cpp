@@ -32,7 +32,7 @@
 #include <hbaction.h>
 
 FmViewDetailsDialog::FmViewDetailsDialog( QGraphicsItem *parent ) 
-    : HbDialog( parent ),
+    : FmDialog( parent ),
       mNumofSubFolers( 0 ),
       mNumofFiles( 0 ),
       mSizeofFolder( 0 ),
@@ -437,7 +437,7 @@ void FmViewDetailsDialog::setSizeofContent( QList<FmDriveDetailsSize*> detailsSi
     }
 }
 
-HbAction *FmViewDetailsDialog::executeDialog( HbDialog *dialog, const QString &associatedDrives )
+HbAction *FmViewDetailsDialog::executeDialog( FmDialog *dialog, const QString &associatedDrives )
 {
     for( int i = 0; i < associatedDrives.length(); i++ ) {
         QString drive( associatedDrives[i] + QString( ":/" ) );

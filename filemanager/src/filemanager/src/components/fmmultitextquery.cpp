@@ -26,7 +26,7 @@
 #include <hbaction.h>
 
 FmMultiTextQuery::FmMultiTextQuery( HbLineEdit::EchoMode echoMode, QGraphicsItem *parent ) :
-    HbDialog( parent ), mEchoMode( echoMode )
+    FmDialog( parent ), mEchoMode( echoMode )
 {
     init();
 }
@@ -68,6 +68,12 @@ void FmMultiTextQuery::init()
     connect( mFirstEdit, SIGNAL(contentsChanged()), this, SLOT(checkActions()) );
     connect( mSecondEdit, SIGNAL(contentsChanged()), this, SLOT(checkActions()) );
         
+}
+
+void FmMultiTextQuery::setLineEditMaxLength( int length )
+{
+    mFirstEdit->setMaxLength( length );
+    mSecondEdit->setMaxLength( length );
 }
 
 void FmMultiTextQuery::setFirstEditText( const QString &text )

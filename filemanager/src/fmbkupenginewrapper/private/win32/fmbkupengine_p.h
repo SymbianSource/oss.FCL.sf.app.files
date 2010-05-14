@@ -57,11 +57,12 @@ public:
     void GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
             QList< FmRestoreInfo > &restoreInfoList,
             const int aDrive = 0 );
+    void getBackupDriveList( QStringList &driveList );
 private:
     int DriverNameToNumber( QString driverName );
     QString NumberToDriverName( int driver );
     
-    TBool HasMultipleBackupTargets();
+//    TBool HasMultipleBackupTargets();
 
 signals:
     void notifyPreparing( bool cancelable );

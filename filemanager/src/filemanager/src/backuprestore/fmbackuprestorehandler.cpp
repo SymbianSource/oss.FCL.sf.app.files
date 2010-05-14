@@ -24,6 +24,7 @@
 #include "fmbkupengine.h"
 #include "fmoperationbase.h"
 #include "fmcommon.h"
+#include "fmdlgutils.h"
 
 #include <hbmessagebox.h>
 
@@ -73,7 +74,7 @@ bool FmBackupRestoreHandler::startBackup( FmOperationBackup *operationBackup )
     mCurrentProcess = ProcessBackup;
     bool ret = mBkupEngine->startBackup( backupConfigLoader()->driversAndOperationList(),
         backupConfigLoader()->backupCategoryList(), 
-        mBkupEngine->BackupSettingsL()->targetDrive(),
+        mBkupEngine->BackupSettingsL()->availableTargetDrive(),
         mBkupEngine->BackupSettingsL()->content() );
 
     if( !ret ) {
@@ -109,14 +110,14 @@ void FmBackupRestoreHandler::onNotifyMemoryLow( int memoryValue, int &userError 
     if( memoryValue < FmEstimateLowerLimit ) {
         userError = FmErrDiskFull;
     } else if( memoryValue < FmEstimateUpperLimit ) {
-        if ( !HbMessageBox::question( "memory low, continue?" ) ){
+        if ( !FmDlgUtils::question( "memory low, continue?" ) ){
             userError = FmErrCancel;
         }
     }
 }
 void FmBackupRestoreHandler::onNotifyBackupFilesExist( bool &isContinue )
     {
-    if ( HbMessageBox::question( "some bacup files exist, continue?" ) )
+    if ( FmDlgUtils::question( "some backup files exist, continue?" ) )
         {
         isContinue = true;
         }

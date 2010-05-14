@@ -21,7 +21,7 @@ TARGET = filemngr
 RESOURCES += filemanager.qrc
 INCLUDEPATH += ../fmbkupenginewrapper/inc
 # remove this path when export plat header to app layer path
-INCLUDEPATH += ../../filemanager_plat/inc
+# INCLUDEPATH += ../../filemanager_plat/inc
 
 include ( ../common.pri )
 include ( ../inc/commoninc.pri )

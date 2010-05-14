@@ -425,3 +425,9 @@ QString FmBkupEnginePrivate::NumberToDriverName( int driver )
     return driverName;
 }
 
+void FmBkupEnginePrivate::getBackupDriveList( QStringList &driveList )
+    {
+    driveList.append("E:/");
+    driveList.append("F:/");
+    }
+

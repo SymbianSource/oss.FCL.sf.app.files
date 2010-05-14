@@ -31,13 +31,13 @@ symbian {
 	    -lcone \
             -ldirectorylocalizer
             
-    TARGET.UID3 = 0x2002BCC2
+    TARGET.UID3 = 0x2002BCC3
 
     # export headers to app
-#    EXPORT_PLATFORM_HEADERS += \
-#                             ../../filemanager_plat/inc/fmglobal.h \
-#                             ../../filemanager_plat/inc/fmfiledialog.h
-#    
-#    headers.sources = $$EXPORT_PLATFORM_HEADERS
-#    for(header, headers.sources):BLD_INF_RULES.prj_exports += "./$$header $$APP_LAYER_PLATFORM_EXPORT_PATH($$basename(header))"
+    EXPORT_PLATFORM_HEADERS += \
+                             ../../filemanager_plat/inc/fmglobal.h \
+                             ../../filemanager_plat/inc/fmfiledialog.h
+    
+    headers.sources = $$EXPORT_PLATFORM_HEADERS
+    for(header, headers.sources):BLD_INF_RULES.prj_exports += "./$$header $$APP_LAYER_PLATFORM_EXPORT_PATH($$basename(header))"
 }

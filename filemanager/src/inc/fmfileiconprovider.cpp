@@ -47,8 +47,10 @@ QIcon FmFileIconProvider::icon(const QFileInfo &info) const
                 if( driveState & FmDriverInfo::EDriveMassStorage ) {
                     // Mass Storage
                     return QIcon( massMemoryIcon );
-                }
-                else{
+                } else if( driveState & FmDriverInfo::EDriveUsbMemory ) {
+                    // Usb Memory
+                    return QIcon( usbMemoryIcon );
+                } else{
                     //Memory Card
                     return QIcon( mmcIcon );
                 }

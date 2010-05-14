@@ -55,7 +55,7 @@ void FmOperationResultProcesser::onAskForReplace(
     
     QString questionText = QString( "file " ) +
         srcFile + QString( " already exist, replace it?" );
-    if( HbMessageBox::question( questionText ) ) {
+    if( FmDlgUtils::question( questionText ) ) {
         *isAccepted = true;
     } else {
         *isAccepted = false;
@@ -183,8 +183,13 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
             FmOperationFormat *paramFormat = static_cast<FmOperationFormat*>( operationBase );
             QString title( tr( "Drive name ") );  
             QString driveName( paramFormat->driverName() );
-            QString volumeName;
-            while( FmDlgUtils::showTextQuery( title, volumeName, false, FmMaxLengthofDriveName ) ){
+            FmDriverInfo driverInfo = FmUtils::queryDriverInfo( driveName );
+            FmDriverInfo::DriveState state = driverInfo.driveState();
+            if( ( state & FmDriverInfo::EDriveAvailable ) &&
+                ( state & FmDriverInfo::EDriveRemovable ) &&
+                !( state & FmDriverInfo::EDriveMassStorage ) ) { 
+                QString volumeName;
+                while( FmDlgUtils::showTextQuery( title, volumeName, false, FmMaxLengthofDriveName ) ){
                     int err = FmUtils::renameDrive( driveName, volumeName );
                     if ( err == FmErrNone ){
                         HbMessageBox::information( hbTrId( "The name has been changed!" ) );
@@ -197,6 +202,7 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
                         break;
                     }                
                 }
+            }
             break;
         }
     case FmOperationService::EOperationTypeBackup:
@@ -222,6 +228,18 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
     {
         case FmErrAlreadyStarted:
             HbMessageBox::information( QString( hbTrId("Operation already started!")) );
+            return;
+        case FmErrLocked:
+            HbMessageBox::information( QString( hbTrId("Operation failed because drive is locked!")) );
+            return;
+        case FmErrPathNotFound:
+            HbMessageBox::information( QString( hbTrId("Operation failed because can not find target path or drive is not available!") ) );
+            return;
+        case FmErrCorrupt:
+            HbMessageBox::information( QString( hbTrId("Operation failed because target media is corrupted!") ) );
+            return;
+        case FmErrNotReady:
+            HbMessageBox::information( QString( hbTrId("Operation failed because device is not ready!") ) );
             return;
         case FmErrDiskFull:
             HbMessageBox::information( QString( hbTrId("Not enough space. Operation cancelled.!")) );
@@ -308,7 +326,7 @@ void FmOperationResultProcesser::showWaiting( QString title, bool cancelable )
         mNote->primaryAction()->setDisabled( true );
     else
         mNote->primaryAction()->setDisabled( false );
-    mNote->exec();
+    mNote->open();
 
 }
 
@@ -339,7 +357,7 @@ void FmOperationResultProcesser::showPreparing( QString title, bool cancelable )
     else{
         mNote->primaryAction()->setDisabled( false );       
     }
-    mNote->exec();
+    mNote->open();
 }
 
 void FmOperationResultProcesser::showProgress( QString title, bool cancelable, int maxValue )
@@ -373,7 +391,7 @@ void FmOperationResultProcesser::showProgress( QString title, bool cancelable, i
         mNote->primaryAction()->setDisabled( false );
     }
 
-    mNote->exec();
+    mNote->open();
 }
 
 void FmOperationResultProcesser::setProgress( int value )

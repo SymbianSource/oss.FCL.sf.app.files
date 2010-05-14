@@ -20,6 +20,7 @@
 #include "fmutils.h"
 #include "fmdrivemodel.h"
 #include "fmdrivewatcher.h"
+#include "fmcommon.h"
 
 #include "hbstyle.h"
 #include "hbabstractitemview.h"
@@ -65,42 +66,64 @@ QFileInfo FmFileWidget::currentPath() const
 
 void FmFileWidget::setRootPath( const QString &pathName )
 {
+    FmLogger::log( "FmFileWidget::setRootPath start" );
     if( pathName.isEmpty() || !FmUtils::isPathAccessabel( pathName ) ) {
+        FmLogger::log( "FmFileWidget::setRootPath set drive model" );
         setModel( mDriveModel );
+        FmLogger::log( "FmFileWidget::setRootPath set drive model end" );
         emit pathChanged( QString() );
     } else {
+        FmLogger::log( "FmFileWidget::setRootPath set dir model end" );
         setModel( mDirModel );
+        FmLogger::log( "FmFileWidget::setRootPath set dir model end" );
         mListView->setRootIndex( mDirModel->index( pathName ) );
+        FmLogger::log( "FmFileWidget::setRootPath set rootIndex" );
         emit pathChanged( pathName );
     }    
+    FmLogger::log( "FmFileWidget::setRootPath end" );
 }
-
-
 void FmFileWidget::on_list_activated( const QModelIndex &index )
+    {
+    mActivatedModelIndex = index;
+    emit listActivated();
+    }
+
+void FmFileWidget::on_listActivated()
 {
+    FmLogger::log("FmFileWidget::on_list_activated start" );
     if( mCurrentModel == mDriveModel ) {
-        QString driveName = mDriveModel->driveName( index );
+        QString driveName = mDriveModel->driveName( mActivatedModelIndex );
         QString checkedPath = FmUtils::checkDriveToFolderFilter( driveName );
         if( checkedPath.isEmpty() ) {
+            FmLogger::log("FmFileWidget::on_list_activated end becaise checkedpath empty" );
             return;
         }
 
+        FmLogger::log("FmFileWidget::on_list_activated setModel dir start" );
         setModel( mDirModel );
+        FmLogger::log("FmFileWidget::on_list_activated setModel dir end" );
         mListView->setRootIndex( mDirModel->index( checkedPath ) );
+        FmLogger::log("FmFileWidget::on_list_activated setRootIndex" );
         emit pathChanged( checkedPath );
+        FmLogger::log("FmFileWidget::on_list_activated finish emit pathChanged" );
     }
     else if( mCurrentModel == mDirModel ) {
-        if ( mDirModel->isDir(index) ) {
-            changeRootIndex( index );
+        if ( mDirModel->isDir( mActivatedModelIndex ) ) {
+            FmLogger::log("FmFileWidget::on_list_activated start changeRootIndex" );
+            changeRootIndex( mActivatedModelIndex );
+            FmLogger::log("FmFileWidget::on_list_activated finish changeRootIndex" );
+            FmLogger::log("FmFileWidget::on_list_activated finish emit fileActivated" );
         } else {
-            QFileInfo fileInfo( mDirModel->filePath( index ) );
+            QFileInfo fileInfo( mDirModel->filePath( mActivatedModelIndex ) );
             if( fileInfo.isFile() ) {
                 emit fileActivated( fileInfo.fileName() );
+                FmLogger::log("FmFileWidget::on_list_activated finish emit fileActivated" );
             }
         }
     } else {
         Q_ASSERT( false );
     }
+    FmLogger::log("FmFileWidget::on_list_activated end" );
 }
 
 void FmFileWidget::setModelFilter( QDir::Filters filters )
@@ -115,7 +138,9 @@ void FmFileWidget::setNameFilters( const QStringList &nameFilters )
 
 void FmFileWidget::changeRootIndex( const QModelIndex &index )
 {
+    FmLogger::log("FmFileWidget::changeRootIndex start" );
     if( mCurrentModel != mDirModel ) {
+        FmLogger::log("FmFileWidget::changeRootIndex end because model not equal dirmodel" );
         return;
     }
 
@@ -124,6 +149,7 @@ void FmFileWidget::changeRootIndex( const QModelIndex &index )
     QFileInfo fileInfo = mDirModel->fileInfo( mListView->rootIndex() );
     QString string = fileInfo.absoluteFilePath();
     emit pathChanged( string );
+    FmLogger::log("FmFileWidget::changeRootIndex end" );
 }
 
 void FmFileWidget::init()
@@ -154,7 +180,9 @@ void FmFileWidget::init()
 //    QMetaObject::connectSlotsByName( this );
     connect( mListView, SIGNAL( activated( QModelIndex ) ),
         this, SLOT( on_list_activated( QModelIndex ) ) );
-    
+    connect( this, SIGNAL( listActivated() ),
+        this, SLOT( on_listActivated() ), Qt::QueuedConnection );
+        
     connect( mDriveWatcher, SIGNAL( driveAddedOrChanged() ),
             this, SLOT( on_driveWatcher_driveAddedOrChanged() ) );
     

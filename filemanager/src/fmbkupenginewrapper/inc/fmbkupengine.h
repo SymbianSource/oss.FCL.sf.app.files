@@ -84,7 +84,7 @@ public:
     
     void GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > &drivesAndOperationList,
             QList< FmRestoreInfo > &restoreInfoList,
-            const int aDrive = FmErrNotFound );
+            const QString& aDrive );
     
     void getBackupDriveList( QStringList &driveList );
     

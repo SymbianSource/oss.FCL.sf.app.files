@@ -91,6 +91,7 @@ void FmBackupView::initToolBar()
 void FmBackupView::on_leftAction_triggered()
 {
     int ret = mOperationService->asyncBackup();
+    FmLogger::log( "FmBackupView_asyncBackup: ret= " + QString::number(ret) );
     switch( ret )
     {
     case FmErrNone:
@@ -102,7 +103,7 @@ void FmBackupView::on_leftAction_triggered()
         HbMessageBox::information( QString( hbTrId("Operation canceled because already started!") ) );
         break;
     case FmErrPathNotFound:
-        HbMessageBox::information( QString( hbTrId("Operation canceled because can not find target drive!") ) );
+        HbMessageBox::information( QString( hbTrId("Operation canceled because can not find target path or drive is not available!") ) );
         break;
     case FmErrAlreadyExists:
         HbMessageBox::information( QString( hbTrId("backup canceled") ) );
@@ -139,3 +140,7 @@ void FmBackupView::removeToolBarAction()
     toolBar()->removeAction( mToolBarAction );
 }
 
+void FmBackupView::refreshBackupView()
+{
+    mMainWidget->updateBackupDate();
+}

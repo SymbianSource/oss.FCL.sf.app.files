@@ -20,21 +20,22 @@
 #define FMMULTITEXTQUERY_H
 
 #include "fmcommon.h"
+#include "fmdialog.h"
 
-#include <hbdialog.h>
 #include <hblineedit.h>
 
 class HbWidget;
 class HbLabel;
 
-class FmMultiTextQuery : public HbDialog
+class FmMultiTextQuery : public FmDialog
 {
 Q_OBJECT
 public:
-    FmMultiTextQuery( HbLineEdit::EchoMode echoMode = HbLineEdit::Normal, QGraphicsItem *parent = 0 );
+    explicit FmMultiTextQuery( HbLineEdit::EchoMode echoMode = HbLineEdit::Normal, QGraphicsItem *parent = 0 );
     ~FmMultiTextQuery();
 
 public:
+    void setLineEditMaxLength( int length );
     void setFirstEditText( const QString &text );
     void setSecondEditText( const QString &text );
     void setFirstLabelText( const QString &text );

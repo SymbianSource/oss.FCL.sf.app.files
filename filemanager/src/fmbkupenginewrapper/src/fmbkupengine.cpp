@@ -88,7 +88,7 @@ FmRestoreSettings *FmBkupEngine::RestoreSettingsL()
     
 void FmBkupEngine::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > &drivesAndOperationList,
         QList< FmRestoreInfo > &restoreInfoList,
-        const int aDrive )
+        const QString& aDrive )
 {
     d->GetRestoreInfoArray( drivesAndOperationList, restoreInfoList, aDrive );
 }

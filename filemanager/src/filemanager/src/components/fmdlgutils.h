@@ -25,7 +25,7 @@
 #include <QStringList>
 #include <QTime>
 
-class HbDialog;
+class FmDialog;
 class HbAction;
 
 class FmDlgUtils : public QObject
@@ -76,20 +76,23 @@ public:
 
     static bool showTextQuery(     
        const QString &title, QString &driveName, bool isDimPrimaryActionWhenEmpty, int maxLength = -1,
-	   const QString &associatedDrives = QString() );
+	   const QString &associatedDrives = QString(), bool isReturnFalseWhenNoTextChanged = true );
 
     static bool showSinglePasswordQuery(     
-       const QString &title, QString &pwd,
+       const QString &title, QString &pwd, int maxLength = -1,
 	   const QString &associatedDrives = QString() );
 
     static bool showMultiPasswordQuery(     
-       const QString &firstLabel, const QString &secondLabel, QString &pwd,
+       const QString &firstLabel, const QString &secondLabel, QString &pwd, int maxLength = -1,
 	   const QString &associatedDrives = QString() );
+    
+    static bool question( const QString &questionText, const QString &primaryButtonText = tr("Yes"),
+            const QString &secondaryButtonText = tr("No") );
 
     ~FmDlgUtils(void);
 private:
     FmDlgUtils(void);
-	static HbAction *executeDialog( HbDialog *dialog, const QString &associatedDrives );
+	static HbAction *executeDialog( FmDialog *dialog, const QString &associatedDrives );
 };
 
 

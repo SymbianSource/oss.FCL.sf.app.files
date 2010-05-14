@@ -23,6 +23,7 @@
 #include "fmmultitextquery.h"
 #include "fmutils.h"
 #include "fmviewmanager.h"
+#include "fmmessagebox.h"
 
 #include <QString>
 #include <QStringList>
@@ -30,8 +31,7 @@
 
 #include <hblabel.h>
 #include <hbaction.h>
-#include <hbmessagebox.h>
-
+    
 FmDlgUtils::FmDlgUtils( void )
 {
 }
@@ -39,7 +39,7 @@ FmDlgUtils::FmDlgUtils( void )
 FmDlgUtils::~FmDlgUtils( void )
 {
 }
-HbAction *FmDlgUtils::executeDialog( HbDialog *dialog, const QString &associatedDrives )
+HbAction *FmDlgUtils::executeDialog( FmDialog *dialog, const QString &associatedDrives )
 {
     for( int i = 0; i < associatedDrives.length(); i++ ) {
         QString drive( associatedDrives[i] + QString( ":/" ) );
@@ -246,7 +246,7 @@ bool FmDlgUtils::showTimeSettingQuery(
 
 bool FmDlgUtils::showTextQuery(
         const QString& title, QString& text, bool isDimPrimaryActionWhenEmpty, int maxLength,
-		const QString &associatedDrives )
+		const QString &associatedDrives, bool isReturnFalseWhenNoTextChanged )
 {
     bool ret( false );
     bool ok ( true );                // SK return (out parameter)
@@ -286,7 +286,14 @@ bool FmDlgUtils::showTextQuery(
 
     if( ok ){
         QString newName = cQuery->getLineEditText();
-        if ( newName != text ){
+        if ( newName == text ){
+            if( isReturnFalseWhenNoTextChanged ) {
+                ret = false;
+            }
+            else {
+                ret = true;
+            }
+        } else {
             text = newName;
             ret = true;
         }
@@ -295,12 +302,15 @@ bool FmDlgUtils::showTextQuery(
     return ret;
 }
 
-bool FmDlgUtils::showSinglePasswordQuery( const QString &title, QString &pwd, const QString &associatedDrives )
+bool FmDlgUtils::showSinglePasswordQuery( const QString &title, QString &pwd, int maxLength, const QString &associatedDrives )
 {
     bool ret( false );
 
     FmSingleTextQuery *cQuery = new FmSingleTextQuery( FmSingleTextQuery::DimPrimereActionWhenEmpty,
             HbLineEdit::Password );
+    if( maxLength != -1 ){
+        cQuery->setLineEditMaxLength( maxLength );
+    }
     cQuery->setHeadingWidget( new HbLabel( title ) );
 
     QString sk1 ( tr ("ok" ) );
@@ -331,11 +341,14 @@ bool FmDlgUtils::showSinglePasswordQuery( const QString &title, QString &pwd, co
 }
 
 bool FmDlgUtils::showMultiPasswordQuery(     
-   const QString &firstLabel, const QString &secondLabel, QString &pwd, const QString &associatedDrives )
+   const QString &firstLabel, const QString &secondLabel, QString &pwd, int maxLength, const QString &associatedDrives )
 {
     bool ret( false );
 
     FmMultiTextQuery *cQuery = new FmMultiTextQuery( HbLineEdit::Password );
+    if( maxLength != -1 ){
+        cQuery->setLineEditMaxLength( maxLength );
+    }
     cQuery->setFirstLabelText( firstLabel );
     cQuery->setSecondLabelText( secondLabel );
 
@@ -368,4 +381,11 @@ bool FmDlgUtils::showMultiPasswordQuery(
 
     delete cQuery;
     return ret;
+}
+
+bool FmDlgUtils::question( const QString &questionText, const QString &primaryButtonText,
+        const QString &secondaryButtonText )
+{
+    FmMessageBox msgBox;
+    return msgBox.question( questionText, primaryButtonText, secondaryButtonText );
 }

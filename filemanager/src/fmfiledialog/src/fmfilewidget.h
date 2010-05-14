@@ -53,9 +53,11 @@ public:
 signals:
     void pathChanged( const QString &path );
     void fileActivated( const QString &path );
+    void listActivated();
 
 private slots:
     void on_list_activated( const QModelIndex &index );
+    void on_listActivated();
     void on_driveWatcher_driveAddedOrChanged();
 
 private:
@@ -71,6 +73,8 @@ private:
 
     QAbstractItemModel *mCurrentModel;
     FmDriveWatcher  *mDriveWatcher;
+    
+    QModelIndex mActivatedModelIndex;
 
 };
 

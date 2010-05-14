@@ -278,7 +278,7 @@ void FmFileView::on_delete_triggered()
     if (files.size() == 0) {
 		infoNoFileSelected();
     } else {
-        if (HbMessageBox::question( tr("Confirm Deletion?" ) )) {
+        if (FmDlgUtils::question( tr("Confirm Deletion?" ) )) {
             QStringList fileList;
             for (int i = 0; i < files.size(); ++i) {
                 fileList.push_back( files[i].absoluteFilePath() );
@@ -381,14 +381,26 @@ void FmFileView::on_move_triggered()
 
 void FmFileView::on_newFolder_triggered()
 {
-    QString dirName;
+    int maxFileNameLength = FmUtils::getMaxFileNameLength();
+    QString associatedDrive = FmUtils::getDriveLetterFromPath( mWidget->currentPath().absoluteFilePath() );
+    
+    QString dirName( hbTrId( "New folder" ) );
     QString path = FmUtils::fillPathWithSplash( mWidget->currentPath().absoluteFilePath() );
     QDir dir( path );
     if( dir.exists() ) {
-        while( FmDlgUtils::showTextQuery( hbTrId( "Enter name for " ), dirName, true ) ){
+        while( FmDlgUtils::showTextQuery( hbTrId( "Enter name for " ), dirName,
+                true, maxFileNameLength, associatedDrive , false ) ){
                 QString newTargetPath = FmUtils::fillPathWithSplash(
                     dir.absolutePath() ) + dirName;
                 QFileInfo newFileInfo( newTargetPath );
+                if( !FmUtils::checkFolderFileName( dirName ) ) {
+                    HbMessageBox::information( hbTrId( "Invalid file or folder name!" ) );
+                    continue;
+                }
+                if( !FmUtils::checkMaxPathLength( newTargetPath ) ) {
+                    HbMessageBox::information( hbTrId( "the path you specified is too long!" ) );
+                    continue;
+                }
                 if( newFileInfo.exists() ) {
                     HbMessageBox::information( hbTrId( "%1 already exist!" ).arg( dirName ) );
                     continue;
@@ -403,6 +415,7 @@ void FmFileView::on_newFolder_triggered()
         
     }
 }
+
 void FmFileView::on_upAction_triggered()
 {
 	mWidget->cdUp();

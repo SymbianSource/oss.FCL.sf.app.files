@@ -147,7 +147,7 @@ void FmUtils::emptyPwd( QString &pwd )
 int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeName)
 {
     Q_UNUSED( driverName );
-    foreach( QChar ch, newVolumeName )
+    foreach( const QChar &ch, newVolumeName )
     {
         // If not alphadigit or space, return error
         if( !ch.isLetterOrNumber() && !ch.isSpace() )

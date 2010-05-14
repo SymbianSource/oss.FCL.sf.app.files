@@ -58,6 +58,8 @@ HEADERS += src/fmdriverlistwidget.h \
            src/components/fmviewdetailsdialog.h \
            src/components/fmviewdetailsitem.h \
            src/components/fmdrivedetailstype.h \
+           src/components/fmmessagebox.h \
+           src/components/fmdialog.h
 
 SOURCES += src/main.cpp \
            src/fmdriverlistwidget.cpp \
@@ -97,7 +99,9 @@ SOURCES += src/main.cpp \
            src/components/fmmultitextquery.cpp \
            src/components/fmviewdetailsdialog.cpp \
            src/components/fmviewdetailsitem.cpp \
-           src/components/fmdrivedetailstype.cpp
+           src/components/fmdrivedetailstype.cpp \
+           src/components/fmmessagebox.cpp \
+           src/components/fmdialog.cpp
 
 win32 {
     SOURCES += src/operationservice/fmoperationformat_win.cpp

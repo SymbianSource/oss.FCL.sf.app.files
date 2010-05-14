@@ -357,4 +357,19 @@ bool FmFileDialogPrivate::isOkAction( HbAction *action )
     return false;
 }
 
+void FmFileDialogPrivate::setRetAction( HbAction *action )
+{
+    mRetAction = action;
+}
+
+HbAction *FmFileDialogPrivate::retAction()
+{
+    return mRetAction;
+}
+
+QEventLoop &FmFileDialogPrivate::eventLoop()
+{
+    return mEventLoop;
+}
+    
 #include "moc_fmfiledialog.cpp"

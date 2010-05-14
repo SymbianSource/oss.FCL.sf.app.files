@@ -35,6 +35,7 @@ class FmBackupWidget : public HbWidget
 public:
 	FmBackupWidget( QGraphicsItem *parent = 0  );
 	~FmBackupWidget();
+	void updateBackupDate();
 
 signals:
     void doModelRefresh();
@@ -70,12 +71,13 @@ private:
     HbDataFormModelItem *mSchedulingItem;
     HbDataFormModelItem *mWeekdayItem;
     HbDataFormModelItem *mTimeItem;
-
+    HbDataFormModelItem *mLastBackupDateItem;
 	FmBackupSettings        *mBackupSettings;
 	FmBackupConfigLoader    *mBackupConfigLoader;
     HbDataFormModelItem     *mLastPressedItem;
 
     bool mScrolled;
+    bool mListReleased;
 };
 
 #endif // FMBACKUPWIDGET_H

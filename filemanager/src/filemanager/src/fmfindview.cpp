@@ -52,7 +52,7 @@ void FmFindView::find( const QString &keyword, const QString &path )
 {
     setTitle( keyword );
     mFindWidget->find( keyword, path );
-    mWaitNote->exec();
+    mWaitNote->open();
 }
 
 void FmFindView::stopFind()

@@ -28,17 +28,18 @@
 #include "fmoperationservice.h"
 #include "fmoperationbase.h"
 #include "fmdrivewatcher.h"
+#include "fmdialog.h"
 
 #include <hbview.h>
 #include <hbmessagebox.h>
 #include <QFileSystemWatcher>
 #include <QFileInfo>
-#include <hbdialog.h>
+
 
 FmViewManager *FmViewManager::mViewManager = 0;
 
 
-FmDlgCloseUnit::FmDlgCloseUnit( HbDialog *dialog ) : mDialog( dialog )
+FmDlgCloseUnit::FmDlgCloseUnit( FmDialog *dialog ) : mDialog( dialog )
 {
 }
 FmDlgCloseUnit::~FmDlgCloseUnit()
@@ -64,7 +65,7 @@ QString FmDlgCloseUnit::associatedDrives()
 	return mAssociatedDrives;
 }
 
-HbDialog *FmDlgCloseUnit::dialog()
+FmDialog *FmDlgCloseUnit::dialog()
 {
 	return mDialog;
 }
@@ -150,10 +151,19 @@ void FmViewManager::on_operationService_refreshModel( FmOperationBase *operation
     emit refreshModel( path );
 }
 
+void FmViewManager::on_operationService_notifyFinish( FmOperationBase *operationBase )
+{
+    if( operationBase->operationType() == FmOperationService::EOperationTypeBackup )
+        {
+        emit refreshBackupView();
+        }
+
+}
+
 
 int FmViewManager::viewCount()
 {
-    return mMainWindow->viewCount();
+    return mMainWindow->views().count();
 }
 
 
@@ -175,8 +185,7 @@ void FmViewManager::createFileView( const QString &path,
     QString absolutePath = fileInfo.absoluteFilePath();
 
     QString checkedPath = FmUtils::checkDriveToFolderFilter( absolutePath );
-    FmDriverInfo::DriveState driveState = FmUtils::queryDriverInfo( path ).driveState();
-    if( driveState & FmDriverInfo::EDriveAvailable ) {
+    if( FmUtils::isDriveAvailable( path ) ) {
         if( !FmUtils::isPathAccessabel( checkedPath ) ) {
             checkedPath.clear();
         }
@@ -229,6 +238,7 @@ void FmViewManager::createBackupView()
 
     mMainWindow->addView( backupView );
     mMainWindow->setCurrentView( backupView );
+    connect( this, SIGNAL( refreshBackupView() ), backupView, SLOT( refreshBackupView() ) );
 
 }
 

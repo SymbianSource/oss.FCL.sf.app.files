@@ -34,6 +34,9 @@ symbian {
                         $$PWD/fmdrivewatcher/private/symbian/fmdriveevent.cpp
 }
 win32 {
+    INCLUDEPATH += $$PWD/fmdrivewatcher/
+    INCLUDEPATH += $$PWD/fmdrivewatcher/private/win32/
+
     INTERNAL_HEADERS += $$PWD/fmdrivewatcher/private/win32/fmdrivewatcherprivate.h
 
     INTERNAL_SOURCES += $$PWD/fmutils_win.cpp \

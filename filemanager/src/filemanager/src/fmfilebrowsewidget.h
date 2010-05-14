@@ -87,12 +87,15 @@ signals:
     void startSearch( const QString &targetPath, const QString &criteria );
     void setEmptyMenu( bool isMenuEmpty );
     void setTitle( const QString &title );
+    void listActivated();
 
 private slots:
     void on_list_activated( const QModelIndex &index );
+    void on_listActivated();
     void on_tree_activated( const QModelIndex &index );
 	void on_list_longPressed( HbAbstractViewItem *item, const QPointF &coords );
-    void on_tree_longPressed( HbAbstractViewItem *item, const QPointF &coords );
+	void on_list_pressed( const QModelIndex &  index ) ;
+    void on_tree_longPressed( HbAbstractViewItem *item, const QPointF &coords );    
     
     void on_viewAction_triggered();
     void on_copyAction_triggered();
@@ -122,7 +125,7 @@ private:
     
     //currentStyle
     Style mStyle;
-    //used to store orignal tree/list style
+    //used to store original tree/list style
     Style mFileBrowseStyle;
 
 	HbAbstractViewItem* mCurrentItem;	
@@ -133,6 +136,10 @@ private:
     HbLabel *mEmptyTipLabel;
     
     QString mCurrentDrive;
+    
+    //used to avoid activate when long press list.
+    bool mListLongPressed;
+    QModelIndex mActivatedModelIndex;
 };
 
 #endif

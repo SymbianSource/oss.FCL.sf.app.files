@@ -50,7 +50,8 @@ FmFileBrowseWidget::FmFileBrowseWidget( HbWidget *parent, FmFileBrowseWidget::St
       mFileBrowseStyle( style ),
       mCurrentItem( 0 ),
       mOperationService( 0 ),
-      mSearchPanel( 0 )
+      mSearchPanel( 0 ),
+      mListLongPressed( false )
 {
     initFileModel();
     initListView();
@@ -236,17 +237,31 @@ bool FmFileBrowseWidget::cdUp()
 
 void FmFileBrowseWidget::on_list_activated( const QModelIndex &index )
 {
+    mActivatedModelIndex = index;
+    emit listActivated();
+}
+
+void FmFileBrowseWidget::on_listActivated()
+{
+    FmLogger::log("FmFileBrowseWidget::on_listActivated start");
+    if( mListLongPressed ) {
+        FmLogger::log("FmFileBrowseWidget::on_list_activated end because longPressed");
+        return;
+    }
     if (!mSelectable) {
-        if (mModel->isDir(index) ) {
-            changeRootIndex( index );
+        if (mModel->isDir(mActivatedModelIndex) ) {
+            FmLogger::log("FmFileBrowseWidget::on_list_activated changeRootIndex>>");
+            changeRootIndex( mActivatedModelIndex );
+            FmLogger::log("FmFileBrowseWidget::on_list_activated changeRootIndex<<");
         } else {
-            QString filePath( mModel->filePath( index ) );
+            QString filePath( mModel->filePath( mActivatedModelIndex ) );
             QFileInfo fileInfo( filePath );
             if ( fileInfo.isFile() ) {
                 mOperationService->syncLaunchFileOpen( filePath );
             }
         }
     }
+    FmLogger::log("FmFileBrowseWidget::on_listActivated end");
 }
 
 void FmFileBrowseWidget::on_tree_activated( const QModelIndex &index )
@@ -258,6 +273,7 @@ void FmFileBrowseWidget::on_tree_activated( const QModelIndex &index )
 
 void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QPointF &coords )
 {
+    mListLongPressed = true;
     HbMenu *contextMenu = new HbMenu();
     mCurrentItem = item;
     
@@ -322,7 +338,13 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
 //        this, SLOT( on_sendAction_triggered() ) );
 //    }
     
-    contextMenu->exec( coords );     
+    contextMenu->setPreferredPos( coords );
+    contextMenu->open();
+}
+
+void FmFileBrowseWidget::on_list_pressed( const QModelIndex &  index )
+{
+    mListLongPressed = false;
 }
 
 void FmFileBrowseWidget::on_tree_longPressed( HbAbstractViewItem *item, const QPointF &coords )
@@ -357,6 +379,8 @@ void FmFileBrowseWidget::initListView()
 
     connect( mListView, SIGNAL( activated( const QModelIndex& ) ),
         this, SLOT( on_list_activated( const QModelIndex& ) ) );
+    connect( this, SIGNAL( listActivated() ),
+        this, SLOT( on_listActivated() ), Qt::QueuedConnection );
     connect( mListView, SIGNAL( longPressed( HbAbstractViewItem *, const QPointF & ) ),
         this, SLOT( on_list_longPressed( HbAbstractViewItem *, const QPointF & ) ) );
 }
@@ -453,6 +477,7 @@ void FmFileBrowseWidget::setModelFilter( QDir::Filters filters )
 
 void FmFileBrowseWidget::refreshModel( const QString& path )
 {
+    FmLogger::log( "FmFileBrowseWidget::refreshModel start" );
     QString currPath( currentPath().absoluteFilePath() );
     QString refreshPath( path );
     
@@ -478,6 +503,7 @@ void FmFileBrowseWidget::refreshModel( const QString& path )
         setRootPath( refreshPath );
         emit setTitle( FmUtils::fillDriveVolume( mCurrentDrive, true ) );
     }
+    FmLogger::log( "FmFileBrowseWidget::refreshModel end" );
 }
 
 bool FmFileBrowseWidget::checkPathAndSetStyle( const QString& path )
@@ -487,9 +513,9 @@ bool FmFileBrowseWidget::checkPathAndSetStyle( const QString& path )
         FmDriverInfo::DriveState state = FmUtils::queryDriverInfo( driveName ).driveState();
         
         if( state & FmDriverInfo::EDriveLocked ) {
-            mEmptyTipLabel->setPlainText( hbTrId( "Memory Card is locked" ) );       
+            mEmptyTipLabel->setPlainText( hbTrId( "Drive is locked" ) );       
         } else if( state & FmDriverInfo::EDriveNotPresent ) {
-            mEmptyTipLabel->setPlainText( hbTrId( "Memory Card is not present" ) );
+            mEmptyTipLabel->setPlainText( hbTrId( "Drive is not present" ) );
         } else if( state & FmDriverInfo::EDriveCorrupted ) {
             mEmptyTipLabel->setPlainText( hbTrId( "Drive is Corrupted" ) );
         } else {
@@ -585,7 +611,7 @@ void FmFileBrowseWidget::on_deleteAction_triggered()
 {
     QStringList fileList;
     fileList.push_back( mModel->filePath( mCurrentItem->modelIndex() ) );
-    if ( HbMessageBox::question( hbTrId("Confirm Deletion?" ) )) {
+    if ( FmDlgUtils::question( hbTrId("Confirm Deletion?" ) )) {
         int ret = mOperationService->asyncRemove( fileList );
         switch( ret ) {
             case FmErrNone:

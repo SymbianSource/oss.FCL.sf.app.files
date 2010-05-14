@@ -35,11 +35,12 @@ public:
 
 private slots:
     void onOrientationChanged( Qt::Orientation orientation );
-
+    void delayedLoading();
 private:
     void init();
 
     FmViewManager *mViewManager;
+    bool mFirstViewLoaded;
 };
 
 #endif

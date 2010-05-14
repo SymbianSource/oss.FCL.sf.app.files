@@ -20,8 +20,7 @@
 #define FMVIEWDETAILSDIALOG_H
 
 #include "fmcommon.h"
-
-#include <hbdialog.h>
+#include "fmdialog.h"
 
 class FmDataListModel;
 class QDirModel;
@@ -30,7 +29,7 @@ class HbLabel;
 class HbAction;
 class FmDriveDetailsSize;
 
-class FmViewDetailsDialog : public HbDialog
+class FmViewDetailsDialog : public FmDialog
 {
     Q_OBJECT
   
@@ -90,7 +89,7 @@ private:
     void setNumofSubfolders( int numofSubFolders, int numofFiles, quint64 sizeofFolder );
     void setSizeofContent( QList<FmDriveDetailsSize*> detailsSizeList );
     
-	static HbAction *executeDialog( HbDialog *dialog, const QString &associatedDrives );
+	static HbAction *executeDialog( FmDialog *dialog, const QString &associatedDrives );
 private:
     HbListView *mListView;
     HbLabel *mHeaderLabel;  

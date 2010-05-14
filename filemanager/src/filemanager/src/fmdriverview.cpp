@@ -32,6 +32,7 @@
 
 FmDriverView::FmDriverView() : FmViewBase( EDriverView )
 {
+    FmLogger::log( "FmDriverView::FmDriverView" );
     initMenu(); 
     initToolBar();
     initDiskListWidget();

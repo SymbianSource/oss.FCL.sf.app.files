@@ -20,8 +20,10 @@
 #ifndef FMFILEDIALOG_P_H
 #define FMFILEDIALOG_P_H
 
-#include <QDir>
 #include "fmfiledialog.h"
+
+#include <QDir>
+#include <QEventLoop>
 
 class HbPushButton;
 class FmFileWidget;
@@ -64,7 +66,11 @@ public:
     QString currentPath() const;
     QString selectedFile() const;
     bool isOkAction( HbAction *action );
-
+    
+    void setRetAction( HbAction *action );
+    HbAction *retAction();
+    QEventLoop &eventLoop();
+        
 protected:
     void createAndSetActions(const QString & primaryActionText,const QString & secondaryActionText);
     void createContentWidget();
@@ -81,7 +87,7 @@ protected:
 
     void setTitle( const QString &str );        
     void setRootPath( const QString &pathName );
-
+    
 public:
     void _q_handleUpButton();
     void _q_handleTextChanged(const QString &text);
@@ -111,6 +117,9 @@ private:
 
     QString mCaptionHead;
     FmFileDialogArgs          mArgs;
+    
+    HbAction *mRetAction;
+    QEventLoop mEventLoop;
 };
 
 #endif // FMFILEDIALOG_P_H

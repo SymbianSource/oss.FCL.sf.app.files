@@ -19,12 +19,12 @@
 #ifndef FMSINGLETEXTQUERY_H
 #define FMSINGLETEXTQUERY_H
 
-#include <hbdialog.h>
+#include "fmdialog.h"
 #include <hblineedit.h>
 
 class HbWidget;
 
-class FmSingleTextQuery : public HbDialog
+class FmSingleTextQuery : public FmDialog
 {
 Q_OBJECT
 public:

@@ -32,6 +32,7 @@
 #include "hblineedit.h"
 
 #include <QGraphicsLinearLayout>
+#include <QEventLoop>
 
 FmFileDialog::FmFileDialog( QGraphicsItem *parent ) : 
     HbDialog( parent ), d_ptr( new FmFileDialogPrivate( this ) )
@@ -136,13 +137,18 @@ QString FmFileDialog::getSaveFileName( HbWidget * parent,
 
 bool FmFileDialog::exec()
 {
-    if ( d_ptr->isOkAction( HbDialog::exec() ) ) {
+    HbDialog::open( this, SLOT(dialogClosed(HbAction*)) );
+    d_ptr->eventLoop().exec();
+    
+    if ( d_ptr->isOkAction( d_ptr->retAction() ) ) {
         return true;
     } else {
         return false ;
     }
 }
 
-
-
-
+void FmFileDialog::dialogClosed(HbAction *action)
+{
+    d_ptr->setRetAction( action );
+    d_ptr->eventLoop().exit();
+}

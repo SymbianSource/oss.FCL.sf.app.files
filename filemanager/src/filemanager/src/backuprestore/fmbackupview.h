@@ -45,6 +45,8 @@ private:
     
     void removeToolBarAction();
 
+public slots:
+    void refreshBackupView();
 private slots:
     void on_leftAction_triggered();
 

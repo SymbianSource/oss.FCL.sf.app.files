@@ -69,7 +69,8 @@ public:
         EScheduling,
         EWeekday,
         ETime,
-        ETarget
+        ETarget,
+        EBackupdate
     };
 
 public:
@@ -241,6 +242,14 @@ public:
     QString targetDrive() const;
 
     /**
+     * Gets available backup target drive
+     * if targetDrive exist, return targetDrive
+     * otherwise return other first available backup drive
+     * @return Available backup target drive, empty QString for null
+     */
+    QString availableTargetDrive() const;
+    
+    /**
      * Loads saved backup settings
      */
     void load();
@@ -284,6 +293,10 @@ public:
      */
     QString targetDriveToString( const QString& targetDrive );
     
+    /**
+     * Updates the backup date
+     */
+    void updateBackupDate();
 private:
     /**
      * Gets the count of contents selected
@@ -318,6 +331,11 @@ private:
      */
     FmBackupEntry* createTargetDriveEntry();
 
+    /**
+     * Creates backup date entry
+     */
+    FmBackupEntry* createBackupDateEntry();
+    
     void refreshList();
     void resetAndDestoryBackupEntry();
 private:
@@ -348,9 +366,15 @@ private:
     QString mTargetDrive;
 
     /**
+     * Backup date
+     */
+    QDate mDate;
+    
+    /**
      * Backup setting list items
      */
     QList< FmBackupEntry* > mBackupEntryList;
+    
     
     FmBkupEngine *mBkupEngine;
 };

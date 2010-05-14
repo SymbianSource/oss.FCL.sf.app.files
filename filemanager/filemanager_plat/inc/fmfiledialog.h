@@ -96,7 +96,10 @@ public:
                                     const QString &dir = QString(),
                                     const QStringList &nameFilters = QStringList(),
                                     Options options = 0 );
-                                   
+
+private slots:
+    void dialogClosed(HbAction *action);
+    
 private:
     explicit FmFileDialog( QGraphicsItem *parent );
     ~FmFileDialog();

@@ -35,9 +35,8 @@
 #include <hbdataformviewitem.h>
 
 
-
 FmBackupWidget::FmBackupWidget( QGraphicsItem *parent )
-: HbWidget( parent ), mLastPressedItem( 0 ), mScrolled( 0 )
+: HbWidget( parent ), mLastPressedItem( 0 ), mScrolled( 0 ), mListReleased( false )
 {
     init();
 }
@@ -50,9 +49,14 @@ FmBackupWidget::~FmBackupWidget()
 
 void FmBackupWidget::on_list_released( const QModelIndex &index )
 {
+    if( mListReleased == true ) {
+        return;
+    }
+    mListReleased = true;
     HbDataFormModelItem *item = mModel->itemFromIndex(index);
     if( item != mLastPressedItem || mDataForm->isScrolling() || mScrolled ) {
         mScrolled = false;
+        mListReleased = false;
         return;
     }
     mScrolled = false;
@@ -68,6 +72,7 @@ void FmBackupWidget::on_list_released( const QModelIndex &index )
     } else if( item == mTimeItem ){
         ChangeTime();
     }
+    mListReleased = false;
 }
 
 void FmBackupWidget::on_list_pressed( const QModelIndex &index )
@@ -92,6 +97,7 @@ void FmBackupWidget::init()
     mDataForm = new HbDataForm( this );
     mDataForm->setModel( mModel );
     vLayout->addItem( mDataForm );
+    
     
     connect( mDataForm, SIGNAL( released( const QModelIndex & ) ),
              this, SLOT( on_list_released( const QModelIndex & ) ) );
@@ -165,7 +171,13 @@ void FmBackupWidget::initModel()
     mTimeItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mSchedulingGroup );
     mTimeItem->setContentWidgetData( QString("readOnly"), QString("true") );
+    
+    mLastBackupDateItem = mModel->appendDataFormItem(
+        HbDataFormModelItem::TextItem, QString( ( "" )), mModel->invisibleRootItem() );
+    mLastBackupDateItem->setContentWidgetData( QString("readOnly"), QString("true") );   
+    
 }
+
 
 
 void FmBackupWidget::refreshModel()
@@ -244,6 +256,11 @@ void FmBackupWidget::refreshModel()
             mTimeItem->setContentWidgetData( QString("readOnly"), QString("true") );
             mTimeItem->setLabel(title);
             mTimeItem->setContentWidgetData( QString("text"), tips );
+            break;
+            }
+        case FmBackupEntry::EBackupdate:
+            {            
+            mLastBackupDateItem->setContentWidgetData( QString("text"), tips );
             break;
             }
         }
@@ -347,7 +364,6 @@ void FmBackupWidget::ChangeTargetDrive()
     int selectIndex = -1;
 
     int currentIndex = 0;
-    QString associatedDrives;
     for( QStringList::const_iterator it = driveList.begin(); it != driveList.end(); ++it )
     {
         QString drive = (*it);
@@ -356,7 +372,6 @@ void FmBackupWidget::ChangeTargetDrive()
 
         driveStringList.push_back( drive );
         queryStringList.push_back( driveWithVolume );
-        associatedDrives += FmUtils::getDriveLetterFromPath(drive);
 
         if( drive == targetDrive )
         {
@@ -366,9 +381,15 @@ void FmBackupWidget::ChangeTargetDrive()
         ++currentIndex;
     }
     
-    if( FmDlgUtils::showSingleSettingQuery( title, queryStringList, selectIndex, associatedDrives ) )
+    if( FmDlgUtils::showSingleSettingQuery( title, queryStringList, selectIndex ) )
     {
         mBackupSettings->setTargetDrive( driveStringList.at( selectIndex ) );
         emit doModelRefresh();
     }
+}
+
+void FmBackupWidget::updateBackupDate()
+{
+    mBackupSettings->updateBackupDate();
+    emit doModelRefresh();
 }

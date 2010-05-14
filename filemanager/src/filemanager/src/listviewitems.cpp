@@ -34,10 +34,11 @@ DiskListViewItem::DiskListViewItem( QGraphicsItem *parent )
       mDiskNameLabel( 0 ),
       mSizeLabel( 0 ),
       mFreeLabel( 0 ),
-      mCheckBox( 0 )
+      mCheckBox( 0 ),
+      hLayout( 0 )
 
 {
-    init();
+    //init();
 }
 
 DiskListViewItem::~DiskListViewItem()
@@ -58,11 +59,15 @@ bool DiskListViewItem::canSetModelIndex( const QModelIndex &index ) const
 
 HbAbstractViewItem *DiskListViewItem::createItem()
 {
-	return new DiskListViewItem( parentItem() );
+	return new DiskListViewItem( *this );
 }
 
 void DiskListViewItem::updateChildItems()
 {
+    //HbListViewItem::updateChildItems();
+    if( !hLayout ) {
+        init();
+    }
 	QVariant variant = modelIndex().data( Qt::DecorationRole );
 	QIcon icon = qvariant_cast<QIcon>( variant );
     if( icon.isNull() ) {
@@ -92,9 +97,11 @@ void DiskListViewItem::setCheckedState( int state )
 
 void DiskListViewItem::init()
 {
-	QGraphicsLinearLayout *hLayout = new QGraphicsLinearLayout();
-	hLayout->setOrientation( Qt::Horizontal );
+    hLayout = new QGraphicsLinearLayout();
 
+	hLayout->setOrientation( Qt::Horizontal );
+	hLayout->addItem(layout());
+	
 	mIconLabel = new HbLabel();
 	mIconLabel->setMinimumWidth(32);
 	hLayout->addItem( mIconLabel );
