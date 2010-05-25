@@ -17,7 +17,7 @@
 
 #include <appinfo.rh>
 #include <data_caging_paths_strings.hrh>
-#include <DevEncUi.rsg>
+#include <devencui.rsg>
 #include <devenc.loc>
 #include "DevEncUids.hrh"
 

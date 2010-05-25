@@ -21,7 +21,7 @@
 #include <aknlists.h>
 #include <StringLoader.h>
 #include <cmemstatepopup.h>
-#include <FileManagerView.rsg>
+#include <filemanagerview.rsg>
 #include <CFileManagerItemProperties.h>
 #include <CFileManagerFeatureManager.h>
 #include <drmuihandling.h>

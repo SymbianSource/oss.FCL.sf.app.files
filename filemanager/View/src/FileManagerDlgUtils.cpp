@@ -25,7 +25,7 @@
 #include <aknmfnesettingpage.h>
 #include <aknmessagequerydialog.h>
 #include <aknnotewrappers.h>
-#include <FileManagerView.rsg>
+#include <filemanagerview.rsg>
 #include <CFileManagerEngine.h>
 #include "FileManagerDlgUtils.h"
 #include "CFileManagerMMCInfoPopup.h"

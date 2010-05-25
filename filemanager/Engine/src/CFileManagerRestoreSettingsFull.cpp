@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include <StringLoader.h>
-#include <FileManagerEngine.rsg>
+#include <filemanagerengine.rsg>
 #include <AknUtils.h>
 #include "FileManagerEngine.hrh"
 #include "CFileManagerEngine.h"

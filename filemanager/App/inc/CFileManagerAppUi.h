@@ -23,6 +23,8 @@
 //  INCLUDES
 #include <aknViewAppUi.h>       // CAknViewAppUi
 #include <TFileManagerDriveInfo.h>
+#include <ssm/ssmstateawaresession.h>
+
 #include "MFileManagerSchBackupObserver.h"
 
 // FORWARD DECLARATIONS
@@ -299,6 +301,13 @@ class CFileManagerAppUi : public CAknViewAppUi,
         */
         void ResetBackupOrRestoreEndTime();
         
+        /**
+        * after startup finish, the system state will get normal, backup/restore need check the status before get started.
+        * @since 5.2
+		* @return ETrue if system state is normal, EFalse if not
+        */
+        TBool IsSystemStateNormal() const;
+        
     public: // MCoeForegroundObserver
 
         /** Handles the application coming to the foreground. */
@@ -402,6 +411,10 @@ class CFileManagerAppUi : public CAknViewAppUi,
         TTime iManualBackupOrRestoreStarted;
         // Own: Stores the end time
         TTime iManualBackupOrRestoreEnded;
+        
+        // State aware session.
+        RSsmStateAwareSession iSAS;
+        
     };
 
 #endif // CFILEMANAGERAPPUI_H

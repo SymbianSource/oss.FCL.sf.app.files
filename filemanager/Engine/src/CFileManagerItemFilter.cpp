@@ -28,7 +28,7 @@
 #include "FileManagerDebug.h"
 #include "TFileManagerDriveInfo.h"
 #include "CFileManagerFeatureManager.h"
-#include <FileManagerEngine.rsg>
+#include <filemanagerengine.rsg>
 #include <StringLoader.h>
 #include <pathinfo.h>
 #ifdef RD_MULTIPLE_DRIVE
@@ -180,11 +180,6 @@ TBool CFileManagerItemFilter::FilterItemL(
                 }
             else if ( driveStatus & DriveInfo::EDriveUsbMemory )
                 {
-                if ( !( driveStatus & DriveInfo::EDrivePresent ) )
-                    {
-                    ERROR_LOG( "CFileManagerItemFilter::FilterItemL()-NotPresentUsbMemory" )
-                    return EFalse; // Not present USB drive is not shown
-                    }
                 icon = EFileManagerUsbMemoryMainIcon;
                 }
             else if ( driveStatus & DriveInfo::EDriveRemovable )

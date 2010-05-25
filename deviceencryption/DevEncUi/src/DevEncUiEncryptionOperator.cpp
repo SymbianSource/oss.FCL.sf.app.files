@@ -33,7 +33,7 @@
 #include <centralrepository.h>
 #include <coemain.h>
 #include <data_caging_path_literals.hrh> // for resource files dir
-#include <DevEncUi.rsg>
+#include <devencui.rsg>
 #include <eikenv.h>
 #include <e32property.h>
 #include <etelmm.h>

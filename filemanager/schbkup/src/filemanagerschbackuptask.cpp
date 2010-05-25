@@ -126,6 +126,7 @@ CFileManagerSchBackupTask::~CFileManagerSchBackupTask()
 
     delete iSubscriber;
     delete iCenRep;
+    delete iSystemStateMonitor;
     Cancel();
     }
 
@@ -198,6 +199,9 @@ void CFileManagerSchBackupTask::ConstructL( const CScheduledTask& aTask )
         parse.Assign( data );
         User::LeaveIfError( parse.Val( iDay ) );
         }
+    
+    // Get pointer to system state monitor
+    iSystemStateMonitor = CFmSystemStateMonitor::NewL( *this );
 
     Retry();
     }
@@ -246,6 +250,15 @@ TBool CFileManagerSchBackupTask::CheckBackupRequired()
 //
 TBool CFileManagerSchBackupTask::CheckPhoneStateL()
     {
+    
+    // Check phone is normal state or not
+    if ( !iSystemStateMonitor->IsSystemStateNormal() )
+       {
+        INFO_LOG( "CFileManagerSchBackupTask::CheckPhoneStateL()-System State is not normal" )
+        iSystemStateMonitor->StartMonitor( ESsmNormal );
+        return EFalse;
+       }
+    
     // Check call state
     TInt callState( 0 );
     RProperty::Get(
@@ -469,6 +482,18 @@ void CFileManagerSchBackupTask::NotifyKeyChangeOrTimeoutL(
         // Backup was not started, try starting it again
         Retry();
         }
+    }
+
+// ---------------------------------------------------------------------------
+// CFileManagerSchBackupTask::SystemStateChangedEvent
+// ---------------------------------------------------------------------------
+//
+void CFileManagerSchBackupTask::SystemStateChangedEvent()
+    {
+    FUNC_LOG
+    
+    // Backup was not started, try starting it again
+    Retry();
     }
 
 // End of file

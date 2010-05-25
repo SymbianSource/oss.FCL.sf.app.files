@@ -22,7 +22,7 @@
 #include <akntitle.h>
 #include <csxhelp/fmgr.hlp.hrh>
 #include <CFileManagerEngine.h>
-#include <FileManager.rsg>
+#include <filemanager.rsg>
 #include <CFileManagerBackupSettings.h>
 #include <FileManagerPrivateCRKeys.h>
 #include <FileManagerDlgUtils.h>
@@ -241,6 +241,14 @@ void CFileManagerBackupView::CmdBackupL()
         {
         return;
         }
+
+    TBool isSystemStateNormal = static_cast< CFileManagerAppUi* >( AppUi() )->IsSystemStateNormal();
+    if ( !isSystemStateNormal )
+       {
+        FileManagerDlgUtils::ShowErrorNoteL( R_QTN_FMGR_SYSTEM_NOT_READY );
+        return;
+       }
+
     StoreIndex();
     CFileManagerBackupSettings& settings( iEngine.BackupSettingsL() );
     TInt drive( settings.TargetDrive() );

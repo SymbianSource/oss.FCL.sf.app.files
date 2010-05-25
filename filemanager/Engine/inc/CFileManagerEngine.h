@@ -718,6 +718,14 @@ NONSHARABLE_CLASS(CFileManagerEngine) : public CBase
         */
         IMPORT_C void DeleteBackupsL();
         
+		/**
+        * Check if a drive is mounted
+        * @Param aDrive The target drive to check
+		* @Return TBool to indicate check result
+        * @since 5.2
+        */
+        IMPORT_C TBool IsDriverMounted( TInt aDrive );
+        
     public:
     	
         /**

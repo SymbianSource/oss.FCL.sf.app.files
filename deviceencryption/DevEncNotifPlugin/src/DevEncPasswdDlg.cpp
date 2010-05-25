@@ -19,7 +19,7 @@
 #include "DevEncUids.hrh"
 #include "DevEncDef.h"
 #include <eiksrvui.h>
-#include <DevEncNotifPlugin.rsg>
+#include <devencnotifplugin.rsg>
 #include <StringLoader.h>
 #include <bautils.h>         // BAFL utils (for language file)
 #include <data_caging_path_literals.hrh>

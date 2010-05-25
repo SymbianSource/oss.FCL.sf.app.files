@@ -18,7 +18,7 @@
 
 
 // INCLUDE FILES
-#include <FileManagerEngine.rsg>
+#include <filemanagerengine.rsg>
 #include "CFileManagerRemovableDriveHandler.h"
 #include "MFileManagerProcessObserver.h"
 #include "CFileManagerUtils.h"

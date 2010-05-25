@@ -23,7 +23,7 @@
 #include <centralrepository.h>
 #include <avkon.hrh>
 #include <avkon.rsg>
-#include <FileManager.rsg>
+#include <filemanager.rsg>
 #include <FileManagerDebug.h>
 #include <FileManagerPrivateCRKeys.h>
 #include <CFileManagerEngine.h>

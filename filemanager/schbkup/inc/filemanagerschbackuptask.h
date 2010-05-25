@@ -23,7 +23,7 @@
 // INCLUDE FILES
 #include <e32base.h>
 #include "filemanagerschobserver.h"
-
+#include "fmsystemstatemonitor.h"
 
 // FORWARD DECLARATIONS
 class CScheduledTask;
@@ -38,7 +38,8 @@ class CRepository;
  *  @since S60 3.1
  */
 class CFileManagerSchBackupTask : public CActive,
-                                  public MFileManagerSchObserver
+                                  public MFileManagerSchObserver,
+                                  public MFmSystemStateMonitorObserver
     {
 
 public:
@@ -65,6 +66,13 @@ private: // From FileManagerSchObserver
         const TUint aKey,
         const TBool aTimeout );
 
+public: // From MFmSystemStateMonitorObserver
+    /**
+     * Called when the system state changed  
+     * @since 5.2
+     */
+    void SystemStateChangedEvent();
+    
 private: // New methods
     /**
      * Constructors
@@ -125,6 +133,11 @@ private: // Data
      * Start attempts left
      */
     TInt iAttemptsLeft;
+    
+    /**
+     * Own: Pointer to system state monitor   
+     */
+    CFmSystemStateMonitor* iSystemStateMonitor;
 
     };
 

@@ -27,8 +27,8 @@
 #include <AknInfoPopupNoteController.h>
 #include <csxhelp/fmgr.hlp.hrh>
 #include <CFileManagerEngine.h>
-#include <FileManager.rsg>
-#include <FileManagerView.rsg>
+#include <filemanager.rsg>
+#include <filemanagerview.rsg>
 #include <TFileManagerDriveInfo.h>
 #include <CFileManagerCommonDefinitions.h>
 #include <FileManagerDebug.h>

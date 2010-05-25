@@ -26,7 +26,7 @@
 #include <CAknMemorySelectionDialog.h>
 #include <CAknFileSelectionDialog.h>
 #include <sendui.h>
-#include <Sendnorm.rsg>
+#include <sendnorm.rsg>
 #include <SenduiMtmUids.h>
 #include <AknProgressDialog.h>
 #include <eikprogi.h>
@@ -57,8 +57,8 @@
 #include <CFileManagerItemProperties.h>
 #include <CFileManagerActiveExecute.h>
 #include <Cfilemanageractivedelete.h>
-#include <FileManager.rsg>
-#include <FileManagerView.rsg>
+#include <filemanager.rsg>
+#include <filemanagerview.rsg>
 #include <FileManagerDebug.h>
 #include <FileManagerDlgUtils.h>
 #include <CFileManagerFeatureManager.h>
@@ -86,7 +86,7 @@ const TInt64 KMSecToMicroSecMultiplier = 1000000;
 const TInt64 KMinToMicroSecMultiplier = KMSecToMicroSecMultiplier * 60;
 const TInt64 KHourToMicroSecMultiplier = KMinToMicroSecMultiplier * 60;
 const TUint KProgressBarAsyncStartDelay = 1500000; // microseconds
-const TInt KMinificationFactor = 1024; // Used to zoom processbar's proportion
+const TInt64 KMinificationFactor = 1024; // Used to zoom processbar's proportion
 
 // ============================ LOCAL FUNCTIONS ================================
 
@@ -4290,7 +4290,7 @@ void CFileManagerViewBase::RefreshProgressDelayedStartL()
         }
     iProgressDialogRefresh = new( ELeave ) CAknProgressDialog(
         reinterpret_cast< CEikDialog** >( &iProgressDialogRefresh ),
-        ETrue );
+        EFalse );
     iProgressDialogRefresh->SetCallback( this );
 
     if ( Id() == CFileManagerAppUi::KFileManagerSearchResultsViewId )

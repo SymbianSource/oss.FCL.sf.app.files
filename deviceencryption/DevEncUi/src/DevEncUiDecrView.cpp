@@ -21,7 +21,7 @@
 
 // System includes
 #include <aknViewAppUi.h>	// CAknViewAppUi
-#include <DevEncUi.rsg>
+#include <devencui.rsg>
 
 // User includes
 #include "DevEncLog.h"

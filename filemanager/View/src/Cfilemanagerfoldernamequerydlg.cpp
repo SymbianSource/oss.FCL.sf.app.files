@@ -23,7 +23,7 @@
 #include <bautils.h>
 #include <CFileManagerEngine.h>
 #include <CFileManagerUtils.h>
-#include <FileManagerView.rsg>
+#include <filemanagerview.rsg>
 #include "Cfilemanagerfoldernamequerydlg.h"
 #include "CFileManagerCommonDefinitions.h"
 #include "FileManagerDlgUtils.h"

@@ -22,7 +22,7 @@
 #include <aknlists.h>
 #include <akntitle.h>
 #include <CFileManagerEngine.h>
-#include <FileManager.rsg>
+#include <filemanager.rsg>
 #include <FileManagerDlgUtils.h>
 #include <CFileManagerRestoreSettings.h>
 #include <FileManagerDebug.h>
@@ -209,6 +209,14 @@ void CFileManagerRestoreView::CmdOkL()
         {
         return;
         }
+
+    TBool isSystemStateNormal = static_cast< CFileManagerAppUi* >( AppUi() )->IsSystemStateNormal();
+    if ( !isSystemStateNormal )
+        {
+        FileManagerDlgUtils::ShowErrorNoteL( R_QTN_FMGR_SYSTEM_NOT_READY );
+        return;
+        }
+
     const CArrayFix< TInt >* items = iContainer->ListBoxSelectionIndexes();
 
     TInt count( items->Count() );

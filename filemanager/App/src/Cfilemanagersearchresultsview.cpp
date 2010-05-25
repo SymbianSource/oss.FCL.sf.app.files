@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include <CFileManagerEngine.h>
-#include <FileManager.rsg>
+#include <filemanager.rsg>
 #include <aknlists.h>
 #include <aknnavi.h>
 #include <akntitle.h> 

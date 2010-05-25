@@ -23,7 +23,7 @@
 #include <gulicon.h>
 #include <AknsItemID.h>
 #include <AknsUtils.h>
-#include <FileManagerView.rsg>
+#include <filemanagerview.rsg>
 #include "CFileManagerIconArray.h"
 #include "FileManagerView.hrh"
 

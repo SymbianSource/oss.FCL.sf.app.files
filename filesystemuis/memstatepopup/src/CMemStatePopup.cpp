@@ -25,7 +25,7 @@
 #include <bautils.h>
 #include <StringLoader.h>
 #include <aknPopup.h>
-#include <MemStatePopup.rsg>
+#include <memstatepopup.rsg>
 #include <f32file.h>
 
 // USER INCLUDES

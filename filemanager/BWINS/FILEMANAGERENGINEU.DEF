@@ -137,4 +137,5 @@ EXPORTS
 	?SetCurrentItemName@CFileManagerEngine@@QAEXABVTDesC16@@@Z @ 136 NONAME ; void CFileManagerEngine::SetCurrentItemName(class TDesC16 const &)
 	?SetAppExitOb@CFileManagerEngine@@QAEXPAVMAknServerAppExitObserver@@@Z @ 137 NONAME ; void CFileManagerEngine::SetAppExitOb(class MAknServerAppExitObserver *)
 	?DeleteBackupsL@CFileManagerEngine@@QAEXXZ @ 138 NONAME ; void CFileManagerEngine::DeleteBackupsL(void)
+	?IsDriverMounted@CFileManagerEngine@@QAEHH@Z @ 139 NONAME ; int CFileManagerEngine::IsDriverMounted(int)
 

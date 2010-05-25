@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include <avkon.rsg>
-#include <FileManagerEngine.rsg>
+#include <filemanagerengine.rsg>
 #include <StringLoader.h>
 #include <centralrepository.h>
 #ifdef RD_MULTIPLE_DRIVE

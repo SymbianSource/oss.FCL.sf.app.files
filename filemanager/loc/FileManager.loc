@@ -2128,4 +2128,11 @@
 //
 #define qtn_memc_not_available "(Memory is not available)"
 
+//d: note text when the system is not ready for user to do backup&restore operation
+//l: popup_note_window
+//w:
+//r:5.2
+// 
+#define qtn_fmgr_system_not_ready "System is not ready. Please try again"
+
 // End of File

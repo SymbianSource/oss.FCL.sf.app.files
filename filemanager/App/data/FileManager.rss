@@ -33,6 +33,7 @@ NAME    FMGR // 4 letter ID
 #include <CommonDialogs.rh>
 #include <filemanager.mbg>
 #include <drmcommon.loc>
+#include <activeidle3.loc>
 #include <filemanager.loc>
 #include "FileManagerEngine.hrh" // filemanager_mbm_file_location
 #include "FileManager.hrh"
@@ -1510,4 +1511,6 @@ RESOURCE TBUF r_qtn_fmgr_memory_in_use_format        { buf = qtn_fmgr_memory_in_
 RESOURCE TBUF r_qtn_fmgr_delete_backup_title         { buf = qtn_fmgr_delete_backup_title; }
 RESOURCE TBUF r_qtn_fmgr_delete_backup_query         { buf = qtn_fmgr_delete_backup_query; }
 RESOURCE TBUF r_qtn_fmgr_usb_memory_default_name     { buf = qtn_fmgr_usb_memory_default_name; }
+
+RESOURCE TBUF r_qtn_fmgr_system_not_ready            { buf = qtn_hs_operation_failed_no_disk ; }
 // End of File

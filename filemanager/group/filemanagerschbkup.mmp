@@ -29,7 +29,8 @@ CAPABILITY      CAP_APPLICATION
 SOURCEPATH      ../schbkup/src
 SOURCE          filemanagerschbackupmain.cpp
 SOURCE          filemanagerschbackuptask.cpp
-SOURCE          filemanagerschsubscriber.cpp
+SOURCE          filemanagerschsubscriber.cpp 
+SOURCE          fmsystemstatemonitor.cpp
 
 USERINCLUDE     . ../schbkup/inc ../Engine/inc
 
@@ -43,3 +44,5 @@ LIBRARY         ws32.lib
 LIBRARY         apgrfx.lib
 LIBRARY         apparc.lib
 LIBRARY         centralrepository.lib
+LIBRARY	        ssmcmn.lib // state manager
+

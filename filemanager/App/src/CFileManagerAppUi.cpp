@@ -22,7 +22,7 @@
 #include <aknnavi.h>    // CAknNavigationControlContainer 
 #include <aknnavide.h>  // CAknNavigationDecorator
 #include <sendui.h>     // CSendAppUi
-#include <Sendnorm.rsg>
+#include <sendnorm.rsg>
 #include <avkon.rsg>
 #include <barsread.h>
 #include <hlplch.h>     // HlpLauncher
@@ -36,10 +36,13 @@
 #include <bautils.h>
 #include <pathinfo.h>
 #include <driveinfo.h>
+#include <ssm/ssmstate.h>
+#include <ssm/ssmdomaindefs.h>
+
 #include <CFileManagerEngine.h>
 #include <CFileManagerIRReceiver.h>
-#include <FileManager.rsg>
-#include <FileManagerView.rsg>
+#include <filemanager.rsg>
+#include <filemanagerview.rsg>
 #include <FileManagerDebug.h>
 #include <FileManagerUID.h>
 #include <CFileManagerFeatureManager.h>
@@ -141,6 +144,7 @@ CFileManagerAppUi::~CFileManagerAppUi()
     CFileManagerEngine& engine =
         static_cast< CFileManagerDocument* >( Document() )->Engine();
     engine.SetObserver( NULL );
+    iSAS.Close();
     }
 
 // -----------------------------------------------------------------------------
@@ -168,6 +172,8 @@ void CFileManagerAppUi::ConstructL()
     CleanupStack::Pop( view );
     SetDefaultViewL( *view );
     iActiveView = view->Id();
+ 
+    User::LeaveIfError( iSAS.Connect( KSM2GenMiddlewareDomain3 ) );
 
 #ifdef RD_FILE_MANAGER_BACKUP
     CFileManagerDocument* doc =
@@ -579,10 +585,6 @@ void CFileManagerAppUi::CloseMemoryStoreViewL()
         {
         ExitEmbeddedAppIfNeededL();
         CreateAndActivateLocalViewL( KFileManagerMainViewId );
-                
-        //Fix for EDMO-7JMH7V
-        //File manager:The phone displays "no data" in File manager 
-        //when cancel installing ".sis" file
         iActiveView = KFileManagerMainViewId;
         }
     }
@@ -717,6 +719,7 @@ void CFileManagerAppUi::ActivateRestoreViewL( TBool aDeleteBackup )
 void CFileManagerAppUi::CloseRestoreViewL()
     {
     CreateAndActivateLocalViewL( KFileManagerBackupViewId );
+    iActiveView = KFileManagerBackupViewId;
     }
 
 // -----------------------------------------------------------------------------
@@ -1295,6 +1298,18 @@ void CFileManagerAppUi::ResetBackupOrRestoreEndTime()
     {
     iManualBackupOrRestoreStarted = 0;
     iManualBackupOrRestoreEnded = 0;
+    }
+
+
+// ------------------------------------------------------------------------------
+// CFileManagerAppUi::IsSystemStateNormal
+//
+// ------------------------------------------------------------------------------
+//
+TBool CFileManagerAppUi::IsSystemStateNormal() const
+    {
+    TSsmState state = iSAS.State();
+    return ( state.MainState() == ESsmNormal );
     }
 
 // End of File  

@@ -18,7 +18,7 @@
 
 #include <appinfo.rh>
 #include <data_caging_paths_strings.hrh>
-#include <FileManager.rsg>
+#include <filemanager.rsg>
 #include "FileManagerUID.h"
 
 UID2 KUidAppRegistrationResourceFile

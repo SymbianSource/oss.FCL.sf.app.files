@@ -22,7 +22,7 @@
 #include <aknlists.h>
 #include <akntitle.h>
 #include <CFileManagerEngine.h>
-#include <FileManager.rsg>
+#include <filemanager.rsg>
 #include <csxhelp/fmgr.hlp.hrh>
 #include <FileManagerDebug.h>
 #include "CFileManagerMemoryStoreView.h"

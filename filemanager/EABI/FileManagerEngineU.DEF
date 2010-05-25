@@ -145,4 +145,5 @@ EXPORTS
 	_ZN18CFileManagerEngine18SetCurrentItemNameERK7TDesC16 @ 144 NONAME
 	_ZN18CFileManagerEngine12SetAppExitObEP25MAknServerAppExitObserver @ 145 NONAME
 	_ZN18CFileManagerEngine14DeleteBackupsLEv @ 146 NONAME
+	_ZN18CFileManagerEngine15IsDriverMountedEi @ 147 NONAME
 

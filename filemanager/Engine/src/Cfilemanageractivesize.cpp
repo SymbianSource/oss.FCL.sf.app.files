@@ -110,7 +110,7 @@ void CFileManagerActiveSize::StepL()
     while( iFileCounter < iDir->Count() && processCount )
         {
         const TEntry& item( ( *iDir )[ iFileCounter ] );
-        iSize += item.iSize;
+        iSize += item.FileSize();
         ++iFileCounter;
         --processCount;
         }

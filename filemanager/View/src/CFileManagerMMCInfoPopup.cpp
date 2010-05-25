@@ -21,7 +21,7 @@
 #include <StringLoader.h>
 #include <aknPopup.h>
 #include <aknlists.h>
-#include <FileManagerView.rsg>
+#include <filemanagerview.rsg>
 #include <cmemstatepopup.h>
 #include "CFileManagerMMCInfoPopup.h"
 #include "TFileManagerDriveInfo.h"

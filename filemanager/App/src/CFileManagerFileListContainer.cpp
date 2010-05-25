@@ -18,7 +18,7 @@
 
 
 // INCLUDE FILES
-#include <FileManager.rsg>
+#include <filemanager.rsg>
 #include <aknlists.h>
 #include <barsread.h>
 #include <eikclbd.h>

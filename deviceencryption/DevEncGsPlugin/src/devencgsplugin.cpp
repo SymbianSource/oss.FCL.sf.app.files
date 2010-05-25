@@ -21,7 +21,6 @@
 #include    <gsparentplugin.h>
 #include    <gscommon.hrh>
 #include    <devencgspluginrsc.rsg> // GUI Resource
-//#include    <DevEncUi.rsg>
 #include    <devencgsplugin.mbg>
 #include    <gsprivatepluginproviderids.h>
 #include    <hwrmvibrasdkcrkeys.h>

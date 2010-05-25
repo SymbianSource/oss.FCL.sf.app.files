@@ -19,7 +19,7 @@
 #include <aknQueryControl.h>
 #include <AknQueryDialog.h>
 #include <aknsoundsystem.h>
-#include <DevEncUi.rsg>
+#include <devencui.rsg>
 #include <eikseced.h>
 
 #include "DevEncLog.h"

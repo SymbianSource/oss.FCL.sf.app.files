@@ -24,7 +24,7 @@
 #include <aknlists.h>
 #include <barsread.h>
 #include <coemain.h>
-#include <DevEncUi.rsg>
+#include <devencui.rsg>
 #include <eikenv.h>
 
 // User Includes

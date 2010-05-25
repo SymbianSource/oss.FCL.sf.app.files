@@ -148,7 +148,8 @@ void CMsengInfoArray::ConstructL(TInt aNumberOfDataGroups,
         || CMseng::IsRemovableDrive(aFsSession, iCurrentScannedDrive)),
         User::Panic(KPanic, KErrNotSupported));
 
-    if(CMseng::IsInternalDrive(aFsSession, iCurrentScannedDrive))
+    if( CMseng::IsInternalDrive(aFsSession, iCurrentScannedDrive) 
+	    && !CMseng::IsMassStorageDrive( aFsSession, iCurrentScannedDrive ) )
         {        
         theReader.OpenLC( &aResFile, C_DIRECTORIES );
         iDirArray = theReader.ReadDesCArrayL();
@@ -162,7 +163,7 @@ void CMsengInfoArray::ConstructL(TInt aNumberOfDataGroups,
         // reading later...
         
         }
-    else if(CMseng::IsRemovableDrive(aFsSession, iCurrentScannedDrive))
+    else // other drives except Phone Memory should be scanned from root folder.
         {
         theReader.OpenLC( &aResFile, E_DIRECTORIES );
         iDirArray = theReader.ReadDesCArrayL();

@@ -19,7 +19,7 @@
 // INCLUDES
 #include <AknUtils.h>
 #include <StringLoader.h>
-#include <FileManager.rsg>
+#include <filemanager.rsg>
 #include <CFileManagerEngine.h>
 #include <CFileManagerItemProperties.h>
 #include <CFileManagerCommonDefinitions.h>

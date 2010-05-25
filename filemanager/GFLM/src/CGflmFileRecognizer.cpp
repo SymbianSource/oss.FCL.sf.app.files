@@ -25,7 +25,7 @@
 #include "GFLMConsts.h"
 #include <e32svr.h>
 #include <barsread.h>
-#include <GflmFileExtensionMimeTypes.rsg>
+#include <gflmfileextensionmimetypes.rsg>
 #include <data_caging_path_literals.hrh> 
 
 

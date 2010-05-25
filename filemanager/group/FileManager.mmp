@@ -95,5 +95,6 @@ LIBRARY         caf.lib
 LIBRARY         commonui.lib
 LIBRARY         servicehandler.lib
 LIBRARY         platformenv.lib
+LIBRARY	        ssmcmn.lib // state manager
 
 // End of File

@@ -21,7 +21,7 @@ NAME    FMGC // 4 letter ID
 
 //  INCLUDES
 #include <apcaptionfile.rh>
-#include <FileManager.loc>
+#include <filemanager.loc>
 
 
 //  RESOURCE DEFINITIONS 

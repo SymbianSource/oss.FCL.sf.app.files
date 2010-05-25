@@ -18,7 +18,7 @@
 // INCLUDE FILES
 #include <avkon.hrh>
 #include <centralrepository.h>
-#include <DevEncUi.rsg>
+#include <devencui.rsg>
 #include <csxhelp/devenc.hlp.hrh>
 #include <e32event.h>
 #include <hlplch.h> // Help launcher

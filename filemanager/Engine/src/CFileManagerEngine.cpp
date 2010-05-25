@@ -27,7 +27,7 @@
 //#include <cmgalbummanager.h>
 #include <pathinfo.h>
 #include <AknServerApp.h>
-#include <FileManagerEngine.rsg>
+#include <filemanagerengine.rsg>
 #ifdef RD_MULTIPLE_DRIVE
 #include <driveinfo.h>
 #endif // RD_MULTIPLE_DRIVE
@@ -1976,7 +1976,7 @@ EXPORT_C TInt64 CFileManagerEngine::GetFileSizesL(
                 {
                 CGflmFileSystemItem* fsItem =
                     static_cast< CGflmFileSystemItem* >( item );
-                size += static_cast<TUint>(fsItem->Entry().iSize);
+                size += fsItem->Entry().FileSize();
                 break;
                 }
             case CGflmGroupItem::EDirectory:
@@ -2288,5 +2288,14 @@ void CFileManagerEngine::StopDiskEventNotifyTimerAsync()
         }
     }
 
+// ---------------------------------------------------------------------------
+// CFileManagerEngine::IsDriverMounted()
+// ---------------------------------------------------------------------------
+//
+EXPORT_C TBool CFileManagerEngine::IsDriverMounted( TInt aDrive )
+    {
+    TVolumeInfo volInfo;
+    return ( KErrNone == iFs.Volume( volInfo, aDrive ) );
+    }
 
 //  End of File

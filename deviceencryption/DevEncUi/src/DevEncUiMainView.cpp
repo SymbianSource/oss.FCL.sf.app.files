@@ -23,7 +23,7 @@
 // System includes
 #include <aknnotewrappers.h>
 #include <aknViewAppUi.h>	// CAknViewAppUi
-#include <DevEncUi.rsg>
+#include <devencui.rsg>
 #include <e32cmn.h>
 #include <StringLoader.h>
 #include <DevEncExternalCRKeys.h>

@@ -21,7 +21,7 @@
 #include <aknnotewrappers.h> 
 #include <bautils.h>
 #include <CFileManagerEngine.h>
-#include <FileManagerView.rsg>
+#include <filemanagerview.rsg>
 #include "CFileManagerFileNameQueryDlg.h"
 #include "CFileManagerCommonDefinitions.h"
 #include "CFileManagerItemProperties.h"

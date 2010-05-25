@@ -24,7 +24,7 @@
 #include <bautils.h>
 #include <StringLoader.h>
 #include <aknPopup.h>
-#include <MemStatePopup.rsg>
+#include <memstatepopup.rsg>
 #include <f32file.h>
 #include <data_caging_path_literals.hrh> 
 

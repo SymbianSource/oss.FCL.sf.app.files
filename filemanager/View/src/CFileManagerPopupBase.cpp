@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include <StringLoader.h>
-#include <FileManagerView.rsg>
+#include <filemanagerview.rsg>
 #include <FileManagerDebug.h>
 #include <CFileManagerCommonDefinitions.h>
 #include "CFileManagerPopupBase.h"

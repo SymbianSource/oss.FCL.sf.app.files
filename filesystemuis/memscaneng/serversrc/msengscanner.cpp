@@ -181,16 +181,18 @@ void CMsengScanner::PreScanL(TDriveNumber aDrive, RFs& aFsSession)
     RResourceReader theReader;  
     
     TBool somethingToDo = EFalse;
-    if(CMseng::IsInternalDrive(aFsSession, aDrive))
+    if( CMseng::IsInternalDrive( aFsSession, aDrive )
+        && !CMseng::IsMassStorageDrive( aFsSession, aDrive ) )
         {
         theReader.OpenLC( &iResFile, C_EXTRADATAFILES );
         somethingToDo = ETrue;
         }
-    else if(CMseng::IsRemovableDrive(aFsSession, aDrive))
+    else
         {
         theReader.OpenLC( &iResFile, E_EXTRADATAFILES );
         somethingToDo = ETrue;
         }
+    
     if(somethingToDo)
         {
         //the first WORD contains the number of elements in the resource

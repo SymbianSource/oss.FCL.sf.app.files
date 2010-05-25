@@ -159,7 +159,7 @@ void CGflmDirectoryListingCache::GetDirL( CListingNamePair& aPair )
             for ( TInt i( 0 ); i < entryCount; i++ )
 			    {
                 const TEntry& entry( iEntryBuffer[ i ] );
-                TInt entrySize( EntrySize( entry ) );
+                TInt entrySize( EntrySize( entry, ETrue ) );
                 aPair.iListing->AppendL( entry, entrySize );
 				}
 			}

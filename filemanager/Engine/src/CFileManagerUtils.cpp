@@ -25,7 +25,7 @@
 #include <bautils.h>
 #include <caf/caf.h>
 #include <DcfCommon.h>
-#include <FileManagerEngine.rsg>
+#include <filemanagerengine.rsg>
 #ifdef RD_MULTIPLE_DRIVE
 #include <driveinfo.h>
 #endif // RD_MULTIPLE_DRIVE
@@ -408,10 +408,6 @@ TUint32 CFileManagerUtils::FileTypeL( const TDesC& aFullPath )
         else
             {
             fileType |= CFileManagerItemProperties::EFile;
-            if ( IsDrmProtectedFileL( aFullPath) )
-                {
-                fileType |= CFileManagerItemProperties::EDrmProtected;
-                }
             }
         }
         

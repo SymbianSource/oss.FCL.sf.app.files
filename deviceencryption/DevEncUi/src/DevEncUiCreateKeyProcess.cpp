@@ -17,7 +17,7 @@
 
 #include "DevEncLog.h"
 #include "DevEncUiCreateKeyProcess.h"
-#include <DevEncUi.rsg>
+#include <devencui.rsg>
 
 CDevEncUiCreateKeyProcess::CDevEncUiCreateKeyProcess()
     {

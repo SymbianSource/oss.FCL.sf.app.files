@@ -27,7 +27,7 @@
 #include <eikenv.h>
 #include <DevEncEngineConstants.h>
 #include <StringLoader.h>
-#include <DevEncUi.rsg>
+#include <devencui.rsg>
 
 //User includes
 #include "DevEncLog.h"

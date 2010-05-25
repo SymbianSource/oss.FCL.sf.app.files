@@ -22,7 +22,7 @@
 #include <DRMHelper.h>
 #include <DRMRights.h>
 #include <AknUtils.h>
-#include <FileManagerView.rsg>
+#include <filemanagerview.rsg>
 #include <FileManagerDebug.h>
 #include <drmuihandling.h>
 #include "CFileManagerFullOmaDrmInfo.h"

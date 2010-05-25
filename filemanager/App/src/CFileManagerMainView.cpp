@@ -21,7 +21,7 @@
 #include <aknlists.h>
 #include <CFileManagerEngine.h>
 #include <CFileManagerItemProperties.h>
-#include <FileManager.rsg>
+#include <filemanager.rsg>
 #include <csxhelp/fmgr.hlp.hrh>
 #include <FileManagerDlgUtils.h>
 #include <FileManagerDebug.h>
@@ -284,6 +284,10 @@ void CFileManagerMainView::MainMenuFilteringL( CEikMenuPane& aMenuPane )
         }
 #endif // RD_FILE_MANAGER_BACKUP
 
+    if( !iEngine.IsDriverMounted( drvInfo.iDrive ) )
+        {
+        aMenuPane.SetItemDimmed( EFileManagerEject, ETrue );
+        }
     CleanupStack::PopAndDestroy( prop );
     }
 

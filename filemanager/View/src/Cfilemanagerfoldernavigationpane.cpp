@@ -26,7 +26,7 @@
 #include <AknsSkinInstance.h>
 #include <AknsUtils.h>
 #include <aknlayoutscalable_avkon.cdl.h>
-#include <FileManagerView.rsg>
+#include <filemanagerview.rsg>
 #include <FileManagerEngine.hrh>
 #include "Cfilemanagerfoldernavigationpane.h"
 #include "MFileManagerFolderNaviObserver.h"

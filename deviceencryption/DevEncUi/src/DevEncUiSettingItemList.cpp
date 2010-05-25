@@ -22,7 +22,7 @@
 
 // System include
 #include <StringLoader.h>
-#include <DevEncUi.rsg>
+#include <devencui.rsg>
 
 // User include
 

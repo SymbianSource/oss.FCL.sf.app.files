@@ -58,7 +58,7 @@ LANGUAGE_IDS
 END //RESOURCE
 
 START RESOURCE    DevEncUi_reg.rss
-DEPENDS           DevEncUi.rsg
+DEPENDS           devencui.rsg
 HEADER
 TARGETPATH 	      /private/10003a3f/apps
 END //RESOURCE
