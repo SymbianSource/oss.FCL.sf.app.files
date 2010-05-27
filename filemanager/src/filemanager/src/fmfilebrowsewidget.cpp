@@ -694,10 +694,11 @@ void FmFileBrowseWidget::on_renameAction_triggered()
 {
     QString filePath = mModel->filePath( mCurrentItem->modelIndex() );
     QFileInfo fileInfo = mModel->fileInfo( mCurrentItem->modelIndex() );
-
-    QString newName( fileInfo.fileName() );
+    int maxFileNameLength = FmUtils::getMaxFileNameLength();
     
-    while( FmDlgUtils::showTextQuery( hbTrId( "Enter new name for %1" ).arg( newName ), newName, true ) ){
+    QString newName( fileInfo.fileName() );
+    while( FmDlgUtils::showTextQuery( hbTrId( "Enter new name for %1" ).arg( newName ), newName, true,
+            maxFileNameLength, QString() , false ) ){
         QString newTargetPath = FmUtils::fillPathWithSplash(
             fileInfo.absolutePath() ) + newName;
         QFileInfo newFileInfo( newTargetPath );
@@ -705,7 +706,14 @@ void FmFileBrowseWidget::on_renameAction_triggered()
             HbMessageBox::information( hbTrId( "%1 already exist!" ).arg( newName ) );
             continue;
         }
-
+        if( !FmUtils::checkFolderFileName( newName ) ) {
+            HbMessageBox::information( hbTrId( "Invalid file or folder name, try again!" ) );
+            continue;
+        }
+        if( !FmUtils::checkMaxPathLength( newTargetPath ) ) {
+            HbMessageBox::information( hbTrId( "the path you specified is too long, try again!" ) );
+            continue;
+        }
         if( !rename( fileInfo.absoluteFilePath(), newTargetPath ) ) {
             HbMessageBox::information( hbTrId("Rename failed!") );
         }

@@ -51,6 +51,8 @@ int FmOperationThread::asyncCopy( FmOperationBase* operationBase )
         this, SLOT( onAskForRename( QString, QString* )), Qt::BlockingQueuedConnection );
     connect( mOperationBase, SIGNAL( askForReplace( QString, QString, bool* ) ),
         this, SLOT( onAskForReplace( QString, QString, bool* )), Qt::BlockingQueuedConnection );
+    connect( mOperationBase, SIGNAL( showNote( QString ) ),
+        this, SLOT( onShowNote( QString )), Qt::BlockingQueuedConnection );
 
     start();
     return FmErrNone;
@@ -69,6 +71,8 @@ int FmOperationThread::asyncMove( FmOperationBase* operationBase )
         this, SLOT( onAskForRename( QString, QString* )), Qt::BlockingQueuedConnection );
     connect( mOperationBase, SIGNAL( askForReplace( QString, QString, bool* ) ),
         this, SLOT( onAskForReplace( QString, QString, bool* )), Qt::BlockingQueuedConnection );
+    connect( mOperationBase, SIGNAL( showNote( QString ) ),
+        this, SLOT( onShowNote( QString )), Qt::BlockingQueuedConnection );
 
 
     start();
@@ -144,6 +148,12 @@ void FmOperationThread::onAskForReplace( const QString &srcFile, const QString &
 {
     emit askForReplace( srcFile, destFile, isAccepted );
 }
+
+void FmOperationThread::onShowNote( const char *noteString )
+{
+    emit showNote( noteString );
+}
+
 void FmOperationThread::on_operationElement_notifyPreparing( bool cancelable )
 {
     emit notifyPreparing( cancelable );
@@ -167,6 +177,7 @@ void FmOperationThread::run()
         {
         mErrString.clear();
         FmOperationCopy *operationCopy = static_cast<FmOperationCopy*>(mOperationBase);
+        QString refreshDestPath = QFileInfo( operationCopy->targetPath() ).dir().absolutePath();
         
         int ret = operationCopy->start( &mStop, &mErrString );
         switch( ret )
@@ -176,6 +187,7 @@ void FmOperationThread::run()
             break;
         case FmErrNone:
             emit notifyFinish();
+            emit refreshModel( refreshDestPath );
             break;
         default:
             emit notifyError( ret, mErrString );

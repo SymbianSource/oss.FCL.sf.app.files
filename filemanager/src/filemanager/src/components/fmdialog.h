@@ -30,6 +30,12 @@ Q_OBJECT
 public:
     explicit FmDialog( QGraphicsItem *parent = 0 );
     HbAction *exec();
+    
+    HbAction *primaryAction() const;
+    void setPrimaryAction( HbAction *action );
+
+    HbAction *secondaryAction() const;
+    void setSecondaryAction( HbAction *action );
 public slots:
     void dialogClosed(HbAction *action);
 private:

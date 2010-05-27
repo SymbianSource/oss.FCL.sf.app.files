@@ -96,8 +96,7 @@ void FmRestoreWigdet::init()
              ++index;
     }
 
-    mListView->setItemPrototype( new FmRestoreViewItem( this ) );
-
+    mListView->setItemPrototype( new FmRestoreViewItem(this) );
 }
 
 void FmRestoreWigdet::on_list_activated( const QModelIndex &index )
@@ -105,8 +104,7 @@ void FmRestoreWigdet::on_list_activated( const QModelIndex &index )
     FmRestoreViewItem *restoreViewItem = static_cast< FmRestoreViewItem* >
                                          ( mListView->itemByIndex( index ) );
 
-    restoreViewItem->setCheckBoxState();
-    emit checkStatusChanged();
+    restoreViewItem->setCheckBoxState();    
 }
 
 int FmRestoreWigdet::backupDataCount()

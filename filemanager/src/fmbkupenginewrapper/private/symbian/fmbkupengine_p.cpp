@@ -435,6 +435,8 @@ int FmBkupEnginePrivate::error()
         return FmErrCorrupt;
     case KErrNotReady:
         return FmErrNotReady;
+    case KErrDisMounted:
+        return FmErrDisMounted;
     default: 
         return FmErrUnKnown;
     }    

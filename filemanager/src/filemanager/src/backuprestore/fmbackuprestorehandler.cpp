@@ -38,7 +38,7 @@ FmBackupRestoreHandler::FmBackupRestoreHandler( QObject *parent ) : QObject( par
     connect( mBkupEngine, SIGNAL( notifyStart( bool, int) ), this, SLOT( onNotifyStart( bool, int ) ), Qt::QueuedConnection );
     connect( mBkupEngine, SIGNAL( notifyUpdate(int) ), this, SLOT( onNotifyUpdate(int) ), Qt::QueuedConnection );
     connect( mBkupEngine, SIGNAL( notifyFinish(int) ), 
-        this, SLOT( onNotifyFinish(int) ), Qt::QueuedConnection );
+        this, SLOT( onNotifyFinish(int) ), Qt::DirectConnection );
     connect( mBkupEngine, SIGNAL( notifyMemoryLow(int, int& ) ), 
         this, SLOT( onNotifyMemoryLow(int, int&) ) );
     connect( mBkupEngine, SIGNAL( notifyBackupFilesExist( bool& )), this, SLOT( onNotifyBackupFilesExist( bool& )));

@@ -293,6 +293,10 @@ void FmOperationService::on_operationThread_refreshModel( const QString &path )
 {
     emit refreshModel( mCurrentOperation, path );
 }
+void FmOperationService::on_operationThread_showNote( const char *noteString )
+{
+    mOperationResultProcesser->onShowNote( mCurrentOperation, noteString );
+}
 void FmOperationService::on_operationThread_notifyWaiting( bool cancelable )
 {
     mOperationResultProcesser->onNotifyWaiting(

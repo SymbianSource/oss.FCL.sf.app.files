@@ -105,7 +105,12 @@ private:
     ~FmFileDialog();
 
     bool exec();
+    HbAction *primaryAction() const;
+    void setPrimaryAction( HbAction *action );
 
+    HbAction *secondaryAction() const;
+    void setSecondaryAction( HbAction *action );
+    
     FmFileDialogPrivate *d_ptr;
     
     Q_DISABLE_COPY( FmFileDialog)

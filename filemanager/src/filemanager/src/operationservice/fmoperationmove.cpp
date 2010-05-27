@@ -95,7 +95,7 @@ int FmOperationMove::start(  volatile bool *isStopped, QString *errString )
                     }
                     destFi.setFile( destFi.absoluteFilePath() );
                 } else {
-                    emit askForRename( destFi.absoluteFilePath(), &newName );
+                    queryForRename( destFi.absoluteFilePath(), &newName );
                     if( newName.isEmpty() ) {
                         ret = FmErrCancel;
                         break;
@@ -105,7 +105,7 @@ int FmOperationMove::start(  volatile bool *isStopped, QString *errString )
                 }
             } else{
                 // destination is dir
-                emit askForRename( destFi.absoluteFilePath(), &newName );
+                queryForRename( destFi.absoluteFilePath(), &newName );
                 if( newName.isEmpty() ) {
                     ret = FmErrCancel;
                     break;
@@ -155,7 +155,7 @@ int FmOperationMove::move( const QString &source, const QString &targetPath, con
             *mErrString = source;
             ret = FmErrCannotRemove;
         }
-        IncreaseProgress( fileSize );
+        increaseProgress( fileSize );
     } else if (fi.isDir()) {
         if( FmUtils::isDefaultFolder( source ) ){
             ret = FmErrRemoveDefaultFolder;
@@ -180,18 +180,20 @@ int FmOperationMove::move( const QString &source, const QString &targetPath, con
 }
 int FmOperationMove::moveDirInsideContent( const QString &srcPath, const QString &destPath )
 {
-    if( destPath.contains( srcPath, Qt::CaseInsensitive ) ) {
+    QFileInfo srcInfo( srcPath );
+    QFileInfo destInfo( destPath );
+        
+    QString destUpPath = FmUtils::fillPathWithSplash( destInfo.absolutePath() );
+    if( destUpPath.contains( srcPath, Qt::CaseInsensitive ) ) {
         *mErrString = destPath;
         return FmErrMoveDestToSubFolderInSrc;
     }
-
-    QFileInfo srcInfo( srcPath );
+    
     if( !srcInfo.isDir() || !srcInfo.exists() ) {
         *mErrString = srcPath;
         return FmErrSrcPathDoNotExist;
     }
-
-    QFileInfo destInfo( destPath );
+    
     if( !destInfo.exists() ) {
         if( !destInfo.dir().mkdir( destInfo.absoluteFilePath() ) ) {
             *mErrString = destPath;
@@ -223,7 +225,7 @@ int FmOperationMove::moveDirInsideContent( const QString &srcPath, const QString
                 *mErrString = fileInfo.absoluteFilePath();
                 return FmErrCannotRemove;
             }
-            IncreaseProgress( fileSize );
+            increaseProgress( fileSize );
         } else if( fileInfo.isDir() ) {
             //makedir
             QString newDirPath = destPath + fileInfo.absoluteFilePath().mid( srcPath.length() );
@@ -256,7 +258,7 @@ int FmOperationMove::moveDirInsideContent( const QString &srcPath, const QString
     return FmErrNone;
 }
 
-void FmOperationMove::IncreaseProgress( quint64 size )
+void FmOperationMove::increaseProgress( quint64 size )
 {
     if( mTotalSize <=0 ) {
         return;
@@ -269,4 +271,7 @@ void FmOperationMove::IncreaseProgress( quint64 size )
     }
 }
 
-
+void FmOperationMove::queryForRename( const QString &srcFile, QString *destFile )
+{
+    emit askForRename( srcFile, destFile );
+}

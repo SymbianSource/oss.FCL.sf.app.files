@@ -48,6 +48,15 @@ void FmDeleteBackupWidget::refresh()
     mListView->setModel( 0 );
     loadData();
     mListView->setModel( mModel );
+    mItemList.clear();
+    for (int i = 0; i < mModel->rowCount(); ++i) {
+        QModelIndex index = mModel->index(i);
+        mRestoreViewItem = static_cast< FmRestoreViewItem* >
+                                                 (mListView->itemByIndex(index));
+        connect(mRestoreViewItem, SIGNAL(stateChanged(int)), this, SIGNAL(stateChanged(int)));        
+        mItemList.push_back(mRestoreViewItem);
+             
+    }
 }
 QList<int> FmDeleteBackupWidget::selectionIndexes()
 {
@@ -112,6 +121,7 @@ void FmDeleteBackupWidget::init()
     mListView->setModel( mModel );
 
     mListView->setItemPrototype( new FmRestoreViewItem( this ) );
+   
 
 }
 

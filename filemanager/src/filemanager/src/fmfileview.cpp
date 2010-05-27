@@ -389,29 +389,29 @@ void FmFileView::on_newFolder_triggered()
     QDir dir( path );
     if( dir.exists() ) {
         while( FmDlgUtils::showTextQuery( hbTrId( "Enter name for " ), dirName,
-                true, maxFileNameLength, associatedDrive , false ) ){
-                QString newTargetPath = FmUtils::fillPathWithSplash(
-                    dir.absolutePath() ) + dirName;
-                QFileInfo newFileInfo( newTargetPath );
-                if( !FmUtils::checkFolderFileName( dirName ) ) {
-                    HbMessageBox::information( hbTrId( "Invalid file or folder name!" ) );
-                    continue;
-                }
-                if( !FmUtils::checkMaxPathLength( newTargetPath ) ) {
-                    HbMessageBox::information( hbTrId( "the path you specified is too long!" ) );
-                    continue;
-                }
-                if( newFileInfo.exists() ) {
-                    HbMessageBox::information( hbTrId( "%1 already exist!" ).arg( dirName ) );
-                    continue;
-                }
-    
-                if( !dir.mkdir( dirName ) ) {
-                    HbMessageBox::information( hbTrId("Operation failed!") );
-                }
-                refreshModel( path );
-                break;
+            true, maxFileNameLength, associatedDrive , false ) ){
+            QString newTargetPath = FmUtils::fillPathWithSplash(
+                dir.absolutePath() ) + dirName;
+            QFileInfo newFileInfo( newTargetPath );
+            if( !FmUtils::checkFolderFileName( dirName ) ) {
+                HbMessageBox::information( hbTrId( "Invalid file or folder name!" ) );
+                continue;
             }
+            if( !FmUtils::checkMaxPathLength( newTargetPath ) ) {
+                HbMessageBox::information( hbTrId( "the path you specified is too long!" ) );
+                continue;
+            }
+            if( newFileInfo.exists() ) {
+                HbMessageBox::information( hbTrId( "%1 already exist!" ).arg( dirName ) );
+                continue;
+            }
+
+            if( !dir.mkdir( dirName ) ) {
+                HbMessageBox::information( hbTrId("Operation failed!") );
+            }
+            refreshModel( path );
+            break;
+        }
         
     }
 }

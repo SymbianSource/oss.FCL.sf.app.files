@@ -49,30 +49,24 @@ FmBackupWidget::~FmBackupWidget()
 
 void FmBackupWidget::on_list_released( const QModelIndex &index )
 {
-    if( mListReleased == true ) {
-        return;
-    }
-    mListReleased = true;
     HbDataFormModelItem *item = mModel->itemFromIndex(index);
     if( item != mLastPressedItem || mDataForm->isScrolling() || mScrolled ) {
         mScrolled = false;
-        mListReleased = false;
         return;
     }
     mScrolled = false;
 
     if( item == mContentsItem ){
-        ChangeContents();
+        emit changeContents();
     } else if( item == mTargetItem ){
-        ChangeTargetDrive();
+        emit changeTargetDrive();
     } else if( item == mSchedulingItem ){
-        ChangeScheduling();
+        emit changeScheduling();
     } else if( item == mWeekdayItem ){
-        ChangeWeekday();
+        emit changeWeekday();
     } else if( item == mTimeItem ){
-        ChangeTime();
+        emit changeTime();
     }
-    mListReleased = false;
 }
 
 void FmBackupWidget::on_list_pressed( const QModelIndex &index )
@@ -110,7 +104,13 @@ void FmBackupWidget::init()
 
     connect( this, SIGNAL( doModelRefresh() ),
              this, SLOT( refreshModel() ), Qt::QueuedConnection );
-
+    
+    connect( this, SIGNAL(changeContents()), this, SLOT(on_changeContents()), Qt::QueuedConnection);
+    connect( this, SIGNAL(changeScheduling()), this, SLOT(on_changeScheduling()), Qt::QueuedConnection);
+    connect( this, SIGNAL(changeWeekday()), this, SLOT(on_changeWeekday()), Qt::QueuedConnection);
+    connect( this, SIGNAL(changeTime()), this, SLOT(on_changeTime()), Qt::QueuedConnection);
+    connect( this, SIGNAL(changeTargetDrive()), this, SLOT(on_changeTargetDrive()), Qt::QueuedConnection);
+    
     //mBackupSettings = new FmBackupSettings();
     mBackupSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->BackupSettingsL();
     mBackupSettings->load();
@@ -273,7 +273,7 @@ void FmBackupWidget::refreshModel()
 
 
 
-void FmBackupWidget::ChangeContents()
+void FmBackupWidget::on_changeContents()
 {
     
     QString title = constFileManagerBackupSettingsTitleContents;  
@@ -294,7 +294,7 @@ void FmBackupWidget::ChangeContents()
 } 
 
 
-void FmBackupWidget::ChangeScheduling()
+void FmBackupWidget::on_changeScheduling()
 {
     QString title = constFileManagerBackupSettingsTitleScheduling;  
     QStringList queryStringList;
@@ -316,7 +316,7 @@ void FmBackupWidget::ChangeScheduling()
     }
 }
 
-void FmBackupWidget::ChangeWeekday()
+void FmBackupWidget::on_changeWeekday()
 {
     QString title = constFileManagerBackupSettingsTitleWeekday;  
     QStringList queryStringList;
@@ -338,7 +338,7 @@ void FmBackupWidget::ChangeWeekday()
     }
 }
 
-void FmBackupWidget::ChangeTime()
+void FmBackupWidget::on_changeTime()
 {
     QString title = constFileManagerBackupSettingsTitleTime;  
     QTime queryTime = mBackupSettings->time();
@@ -351,7 +351,7 @@ void FmBackupWidget::ChangeTime()
 }
 
 
-void FmBackupWidget::ChangeTargetDrive()
+void FmBackupWidget::on_changeTargetDrive()
 {
     QString title = constFileManagerBackupSettingsTitleTargetDrive;  
     QStringList queryStringList;

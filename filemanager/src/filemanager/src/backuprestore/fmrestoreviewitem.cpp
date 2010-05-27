@@ -29,10 +29,11 @@ FmRestoreViewItem::FmRestoreViewItem( QGraphicsItem *parent )
   : HbListViewItem( parent ),
     mRestoreContentLabel( 0 ),
     mDateTimeLabel( 0 ),
-    mCheckBox( 0 )
-
+    mCheckBox( 0 ),
+    hLayout( 0 ),
+    mParentWidget((HbWidget *)parent)
 {
-	init();
+	//init();
 }
 
 FmRestoreViewItem::~FmRestoreViewItem()
@@ -42,7 +43,7 @@ FmRestoreViewItem::~FmRestoreViewItem()
 
 HbAbstractViewItem *FmRestoreViewItem::createItem()
 {
-	return new FmRestoreViewItem( parentItem() );
+	return new FmRestoreViewItem( *this );
 }
 
 void FmRestoreViewItem::polish(HbStyleParameters& params)
@@ -52,6 +53,9 @@ void FmRestoreViewItem::polish(HbStyleParameters& params)
 
 void FmRestoreViewItem::updateChildItems()
 {
+    if( !hLayout ) {
+       init();
+    }
 	QString string = modelIndex().data( Qt::DisplayRole ).toString();	
 
 	QStringList stringList = string.split( '\t' );
@@ -65,15 +69,17 @@ void FmRestoreViewItem::updateChildItems()
 	 if( stringList.first() != stringList.last() ){
 	     mDateTimeLabel->setPlainText( stringList.last() );
 	 }
+	 connect(this, SIGNAL(stateChanged(int)), mParentWidget, SIGNAL(stateChanged(int)));  
 
 }
 
 
 void FmRestoreViewItem::init()
 {
-	QGraphicsLinearLayout *hLayout = new QGraphicsLinearLayout();
+    hLayout = new QGraphicsLinearLayout();
 	hLayout->setOrientation( Qt::Horizontal );
-
+	hLayout->addItem(layout());
+	
 	mCheckBox = new HbCheckBox( this );
     hLayout->addItem( mCheckBox );
 	hLayout->setAlignment( mCheckBox, Qt::AlignVCenter );
@@ -96,8 +102,8 @@ void FmRestoreViewItem::init()
 
 	hLayout->addItem( textWidget );
 	hLayout->setAlignment( textWidget, Qt::AlignVCenter );
-
-	setLayout( hLayout );
+    connect(mCheckBox, SIGNAL(stateChanged(int)), this, SIGNAL(stateChanged(int)));    
+	setLayout( hLayout );	
 
 }
 
@@ -105,12 +111,12 @@ void FmRestoreViewItem::setCheckBoxState()
 {
 	if ( mCheckBox->checkState() ==  Qt::Unchecked ){
 		mCheckBox->setCheckState( Qt::Checked );
-		setSelected( true );
+		setSelected( true );		
 	}
 	else if( mCheckBox->checkState() ==  Qt::Checked ){
 		mCheckBox->setCheckState( Qt::Unchecked );
 		setSelected( false );
-	}
+	}	
 }
 
 bool FmRestoreViewItem::getCheckBoxState()
@@ -121,3 +127,4 @@ bool FmRestoreViewItem::getCheckBoxState()
         return true;
     }
 }
+

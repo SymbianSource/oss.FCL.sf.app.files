@@ -39,8 +39,8 @@ public:
 private:
     void init();
 
-signals:
-    void checkStatusChanged();
+signals:    
+    void stateChanged(int state);
 
 private slots:
     void on_list_activated( const QModelIndex &index );

@@ -24,7 +24,8 @@
 class HbLabel;
 class HbCheckBox;
 class HbLineEdit;
-
+class QGraphicsLinearLayout;
+class HbWidget;
 //FmRestoreViewItem
 class FmRestoreViewItem : public HbListViewItem
 {
@@ -32,13 +33,16 @@ class FmRestoreViewItem : public HbListViewItem
 
 public:
     FmRestoreViewItem( QGraphicsItem *parent = 0  );
-	  ~FmRestoreViewItem();
+	~FmRestoreViewItem();
 
 public:
 	virtual HbAbstractViewItem *createItem();
 	virtual void updateChildItems();
 	void setCheckBoxState();
 	bool getCheckBoxState();
+signals:
+    void stateChanged(int);
+	
 	
 private:
     virtual void polish(HbStyleParameters& params);
@@ -51,6 +55,8 @@ private:
     HbLabel *mDateTimeLabel;
 
 	HbCheckBox *mCheckBox;
+	QGraphicsLinearLayout *hLayout;
+	HbWidget *mParentWidget;
 };
 
 #endif

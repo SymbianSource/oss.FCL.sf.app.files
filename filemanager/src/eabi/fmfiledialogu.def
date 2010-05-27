@@ -20,4 +20,8 @@ EXPORTS
 	_ZThn8_N12FmFileDialogD0Ev @ 19 NONAME
 	_ZThn8_N12FmFileDialogD1Ev @ 20 NONAME
 	_ZN12FmFileDialog12dialogClosedEP8HbAction @ 21 NONAME
+	_ZN12FmFileDialog16setPrimaryActionEP8HbAction @ 22 NONAME
+	_ZN12FmFileDialog18setSecondaryActionEP8HbAction @ 23 NONAME
+	_ZNK12FmFileDialog13primaryActionEv @ 24 NONAME
+	_ZNK12FmFileDialog15secondaryActionEv @ 25 NONAME
 

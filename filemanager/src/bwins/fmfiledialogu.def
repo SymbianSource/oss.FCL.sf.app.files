@@ -18,4 +18,8 @@ EXPORTS
 	?getExistingDirectory@FmFileDialog@@SA?AVQString@@PAVHbWidget@@ABV2@1ABVQStringList@@V?$QFlags@W4Option@FmFileDialog@@@@@Z @ 17 NONAME ; class QString FmFileDialog::getExistingDirectory(class HbWidget *, class QString const &, class QString const &, class QStringList const &, class QFlags<enum FmFileDialog::Option>)
 	?qt_metacast@FmFileDialog@@UAEPAXPBD@Z @ 18 NONAME ; void * FmFileDialog::qt_metacast(char const *)
 	?dialogClosed@FmFileDialog@@AAEXPAVHbAction@@@Z @ 19 NONAME ; void FmFileDialog::dialogClosed(class HbAction *)
+	?setSecondaryAction@FmFileDialog@@AAEXPAVHbAction@@@Z @ 20 NONAME ; void FmFileDialog::setSecondaryAction(class HbAction *)
+	?secondaryAction@FmFileDialog@@ABEPAVHbAction@@XZ @ 21 NONAME ; class HbAction * FmFileDialog::secondaryAction(void) const
+	?setPrimaryAction@FmFileDialog@@AAEXPAVHbAction@@@Z @ 22 NONAME ; void FmFileDialog::setPrimaryAction(class HbAction *)
+	?primaryAction@FmFileDialog@@ABEPAVHbAction@@XZ @ 23 NONAME ; class HbAction * FmFileDialog::primaryAction(void) const
 

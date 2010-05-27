@@ -21,10 +21,12 @@
 #include "fmviewdetailsdialog.h"
 #include "fmdlgutils.h"
 #include "fmutils.h"
-
+#include <hbaction.h>
 #include <hbprogressdialog.h>
 #include <hbaction.h>
 #include <hbmessagebox.h>
+#include <hbglobal.h>
+#include <QFileInfo>
 
 FmOperationResultProcesser::FmOperationResultProcesser( FmOperationService *operationService )
     : mOperationService( operationService ), mNote( 0 )
@@ -39,11 +41,30 @@ void FmOperationResultProcesser::onAskForRename(
     FmOperationBase* operationBase, const QString &srcFile, QString *destFile )
 {
     Q_UNUSED( operationBase );
+    int maxFileNameLength = FmUtils::getMaxFileNameLength();
     
     QString questionText = QString( "file " ) +
         srcFile + QString( " already exist, please rename:" );
-    QString value;
-    FmDlgUtils::showTextQuery( questionText, value, true );
+    QString value;   
+    QFileInfo fileInfo(srcFile);
+    while (FmDlgUtils::showTextQuery( questionText, value, true, maxFileNameLength, QString(), false )) {
+        QString newTargetPath = FmUtils::fillPathWithSplash(
+                                fileInfo.absolutePath() ) + value;
+        QFileInfo newFileInfo( newTargetPath );
+        if (!FmUtils::checkFolderFileName(value)) {
+            HbMessageBox::information( hbTrId( "Invalid file or folder name, try again!" ) );
+            continue;
+        }
+        if( !FmUtils::checkMaxPathLength( newTargetPath ) ) {
+            HbMessageBox::information( hbTrId( "the path you specified is too long, try again!" ) );
+            continue;
+        }
+        if (newFileInfo.exists()) {
+            HbMessageBox::information( hbTrId( "%1 already exist!" ).arg( value ) );
+            continue;
+        }
+        break;
+    }   
     *destFile = value;
 }
 
@@ -60,6 +81,11 @@ void FmOperationResultProcesser::onAskForReplace(
     } else {
         *isAccepted = false;
     }
+}
+
+void FmOperationResultProcesser::onShowNote( FmOperationBase* operationBase, const char *noteString )
+{
+    HbMessageBox::information(hbTrId(noteString));
 }
 
 void FmOperationResultProcesser::onNotifyWaiting( FmOperationBase* operationBase, bool cancelable )
@@ -238,11 +264,14 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
         case FmErrCorrupt:
             HbMessageBox::information( QString( hbTrId("Operation failed because target media is corrupted!") ) );
             return;
-        case FmErrNotReady:
+        case FmErrNotReady: // Caused when MMC & OTG is not inserted when start backup
             HbMessageBox::information( QString( hbTrId("Operation failed because device is not ready!") ) );
             return;
+        case FmErrDisMounted: // Caused by eject MMC when preparing backup
+            HbMessageBox::information( QString( hbTrId("Operation failed because device has been removed!") ) );
+            return;
         case FmErrDiskFull:
-            HbMessageBox::information( QString( hbTrId("Not enough space. Operation cancelled.!")) );
+            HbMessageBox::information( QString( hbTrId("Not enough space. Operation cancelled!")) );
             return;
         case FmErrCopyDestToSubFolderInSrc:
             HbMessageBox::information( QString( hbTrId("Can not copy to sub folder!")) );
@@ -321,11 +350,15 @@ void FmOperationResultProcesser::showWaiting( QString title, bool cancelable )
 //    } else {
 //        mNote->setProgressDialogType( HbProgressDialog::WaitNote );
 //    }
-    mNote->setText( title );
-    if( !cancelable )
-        mNote->primaryAction()->setDisabled( true );
-    else
-        mNote->primaryAction()->setDisabled( false );
+    QList<QAction *> actionList = mNote->actions();
+    if (actionList.size() > 0) {        
+        QAction *cancelAction = actionList.at(0);
+        if (!cancelable) {
+            cancelAction->setDisabled( true );
+        } else {
+            cancelAction->setDisabled( false );
+        }        
+    } 
     mNote->open();
 
 }
@@ -351,12 +384,15 @@ void FmOperationResultProcesser::showPreparing( QString title, bool cancelable )
     mNote->setMaximum( 65535 );
     mNote->setProgressValue( 0 );
     mNote->setText( title );
-    if( !cancelable ){
-        mNote->primaryAction()->setDisabled( true );  
-    }
-    else{
-        mNote->primaryAction()->setDisabled( false );       
-    }
+    QList<QAction *> actionList = mNote->actions();
+    if (actionList.size() > 0) {        
+        QAction *cancelAction = actionList.at(0);
+        if (!cancelable) {
+            cancelAction->setDisabled( true );
+        } else {
+            cancelAction->setDisabled( false );
+        }        
+    } 
     mNote->open();
 }
 
@@ -383,14 +419,15 @@ void FmOperationResultProcesser::showProgress( QString title, bool cancelable, i
     mNote->setMaximum( maxValue );
 
     mNote->setProgressValue( 0 );
-
-    if( !cancelable ){
-        mNote->primaryAction()->setDisabled( true );
-    }
-    else{
-        mNote->primaryAction()->setDisabled( false );
-    }
-
+    QList<QAction *> actionList = mNote->actions();
+    if (actionList.size() > 0) {        
+        QAction *cancelAction = actionList.at(0);
+        if(!cancelable) {
+            cancelAction->setDisabled( true );
+        } else {
+            cancelAction->setDisabled( false );
+        }        
+    } 
     mNote->open();
 }
 

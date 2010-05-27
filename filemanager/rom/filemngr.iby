@@ -24,7 +24,6 @@
 
 file=ABI_DIR\BUILD_DIR\filemngr.exe                   SHARED_LIB_DIR\filemngr.exe
 HB_UPGRADABLE_APP_REG_RSC(filemngr)
-S60_APP_RESOURCE(filemngr)
 
 
 file=ABI_DIR\BUILD_DIR\fmbkupengine.dll               SHARED_LIB_DIR\fmbkupengine.dll

@@ -33,6 +33,7 @@ public:
 
     void onAskForRename( FmOperationBase* operationBase, const QString &srcFile, QString *destFile );
     void onAskForReplace( FmOperationBase* operationBase, const QString &srcFile, const QString &destFile, bool *isAccepted );
+    void onShowNote( FmOperationBase* operationBase, const char *noteString );
     void onNotifyWaiting( FmOperationBase* operationBase, bool cancelable );
     void onNotifyPreparing( FmOperationBase* operationBase, bool cancelable );
     void onNotifyStart( FmOperationBase* operationBase, bool cancelable, int maxSteps );

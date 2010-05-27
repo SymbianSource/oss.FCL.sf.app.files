@@ -37,8 +37,7 @@ FmRestoreView::FmRestoreView(): FmViewBase( ERestoreView )
 
 	initMainWidget();
 	initToolBar();
-	initMenu();
-    adjustActions();
+	initMenu();  
 	mOperationService = FmViewManager::viewManager()->operationService();
 
 	QMetaObject::connectSlotsByName( this );
@@ -63,6 +62,7 @@ void FmRestoreView::initMenu()
     mRestoreAction->setObjectName( "restoreAction" );
     mRestoreAction->setText( hbTrId( "Restore data" ) );
     menu()->addAction( mRestoreAction );
+    mRestoreAction->setEnabled(false);
 }
 
 void FmRestoreView::initMainWidget()
@@ -70,6 +70,7 @@ void FmRestoreView::initMainWidget()
 	mRestoreWigdet = new FmRestoreWigdet( this );
 
     setWidget( mRestoreWigdet );
+    connect(mRestoreWigdet, SIGNAL(stateChanged(int)), this, SLOT(onCheckBoxStateChange()));
 
 }
 
@@ -79,7 +80,7 @@ void FmRestoreView::initToolBar()
     mLeftAction->setObjectName( "leftAction" );
     mLeftAction->setText( hbTrId( "Restore" ) );
     toolBar()->addAction( mLeftAction );
-    
+    mLeftAction->setEnabled(false);
     toolBar()->setOrientation( Qt::Horizontal );
 }
 
@@ -126,19 +127,19 @@ void FmRestoreView::on_restoreAction_triggered()
     on_leftAction_triggered();
 }
 
-void FmRestoreView::adjustActions()
-{
-    if( mRestoreWigdet->backupDataCount() > 0 ) {
-        mRestoreAction->setDisabled( false );
-        mLeftAction->setDisabled( false );
-    } else {
-        mRestoreAction->setDisabled( true );
-        mLeftAction->setDisabled( true );
-    }
-}
-
 void FmRestoreView::removeToolBarAction()
 {
     toolBar()->removeAction( mLeftAction );
 }
 
+void FmRestoreView::onCheckBoxStateChange()
+{
+    QList<int> items = mRestoreWigdet->selectionIndexes();
+    if (items.count() > 0) {
+        mLeftAction->setEnabled(true);
+        mRestoreAction->setEnabled(true);
+    } else {
+        mLeftAction->setEnabled(false);
+        mRestoreAction->setEnabled(false);
+    }
+}

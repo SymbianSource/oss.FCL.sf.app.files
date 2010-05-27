@@ -49,6 +49,7 @@
 #define  FmErrRemoveDefaultFolder       -28
 #define  FmErrLocked                    -29
 #define  FmErrCorrupt                   -30
+#define  FmErrDisMounted                -31
 
 #define FmEstimateUpperLimit 90 // available mem/backup size*100%=90%, User selectable continuation
 #define FmEstimateLowerLimit 10 // available mem/backup size*100%=10%, Backup will be interrupted
