@@ -218,7 +218,7 @@ void CMsengScanner::PreScanL(TDriveNumber aDrive, RFs& aFsSession)
                 TInt err = aFsSession.Entry(ptrName, file);
                 if (err == KErrNone)
                     {
-                    TInt size = file.iSize;
+                    TInt64 size = file.FileSize();
                     iScanArray->AddSizeByGroupL(groupindex, size);
                     }
                     

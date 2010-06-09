@@ -166,7 +166,7 @@ CMsengFileScanner::TLocationResponse CMsengFileExtScanner::HandleLocatedEntryL(
         if( addSize )
             {
             // Add size of object
-            InfoArray().AddSizeByExtL(iCurrentExtensionIndex, aEntry.iSize);
+            InfoArray().AddSizeByExtL(iCurrentExtensionIndex,  aEntry.FileSize() );
 
 #ifdef __SHOW_RDEBUG_PRINT_
         	const TInt pathlength = aFullFileNameAndPath.Length();
@@ -174,12 +174,12 @@ CMsengFileScanner::TLocationResponse CMsengFileExtScanner::HandleLocatedEntryL(
         	if ( pathlength < KMaxFileName )
         		{	
         		RDebug::Print(_L("File: %S, extension number: %d, size: %d"), 
-        		    &aFullFileNameAndPath, iCurrentExtensionIndex, aEntry.iSize);
+        		    &aFullFileNameAndPath, iCurrentExtensionIndex,  aEntry.FileSize());
         		}
         	else
         		{
         		RDebug::Print(_L("File: see next line, extension number: %d, size: %d"), 
-        		    iCurrentExtensionIndex, aEntry.iSize );
+        		    iCurrentExtensionIndex, aEntry.FileSize() );
         		RDebug::Print(_L("Can not print %d characters long file name"), pathlength );
         		}
 #endif // __SHOW_RDEBUG_PRINT_
@@ -198,7 +198,7 @@ CMsengFileScanner::TLocationResponse CMsengFileExtScanner::HandleLocatedEntryL(
         // Make sure other than native applications are not calculated
         if( iCurrentExtensionIndex == EExtSis || iCurrentExtensionIndex == EExtSisx )
             {
-            InfoArray().AddSizeByExtL(iCurrentExtensionIndex, aEntry.iSize);
+            InfoArray().AddSizeByExtL(iCurrentExtensionIndex, aEntry.FileSize() );
             }
         }
         

@@ -108,7 +108,7 @@ RESOURCE EXTRADATAFILES c_extradatafiles
         EXTRADATAFILE
             {
             datagroup=EGroupContacts;
-            filepath="?:\\private\\10003a73\\Contacts.cdb";
+            filepath="?:\\private\\10003a73\\SQLite__Contacts.cdb";
             }
         };
     }
@@ -148,7 +148,7 @@ RESOURCE SPECIAL_DATADIRS c_special_datadirs
         SPECIAL_DATADIR
             {
             datagroup=EGroupMidpJava;
-            path="?:\\private\\102033E6\\MIDlets\\";
+            path="?:\\private\\102033E6\\apps\\";
             // Note: Midlets outside private dirs are scanned by extensions
             excludeddatafiles=
                 {
@@ -197,7 +197,7 @@ RESOURCE SPECIAL_DATADIRS e_special_datadirs
         SPECIAL_DATADIR
             {
             datagroup=EGroupMidpJava;
-            path="?:\\private\\102033E6\\MIDlets\\";
+            path="?:\\private\\102033E6\\apps\\";
             // Note: Midlets outside private dirs are scanned by extensions
             excludeddatafiles=
                 {

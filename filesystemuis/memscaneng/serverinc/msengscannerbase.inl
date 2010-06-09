@@ -17,12 +17,12 @@
 */
 
 
-inline void CMsengScannerBase::AddSizeByUidL(TUidTypes aUid, TInt aSize)
+inline void CMsengScannerBase::AddSizeByUidL(TUidTypes aUid, TInt64 aSize)
     {
     iInfoArray.AddSizeByUidL(aUid, aSize);
     }
 
-inline void CMsengScannerBase::AddSizeByExtL(TExtTypes aExt, TInt aSize)
+inline void CMsengScannerBase::AddSizeByExtL(TExtTypes aExt, TInt64 aSize)
     {
     iInfoArray.AddSizeByExtL(aExt, aSize);
     }

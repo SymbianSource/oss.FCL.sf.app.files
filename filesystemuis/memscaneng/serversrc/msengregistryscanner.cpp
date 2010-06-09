@@ -139,7 +139,7 @@ void CMsengRegistryScanner::ScanSisRegistryL()
 
     RPointerArray<Swi::CSisRegistryPackage> augmentations;
     
-    TInt totalSize(0);
+    TInt64 totalSize(0);
     
     for ( TInt index(0); index < uids.Count(); index++ )
     	{
@@ -150,7 +150,7 @@ void CMsengRegistryScanner::ScanSisRegistryL()
 	    //All packages are from installed packages        
 	    CMsengSisxInfo* appObj = CMsengSisxInfo::NewL( entry, iDrive );
 	    CleanupStack::PushL( appObj ); 
-	    TInt baseSize( 0 );
+	    TInt64 baseSize( 0 );
 	    baseSize = entry.SizeL();
 	    
         TRACES

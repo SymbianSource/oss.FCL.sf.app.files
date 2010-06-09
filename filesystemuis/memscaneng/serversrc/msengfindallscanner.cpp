@@ -147,7 +147,7 @@ CMsengFileScanner::TLocationResponse CMsengFindAllScanner::HandleLocatedEntryL(
                     if(InfoArray().DataDirGroups().Count())
                         {
                         TInt group = InfoArray().DataDirGroups().At(i);
-                        InfoArray().AddSizeByGroupL(group, aEntry.iSize);
+                        InfoArray().AddSizeByGroupL(group, aEntry.FileSize());
 
                         TRACES
                         ( 

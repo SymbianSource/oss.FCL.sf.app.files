@@ -435,7 +435,7 @@ RESOURCE BACKUPCATEGORYARRAY r_filemanager_backup_categories
                 0x101f84eb, // FileManager
                 0x10005907, // Notepad (EBUCatUserFiles)
                 0x1028246F, // Java Backup process
-                0x10282475, // Java Registry process
+                0x200211DC, // Java Captain process
                 0x102033E6 // MIDP2 Runtime process
                 };
             },
@@ -520,7 +520,7 @@ RESOURCE BACKUPCATEGORYARRAY r_filemanager_backup_categories
                 0x101f84eb, // FileManager
                 0x10005907, // Notepad
                 0x1028246F, // Java Backup process
-                0x10282475, // Java Registry process
+                0x200211DC, // Java Captain process
                 0x102033E6 // MIDP2 Runtime process
                 };
             exclude_uids=

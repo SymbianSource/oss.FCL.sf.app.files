@@ -120,21 +120,21 @@ class CMsengInfoArray : public CBase
         * @param aUid The file UID type in question
         * @param aSize Size of the file
         */
-        inline void AddSizeByUidL(TInt aUid, TInt aSize);
+        inline void AddSizeByUidL(TInt aUid, TInt64 aSize);
 
         /**
         * Add new file size to the result array.
         * @param aExt Filename extension type in question
         * @param aSize Size of the file
         */
-        inline void AddSizeByExtL(TInt aExt, TInt aSize);
+        inline void AddSizeByExtL(TInt aExt, TInt64 aSize);
 
         /**
         * Add scan result af a specific data group.
         * @param aGroupIndex Data group in question
         * @param aSize Size of the file
         */
-        inline void AddSizeByGroupL(TInt aGroupIndex, TInt aSize);
+        inline void AddSizeByGroupL(TInt aGroupIndex, TInt64 aSize);
 
         /**
         * Query if the directory is in the list of directories to be 

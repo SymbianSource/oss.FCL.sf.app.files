@@ -67,19 +67,19 @@ inline const TDriveNumber CMsengInfoArray::CurrentDrive() const
     return iCurrentScannedDrive;
     }
 
-inline void CMsengInfoArray::AddSizeByUidL(TInt aUid, TInt aSize)
+inline void CMsengInfoArray::AddSizeByUidL(TInt aUid, TInt64 aSize)
     {
     // The array must have been initialized to contain zeros!
     (*iUidResultArray)[aUid] += aSize;
     }
 
-inline void CMsengInfoArray::AddSizeByExtL(TInt aExt, TInt aSize)
+inline void CMsengInfoArray::AddSizeByExtL(TInt aExt, TInt64 aSize)
     {
     // The array must have been initialized to contain zeros!
     (*iExtResultArray)[aExt] += aSize;
     }
 
-inline void CMsengInfoArray::AddSizeByGroupL(TInt aGroupIndex, TInt aSize)
+inline void CMsengInfoArray::AddSizeByGroupL(TInt aGroupIndex, TInt64 aSize)
     {
     // The array must have been initialized to contain zeros!
     (*iGroupResultArray)[aGroupIndex] += aSize;

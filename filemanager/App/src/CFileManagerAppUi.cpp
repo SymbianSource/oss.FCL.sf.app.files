@@ -1227,6 +1227,7 @@ void CFileManagerAppUi::CreateAndActivateLocalViewL(
         CleanupStack::Pop( view );
         }
     ActivateLocalViewL( aViewId, aCustomMessageId, aCustomMessage );
+    iActiveView = aViewId;
     }
 
 // ------------------------------------------------------------------------------

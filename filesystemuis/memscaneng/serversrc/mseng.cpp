@@ -92,7 +92,7 @@ void CMseng::ConstructL()
     User::LeaveIfError( iFsSession.Entry( fileName, entry ) );
     // if file does not exist, leaves with KErrNotFound
 
-    iResFile = CResourceFile::NewL( iFsSession, fileName, 0, entry.iSize );
+    iResFile = CResourceFile::NewL( iFsSession, fileName, 0, entry.FileSize() );
     
     iResFile->ConfirmSignatureL();
     

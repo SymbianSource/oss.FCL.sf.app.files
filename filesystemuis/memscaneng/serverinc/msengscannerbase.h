@@ -82,14 +82,14 @@ class CMsengScannerBase : public CActive
         * @param aUid The UID type.
         * @param aSize The size of the file with this UID.
         */
-        inline void AddSizeByUidL(TUidTypes aUid, TInt aSize);
+        inline void AddSizeByUidL(TUidTypes aUid, TInt64 aSize);
 
         /**
         * Add new value in bytes to the amount of data found with this UID.
         * @param aUid The UID type.
         * @param aSize The size of the file with this UID.
         */
-        inline void AddSizeByExtL(TExtTypes aExt, TInt aSize);
+        inline void AddSizeByExtL(TExtTypes aExt, TInt64 aSize);
 
         /**
         * Query if the directory is in the list of directories to be 
