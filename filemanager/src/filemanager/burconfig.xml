@@ -115,7 +115,7 @@
             <uids>0x2002bcc0</uids><!--FileManager instead of MediaGallery backup c:/data/ -->              
             <uids>0x20029f80</uids><!--Notepad changed from 0x10005907-->                                           
             <uids>0x1028246F</uids><!--Java Backup process-->                               
-            <uids>0x10282475</uids><!--Java Registry process-->                             
+            <uids>0x200211DC</uids><!--Java Captain. And Java registry process removed-->                             
             <uids>0x102033E6</uids><!--MIDP2 Runtime process-->                             
             <exclude_uids></exclude_uids>                                                   
         </backupCategory>                                                                   

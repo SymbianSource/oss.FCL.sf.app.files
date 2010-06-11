@@ -16,6 +16,7 @@
 
 QT += testlib
 CONFIG += qtestlib
+CONFIG += symbian_test
 TEMPLATE = app
 TARGET = 
 include ( ../../../src/inc/commoninc.pri )

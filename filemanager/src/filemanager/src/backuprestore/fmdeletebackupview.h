@@ -34,11 +34,12 @@ class FmDeleteBackupView : public FmViewBase
 public:
 	FmDeleteBackupView();
 	~FmDeleteBackupView();
-
+    
 private slots:
     void on_leftAction_triggered();
 	void on_deleteAction_triggered();
 	void on_deleteBackupWidget_stateChanged(int state);
+	void refreshDeleteBackupView();
 #ifdef FM_CHANGE_ORIENT_ENABLE
     void on_rotateAction_triggered();
 #endif

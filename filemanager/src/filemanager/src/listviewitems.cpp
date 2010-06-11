@@ -32,8 +32,8 @@ DiskListViewItem::DiskListViewItem( QGraphicsItem *parent )
     : HbListViewItem( parent ),
       mIconLabel( 0 ),
       mDiskNameLabel( 0 ),
-      mSizeLabel( 0 ),
-      mFreeLabel( 0 ),
+      mFirstLabel( 0 ),
+      mSecondLabel( 0 ),
       mCheckBox( 0 ),
       hLayout( 0 )
 
@@ -84,8 +84,19 @@ void DiskListViewItem::updateChildItems()
 	FmDriverInfo driverInfo = FmUtils::queryDriverInfo( diskName );
 
     mDiskNameLabel->setPlainText( displayString );
-    mSizeLabel->setPlainText( hbTrId ( "Size: " ) + FmUtils::formatStorageSize( driverInfo.size() ) );
-    mFreeLabel->setPlainText( hbTrId ( "Free: " ) + FmUtils::formatStorageSize( driverInfo.freeSize() ) );
+	if( driverInfo.driveState() & FmDriverInfo::EDriveAvailable ) {
+		mFirstLabel->setPlainText( hbTrId ( "Size: " ) + FmUtils::formatStorageSize( driverInfo.size() ) );
+		mSecondLabel->setPlainText( hbTrId ( "Free: " ) + FmUtils::formatStorageSize( driverInfo.freeSize() ) );
+	} else if( driverInfo.driveState() & FmDriverInfo::EDriveLocked ) {
+		mFirstLabel->setPlainText( hbTrId ( "Locked" ) );
+		mSecondLabel->setPlainText( QString(" ") );
+	} else if( driverInfo.driveState() & FmDriverInfo::EDriveCorrupted ) {
+		mFirstLabel->setPlainText( hbTrId ( "Corrupted" ) );
+		mSecondLabel->setPlainText( QString(" ") );
+	} else if( driverInfo.driveState() & FmDriverInfo::EDriveNotPresent ) {
+		mFirstLabel->setPlainText( hbTrId ( "Not Ready" ) );
+		mSecondLabel->setPlainText( QString(" ") );
+	}
 
 //    mCheckBox->setCheckState( checkState() );
 }
@@ -116,15 +127,15 @@ void DiskListViewItem::init()
 	vLayout->addItem( mDiskNameLabel );
 	vLayout->setAlignment( mDiskNameLabel, Qt::AlignLeft );
 
-	mSizeLabel = new HbLabel();
-	mSizeLabel->setFontSpec( HbFontSpec( HbFontSpec::Secondary ) );
-	vLayout->addItem( mSizeLabel );
-	vLayout->setAlignment( mSizeLabel, Qt::AlignLeft );
+	mFirstLabel = new HbLabel();
+	mFirstLabel->setFontSpec( HbFontSpec( HbFontSpec::Secondary ) );
+	vLayout->addItem( mFirstLabel );
+	vLayout->setAlignment( mFirstLabel, Qt::AlignLeft );
 
-	mFreeLabel = new HbLabel();
-	mFreeLabel->setFontSpec( HbFontSpec( HbFontSpec::Secondary ) );
-	vLayout->addItem( mFreeLabel );
-	vLayout->setAlignment( mFreeLabel, Qt::AlignLeft );
+	mSecondLabel = new HbLabel();
+	mSecondLabel->setFontSpec( HbFontSpec( HbFontSpec::Secondary ) );
+	vLayout->addItem( mSecondLabel );
+	vLayout->setAlignment( mSecondLabel, Qt::AlignLeft );
 
 	HbWidget *labelsWidget = new HbWidget();
 	labelsWidget->setLayout(vLayout);
@@ -134,88 +145,3 @@ void DiskListViewItem::init()
 
 	setLayout( hLayout );
 }
-
-//file list item, not used.
-/*
-FileListViewItem::FileListViewItem( QGraphicsItem *parent )
-    : HbListViewItem( parent ),
-      mIconLabel( 0 ),
-      mNameLabel( 0 ),
-      mCheckBox( 0 )
-{
-    init();
-}
-
-FileListViewItem::~FileListViewItem()
-{
-}
-
-void FileListViewItem::polish(HbStyleParameters& params)
-{
-    Q_UNUSED(params);
-}
-
-bool FileListViewItem::canSetModelIndex( const QModelIndex &index ) const
-{
-    Q_UNUSED( index );
-    return true;
-
-//  do not used
-//	const QFileSystemModel *model = dynamic_cast<const QFileSystemModel *>(index.model());
-//	QFileInfo info = model->fileInfo( index );
-//	QString path = info.path();
-
-//	return (path.right(1) != ":");
-   
-}
-
-
-HbAbstractViewItem *FileListViewItem::createItem()
-{
-	return new FileListViewItem( parentItem() );
-}
-
-void FileListViewItem::updateChildItems()
-{
-	QVariant variant = modelIndex().data( Qt::DecorationRole );
-	QIcon icon = qvariant_cast<QIcon>( variant );
-	QString diskName = modelIndex().data( Qt::DisplayRole ).toString();
-
-    QString debugString = "updateChindItems: diskName = " + diskName;
-    FmLogger::log(debugString);
-	mIconLabel->setIcon( HbIcon( icon ) );
-	mNameLabel->setPlainText( diskName );
-    mCheckBox->setCheckState( checkState() );
-}
-
-void FileListViewItem::setCheckedState( int state )
-{
-	HbAbstractViewItem::setCheckState( static_cast<Qt::CheckState>(state) );
-}
-
-void FileListViewItem::init()
-{
-	QGraphicsLinearLayout *hLayout = new QGraphicsLinearLayout();
-	hLayout->setOrientation( Qt::Horizontal );
-
-	mIconLabel = new HbLabel();
-	mIconLabel->setMinimumWidth(32);
-	hLayout->addItem( mIconLabel );
-	hLayout->setAlignment( mIconLabel, Qt::AlignTop );
-	hLayout->setStretchFactor( mIconLabel, 1 );
-
-	mNameLabel = new HbLabel();
-	mNameLabel->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
-	mNameLabel->setAlignment( Qt::AlignVCenter );
-	hLayout->addItem( mNameLabel );
-	hLayout->setAlignment( mNameLabel, Qt::AlignLeft );
-	hLayout->setStretchFactor( mNameLabel, 20 );
-
-    mCheckBox = new HbCheckBox( this );
-	connect( mCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setCheckedState(int)) );
-    hLayout->addItem( mCheckBox );
-    hLayout->setAlignment( mCheckBox, Qt::AlignLeft );
-
-	setLayout( hLayout );
-}
-*/

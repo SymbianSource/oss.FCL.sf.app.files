@@ -38,6 +38,7 @@ void FmDriveModel::refresh()
 {
     QFileInfoList infoList = QDir::drives();
 
+	emit layoutAboutToBeChanged();
     mDriveList.clear();
     if( mOptions & HideUnAvailableDrive ) {
         FmLogger::log( QString( "FmDriveModel::refresh HideUnAvailableDrive_true" ) );
@@ -46,7 +47,10 @@ void FmDriveModel::refresh()
         FmLogger::log( QString( "FmDriveModel::refresh HideUnAvailableDrive_false" ) );
         FmUtils::getDriveList( mDriveList, false );
     }
-    emit layoutChanged();
+	emit layoutChanged();
+	for( int i=0; i<mDriveList.count(); i++ ) {
+        emit dataChanged(index( i, 0 ), index( i, 0 ));
+	}
 }
 
 

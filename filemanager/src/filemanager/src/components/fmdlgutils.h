@@ -89,6 +89,8 @@ public:
     static bool question( const QString &questionText, const QString &primaryButtonText = tr("Yes"),
             const QString &secondaryButtonText = tr("No") );
 
+    static void information( const QString &informationText );
+
     ~FmDlgUtils(void);
 private:
     FmDlgUtils(void);

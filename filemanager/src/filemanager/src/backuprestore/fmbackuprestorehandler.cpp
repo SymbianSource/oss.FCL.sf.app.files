@@ -26,8 +26,6 @@
 #include "fmcommon.h"
 #include "fmdlgutils.h"
 
-#include <hbmessagebox.h>
-
 FmBackupRestoreHandler::FmBackupRestoreHandler( QObject *parent ) : QObject( parent ), mBackupConfigLoader( 0 )
 {
     mBkupEngine = new FmBkupEngine( this );

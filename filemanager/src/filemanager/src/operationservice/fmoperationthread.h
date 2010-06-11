@@ -55,7 +55,7 @@ signals:
     void askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted );
     void refreshModel( const QString &path );
 
-    void showNote( const QString &noteString );
+    void showNote(const char*);
     void notifyWaiting( bool cancelable );
     void notifyPreparing( bool cancelable );      // this step could not be used if not needed.
     void notifyStart( bool cancelable, int maxSteps );

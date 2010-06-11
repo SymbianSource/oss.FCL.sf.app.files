@@ -100,6 +100,8 @@ public slots:
 signals:
     void refreshModel( const QString &path  );
     void refreshBackupView();
+    void refreshDeleteBackupView();
+    void refreshRestoreView();
 
 private:
        /// create view will push current view to stack

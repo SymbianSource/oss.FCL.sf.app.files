@@ -26,6 +26,8 @@
 #include <QVariant>
 
 #define BURCONFIGFILE  "burconfig.xml"
+const int KMaxFileName=0x100;
+const int KMaxPath=0x100;
 
 QString FmUtils::getDriveNameFromPath( const QString &path )
 {
@@ -73,6 +75,21 @@ FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
     if ( drvStatus == DRIVE_REMOVABLE  ) {
         state |= FmDriverInfo::EDriveRemovable;
     }
+#ifdef _DEBUG_DISABLE_DRIVE_D_TEST_DRIVEHIDE_
+	if ( driverName.contains( "D", Qt::CaseInsensitive )  ) {
+		state |= FmDriverInfo::EDriveNotPresent;
+    }
+#endif
+
+#ifdef _DEBUG_LOCKED_DRIVE_Z
+	if ( driverName.contains( "Z", Qt::CaseInsensitive )  ) {
+		state |= FmDriverInfo::EDriveLocked;
+    }
+#endif
+	if( !(state&FmDriverInfo::EDriveNotPresent) && !(state&FmDriverInfo::EDriveLocked) &&
+		!(state&FmDriverInfo::EDriveCorrupted) ) {
+		state |= FmDriverInfo::EDriveAvailable;
+	}
     return FmDriverInfo( size, freeSize, driverName, QString::fromWCharArray( &volumeName[0] ), state );
 }
 
@@ -273,10 +290,10 @@ QString FmUtils::checkFolderToDriveFilter( const QString &path )
 
 bool FmUtils::isPathAccessabel( const QString &path )
 {
-#ifdef _DEBUG_DISABLE_DRIVE_D_TEST_DRIVEHIDE_
-    if(path.contains("D:"))
+    if(!isDriveAvailable( path ) ) { //used to filter locked drive
         return false;
-#endif
+    }
+
     QFileInfo fileInfo( path );
 
 #ifdef _DEBUG_HIDE_VIEWFOLDER_WINDOWS_
@@ -299,11 +316,15 @@ bool FmUtils::isPathAccessabel( const QString &path )
 
 bool FmUtils::isDriveAvailable( const QString &path )
 {
-    QFileInfo fileInfo( path );
-    if( !fileInfo.exists() ) {
-        return false;
-    }
-    return true;
+#ifdef _DEBUG_DISABLE_DRIVE_D_TEST_DRIVEHIDE_
+	if(path.contains("D:"))
+		return false;
+#endif
+#ifdef _DEBUG_LOCKED_DRIVE_Z
+	if(path.contains("Z:"))
+		return false;
+#endif
+	return true;
 }
 
 void FmUtils::getDriveList( QStringList &driveList, bool isHideUnAvailableDrive )
@@ -399,4 +420,38 @@ QString FmUtils::formatPath( const QString &path  )
 {
     Q_UNUSED( path );
     return false;
+}
+
+int FmUtils::getMaxFileNameLength()
+{
+	return KMaxFileName;
+}
+
+bool FmUtils::checkMaxPathLength( const QString& path )
+{
+	if( path.length() > KMaxPath ) {
+		return false;
+	}
+	return true;
+}
+bool FmUtils::checkFolderFileName( const QString& name )
+{
+    if( name.endsWith( QChar('.'),  Qt::CaseInsensitive ) ) {
+        return false;
+    }
+    if( name.contains( QChar('\\'), Qt::CaseInsensitive ) ||
+        name.contains( QChar('/'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar(':'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar('*'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar('?'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar('\"'), Qt::CaseInsensitive ) ||
+        name.contains( QChar('<'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar('>'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar('|'),  Qt::CaseInsensitive ) ){
+        return false;
+    }
+    if( name.length() > KMaxFileName ) {
+        return false;
+    }
+    return true;
 }

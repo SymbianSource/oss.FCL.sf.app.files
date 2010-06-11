@@ -389,3 +389,9 @@ bool FmDlgUtils::question( const QString &questionText, const QString &primaryBu
     FmMessageBox msgBox;
     return msgBox.question( questionText, primaryButtonText, secondaryButtonText );
 }
+
+void FmDlgUtils::information( const QString &informationText )
+{
+    FmMessageBox msgBox;
+    return msgBox.information( informationText );
+}

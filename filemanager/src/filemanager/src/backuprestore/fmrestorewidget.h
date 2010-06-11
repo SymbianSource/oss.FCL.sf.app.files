@@ -36,6 +36,7 @@ public:
 
     QList<int> selectionIndexes();
     int backupDataCount();
+    void refresh();
 private:
     void init();
 

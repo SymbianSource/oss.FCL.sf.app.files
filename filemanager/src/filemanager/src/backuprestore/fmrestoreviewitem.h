@@ -26,6 +26,7 @@ class HbCheckBox;
 class HbLineEdit;
 class QGraphicsLinearLayout;
 class HbWidget;
+class FmFileIconProvider;
 //FmRestoreViewItem
 class FmRestoreViewItem : public HbListViewItem
 {
@@ -52,11 +53,13 @@ private:
 
 private:
     HbLabel *mRestoreContentLabel;
-    HbLabel *mDateTimeLabel;
+    HbLabel *mDateTimeLabel;    
 
 	HbCheckBox *mCheckBox;
 	QGraphicsLinearLayout *hLayout;
 	HbWidget *mParentWidget;
+	HbLabel *mIconLabel;
+    FmFileIconProvider   *mIconProvider;
 };
 
 #endif

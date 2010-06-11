@@ -29,7 +29,6 @@
 #include "fmoperationformat.h"
 
 #include <hbaction.h>
-#include <hbmessagebox.h>
 
 FmOperationService::FmOperationService( QObject *parent ) : QObject( parent ),
         mCurrentOperation( 0 )

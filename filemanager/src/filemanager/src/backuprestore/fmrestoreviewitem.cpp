@@ -16,9 +16,9 @@
  *     The source file of the restore view list item of file manager
  */
 #include "fmrestoreviewitem.h"
-
+#include "fmfileiconprovider.h"
 #include <QGraphicsLinearLayout>
-
+#include <QGraphicsGridLayout>
 #include <hblabel.h>
 #include <hbcheckbox.h>
 #include <hbwidget.h>
@@ -64,47 +64,62 @@ void FmRestoreViewItem::updateChildItems()
 		return;
 	}
 
-	 mRestoreContentLabel->setPlainText( stringList.first() );
+    mRestoreContentLabel->setPlainText(stringList.first());
 
-	 if( stringList.first() != stringList.last() ){
-	     mDateTimeLabel->setPlainText( stringList.last() );
-	 }
-	 connect(this, SIGNAL(stateChanged(int)), mParentWidget, SIGNAL(stateChanged(int)));  
+    if (stringList.size() > 0)
+        {
+        mDateTimeLabel->setPlainText(stringList.at(1));
+        }
+    if (stringList.size() > 1)
+        {
+        QIcon icon = mIconProvider->icon(QFileInfo(stringList.at(2)));
+        if (icon.isNull())
+            {
+            QFileIconProvider fileIconProvider;
+            icon = fileIconProvider.icon(QFileIconProvider::Drive);
+            }        
+        mIconLabel->setIcon(HbIcon(icon));
+        }
+    
+    connect(this, SIGNAL(stateChanged(int)), mParentWidget,
+            SIGNAL(stateChanged(int)));
 
 }
 
-
 void FmRestoreViewItem::init()
 {
+    mIconProvider = new FmFileIconProvider(); 
     hLayout = new QGraphicsLinearLayout();
-	hLayout->setOrientation( Qt::Horizontal );
-	hLayout->addItem(layout());
-	
-	mCheckBox = new HbCheckBox( this );
-    hLayout->addItem( mCheckBox );
-	hLayout->setAlignment( mCheckBox, Qt::AlignVCenter );
+    hLayout->setOrientation(Qt::Horizontal);
+    hLayout->addItem(layout());
 
-	QGraphicsLinearLayout *vLayout = new QGraphicsLinearLayout();
-	vLayout->setOrientation( Qt::Vertical );
+    mCheckBox = new HbCheckBox(this);
+    hLayout->addItem(mCheckBox);
+    hLayout->setAlignment(mCheckBox, Qt::AlignVCenter);
 
-	mRestoreContentLabel = new HbLabel("");
-	mRestoreContentLabel->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
-	vLayout->addItem( mRestoreContentLabel );
-	vLayout->setAlignment( mRestoreContentLabel, Qt::AlignLeft );
+    QGraphicsGridLayout *vLayout = new QGraphicsGridLayout();
 
-	mDateTimeLabel = new HbLabel("");
-	mDateTimeLabel->setFontSpec( HbFontSpec( HbFontSpec::Secondary ) );
-	vLayout->addItem( mDateTimeLabel );
-	vLayout->setAlignment( mDateTimeLabel, Qt::AlignLeft );
+    mRestoreContentLabel = new HbLabel("");
+    mRestoreContentLabel->setFontSpec(HbFontSpec(HbFontSpec::Primary));
+    
+    mIconLabel = new HbLabel();    
 
-	HbWidget *textWidget = new HbWidget();
-	textWidget->setLayout(vLayout);
+    mDateTimeLabel = new HbLabel("");
+    mDateTimeLabel->setFontSpec(HbFontSpec(HbFontSpec::Secondary));
 
-	hLayout->addItem( textWidget );
-	hLayout->setAlignment( textWidget, Qt::AlignVCenter );
-    connect(mCheckBox, SIGNAL(stateChanged(int)), this, SIGNAL(stateChanged(int)));    
-	setLayout( hLayout );	
+    vLayout->addItem(mRestoreContentLabel, 0, 0);
+    vLayout->addItem(mIconLabel, 0, 1);
+    vLayout->addItem(mDateTimeLabel, 1, 0);
 
+    HbWidget *textWidget = new HbWidget();
+    textWidget->setLayout(vLayout);
+
+    hLayout->addItem(textWidget);
+    hLayout->setAlignment(textWidget, Qt::AlignVCenter);
+    
+    connect(mCheckBox, SIGNAL(stateChanged(int)), this,
+            SIGNAL(stateChanged(int)));
+    setLayout(hLayout);
 }
 
 void FmRestoreViewItem::setCheckBoxState()

@@ -36,7 +36,6 @@
 #include <hbabstractviewitem.h>
 #include <hbaction.h>
 #include <hbsearchpanel.h>
-#include <hbmessagebox.h>
 #include <hblabel.h>
 
 FmFileBrowseWidget::FmFileBrowseWidget( HbWidget *parent, FmFileBrowseWidget::Style style )
@@ -208,14 +207,6 @@ void FmFileBrowseWidget::clearSelection()
 bool FmFileBrowseWidget::rename( const QString &oldName, const QString &newName )
 {
     return QFile::rename( oldName, newName );
-    /*
-    if (QFile::rename( oldName, newName )) {
-    QModelIndex index = mModel->index( newName );
-    mModel->refresh( index );
-    index = mModel->index( oldName );
-    mModel->refresh( index );
-    }
-    */
 }
 
 
@@ -283,7 +274,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
     contextMenu->addAction( viewAction );
 
     connect( viewAction, SIGNAL( triggered() ),
-    this, SLOT( on_viewAction_triggered() ) );
+        this, SLOT( on_viewAction_triggered() ), Qt::QueuedConnection );
 
     //copy
     HbAction *copyAction = new HbAction();
@@ -292,7 +283,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
     contextMenu->addAction( copyAction );
 
     connect( copyAction, SIGNAL( triggered() ),
-    this, SLOT( on_copyAction_triggered() ) );
+    this, SLOT( on_copyAction_triggered() ), Qt::QueuedConnection );
 
     
     QString filePath( mModel->filePath( item->modelIndex() ) );
@@ -307,7 +298,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         contextMenu->addAction( moveAction );
     
         connect( moveAction, SIGNAL( triggered() ),
-        this, SLOT( on_moveAction_triggered() ) );
+        this, SLOT( on_moveAction_triggered() ), Qt::QueuedConnection );
     
         //Delete
         HbAction *deleteAction = new HbAction();
@@ -316,7 +307,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         contextMenu->addAction( deleteAction );
     
         connect( deleteAction, SIGNAL( triggered() ),
-        this, SLOT( on_deleteAction_triggered() ) );
+        this, SLOT( on_deleteAction_triggered() ), Qt::QueuedConnection );
     
         //rename
         HbAction *renameAction = new HbAction();
@@ -325,7 +316,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         contextMenu->addAction( renameAction );
     
         connect( renameAction, SIGNAL( triggered() ),
-        this, SLOT( on_renameAction_triggered() ) );
+        this, SLOT( on_renameAction_triggered() ), Qt::QueuedConnection );
     }
     
 //    if( fileInfo.isFile() ){
@@ -381,6 +372,8 @@ void FmFileBrowseWidget::initListView()
         this, SLOT( on_list_activated( const QModelIndex& ) ) );
     connect( this, SIGNAL( listActivated() ),
         this, SLOT( on_listActivated() ), Qt::QueuedConnection );
+    connect( mListView, SIGNAL( pressed( const QModelIndex & ) ),
+        this, SLOT( on_list_pressed( const QModelIndex & ) ) );
     connect( mListView, SIGNAL( longPressed( HbAbstractViewItem *, const QPointF & ) ),
         this, SLOT( on_list_longPressed( HbAbstractViewItem *, const QPointF & ) ) );
 }
@@ -421,7 +414,7 @@ void FmFileBrowseWidget::initSearchPanel()
     mSearchPanel->hide();
     
     connect( mSearchPanel, SIGNAL( searchOptionsClicked() ),
-        this, SLOT( on_searchPanel_searchOptionsClicked() ) );
+        this, SLOT( on_searchPanel_searchOptionsClicked() ), Qt::QueuedConnection );
     
     connect( mSearchPanel, SIGNAL( criteriaChanged( const QString & ) ),
         this, SLOT( on_searchPanel_criteriaChanged( const QString & ) ) );
@@ -565,8 +558,8 @@ void FmFileBrowseWidget::activeSearchPanel()
 
 void FmFileBrowseWidget::on_searchPanel_searchOptionsClicked()
 {
-    mFindTargetPath = FmFileDialog::getExistingDirectory( 0, hbTrId( "Look in:" ), QString(""),
-        QStringList() );
+    mFindTargetPath = FmUtils::fillPathWithSplash( FmFileDialog::getExistingDirectory( 0, hbTrId( "Look in:" ), QString(""),
+        QStringList() ) );
 }
 
 void FmFileBrowseWidget::on_searchPanel_criteriaChanged( const QString &criteria )
@@ -619,13 +612,13 @@ void FmFileBrowseWidget::on_deleteAction_triggered()
                 break;
             case FmErrAlreadyStarted:
                 // last operation have not finished
-                HbMessageBox::information( hbTrId( "Operatin already started!" ) );
+                FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
                 break;
             case FmErrWrongParam:
-                HbMessageBox::information( hbTrId( "Wrong parameters!" ) );
+                FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
                 break;
             default:
-                HbMessageBox::information( hbTrId( "Operation fail to start!" ) );
+                FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
         }
     }
 }
@@ -648,13 +641,13 @@ void FmFileBrowseWidget::on_copyAction_triggered()
                 break;
             case FmErrAlreadyStarted:
                 // last operation have not finished
-                HbMessageBox::information( hbTrId( "Operatin already started!" ) );
+                FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
                 break;
             case FmErrWrongParam:
-                HbMessageBox::information( hbTrId( "Wrong parameters!" ) );
+                FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
                 break;
             default:
-                HbMessageBox::information( hbTrId( "Operation fail to start!" ) );
+                FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
         }
     }
 
@@ -678,13 +671,13 @@ void FmFileBrowseWidget::on_moveAction_triggered()
                 break;
             case FmErrAlreadyStarted:
                 // last operation have not finished
-                HbMessageBox::information( hbTrId( "Operatin already started!" ) );
+                FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
                 break;
             case FmErrWrongParam:
-                HbMessageBox::information( hbTrId( "Wrong parameters!" ) );
+                FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
                 break;
             default:
-                HbMessageBox::information( hbTrId( "Operation fail to start!" ) );
+                FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
         }
     }
 }
@@ -698,24 +691,25 @@ void FmFileBrowseWidget::on_renameAction_triggered()
     
     QString newName( fileInfo.fileName() );
     while( FmDlgUtils::showTextQuery( hbTrId( "Enter new name for %1" ).arg( newName ), newName, true,
-            maxFileNameLength, QString() , false ) ){
+            maxFileNameLength, QString() , true ) ){
         QString newTargetPath = FmUtils::fillPathWithSplash(
             fileInfo.absolutePath() ) + newName;
         QFileInfo newFileInfo( newTargetPath );
-        if( newFileInfo.exists() ) {
-            HbMessageBox::information( hbTrId( "%1 already exist!" ).arg( newName ) );
-            continue;
-        }
-        if( !FmUtils::checkFolderFileName( newName ) ) {
-            HbMessageBox::information( hbTrId( "Invalid file or folder name, try again!" ) );
+		if( !FmUtils::checkFolderFileName( newName ) ) {
+            FmDlgUtils::information( hbTrId( "Invalid file or folder name!" ) );
             continue;
         }
         if( !FmUtils::checkMaxPathLength( newTargetPath ) ) {
-            HbMessageBox::information( hbTrId( "the path you specified is too long, try again!" ) );
+            FmDlgUtils::information( hbTrId( "the path you specified is too long!" ) );
             continue;
         }
+        if( newFileInfo.exists() ) {
+            FmDlgUtils::information( hbTrId( "%1 already exist!" ).arg( newName ) );
+            continue;
+        }
+
         if( !rename( fileInfo.absoluteFilePath(), newTargetPath ) ) {
-            HbMessageBox::information( hbTrId("Rename failed!") );
+            FmDlgUtils::information( hbTrId("Rename failed!") );
         }
         break;
     }   

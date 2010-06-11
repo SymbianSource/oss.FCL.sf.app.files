@@ -149,7 +149,7 @@ bool FmBkupEnginePrivate::StartRestoreL( QList<FmBkupDrivesAndOperation* > drive
 
 void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
         QList< FmRestoreInfo > &restoreInfoList,
-        const int aDrive )
+        const QString& aDrive )
 {
     restoreInfoList.clear();
     QString debugString;
@@ -162,7 +162,7 @@ void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* >
     dateTime.setTime_t( settings.value( "dateTime" ).toUInt() );
     QString drive = settings.value( "drive" ).toString();
     settings.endGroup();
-    if( content != 0 && ( DriverNameToNumber(drive) == aDrive || aDrive < 0 ) )
+	if( content != 0 && ( drive.contains( aDrive, Qt::CaseInsensitive ) || aDrive.isEmpty() ) )
     {
         FmRestoreInfo restoreInfo( content, dateTime, drive );
         restoreInfoList.push_back( restoreInfo );
@@ -173,7 +173,7 @@ void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* >
     dateTime.setTime_t( settings.value( "dateTime" ).toUInt() );
     drive = settings.value( "drive" ).toString();
     settings.endGroup();
-   if( content != 0 && ( DriverNameToNumber(drive) == aDrive || aDrive < 0 ) )
+   if( content != 0 && ( drive.contains( aDrive, Qt::CaseInsensitive ) || aDrive.isEmpty() ) )
     {
         FmRestoreInfo restoreInfo( content, dateTime, drive );
         restoreInfoList.push_back( restoreInfo );
@@ -184,7 +184,7 @@ void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* >
     dateTime.setTime_t( settings.value( "dateTime" ).toUInt() );
     drive = settings.value( "drive" ).toString();
     settings.endGroup();
-    if( content != 0 && ( DriverNameToNumber(drive) == aDrive || aDrive < 0 ) )
+    if( content != 0 && ( drive.contains( aDrive, Qt::CaseInsensitive ) || aDrive.isEmpty() ) )
     {
         FmRestoreInfo restoreInfo( content, dateTime, drive );
         restoreInfoList.push_back( restoreInfo );
@@ -195,7 +195,7 @@ void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* >
     dateTime.setTime_t( settings.value( "dateTime" ).toUInt() );
     drive = settings.value( "drive" ).toString();
     settings.endGroup();
-    if( content != 0 && ( DriverNameToNumber(drive) == aDrive || aDrive < 0 ) )
+    if( content != 0 && ( drive.contains( aDrive, Qt::CaseInsensitive ) || aDrive.isEmpty() ) )
     {
         FmRestoreInfo restoreInfo( content, dateTime, drive );
         restoreInfoList.push_back( restoreInfo );
@@ -206,7 +206,7 @@ void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* >
     dateTime.setTime_t( settings.value( "dateTime" ).toUInt() );
     drive = settings.value( "drive" ).toString();
     settings.endGroup();
-    if( content != 0 && ( DriverNameToNumber(drive) == aDrive || aDrive < 0 ) )
+    if( content != 0 && ( drive.contains( aDrive, Qt::CaseInsensitive ) || aDrive.isEmpty() ) )
     {
         FmRestoreInfo restoreInfo( content, dateTime, drive );
         restoreInfoList.push_back( restoreInfo );
@@ -217,7 +217,7 @@ void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* >
     dateTime.setTime_t( settings.value( "dateTime" ).toUInt() );
     drive = settings.value( "drive" ).toString();
     settings.endGroup();
-    if( content != 0 && ( DriverNameToNumber(drive) == aDrive || aDrive < 0 ) )
+    if( content != 0 && ( drive.contains( aDrive, Qt::CaseInsensitive ) || aDrive.isEmpty() ) )
     {
         FmRestoreInfo restoreInfo( content, dateTime, drive );
         restoreInfoList.push_back( restoreInfo );

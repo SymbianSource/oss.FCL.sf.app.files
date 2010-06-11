@@ -20,10 +20,9 @@
 #define FMDIALOG_H
 
 #include <QEventLoop>
-#include <hbmessagebox.h>
 #include <hbaction.h>
-
-#include "hbmenu.h"
+#include <hbdialog.h>
+#include <hbmenu.h>
 class FmDialog : public HbDialog
 {
 Q_OBJECT

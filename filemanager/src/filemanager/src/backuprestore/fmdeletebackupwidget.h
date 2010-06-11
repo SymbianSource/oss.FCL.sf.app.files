@@ -53,9 +53,7 @@ private:
     QStringListModel  *mModel;
 
     FmRestoreSettings *mRestoreSettings;
-    FmBackupConfigLoader *mBackupConfigLoader;
-    FmRestoreViewItem *mRestoreViewItem;
-    QList<FmRestoreViewItem *> mItemList;
+    FmBackupConfigLoader *mBackupConfigLoader;    
 };
 
 #endif

@@ -28,9 +28,6 @@
 #include <hbtoolbar.h>
 #include <hbmenu.h>
 #include <hbmainwindow.h>
-#include <hbmessagebox.h>
-
-
 
 FmDeleteBackupView::FmDeleteBackupView() : FmViewBase( EDeleteBackupView )
 {
@@ -143,3 +140,7 @@ void FmDeleteBackupView::removeToolBarAction()
     toolBar()->removeAction( mLeftAction );
 }
 
+void FmDeleteBackupView::refreshDeleteBackupView()
+{
+    mDeleteBackupWidget->refresh();
+}

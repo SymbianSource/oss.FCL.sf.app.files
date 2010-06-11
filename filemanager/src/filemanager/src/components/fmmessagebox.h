@@ -33,6 +33,8 @@ public:
     ~FmMessageBox()
     {
     }
+    void information( const QString &informationText );
+
     bool question( const QString &questionText, const QString &primaryButtonText,
             const QString &secondaryButtonText );
 public slots:

@@ -46,7 +46,7 @@ const QString constFileManagerBackupSettingsContentAll = "All";
 const QString constFileManagerBackupSettingsContentSettings = "Settings";
 const QString constFileManagerBackupSettingsContentMessages = "Messages";
 const QString constFileManagerBackupSettingsContentContacts = "Contacts";
-const QString constFileManagerBackupSettingsContentCalendar = "Calendar entries";
+const QString constFileManagerBackupSettingsContentCalendar = "Calendar";
 const QString constFileManagerBackupSettingsContentBookmarks = "Bookmarks";
 const QString constFileManagerBackupSettingsContentUserFiles = "Files";
 

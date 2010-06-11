@@ -56,7 +56,7 @@ public:
     bool StartRestoreL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList );
     void GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
             QList< FmRestoreInfo > &restoreInfoList,
-            const int aDrive = 0 );
+            const QString& aDrive );
     void getBackupDriveList( QStringList &driveList );
 private:
     int DriverNameToNumber( QString driverName );

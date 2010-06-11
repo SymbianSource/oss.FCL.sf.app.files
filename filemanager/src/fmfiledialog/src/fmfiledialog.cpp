@@ -68,7 +68,7 @@ QString FmFileDialog::getExistingDirectory( HbWidget *parent,
     FmFileDialog dialog( parent );
     dialog.d_ptr->init( args );
     if( dialog.exec() ) {
-        ret = FmUtils::fillPathWithSplash( dialog.d_ptr->currentPath() );
+        ret = FmUtils::formatPath( dialog.d_ptr->currentPath() );
     }
     return ret;
 }
@@ -97,7 +97,7 @@ QString FmFileDialog::getOpenFileName( HbWidget *parent,
     FmFileDialog dialog( parent );
     dialog.d_ptr->init( args );
     if( dialog.exec() ) {
-        ret = FmUtils::fillPathWithSplash( dialog.d_ptr->currentPath() )
+        ret = FmUtils::formatPath( dialog.d_ptr->currentPath() )
             + dialog.d_ptr->selectedFile();
     }
     return ret;
@@ -127,7 +127,7 @@ QString FmFileDialog::getSaveFileName( HbWidget * parent,
     FmFileDialog dialog( parent );
     dialog.d_ptr->init( args );
     if( dialog.exec() ) {
-        ret = FmUtils::fillPathWithSplash( dialog.d_ptr->currentPath() )
+        ret = FmUtils::formatPath( dialog.d_ptr->currentPath() )
             + dialog.d_ptr->selectedFile();
     }
     return ret;

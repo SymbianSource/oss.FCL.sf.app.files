@@ -23,7 +23,6 @@
 
 #include <QApplication>
 
-#include <hbmessagebox.h>
 #include <hbmenu.h>
 #include <hbaction.h>
 #include <hbtoolbar.h>

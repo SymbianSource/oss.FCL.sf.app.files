@@ -571,14 +571,26 @@ void FmUtils::createDefaultFolders( const QString &driverName )
 
 QString FmUtils::fillPathWithSplash( const QString &filePath )
 {
-    QString newFilePath( filePath );
+    QString newFilePath = filePath ;
     if( filePath.isEmpty() ) {
         return newFilePath;
     }
-
-    if( filePath.at( filePath.length()-1 ) != QChar( '/' ) ){
-        newFilePath.append( QChar( '/' ) );
+    
+    QString tempString;
+    for( int i=0; i<newFilePath.length(); i++ ) {
+        QChar ch( newFilePath[i] );
+        if( ch == QChar('\\') ) {
+            tempString.append( QChar('/') );
+        } else {
+            tempString.append( ch );
+        }
     }
+    newFilePath = tempString;
+    
+    if( newFilePath.right( 1 )!= QChar('/') ){
+        newFilePath.append( QChar('/') );
+    }
+    
     return newFilePath;
 }
 
@@ -594,7 +606,9 @@ QString FmUtils::removePathSplash( const QString &filePath )
 // used to filter drive which need be hide.
 bool FmUtils::checkDriveFilter( const QString &driveName )
 {
-    if( driveName.contains( "D:" ) || driveName.contains( "Z:" ) ) {
+    FmDriverInfo driveInfo = queryDriverInfo( driveName );
+    if( ( driveInfo.driveState()& FmDriverInfo::EDriveRam ) ||
+        ( driveInfo.driveState()& FmDriverInfo::EDriveRom ) ) {
         return false;
     }
     return true;
@@ -734,6 +748,10 @@ QString FmUtils::fillDriveVolume( QString driveName, bool isFillWithDefaultVolum
 int FmUtils::launchFile( const QString &filePath )
 {
     QFile file( filePath );
+    if( !file.exists() ) {
+        return false;
+    }
+        
     XQApplicationManager mAiwMgr;
     XQAiwRequest *request = mAiwMgr.create(file);
     if ( request == 0 ) {
@@ -830,24 +848,24 @@ QString FmUtils::formatPath( const QString &path  )
     QRegExp regExp( "/" );
     formatPath.replace( regExp, "\\" );
     
-    if( path.right( 1 )!= "\\"){
-        formatPath.append( "\\" );
+    if( formatPath.right( 1 ) != QChar('\\') ){
+        formatPath.append( QChar('\\') );
     }
     return formatPath;
 }
 
 int FmUtils::getMaxFileNameLength()
-    {
+{
     return KMaxFileName;
-    }
+}
 
 bool FmUtils::checkMaxPathLength( const QString& path )
-    {
+{
     if( path.length() > KMaxPath ) {
         return false;
     }
     return true;
-    }
+}
 bool FmUtils::checkFolderFileName( const QString& name )
 {
     if( name.endsWith( QChar('.'),  Qt::CaseInsensitive ) ) {

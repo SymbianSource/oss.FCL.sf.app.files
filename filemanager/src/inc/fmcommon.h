@@ -36,6 +36,8 @@
 //used to test drive hide which drive could be listed but not available
 //#define _DEBUG_DISABLE_DRIVE_D_TEST_DRIVEHIDE_
 
+//used to test locked drive
+//#define _DEBUG_LOCKED_DRIVE_Z
 
 #include "fmlogger.h"
 #include "fmdefine.h"
