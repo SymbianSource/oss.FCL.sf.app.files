@@ -586,5 +586,6 @@ RESOURCE TBUF r_qtn_fmgr_backup_content_device_memory { buf = qtn_fmgr_backup_co
 RESOURCE TBUF r_qtn_fmgr_backup_content_mass_storage{ buf = qtn_fmgr_backup_content_mass_storage; }
 RESOURCE TBUF r_qtn_fmgr_restore_device_memory { buf = qtn_fmgr_restore_device_memory; }
 RESOURCE TBUF r_qtn_fmgr_restore_mass_storage { buf = qtn_fmgr_restore_mass_storage; }
+RESOURCE TBUF r_qtn_fmgr_usb_memory_default_name { buf = qtn_fmgr_usb_memory_default_name; }
 
 // End of File

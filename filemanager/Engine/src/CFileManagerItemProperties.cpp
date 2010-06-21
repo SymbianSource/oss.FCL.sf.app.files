@@ -379,6 +379,10 @@ TInt64 CFileManagerItemProperties::FolderSizeL( const TDesC& aFullPath )
     iActiveSize = NULL;
     iActiveSize = CFileManagerActiveSize::NewL( iEngine.Fs(), aFullPath );
     iEngine.ShowWaitDialogL( *iActiveSize );
+    if ( !iActiveSize->IsProcessDone() )
+        {
+        User::Leave( KErrCancel );
+        }
     return iActiveSize->GetFolderSize();
     }
 

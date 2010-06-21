@@ -630,9 +630,13 @@ EXPORT_C void FileManagerDlgUtils::ShowItemInfoPopupL(
         CFileManagerItemProperties& aProperties,
         const CFileManagerFeatureManager& aFeatureManager )
     {
-    CFileManagerInfoPopup* popup = CFileManagerInfoPopup::NewL(
-        aProperties, aFeatureManager );
-    popup->ExecuteLD();
+    CFileManagerInfoPopup* popup = NULL;
+    TRAPD ( err,  popup = CFileManagerInfoPopup::NewL(
+        aProperties, aFeatureManager ) );
+    if ( err == KErrNone )
+        {
+        popup->ExecuteLD();
+        }
     }
 
 // ----------------------------------------------------------------------------

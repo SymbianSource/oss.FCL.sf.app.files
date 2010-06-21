@@ -5002,6 +5002,11 @@ void CFileManagerViewBase::ShowDiskSpaceErrorL( const TDesC& aFolder )
             {
             defaultNameResId = R_QTN_MEMLO_NOT_ENOUGH_MASS_MEMORY;
             }
+        else if ( drvInfo.iState & TFileManagerDriveInfo::EDriveUsbMemory )
+            {
+            defaultNameResId = R_QTN_MEMLO_NOT_ENOUGH_MEMORY_CARD_NAME;
+            namedResId = R_QTN_MEMLO_NOT_ENOUGH_MEMORY_CARD_NAME;
+            }
         else if ( drvInfo.iState & TFileManagerDriveInfo::EDriveRemovable )
             {
             defaultNameResId = R_QTN_MEMLO_NOT_ENOUGH_MEMORY_CARD_DEFAULTNAME;

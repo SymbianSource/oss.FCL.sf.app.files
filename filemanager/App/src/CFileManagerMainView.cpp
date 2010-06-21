@@ -220,11 +220,6 @@ void CFileManagerMainView::MainMenuFilteringL( CEikMenuPane& aMenuPane )
         return;
         }
 
-    if ( !FeatureManager().IsRemoteStorageFwSupported() )
-        {
-        aMenuPane.SetItemDimmed( EFileManagerRemoveDrives, ETrue );
-        }
-
     CFileManagerItemProperties* prop = iEngine.GetItemInfoLC(
         iContainer->ListBoxCurrentItemIndex() );
     TUint32 drvState( 0 );
@@ -239,6 +234,7 @@ void CFileManagerMainView::MainMenuFilteringL( CEikMenuPane& aMenuPane )
         // No drive selected
         aMenuPane.SetItemDimmed( EFileManagerMemoryStorage, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerEject, ETrue );
+        aMenuPane.SetItemDimmed( EFileManagerRemoveDrives, ETrue );
         }
     else
         {
@@ -255,6 +251,11 @@ void CFileManagerMainView::MainMenuFilteringL( CEikMenuPane& aMenuPane )
         if ( drvInfo.iState & TFileManagerDriveInfo::EDriveRemote )
             {
             aMenuPane.SetItemDimmed( EFileManagerMemoryStorage, ETrue );
+            }
+        if  ( !FeatureManager().IsRemoteStorageFwSupported() ||
+              !( drvInfo.iState & TFileManagerDriveInfo::EDriveRemote ) )
+            {
+            aMenuPane.SetItemDimmed( EFileManagerRemoveDrives, ETrue );
             }
         }
 

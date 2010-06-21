@@ -903,8 +903,8 @@ HBufC* CFileManagerUtils::GetFormattedDriveNameLC(
 				CleanupStack::PushL( usbLetterName );
 				
 				TPtrC16 driveletter=array->MdcaPoint( KDriveLetterIndex );
-				usbLetterName->AppendL( driveletter );
-				
+				usbLetterName->AppendL( driveletter );							
+				HBufC* usbDriveDefaultName = NULL;			
 				if(array->MdcaCount() > 1 )
 					{
 					TPtrC16 drivename=array->MdcaPoint( KDriveNameIndex );
@@ -912,8 +912,9 @@ HBufC* CFileManagerUtils::GetFormattedDriveNameLC(
 					}
 				else
 					{
-					TPtrC16 drivename=_L("");
-					usbLetterName->AppendL( drivename );
+				    usbDriveDefaultName = StringLoader::LoadLC( R_QTN_FMGR_USB_MEMORY_DEFAULT_NAME );
+				    TPtrC16 drivename = usbDriveDefaultName->Des();
+				    usbLetterName->AppendL( drivename );
 					}
 				
 				
@@ -921,10 +922,14 @@ HBufC* CFileManagerUtils::GetFormattedDriveNameLC(
 				aTextIdForDefaultName,*usbLetterName );
 	
 				CleanupStack::PopAndDestroy( usbLetterName );
-			}
-		else
-			{
-			ret = StringLoader::LoadL(aTextIdForDefaultName, array->MdcaPoint(
+				if ( usbDriveDefaultName )
+				    {
+				    CleanupStack::PopAndDestroy( usbDriveDefaultName );
+				    }
+			    }
+		    else
+			    {
+			    ret = StringLoader::LoadL(aTextIdForDefaultName, array->MdcaPoint(
 					KDriveLetterIndex));
             	}
         }
