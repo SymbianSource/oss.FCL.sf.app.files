@@ -195,8 +195,12 @@ quint64 FmUtils::getDriveDetailsResult( const QString &folderPath, const QString
 
 bool FmUtils::isDriveC( const QString &driverName )
 {
-    Q_UNUSED( driverName );
-    return false;
+	if( driverName.contains("C",Qt::CaseInsensitive) ){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 bool FmUtils::isDrive( const QString &path )
@@ -216,14 +220,23 @@ void FmUtils::createDefaultFolders( const QString &driverName )
 
 QString FmUtils::fillPathWithSplash( const QString &filePath )
 {
-    QString newFilePath( filePath );
+	QString newFilePath;
     if( filePath.isEmpty() ) {
         return newFilePath;
     }
 
-    if( filePath.at( filePath.length()-1 ) != QChar( '/' ) ){
-        newFilePath.append( QChar( '/' ) );
+    foreach( QChar ch, filePath ) {
+        if( ch == QChar('\\') || ch == QChar('/') ) {
+			newFilePath.append( QDir::separator() );
+        } else {
+            newFilePath.append( ch );
+        }
     }
+    
+    if( newFilePath.right( 1 )!= QDir::separator() ){
+        newFilePath.append( QDir::separator() );
+    }
+    
     return newFilePath;
 }
 
@@ -418,8 +431,19 @@ bool FmUtils::isDefaultFolder( const QString &folderPath  )
 
 QString FmUtils::formatPath( const QString &path  )
 {
-    Q_UNUSED( path );
-    return false;
+    QString formatPath;
+	foreach( QChar ch, path ) {
+		if( ch == QChar('\\') || ch == QChar('/') ) {
+			formatPath.append( QDir::separator() );
+		} else {
+			formatPath.append( ch );
+		}
+    }
+
+    if( formatPath.right( 1 ) != QDir::separator() ){
+        formatPath.append( QDir::separator() );
+    }
+    return formatPath;
 }
 
 int FmUtils::getMaxFileNameLength()

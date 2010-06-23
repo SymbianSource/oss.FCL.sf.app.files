@@ -79,7 +79,6 @@ signals:
     // pass modelCountChanged signal to parent widget
     // so parent widget could change contentWiget between emptyTipsWidget and listWidget
     void modelCountChanged( int count );
-    void refresh();
 
 private slots:
     void on_findThread_found( int count );

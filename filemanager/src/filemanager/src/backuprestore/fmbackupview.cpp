@@ -138,7 +138,16 @@ void FmBackupView::removeToolBarAction()
     toolBar()->removeAction( mToolBarAction );
 }
 
-void FmBackupView::refreshBackupView()
+void FmBackupView::refreshBackupDate()
 {
     mMainWidget->updateBackupDate();
+}
+
+void FmBackupView::refreshModel( const QString& path )
+{
+    if( !path.isEmpty() ) {
+        // ignore non-empty refresh signal as it means change of folder/file, not drive.
+        return;
+    }
+    mMainWidget->refreshModel();
 }

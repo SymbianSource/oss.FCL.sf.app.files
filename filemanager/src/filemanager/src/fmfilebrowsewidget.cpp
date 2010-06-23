@@ -688,10 +688,12 @@ void FmFileBrowseWidget::on_renameAction_triggered()
     QString filePath = mModel->filePath( mCurrentItem->modelIndex() );
     QFileInfo fileInfo = mModel->fileInfo( mCurrentItem->modelIndex() );
     int maxFileNameLength = FmUtils::getMaxFileNameLength();
-    
+    QString oldSuffix( fileInfo.suffix() );
     QString newName( fileInfo.fileName() );
     while( FmDlgUtils::showTextQuery( hbTrId( "Enter new name for %1" ).arg( newName ), newName, true,
             maxFileNameLength, QString() , true ) ){
+        // remove whitespace from the start and the end.
+        newName = newName.trimmed();
         QString newTargetPath = FmUtils::fillPathWithSplash(
             fileInfo.absolutePath() ) + newName;
         QFileInfo newFileInfo( newTargetPath );
@@ -711,6 +713,12 @@ void FmFileBrowseWidget::on_renameAction_triggered()
         if( !rename( fileInfo.absoluteFilePath(), newTargetPath ) ) {
             FmDlgUtils::information( hbTrId("Rename failed!") );
         }
+        else {
+            QString newSuffix( newFileInfo.suffix() );
+            if ( oldSuffix != newSuffix ) {
+                FmDlgUtils::information( hbTrId( "File may become unusable when file name extension is changed" ) );        
+            }   
+        }
         break;
-    }   
+    }
 }

@@ -394,13 +394,15 @@ void FmFileView::on_newFolder_triggered()
 {
     int maxFileNameLength = FmUtils::getMaxFileNameLength();
     QString associatedDrive = FmUtils::getDriveLetterFromPath( mWidget->currentPath().absoluteFilePath() );
-    
-    QString dirName( hbTrId( "New folder" ) );
     QString path = FmUtils::fillPathWithSplash( mWidget->currentPath().absoluteFilePath() );
-    QDir dir( path );
+    QString dirName = createDefaultFolderName( path );
+    
+    QDir dir( path );  
     if( dir.exists() ) {
         while( FmDlgUtils::showTextQuery( hbTrId( "Enter name for " ), dirName,
             true, maxFileNameLength, associatedDrive , false ) ){
+            // remove whitespace from the start and the end.
+            dirName = dirName.trimmed();
             QString newTargetPath = FmUtils::fillPathWithSplash(
                 dir.absolutePath() ) + dirName;
             QFileInfo newFileInfo( newTargetPath );
@@ -509,4 +511,26 @@ void FmFileView::on_mainWidget_setEmptyMenu( bool isMenuEmpty )
 void FmFileView::on_mainWidget_setTitle( const QString &title )
 {
     this->setTitle( title );
+}
+
+QString FmFileView::createDefaultFolderName( const QString &path )
+{
+    QString dirBaseName( hbTrId( "New folder" ) );
+    QString dirName( dirBaseName );
+    QString dirAbsolutePath( path + dirName );
+    QFileInfo fileInfo( dirAbsolutePath );
+    int i = 0;    
+    while ( fileInfo.exists() ) {
+        ++i;
+        dirName = dirBaseName;
+        dirName.append( hbTrId("(") );
+        if ( i < 10 ) {
+            dirName.append( hbTrId("0") );                        
+        }
+        dirName.append( QString::number(i) );
+        dirName.append( hbTrId(")") );
+        dirAbsolutePath = path + dirName;
+        fileInfo.setFile( dirAbsolutePath );
+    }
+    return dirName;
 }

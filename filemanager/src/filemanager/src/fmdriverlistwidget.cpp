@@ -424,6 +424,9 @@ void FmDriverListWidget::activeSearchPanel()
     FmUtils::getDriveList( driveList, true );
     if(driveList.count() > 0 ) {
         mFindTargetPath =  driveList.first();
+        if( FmUtils::isDriveC( mFindTargetPath ) ) {
+            mFindTargetPath =  QString( Folder_C_Data );
+        }
     } else {
         mFindTargetPath.clear();
     }

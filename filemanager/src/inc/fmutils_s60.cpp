@@ -571,24 +571,21 @@ void FmUtils::createDefaultFolders( const QString &driverName )
 
 QString FmUtils::fillPathWithSplash( const QString &filePath )
 {
-    QString newFilePath = filePath ;
+	QString newFilePath;
     if( filePath.isEmpty() ) {
         return newFilePath;
     }
-    
-    QString tempString;
-    for( int i=0; i<newFilePath.length(); i++ ) {
-        QChar ch( newFilePath[i] );
-        if( ch == QChar('\\') ) {
-            tempString.append( QChar('/') );
+
+    foreach( QChar ch, filePath ) {
+        if( ch == QChar('\\') || ch == QChar('/') ) {
+			newFilePath.append( QDir::separator() );
         } else {
-            tempString.append( ch );
+            newFilePath.append( ch );
         }
     }
-    newFilePath = tempString;
     
-    if( newFilePath.right( 1 )!= QChar('/') ){
-        newFilePath.append( QChar('/') );
+    if( newFilePath.right( 1 )!= QDir::separator() ){
+        newFilePath.append( QDir::separator() );
     }
     
     return newFilePath;
@@ -623,8 +620,8 @@ QString FmUtils::checkDriveToFolderFilter( const QString &path )
         }
     */
     QString checkedPath = fillPathWithSplash( path );
-    if( checkedPath.compare( QString( "C:/"), Qt::CaseInsensitive ) == 0 ) {
-        checkedPath += QString( "data/" );
+    if( checkedPath.compare( Drive_C, Qt::CaseInsensitive ) == 0 ) {
+        checkedPath += QString( "data" ) + QDir::separator();
         return checkedPath;
     }
     return path;
@@ -641,9 +638,9 @@ QString FmUtils::checkFolderToDriveFilter( const QString &path )
     logString = QString( "checkFolderToDriveFilter_fillPathWithSplash: " ) + checkedPath;
     FmLogger::log( logString );
     
-    if( checkedPath.compare( QString( "C:/data/"), Qt::CaseInsensitive ) == 0 ) {
+    if( checkedPath.compare( Folder_C_Data, Qt::CaseInsensitive ) == 0 ) {
         FmLogger::log( QString( " change from c:/data/ to C:/" ) );
-        return QString( "C:/" );
+        return Drive_C;
     }
     return path;
 
@@ -657,16 +654,16 @@ bool FmUtils::isPathAccessabel( const QString &path )
         return false;
     }
     QFileInfo fileInfo( path );
-    if( fileInfo.absoluteFilePath().contains( QString( Drive_C ), Qt::CaseInsensitive ) &&
-        !fileInfo.absoluteFilePath().contains( QString( Folder_C_Data ), Qt::CaseInsensitive ) ) {
+    if( fileInfo.absoluteFilePath().contains( Drive_C, Qt::CaseInsensitive ) &&
+        !fileInfo.absoluteFilePath().contains( Folder_C_Data, Qt::CaseInsensitive ) ) {
         FmLogger::log( QString( "isPathAccessabel false: path contain C and not in data folder" ) );
         return false;
     }
-    if( fileInfo.absoluteFilePath().contains( QString( Drive_D ), Qt::CaseInsensitive ) ) {
+    if( fileInfo.absoluteFilePath().contains( Drive_D, Qt::CaseInsensitive ) ) {
         FmLogger::log( QString( "isPathAccessabel false: path contain D" ) );
         return false;
     }
-    if( fileInfo.absoluteFilePath().contains( QString( Drive_Z ), Qt::CaseInsensitive ) ) {
+    if( fileInfo.absoluteFilePath().contains( Drive_Z, Qt::CaseInsensitive ) ) {
         FmLogger::log( QString( "isPathAccessabel false: path contain Z" ) );
         return false;
     }
@@ -844,12 +841,17 @@ QString FmUtils::Localize( const QString &path )
 
 QString FmUtils::formatPath( const QString &path  )
 {
-    QString formatPath = path;
-    QRegExp regExp( "/" );
-    formatPath.replace( regExp, "\\" );
-    
-    if( formatPath.right( 1 ) != QChar('\\') ){
-        formatPath.append( QChar('\\') );
+    QString formatPath;
+	foreach( QChar ch, path ) {
+		if( ch == QChar('\\') || ch == QChar('/') ) {
+			formatPath.append( QDir::separator() );
+		} else {
+			formatPath.append( ch );
+		}
+    }
+
+    if( formatPath.right( 1 ) != QDir::separator() ){
+        formatPath.append( QDir::separator() );
     }
     return formatPath;
 }

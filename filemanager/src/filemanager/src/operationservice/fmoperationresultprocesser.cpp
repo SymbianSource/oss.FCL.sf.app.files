@@ -49,6 +49,8 @@ void FmOperationResultProcesser::onAskForRename(
     bool ret = FmDlgUtils::showTextQuery( questionText, value, true, maxFileNameLength, QString(), false );
     while ( ret ) {
         bool checkResult = true;
+        // remove whitespace from the start and the end.
+        value = value.trimmed();
         QString newTargetPath = FmUtils::fillPathWithSplash(
                                 fileInfo.absolutePath() ) + value;
         QFileInfo newFileInfo( newTargetPath );

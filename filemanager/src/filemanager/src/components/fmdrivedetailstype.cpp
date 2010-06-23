@@ -82,11 +82,12 @@ QList<FmDriveDetailsDataGroup*> FmDriveDetailsContent::queryDetailsContent()
     typeFilters.append( QString( "*.3gp" ) );
     typeFilters.append( QString( "*.mp4" ) );
     typeFilters.append( QString( "*.nim" ) );
-    typeFilters.append( QString( "*.rm" ) );
-    typeFilters.append( QString( "*.rv" ) );
+    typeFilters.append( QString( "*.rm"  ) );
+    typeFilters.append( QString( "*.rv"  ) );
     typeFilters.append( QString( "*.wmv" ) );
     typeFilters.append( QString( "*.3g2" ) );
-    typeFilters.append( QString( "*.rmvb" ) );
+    typeFilters.append( QString( "*.rmvb") );
+    typeFilters.append( QString( "*.mkv" ) );
  
     dataGroupList.append( new FmDriveDetailsDataGroup( FmDriveDetailsDataGroup::EGroupVideos, typeFilters ));
  

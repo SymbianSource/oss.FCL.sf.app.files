@@ -99,7 +99,7 @@ public slots:
     void on_operationService_notifyFinish( FmOperationBase *operationBase );
 signals:
     void refreshModel( const QString &path  );
-    void refreshBackupView();
+    void refreshBackupDate();
     void refreshDeleteBackupView();
     void refreshRestoreView();
 

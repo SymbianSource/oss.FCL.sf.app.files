@@ -354,36 +354,10 @@ void FmBackupWidget::on_changeTime()
 void FmBackupWidget::on_changeTargetDrive()
 {
     QString title = constFileManagerBackupSettingsTitleTargetDrive;  
-    QStringList queryStringList;
-    QStringList driveStringList;
-
-    QStringList driveList;
-    //FmUtils::getDriveList( driveList, true );
-    FmViewManager::viewManager()->operationService()->backupRestoreHandler()->getBackupDriveList( driveList );
-    QString targetDrive =  mBackupSettings->targetDrive();
-    int selectIndex = -1;
-
-    int currentIndex = 0;
-    for( QStringList::const_iterator it = driveList.begin(); it != driveList.end(); ++it )
-    {
-        QString drive = (*it);
-        drive = FmUtils::removePathSplash( drive );
-        QString driveWithVolume = FmUtils::fillDriveVolume( drive, true );
-
-        driveStringList.push_back( drive );
-        queryStringList.push_back( driveWithVolume );
-
-        if( drive == targetDrive )
-        {
-            // adjust index offset against drive.
-            selectIndex = currentIndex;
-        }
-        ++currentIndex;
-    }
-    
-    if( FmDlgUtils::showSingleSettingQuery( title, queryStringList, selectIndex ) )
-    {
-        mBackupSettings->setTargetDrive( driveStringList.at( selectIndex ) );
+    QString drive = FmDlgUtils::showBackupDriveQuery( title );
+    if( !drive.isEmpty() && 
+            mBackupSettings->targetDrive().compare( drive, Qt::CaseInsensitive ) != 0 ) {
+        mBackupSettings->setTargetDrive( drive );
         emit doModelRefresh();
     }
 }

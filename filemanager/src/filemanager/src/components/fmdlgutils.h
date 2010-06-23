@@ -90,6 +90,14 @@ public:
             const QString &secondaryButtonText = tr("No") );
 
     static void information( const QString &informationText );
+    
+    /**
+     * Query drive for backup
+     *
+     * @param title Title for query dialog
+     * @return selected drive name. empty for cancel.
+     */
+    static QString showBackupDriveQuery( const QString& title );
 
     ~FmDlgUtils(void);
 private:

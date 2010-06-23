@@ -24,6 +24,7 @@
 #include "fmutils.h"
 #include "fmviewmanager.h"
 #include "fmmessagebox.h"
+#include "fmdrivequery.h"
 
 #include <QString>
 #include <QStringList>
@@ -394,4 +395,23 @@ void FmDlgUtils::information( const QString &informationText )
 {
     FmMessageBox msgBox;
     return msgBox.information( informationText );
+}
+
+QString FmDlgUtils::showBackupDriveQuery( const QString& title )
+{
+    QString ret;
+
+    FmDriveQuery *cQuery = new FmDriveQuery();
+    cQuery->setHeadingWidget( new HbLabel( title ) );
+    
+    QString sk = ( hbTrId( "cancel" ) );
+    
+    HbAction *primary = new HbAction( sk );
+    cQuery->setPrimaryAction( primary );
+
+    executeDialog( cQuery, QString() );
+    ret = cQuery->selectedDrive();
+    
+    delete cQuery;
+    return ret;
 }

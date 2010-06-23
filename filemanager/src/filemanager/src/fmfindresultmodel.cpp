@@ -171,7 +171,6 @@ void FmFindResultModel::find()
         mFindThread->setLastResult( mFindResult );
     }
 	removeRows( 0, mFindResult.size() );
-    emit modelCountChanged( mFindResult.size() );
     mFindThread->start();
 }
 
@@ -188,8 +187,10 @@ bool FmFindResultModel::isFinding() const
 
 void FmFindResultModel::on_findThread_found( int count )
 {
-    int size = mFindResult.size();
-    insertRows( mFindResult.size() - count, count );
+    if( count > 0 ) {
+        int size = mFindResult.size();
+        insertRows( mFindResult.size() - count, count );
+    }
     emit modelCountChanged( mFindResult.size() );
 }
 
@@ -250,21 +251,30 @@ void FmFindResultModel::sort ( int column, Qt::SortOrder order )
            
 //    emit  layoutAboutToBeChanged();
     
+    QStringList lst;
+    for (int i = 0; i < mFindResult.size(); ++i)
+        lst.append( mFindResult.at(i) );
+  
+    removeRows( 0, mFindResult.size() );
+    
     switch( ( SortFlag )column )
     {
     case Name:
-        qSort( mFindResult.begin(), mFindResult.end(), caseNameLessThan );
+        qSort( lst.begin(), lst.end(), caseNameLessThan );
         break;
     case Time:
-        qSort( mFindResult.begin(), mFindResult.end(), caseTimeLessThan );
+        qSort( lst.begin(), lst.end(), caseTimeLessThan );
         break;
     case Size:
-        qSort( mFindResult.begin(), mFindResult.end(), caseSizeLessThan );
+        qSort( lst.begin(), lst.end(), caseSizeLessThan );
         break;
     case Type:
-        qSort( mFindResult.begin(), mFindResult.end(), caseTypeLessThan );
+        qSort( lst.begin(), lst.end(), caseTypeLessThan );
         break;
-    }
-//    emit layoutChanged();
-    emit refresh();
+    }    
+    
+    for (int i = 0; i < lst.count(); ++i)
+        mFindResult.append( lst.at(i) );
+    insertRows( 0, mFindResult.size() );
+    emit modelCountChanged( mFindResult.size() );
 }

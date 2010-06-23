@@ -22,8 +22,9 @@
 #include <QDir>
 #include <QFileInfo>
 
-FmDriveModel::FmDriveModel( QObject *parent, Options options ) :
-    QAbstractListModel( parent ), mOptions( options )
+FmDriveModel::FmDriveModel( QObject *parent, Options options,
+        FmDriveListProvider *driveListProvider ) :
+    QAbstractListModel( parent ), mOptions( options ), mDriveListProvider( driveListProvider )
 {
     mIconProvider = new FmFileIconProvider();
     refresh();
@@ -36,17 +37,23 @@ FmDriveModel::~FmDriveModel()
 
 void FmDriveModel::refresh()
 {
-    QFileInfoList infoList = QDir::drives();
-
-	emit layoutAboutToBeChanged();
+    emit layoutAboutToBeChanged();
     mDriveList.clear();
-    if( mOptions & HideUnAvailableDrive ) {
-        FmLogger::log( QString( "FmDriveModel::refresh HideUnAvailableDrive_true" ) );
-        FmUtils::getDriveList( mDriveList, true );
+    
+    // if mDriveListProvider existed, use it to fetch drive list
+    // otherwise use FmUtils::getDriveList to fetch drive list.
+    if( mDriveListProvider ) {
+        mDriveListProvider->getDriveList( mDriveList );
     } else {
-        FmLogger::log( QString( "FmDriveModel::refresh HideUnAvailableDrive_false" ) );
-        FmUtils::getDriveList( mDriveList, false );
+        if( mOptions & HideUnAvailableDrive ) {
+            FmLogger::log( QString( "FmDriveModel::refresh HideUnAvailableDrive_true" ) );
+            FmUtils::getDriveList( mDriveList, true );
+        } else {
+            FmLogger::log( QString( "FmDriveModel::refresh HideUnAvailableDrive_false" ) );
+            FmUtils::getDriveList( mDriveList, false );
+        }
     }
+
 	emit layoutChanged();
 	for( int i=0; i<mDriveList.count(); i++ ) {
         emit dataChanged(index( i, 0 ), index( i, 0 ));

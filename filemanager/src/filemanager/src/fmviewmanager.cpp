@@ -155,7 +155,8 @@ void FmViewManager::on_operationService_notifyFinish( FmOperationBase *operation
 {
     if( operationBase->operationType() == FmOperationService::EOperationTypeBackup )
         {
-        emit refreshBackupView();
+        // after finish backup, we need refresh backup date in backup view.
+        emit refreshBackupDate();
         }
 
 }
@@ -238,8 +239,10 @@ void FmViewManager::createBackupView()
 
     mMainWindow->addView( backupView );
     mMainWindow->setCurrentView( backupView );
-    connect( this, SIGNAL( refreshBackupView() ), backupView, SLOT( refreshBackupView() ) );
-
+    connect( this, SIGNAL( refreshModel( QString ) ), //emit when need refresh models
+            backupView, SLOT( refreshModel( QString ) ) );
+    connect( this, SIGNAL( refreshBackupDate() ),  //emit when need refresh backup date
+            backupView, SLOT( refreshBackupDate() ) );
 }
 
 void FmViewManager::createRestoreView()

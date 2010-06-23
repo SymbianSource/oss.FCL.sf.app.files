@@ -56,10 +56,10 @@
 
 #define FmPlaceholderString " " // Placeholder for HbLabel because layout will be wrong when HbLabel is empty
 
-#define Drive_C "C:/"
-#define Drive_D "D:/"
-#define Drive_Z "Z:/"
-#define Folder_C_Data "C:/Data"
+#define Drive_C QString( "C:" ) + QDir::separator() 
+#define Drive_D QString( "D:" ) + QDir::separator()
+#define Drive_Z QString( "Z:" ) + QDir::separator()
+#define Folder_C_Data QString( "C:" ) + QDir::separator() + QString( "Data" ) + QDir::separator()
 
 #define FmMaxLengthofDriveName           11
 #define FmMaxLengthofDrivePassword       8
