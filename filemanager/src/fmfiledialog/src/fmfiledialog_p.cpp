@@ -90,11 +90,13 @@ void FmFileDialogPrivate::createAndSetActions(const QString & primaryActionText,
 {
     // Create action for ok button and assign it to the primary action of popup
     mOkAction = new HbAction( primaryActionText, mFileDialog );
+    mOkAction->setObjectName( "okAction" );
     Q_ASSERT( mOkAction );
     mFileDialog->setPrimaryAction( mOkAction );
 
     // Create action for cancel button and assign it to the secondary action of popup
     mCancelAction = new HbAction( secondaryActionText, mFileDialog );
+    mCancelAction->setObjectName( "cancelAction" );
     Q_ASSERT( mCancelAction );
     mFileDialog->setSecondaryAction( mCancelAction );
 }
@@ -144,6 +146,7 @@ void FmFileDialogPrivate::makeConnections()
 void FmFileDialogPrivate::createHeadingWidget()
 {
     mHeadingWidget = new HbWidget( mFileDialog );
+    mHeadingWidget->setObjectName( "headingWidget" ); 
 
     QGraphicsLinearLayout *headingLayout = new QGraphicsLinearLayout;
     headingLayout->setOrientation(Qt::Horizontal);
@@ -154,6 +157,7 @@ void FmFileDialogPrivate::createHeadingWidget()
     titleLayout->setOrientation(Qt::Vertical);    
 
     mTitleLabel = new HbLabel();
+    mTitleLabel->setObjectName( "titleLabel" );
     if( mArgs.mTitle.isEmpty() ){
         mTitleLabel->setPlainText( QString( FmPlaceholderString ) );
     } else {
@@ -161,9 +165,11 @@ void FmFileDialogPrivate::createHeadingWidget()
     }
 
     mCurrentPathLabel = new HbLabel( QString( FmPlaceholderString ) );
+    mCurrentPathLabel->setObjectName( "currentPathLabel" );
     mCurrentPathLabel->setElideMode(Qt::ElideRight);
 
     mUpButton  = new HbPushButton;
+    mUpButton->setObjectName( "upButton" );
     mUpButton->setIcon(HbIcon(backButtonIcon));
 
     titleLayout->addItem( mTitleLabel );
@@ -187,6 +193,7 @@ void FmFileDialogPrivate::createHeadingWidget()
 void FmFileDialogPrivate::createContentWidget()
 {
     mContentWidget = new HbWidget( mFileDialog );
+    mContentWidget->setObjectName( "contentWidget" );
 
     mContentLayout = new QGraphicsLinearLayout;
     mContentLayout->setOrientation(Qt::Vertical);
@@ -194,6 +201,7 @@ void FmFileDialogPrivate::createContentWidget()
     mContentWidget->setLayout( mContentLayout );
 
     mFileWidget = new FmFileWidget( mContentWidget );
+    mFileWidget->setObjectName( "fileWidget" );
     mContentLayout->addItem( mFileWidget );
 
     mFileDialog->setContentWidget( mContentWidget );
@@ -210,15 +218,18 @@ void FmFileDialogPrivate::createBottomWidget()
         return;
     }
     HbWidget *bottomWidget = new HbWidget( mContentWidget );
+    bottomWidget->setObjectName( "bottomWidget" );
     mContentLayout->addItem( bottomWidget );
 
     QGraphicsLinearLayout *bottomLayout = new QGraphicsLinearLayout;
     bottomLayout->setOrientation( Qt::Horizontal );
 
     mFileNameTitleLabel = new HbLabel( mFileDialog->tr( "file name:" ), bottomWidget );
+    mFileNameTitleLabel->setObjectName( "fileNameTitleLabel" );
     bottomLayout->addItem( mFileNameTitleLabel );
 
     mFileNameLineEdit = new HbLineEdit( bottomWidget );
+    mFileNameLineEdit->setObjectName( "fileNameLineEdit" );
     bottomLayout->addItem( mFileNameLineEdit );    
 
     bottomWidget->setLayout( bottomLayout );
@@ -256,10 +267,12 @@ void FmFileDialogPrivate::checkBottomFileWidget()
         }
         break;
     case SaveFileMode:
-        if( mFileWidget->currentPath().absoluteFilePath().isEmpty() ) {
-            mFileNameLineEdit->setReadOnly( true );
-        } else {
-            mFileNameLineEdit->setReadOnly( false );
+        if( mFileNameLineEdit ){
+            if( mFileWidget->currentPath().absoluteFilePath().isEmpty() ) {
+                mFileNameLineEdit->setReadOnly( true );
+            } else {
+                mFileNameLineEdit->setReadOnly( false );
+            }
         }
         break;
     }
@@ -357,4 +370,19 @@ bool FmFileDialogPrivate::isOkAction( HbAction *action )
     return false;
 }
 
+void FmFileDialogPrivate::setRetAction( HbAction *action )
+{
+    mRetAction = action;
+}
+
+HbAction *FmFileDialogPrivate::retAction()
+{
+    return mRetAction;
+}
+
+QEventLoop &FmFileDialogPrivate::eventLoop()
+{
+    return mEventLoop;
+}
+    
 #include "moc_fmfiledialog.cpp"

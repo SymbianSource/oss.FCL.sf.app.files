@@ -98,8 +98,18 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
 	    QList<FmBkupBackupCategory*> backupCategoryList,
 	    QString drive, quint32 content)
 {
+    FmLogger::log( "FmBkupEnginePrivate::startBackup_with drive: " + drive +
+            "_number:" + QString::number(DriverNameToNumber( drive )));
     if( drive.isEmpty() ) {
         iError = KErrPathNotFound;
+        FmLogger::log( "FmBkupEnginePrivate::startBackup_with return with KErrPathNotFound because drive is empty" );
+        return false;
+    }
+    QStringList backupableDriveList;
+    getBackupDriveList( backupableDriveList );
+    if( !backupableDriveList.contains( drive, Qt::CaseInsensitive ) ) {
+        iError = KErrPathNotFound;
+        FmLogger::log( "FmBkupEnginePrivate::startBackup_with return with KErrPathNotFound because drive is not available" );
         return false;
     }
     QString logString;
@@ -183,10 +193,9 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
     FmLogger::log( logString );
 
     QList< FmRestoreInfo > restoreInfoList;
-    TInt driveNumber = DriverNameToNumber( drive );
-    GetRestoreInfoArray( drivesAndOperationList, restoreInfoList, driveNumber );
+    GetRestoreInfoArray( drivesAndOperationList, restoreInfoList, drive );
     
-    for ( TInt i( 0 ); i < restoreInfoList.count(); i++ )
+    for ( TInt i( 0 ); i < restoreInfoList.count(); ++i )
         {        
         bool toContinue = false;
         FmRestoreInfo &info = restoreInfoList[ i ];
@@ -405,6 +414,7 @@ TInt FmBkupEnginePrivate::HandleBkupEngineEventL(
 
 int FmBkupEnginePrivate::error()
 {
+    FmLogger::log( "FmBkupEnginePrivate::error:" + QString::number( iError ) );
     switch (iError) 
     {
     case KErrNone: 
@@ -419,6 +429,14 @@ int FmBkupEnginePrivate::error()
         return FmErrCancel;
     case KErrPathNotFound:
         return FmErrPathNotFound;
+    case KErrLocked:
+        return FmErrLocked;
+    case KErrCorrupt:
+        return FmErrCorrupt;
+    case KErrNotReady:
+        return FmErrNotReady;
+    case KErrDisMounted:
+        return FmErrDisMounted;
     default: 
         return FmErrUnKnown;
     }    
@@ -650,8 +668,9 @@ bool FmBkupEnginePrivate::StartRestoreL( QList<FmBkupDrivesAndOperation* > drive
 
 void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
         QList< FmRestoreInfo > &restoreInfoList,
-        const TInt aDrive )
+        const QString& aDrive )
     {
+    int targetDrive = DriverNameToNumber( aDrive );
     FmBackupSettings& settings( *( q->BackupSettingsL() ) );
 
     restoreInfoList.clear();
@@ -684,7 +703,7 @@ void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* >
         archives,
         params,
         AllowedDriveAttMatchMask(),
-        aDrive );
+        targetDrive );
 
     // Fill restore info
     TInt count( archives.Count() );
@@ -705,7 +724,7 @@ void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* >
         int s       = iDateTime.Second();
         int year    = iDateTime.Year();
         int month   = iDateTime.Month() + 1;
-        int day     = iDateTime.Day();
+        int day     = iDateTime.Day()+1;
         QTime time( h, m, s);
         QDate date( year, month, day );
         
@@ -750,6 +769,9 @@ TUint32 FmBkupEnginePrivate::AllowedDriveAttMatchMask() const
 
 TInt FmBkupEnginePrivate::DriverNameToNumber( QString driverName )
     {
+        if( driverName.isEmpty() ) {
+            return KErrNotFound;
+        }
         TInt drive = 0;
         drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
         return drive;
@@ -784,7 +806,6 @@ void FmBkupEnginePrivate::getBackupDriveList( QStringList &driveList )
                 }
             }
         }
-    
     fs.Close();
     }
 

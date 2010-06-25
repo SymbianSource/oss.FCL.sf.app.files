@@ -23,11 +23,12 @@
 #include "fmoperationservice.h"
 #include <hbwidget.h>
 
-class QFileSystemWatcher;
+class FmDriveModel;
 class HbListView;
 class HbAbstractViewItem;
 class HbSearchPanel;
-class FmDriveModel;
+class HbMenu;
+class QFileSystemWatcher;
 
 class QGraphicsLinearLayout;
 
@@ -50,6 +51,7 @@ signals:
 private slots:
 	void on_list_activated( const QModelIndex &index );
     void on_list_longPressed( HbAbstractViewItem *item, const QPointF &coords );
+    void on_list_pressed( const QModelIndex &  index ) ;
 
     void on_viewAction_triggered();
     void on_renameAction_triggered();
@@ -79,6 +81,10 @@ private:
     
     QString mFindTargetPath;
     QGraphicsLinearLayout *mLayout;
+	HbMenu *mContextMenu;
+    
+    //used to avoid activate when long press list.
+    bool mListLongPressed;
 };
 
 #endif

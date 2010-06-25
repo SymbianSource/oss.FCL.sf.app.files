@@ -26,7 +26,7 @@
 
 FmSingleTextQuery::FmSingleTextQuery( Options options,
     HbLineEdit::EchoMode echoMode, QGraphicsItem *parent  ) :
-    HbDialog( parent ), mOptions( options ), mEchoMode( echoMode )
+    FmDialog( parent ), mOptions( options ), mEchoMode( echoMode )
 {
     init();
 }

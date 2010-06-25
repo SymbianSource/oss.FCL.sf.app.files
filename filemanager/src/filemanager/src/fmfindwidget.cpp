@@ -75,8 +75,6 @@ void FmFindWidget::stopFind()
 void FmFindWidget::on_resultModel_finished()
 {
     emit finished();
-    //Since layout problem is found, refresh it
-    on_resultModel_refresh();  
 }
 
 void FmFindWidget::on_resultModel_modelCountChanged( int count )
@@ -140,9 +138,6 @@ void FmFindWidget::init()
     connect( mModel, SIGNAL( modelCountChanged( int )),
         this, SLOT( on_resultModel_modelCountChanged( int )) );
     
-    connect( mModel, SIGNAL( refresh()),
-        this, SLOT( on_resultModel_refresh()) );
-
     mListView = new HbListView( this );
     mListView->setModel( mModel );
 
@@ -202,12 +197,6 @@ void FmFindWidget::deActiveSearchPanel()
     mSearchPanel->hide();
     mLayout->removeItem( mSearchPanel );
 
-}
-
-void FmFindWidget::on_resultModel_refresh()
-{
-    mListView->setModel( 0 );
-    mListView->setModel( mModel );  
 }
 
 

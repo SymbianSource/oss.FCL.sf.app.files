@@ -24,8 +24,7 @@
 #include "fmbkupengine.h"
 #include "fmoperationbase.h"
 #include "fmcommon.h"
-
-#include <hbmessagebox.h>
+#include "fmdlgutils.h"
 
 FmBackupRestoreHandler::FmBackupRestoreHandler( QObject *parent ) : QObject( parent ), mBackupConfigLoader( 0 )
 {
@@ -37,7 +36,7 @@ FmBackupRestoreHandler::FmBackupRestoreHandler( QObject *parent ) : QObject( par
     connect( mBkupEngine, SIGNAL( notifyStart( bool, int) ), this, SLOT( onNotifyStart( bool, int ) ), Qt::QueuedConnection );
     connect( mBkupEngine, SIGNAL( notifyUpdate(int) ), this, SLOT( onNotifyUpdate(int) ), Qt::QueuedConnection );
     connect( mBkupEngine, SIGNAL( notifyFinish(int) ), 
-        this, SLOT( onNotifyFinish(int) ), Qt::QueuedConnection );
+        this, SLOT( onNotifyFinish(int) ), Qt::DirectConnection );
     connect( mBkupEngine, SIGNAL( notifyMemoryLow(int, int& ) ), 
         this, SLOT( onNotifyMemoryLow(int, int&) ) );
     connect( mBkupEngine, SIGNAL( notifyBackupFilesExist( bool& )), this, SLOT( onNotifyBackupFilesExist( bool& )));
@@ -73,7 +72,7 @@ bool FmBackupRestoreHandler::startBackup( FmOperationBackup *operationBackup )
     mCurrentProcess = ProcessBackup;
     bool ret = mBkupEngine->startBackup( backupConfigLoader()->driversAndOperationList(),
         backupConfigLoader()->backupCategoryList(), 
-        mBkupEngine->BackupSettingsL()->targetDrive(),
+        mBkupEngine->BackupSettingsL()->availableTargetDrive(),
         mBkupEngine->BackupSettingsL()->content() );
 
     if( !ret ) {
@@ -109,14 +108,14 @@ void FmBackupRestoreHandler::onNotifyMemoryLow( int memoryValue, int &userError 
     if( memoryValue < FmEstimateLowerLimit ) {
         userError = FmErrDiskFull;
     } else if( memoryValue < FmEstimateUpperLimit ) {
-        if ( !HbMessageBox::question( "memory low, continue?" ) ){
+        if ( !FmDlgUtils::question( "memory low, continue?" ) ){
             userError = FmErrCancel;
         }
     }
 }
 void FmBackupRestoreHandler::onNotifyBackupFilesExist( bool &isContinue )
     {
-    if ( HbMessageBox::question( "some bacup files exist, continue?" ) )
+    if ( FmDlgUtils::question( "some backup files exist, continue?" ) )
         {
         isContinue = true;
         }

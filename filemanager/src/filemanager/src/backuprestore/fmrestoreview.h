@@ -37,6 +37,8 @@ public:
 private slots:
     void on_leftAction_triggered();
 	void on_restoreAction_triggered();
+	void onCheckBoxStateChange();
+	void refreshRestoreView();
 #ifdef FM_CHANGE_ORIENT_ENABLE
     void on_rotateAction_triggered();
 #endif
@@ -44,9 +46,7 @@ private slots:
 private:
     void initMenu();
     void initMainWidget();
-    void initToolBar();
-    void adjustActions();
-    
+    void initToolBar();    
     void removeToolBarAction();
     
 private:

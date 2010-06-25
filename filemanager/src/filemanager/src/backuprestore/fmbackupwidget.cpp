@@ -35,9 +35,8 @@
 #include <hbdataformviewitem.h>
 
 
-
 FmBackupWidget::FmBackupWidget( QGraphicsItem *parent )
-: HbWidget( parent ), mLastPressedItem( 0 ), mScrolled( 0 )
+: HbWidget( parent ), mLastPressedItem( 0 ), mScrolled( 0 ), mListReleased( false )
 {
     init();
 }
@@ -58,15 +57,15 @@ void FmBackupWidget::on_list_released( const QModelIndex &index )
     mScrolled = false;
 
     if( item == mContentsItem ){
-        ChangeContents();
+        emit changeContents();
     } else if( item == mTargetItem ){
-        ChangeTargetDrive();
+        emit changeTargetDrive();
     } else if( item == mSchedulingItem ){
-        ChangeScheduling();
+        emit changeScheduling();
     } else if( item == mWeekdayItem ){
-        ChangeWeekday();
+        emit changeWeekday();
     } else if( item == mTimeItem ){
-        ChangeTime();
+        emit changeTime();
     }
 }
 
@@ -93,6 +92,7 @@ void FmBackupWidget::init()
     mDataForm->setModel( mModel );
     vLayout->addItem( mDataForm );
     
+    
     connect( mDataForm, SIGNAL( released( const QModelIndex & ) ),
              this, SLOT( on_list_released( const QModelIndex & ) ) );
 
@@ -104,7 +104,13 @@ void FmBackupWidget::init()
 
     connect( this, SIGNAL( doModelRefresh() ),
              this, SLOT( refreshModel() ), Qt::QueuedConnection );
-
+    
+    connect( this, SIGNAL(changeContents()), this, SLOT(on_changeContents()), Qt::QueuedConnection);
+    connect( this, SIGNAL(changeScheduling()), this, SLOT(on_changeScheduling()), Qt::QueuedConnection);
+    connect( this, SIGNAL(changeWeekday()), this, SLOT(on_changeWeekday()), Qt::QueuedConnection);
+    connect( this, SIGNAL(changeTime()), this, SLOT(on_changeTime()), Qt::QueuedConnection);
+    connect( this, SIGNAL(changeTargetDrive()), this, SLOT(on_changeTargetDrive()), Qt::QueuedConnection);
+    
     //mBackupSettings = new FmBackupSettings();
     mBackupSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->BackupSettingsL();
     mBackupSettings->load();
@@ -141,7 +147,7 @@ void FmBackupWidget::expandAllGroup()
 void FmBackupWidget::initModel()
 {
     mContentsGroup = mModel->appendDataFormGroup(
-        QString( tr( "Contents" ) ), mModel->invisibleRootItem());
+        QString( hbTrId( "Contents" ) ), mModel->invisibleRootItem());
 
     mContentsItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mContentsGroup );
@@ -152,7 +158,7 @@ void FmBackupWidget::initModel()
     mTargetItem->setContentWidgetData( QString("readOnly"), QString("true") );
 
     mSchedulingGroup = mModel->appendDataFormGroup(
-        QString( tr( "Scheduling" ) ), mModel->invisibleRootItem());
+        QString( hbTrId( "Scheduling" ) ), mModel->invisibleRootItem());
 
     mSchedulingItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mSchedulingGroup );
@@ -165,7 +171,13 @@ void FmBackupWidget::initModel()
     mTimeItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mSchedulingGroup );
     mTimeItem->setContentWidgetData( QString("readOnly"), QString("true") );
+    
+    mLastBackupDateItem = mModel->appendDataFormItem(
+        HbDataFormModelItem::TextItem, QString( ( "" )), mModel->invisibleRootItem() );
+    mLastBackupDateItem->setContentWidgetData( QString("readOnly"), QString("true") );   
+    
 }
+
 
 
 void FmBackupWidget::refreshModel()
@@ -246,6 +258,11 @@ void FmBackupWidget::refreshModel()
             mTimeItem->setContentWidgetData( QString("text"), tips );
             break;
             }
+        case FmBackupEntry::EBackupdate:
+            {            
+            mLastBackupDateItem->setContentWidgetData( QString("text"), tips );
+            break;
+            }
         }
     }
 
@@ -254,12 +271,10 @@ void FmBackupWidget::refreshModel()
     expandAllGroup();
 }
 
-
-
-void FmBackupWidget::ChangeContents()
+void FmBackupWidget::on_changeContents()
 {
     
-    QString title = constFileManagerBackupSettingsTitleContents;  
+    QString title = mContentsItem->label();  
     QStringList queryStringList;
     quint32 contentMask = FmBackupSettings::EFileManagerBackupContentAll;
     while ( contentMask <= FmBackupSettings::EFileManagerBackupContentLast)
@@ -277,9 +292,9 @@ void FmBackupWidget::ChangeContents()
 } 
 
 
-void FmBackupWidget::ChangeScheduling()
+void FmBackupWidget::on_changeScheduling()
 {
-    QString title = constFileManagerBackupSettingsTitleScheduling;  
+    QString title = mSchedulingItem->label();  
     QStringList queryStringList;
 
     FmBackupSettings::TFileManagerBackupSchedule schedule = FmBackupSettings::EFileManagerBackupScheduleNever;
@@ -299,9 +314,9 @@ void FmBackupWidget::ChangeScheduling()
     }
 }
 
-void FmBackupWidget::ChangeWeekday()
+void FmBackupWidget::on_changeWeekday()
 {
-    QString title = constFileManagerBackupSettingsTitleWeekday;  
+    QString title = mWeekdayItem->label();
     QStringList queryStringList;
 
     FmBackupSettings::TFileManagerBackupWeekday weekday = FmBackupSettings::EFileManagerBackupWeekdayMonday;
@@ -321,9 +336,9 @@ void FmBackupWidget::ChangeWeekday()
     }
 }
 
-void FmBackupWidget::ChangeTime()
+void FmBackupWidget::on_changeTime()
 {
-    QString title = constFileManagerBackupSettingsTitleTime;  
+    QString title = mTimeItem->label();  
     QTime queryTime = mBackupSettings->time();
 
     if( FmDlgUtils::showTimeSettingQuery( title, queryTime ) )
@@ -334,41 +349,19 @@ void FmBackupWidget::ChangeTime()
 }
 
 
-void FmBackupWidget::ChangeTargetDrive()
+void FmBackupWidget::on_changeTargetDrive()
 {
-    QString title = constFileManagerBackupSettingsTitleTargetDrive;  
-    QStringList queryStringList;
-    QStringList driveStringList;
-
-    QStringList driveList;
-    //FmUtils::getDriveList( driveList, true );
-    FmViewManager::viewManager()->operationService()->backupRestoreHandler()->getBackupDriveList( driveList );
-    QString targetDrive =  mBackupSettings->targetDrive();
-    int selectIndex = -1;
-
-    int currentIndex = 0;
-    QString associatedDrives;
-    for( QStringList::const_iterator it = driveList.begin(); it != driveList.end(); ++it )
-    {
-        QString drive = (*it);
-        drive = FmUtils::removePathSplash( drive );
-        QString driveWithVolume = FmUtils::fillDriveVolume( drive, true );
-
-        driveStringList.push_back( drive );
-        queryStringList.push_back( driveWithVolume );
-        associatedDrives += FmUtils::getDriveLetterFromPath(drive);
-
-        if( drive == targetDrive )
-        {
-            // adjust index offset against drive.
-            selectIndex = currentIndex;
-        }
-        ++currentIndex;
-    }
-    
-    if( FmDlgUtils::showSingleSettingQuery( title, queryStringList, selectIndex, associatedDrives ) )
-    {
-        mBackupSettings->setTargetDrive( driveStringList.at( selectIndex ) );
+    QString title = mTargetItem->label();  
+    QString drive = FmDlgUtils::showBackupDriveQuery( title );
+    if( ( !drive.isEmpty() ) && 
+            ( mBackupSettings->targetDrive().compare( drive, Qt::CaseInsensitive ) != 0 ) ) {
+        mBackupSettings->setTargetDrive( drive );
         emit doModelRefresh();
     }
+}
+
+void FmBackupWidget::updateBackupDate()
+{
+    mBackupSettings->updateBackupDate();
+    emit doModelRefresh();
 }

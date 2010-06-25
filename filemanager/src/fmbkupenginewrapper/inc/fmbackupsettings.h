@@ -24,31 +24,7 @@
 #include <QString>
 #include <QList>
 
-const QString constFileManagerBackupWeekdayMonday = "Monday";
-const QString constFileManagerBackupWeekdayTuesday = "Tuesday";
-const QString constFileManagerBackupWeekdayWednesday = "Wednesday";
-const QString constFileManagerBackupWeekdayThursday = "Thursday";
-const QString constFileManagerBackupWeekdayFirday = "Friday";
-const QString constFileManagerBackupWeekdaySaturday = "Saturday";
-const QString constFileManagerBackupWeekdaySunday = "Sunday";
-
-const QString constFileManagerBackupScheduleNever = "Never";
-const QString constFileManagerBackupScheduleDaily = "Daily";
-const QString constFileManagerBackupScheduleWeekly = "Weekly";
-
-const QString constFileManagerBackupSettingsTitleContents = "Backup Contents";
-const QString constFileManagerBackupSettingsTitleScheduling = "Backup scheduling";
-const QString constFileManagerBackupSettingsTitleWeekday = "Weekday";
-const QString constFileManagerBackupSettingsTitleTime = "Time";
-const QString constFileManagerBackupSettingsTitleTargetDrive = "Backup destination";
-
-const QString constFileManagerBackupSettingsContentAll = "All";
-const QString constFileManagerBackupSettingsContentSettings = "Settings";
-const QString constFileManagerBackupSettingsContentMessages = "Messages";
-const QString constFileManagerBackupSettingsContentContacts = "Contacts";
-const QString constFileManagerBackupSettingsContentCalendar = "Calendar entries";
-const QString constFileManagerBackupSettingsContentBookmarks = "Bookmarks";
-const QString constFileManagerBackupSettingsContentUserFiles = "Files";
+#include <hbglobal.h>
 
 class FmBkupEngine;
 
@@ -69,7 +45,8 @@ public:
         EScheduling,
         EWeekday,
         ETime,
-        ETarget
+        ETarget,
+        EBackupdate
     };
 
 public:
@@ -241,6 +218,14 @@ public:
     QString targetDrive() const;
 
     /**
+     * Gets available backup target drive
+     * if targetDrive exist, return targetDrive
+     * otherwise return other first available backup drive
+     * @return Available backup target drive, empty QString for null
+     */
+    QString availableTargetDrive() const;
+    
+    /**
      * Loads saved backup settings
      */
     void load();
@@ -284,6 +269,10 @@ public:
      */
     QString targetDriveToString( const QString& targetDrive );
     
+    /**
+     * Updates the backup date
+     */
+    void updateBackupDate();
 private:
     /**
      * Gets the count of contents selected
@@ -318,6 +307,11 @@ private:
      */
     FmBackupEntry* createTargetDriveEntry();
 
+    /**
+     * Creates backup date entry
+     */
+    FmBackupEntry* createBackupDateEntry();
+    
     void refreshList();
     void resetAndDestoryBackupEntry();
 private:
@@ -348,9 +342,15 @@ private:
     QString mTargetDrive;
 
     /**
+     * Backup date
+     */
+    QDate mDate;
+    
+    /**
      * Backup setting list items
      */
     QList< FmBackupEntry* > mBackupEntryList;
+    
     
     FmBkupEngine *mBkupEngine;
 };

@@ -82,6 +82,14 @@ private:
 	void infoNoFileSelected();
 	void removeToolBarAction();
 	
+    /**
+     * Create  Default folder name while create folder.
+     *
+     * @param  path Current path.
+     * @return Default folder name for new folder.
+     */
+	QString createDefaultFolderName( const QString &path );
+	
 private:
     FmFileBrowseWidget *mWidget;
     HbPushButton *mUpButton;

@@ -25,7 +25,7 @@
 #include <hblistwidgetitem.h>
 #include <hbabstractviewitem.h>
 
-FmCombinedQuery::FmCombinedQuery( QGraphicsItem *parent ) : HbDialog( parent ), 
+FmCombinedQuery::FmCombinedQuery( QGraphicsItem *parent ) : FmDialog( parent ), 
     mSelectMode ( MultiSelectMode ), mDominantIndex ( -1 )
 {
 	mContentWidget = new QGraphicsWidget();
@@ -110,7 +110,7 @@ void FmCombinedQuery::setListItems( const QMap< int, QString > &list )
 
 void FmCombinedQuery::activated( const QModelIndex &index )
 {
-	int selectedRow = mListWidget->indexPosition( index );
+	int selectedRow = index.row();
 	if( selectedRow == mDominantIndex ){
 		QModelIndexList modelIndexList = mListWidget->selectionModel()->selectedIndexes();
 		for( QModelIndexList::const_iterator it = modelIndexList.begin(); it != modelIndexList.end(); ++it ){

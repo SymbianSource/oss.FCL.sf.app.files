@@ -20,10 +20,9 @@
 
 #include <hbaction.h>
 
-FmMainWindow::FmMainWindow()
+FmMainWindow::FmMainWindow() : mViewManager( 0 ), mFirstViewLoaded( false )
 {
-    init();
-	QMetaObject::connectSlotsByName( this );
+    connect(this, SIGNAL(viewReady()), this, SLOT(delayedLoading()));
 }
 
 FmMainWindow::~FmMainWindow()
@@ -45,17 +44,28 @@ void FmMainWindow::onOrientationChanged( Qt::Orientation orientation )
 
 void FmMainWindow::init()
 {
+    FmLogger::log("FmMainWindow::init start");
     mViewManager = FmViewManager::CreateViewManager( this );
-    
     mViewManager->createDriverView();
-    
     connect( this, SIGNAL( orientationChanged( Qt::Orientation ) ),
              this, SLOT( onOrientationChanged( Qt::Orientation ) ) );
     
+    FmLogger::log("FmMainWindow::init end");
 //    if ( orientation() == Qt::Vertical ) {
 //        createDriverView();
 //    } else {
 //        createSplitView();
 //    }
+}
+
+void FmMainWindow::delayedLoading()
+{
+    FmLogger::log("FmMainWindow::delayedLoading start");
+    if( mFirstViewLoaded ) {
+        return;
+    }
+    init();
+    mFirstViewLoaded = true;
+    FmLogger::log("FmMainWindow::delayedLoading end");
 }
 

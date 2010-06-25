@@ -35,6 +35,7 @@ public:
 signals:
     void askForRename( const QString &srcFile, QString *destFile );
     void askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted );
+    void showNote( const QString &noteString );
     void notifyPreparing( bool cancelable );
     void notifyStart( bool cancelable, int maxSteps );
     void notifyProgress( int currentStep );
@@ -42,7 +43,8 @@ signals:
 private:
     int move( const QString &source, const QString &targetPath, const QString &newTargetName = QString() );
     int moveDirInsideContent( const QString &srcPath, const QString &destPath );
-    void IncreaseProgress( quint64 size );
+    void increaseProgress( quint64 size );
+    void queryForRename( const QString &srcFile, QString *destFile );
      
 private:
     QStringList mSourceList;

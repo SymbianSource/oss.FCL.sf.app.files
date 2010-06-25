@@ -21,7 +21,6 @@
 #include "fmdriverlistwidget.h"
 #include <QGraphicsLinearLayout>
 
-#include <hbmessagebox.h>
 #include <hbmenu.h>
 #include <hbaction.h>
 #include <hbmainwindow.h>
@@ -50,7 +49,7 @@ void FmSplitView::on_rotateAction_triggered()
 
 void FmSplitView::on_normalViewAction_triggered()
 {
-	mainWindow()->setCurrentView( mainWindow()->viewAt(0) );
+	mainWindow()->setCurrentView( mainWindow()->views().first() );
 }
 
 void FmSplitView::initMenu()

@@ -18,12 +18,7 @@
 symbian {
     FILEMNGR_IBY_DIR = $$section(PWD, ":", 1)
 
-    exists(/epoc32/include/platform_paths.hrh) {
-        BLD_INF_RULES.prj_exports += "$${LITERAL_HASH}include <platform_paths.hrh>"
-    } else {
-        BLD_INF_RULES.prj_exports += "$${LITERAL_HASH}include <domain\osextensions\platform_paths.hrh>"
-    }
-
+    BLD_INF_RULES.prj_exports += "$${LITERAL_HASH}include<platform_paths.hrh>"
     BLD_INF_RULES.prj_exports += "$$FILEMNGR_IBY_DIR/filemngr.iby CORE_APP_LAYER_IBY_EXPORT_PATH(filemngr.iby)"
     BLD_INF_RULES.prj_exports += "$$FILEMNGR_IBY_DIR/filemngr_resources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(filemngr_resources.iby)"
 }

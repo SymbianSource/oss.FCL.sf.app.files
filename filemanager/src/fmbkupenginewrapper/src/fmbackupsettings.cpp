@@ -25,6 +25,8 @@
 #include <QTime>
 #include <QSettings>
 
+#include <hbglobal.h>
+
 FmBackupSettings::FmBackupSettings( FmBkupEngine *aFmBkupEngine ) : mBkupEngine( aFmBkupEngine )
 {
     
@@ -90,6 +92,21 @@ QString FmBackupSettings::targetDrive() const
     return mTargetDrive;
 }
 
+QString FmBackupSettings::availableTargetDrive() const
+{
+    QString targetDrive;
+    QStringList driveList;
+    mBkupEngine->getBackupDriveList( driveList );
+    if( !driveList.isEmpty() ) {
+        if( driveList.contains( mTargetDrive ) ) {
+            targetDrive =  mTargetDrive;
+        } else {
+            targetDrive = driveList.first();
+        }
+    }
+    return targetDrive;
+}
+
 int FmBackupSettings::contentsSelected() const
 {
     int ret( 0 );
@@ -115,7 +132,7 @@ FmBackupEntry* FmBackupSettings::createContentsEntry()
     QString title;
     QString tips;
 
-    title = constFileManagerBackupSettingsTitleContents;
+    title = hbTrId( "Backup Contents" );
 
     int selected( contentsSelected() );
     if ( !( mContent & EFileManagerBackupContentAll ) && selected > 1 ){
@@ -136,7 +153,7 @@ FmBackupEntry* FmBackupSettings::createSchedulingEntry()
     QString title;
     QString tips;
 
-    title = constFileManagerBackupSettingsTitleScheduling;
+    title = hbTrId( "Backup scheduling" );
     tips  = schedulingToString( mScheduling );
 
     return CreateEntry( title, tips, FmBackupEntry::EScheduling );
@@ -147,7 +164,7 @@ FmBackupEntry* FmBackupSettings::createWeekdayEntry()
     QString title;
     QString tips;
 
-    title = constFileManagerBackupSettingsTitleWeekday;
+    title = hbTrId( "Weekday" );
     tips  = weekdayToString( mWeekday );
 
     return CreateEntry( title, tips, FmBackupEntry::EWeekday );
@@ -158,7 +175,7 @@ FmBackupEntry* FmBackupSettings::createTimeEntry()
     QString title;
     QString tips;
 
-    title = constFileManagerBackupSettingsTitleTime;
+    title = hbTrId( "Time" );
     tips  = mTime.toString( "hh:mm" );
 
     return CreateEntry( title, tips, FmBackupEntry::ETime );
@@ -169,36 +186,49 @@ FmBackupEntry* FmBackupSettings::createTargetDriveEntry()
     QString title;
     QString tips;
 
-    title = constFileManagerBackupSettingsTitleTargetDrive;
+    title = hbTrId( "Backup destination" );
     tips  = targetDriveToString( mTargetDrive );
 
     return CreateEntry( title, tips, FmBackupEntry::ETarget );
 }
 
+FmBackupEntry* FmBackupSettings::createBackupDateEntry()
+{
+    QString tips;
+    if( mDate.isNull() )
+        {
+        tips =  hbTrId( "No previous backups created");
+        }
+    else
+        {
+        tips = hbTrId( "Backup Created " ) + mDate.toString( "dd.MM.yyyy" );
+        }    
+    return CreateEntry( QString(""), tips, FmBackupEntry::EBackupdate);
+}
 QString FmBackupSettings::contentToString( const quint32 content )
 {
-    QString ret( constFileManagerBackupSettingsContentAll );
+    QString ret( hbTrId( "All" ) );
 
     if ( content & EFileManagerBackupContentAll ){
-        ret = constFileManagerBackupSettingsContentAll;
+        ret = hbTrId( "All" );
     }
     else if ( content & EFileManagerBackupContentSettings ){
-        ret = constFileManagerBackupSettingsContentSettings;
+        ret = hbTrId( "Settings" );
     }
     else if ( content & EFileManagerBackupContentMessages ){
-        ret = constFileManagerBackupSettingsContentMessages;
+        ret = hbTrId( "Messages" );
     }
     else if ( content & EFileManagerBackupContentContacts ){
-        ret = constFileManagerBackupSettingsContentContacts;
+        ret = hbTrId( "Contacts" );
     }
     else if ( content & EFileManagerBackupContentCalendar ){
-        ret = constFileManagerBackupSettingsContentCalendar;
+        ret = hbTrId( "Calendar" );
     }
     else if ( content & EFileManagerBackupContentBookmarks ){
-        ret = constFileManagerBackupSettingsContentBookmarks;
+        ret = hbTrId( "Bookmarks" );
     }
     else if ( content & EFileManagerBackupContentUserFiles ){
-        ret = constFileManagerBackupSettingsContentUserFiles;
+        ret = hbTrId( "Files" );
     }
     return ret;
 }
@@ -209,25 +239,25 @@ QString FmBackupSettings::weekdayToString( const TFileManagerBackupWeekday weekd
     switch (weekday)
     {
     case EFileManagerBackupWeekdayMonday:
-        ret = constFileManagerBackupWeekdayMonday;
+        ret = hbTrId( "Monday" );
         break;
     case EFileManagerBackupWeekdayTuesday:
-        ret = constFileManagerBackupWeekdayTuesday;
+        ret = hbTrId( "Tuesday" );
         break;
     case EFileManagerBackupWeekdayWednesday:
-        ret = constFileManagerBackupWeekdayWednesday;
+        ret = hbTrId( "Wednesday" );
         break;
     case EFileManagerBackupWeekdayThursday:
-        ret = constFileManagerBackupWeekdayThursday;
+        ret = hbTrId( "Thursday" );
         break;
     case EFileManagerBackupWeekdayFriday:
-        ret = constFileManagerBackupWeekdayFirday;
+        ret = hbTrId( "Friday" );
         break;
     case EFileManagerBackupWeekdaySaturday:
-        ret = constFileManagerBackupWeekdaySaturday;
+        ret = hbTrId( "Saturday" );
         break;
     case EFileManagerBackupWeekdaySunday:
-        ret = constFileManagerBackupWeekdaySunday;
+        ret = hbTrId( "Sunday" );
         break;
     }
     return ret;
@@ -240,13 +270,13 @@ QString FmBackupSettings::schedulingToString( const TFileManagerBackupSchedule s
     switch (scheduling)
     {
     case EFileManagerBackupScheduleNever:
-        ret = constFileManagerBackupScheduleNever;
+        ret = hbTrId( "Never" );
         break;
     case EFileManagerBackupScheduleDaily:
-        ret = constFileManagerBackupScheduleDaily;
+        ret = hbTrId ("Daily" );
         break;
     case EFileManagerBackupScheduleWeekly:
-        ret = constFileManagerBackupScheduleWeekly;
+        ret = hbTrId( "Weekly" );
         break;
     }
     return ret;
@@ -294,6 +324,9 @@ void FmBackupSettings::refreshList()
         entry = createTargetDriveEntry();
         mBackupEntryList.push_back( entry );
     }
+    
+    entry = createBackupDateEntry();
+    mBackupEntryList.push_back( entry );
 }
 
 void FmBackupSettings::resetAndDestoryBackupEntry()
@@ -316,7 +349,7 @@ void FmBackupSettings::load()
     mBkupEngine->getBackupDriveList( driveList );
     QString defaultDrive( driveList.first() );
    
-    
+    QDate date;
     QSettings settings("Nokia", "FileManager");
 
     settings.beginGroup("BackupConfigure");
@@ -326,7 +359,7 @@ void FmBackupSettings::load()
     mWeekday = (TFileManagerBackupWeekday)(settings.value("weekday", EFileManagerBackupWeekdayMonday ).toInt()); // monday for default value
     mTime = (settings.value("time", QTime::currentTime() ).toTime()); // empty for default
     mTargetDrive = (settings.value("targetDrive", defaultDrive ) ).toString();  // C for default
-
+    mDate = (settings.value("backupDate", date)).toDate();
     settings.endGroup();
     refreshList();
 }
@@ -343,8 +376,14 @@ void FmBackupSettings::save()
     settings.setValue( "weekday", mWeekday );
     settings.setValue( "time", mTime.toString() );
     settings.setValue( "targetDrive", mTargetDrive );
-
+    settings.setValue( "backupDate", mDate.toString( Qt::ISODate ) );
     settings.endGroup();
 
     refreshList();
+}
+
+void FmBackupSettings::updateBackupDate()
+{
+    mDate.setDate( QDate::currentDate().year(), QDate::currentDate().month(), QDate::currentDate().day() );
+    save();
 }

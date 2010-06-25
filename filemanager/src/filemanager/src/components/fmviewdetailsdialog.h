@@ -20,17 +20,15 @@
 #define FMVIEWDETAILSDIALOG_H
 
 #include "fmcommon.h"
+#include "fmdialog.h"
 
-#include <hbdialog.h>
-
-class FmDataListModel;
-class QDirModel;
+class QStandardItemModel;
 class HbListView;
 class HbLabel;
 class HbAction;
 class FmDriveDetailsSize;
 
-class FmViewDetailsDialog : public HbDialog
+class FmViewDetailsDialog : public FmDialog
 {
     Q_OBJECT
   
@@ -46,6 +44,7 @@ public:
         EMemoryNativeApps,
         EMemoryDocuments,
         EMemoryCalendar,
+        EMemoryContacts,
         EMemoryOthers,
         EDriveDetailEntryEnd
     };
@@ -90,26 +89,26 @@ private:
     void setNumofSubfolders( int numofSubFolders, int numofFiles, quint64 sizeofFolder );
     void setSizeofContent( QList<FmDriveDetailsSize*> detailsSizeList );
     
-	static HbAction *executeDialog( HbDialog *dialog, const QString &associatedDrives );
+	static HbAction *executeDialog( FmDialog *dialog, const QString &associatedDrives );
 private:
     HbListView *mListView;
     HbLabel *mHeaderLabel;  
     HbAction *mOkAction;
     
-    FmDataListModel *mDataListModel;
-    QDirModel *mDirModel;
+    QStandardItemModel *mDataListModel;
     QString     mDrive;
     
     int mNumofSubFolers;
     int mNumofFiles;
-    int mSizeofFolder;
-    int mSizeofImage;
-    int mSizeofSounds;
-    int mSizeofVideo;
-    int mSizeofJava;
-    int mSizeofNativeFiles;
-    int mSizeofDocument;
-    int mSizeofCalendar;
+    quint64 mSizeofFolder;
+    quint64 mSizeofImage;
+    quint64 mSizeofSounds;
+    quint64 mSizeofVideo;
+    quint64 mSizeofJava;
+    quint64 mSizeofNativeFiles;
+    quint64 mSizeofDocument;
+    quint64 mSizeofCalendar;
+    quint64 mSizeofContacts;
 };
 
 #endif /* FMVIEWDETAILSDIALOG_H_ */

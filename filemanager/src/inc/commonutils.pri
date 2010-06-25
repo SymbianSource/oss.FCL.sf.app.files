@@ -17,11 +17,13 @@
 INTERNAL_HEADERS += $$PWD/fmutils.h \
                     $$PWD/fmdrivemodel.h \
                     $$PWD/fmfileiconprovider.h \
-                    $$PWD/fmdrivewatcher/fmdrivewatcher.h
+                    $$PWD/fmdrivewatcher/fmdrivewatcher.h \
+                    $$PWD/fmfiletyperecognizer.h
                     
 INTERNAL_SOURCES += $$PWD/fmdrivemodel.cpp \
                     $$PWD/fmfileiconprovider.cpp \
-                    $$PWD/fmdrivewatcher/fmdrivewatcher.cpp
+                    $$PWD/fmdrivewatcher/fmdrivewatcher.cpp \
+                    $$PWD/fmfiletyperecognizer.cpp
 
 symbian {
     INTERNAL_HEADERS += $$PWD/fms60utils.h \
@@ -34,6 +36,9 @@ symbian {
                         $$PWD/fmdrivewatcher/private/symbian/fmdriveevent.cpp
 }
 win32 {
+    INCLUDEPATH += $$PWD/fmdrivewatcher/
+    INCLUDEPATH += $$PWD/fmdrivewatcher/private/win32/
+
     INTERNAL_HEADERS += $$PWD/fmdrivewatcher/private/win32/fmdrivewatcherprivate.h
 
     INTERNAL_SOURCES += $$PWD/fmutils_win.cpp \

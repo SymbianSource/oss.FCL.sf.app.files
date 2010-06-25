@@ -20,6 +20,7 @@
 #include "fmrestorewidget.h"
 #include "fmviewmanager.h"
 #include "fmoperationbase.h"
+#include "fmdlgutils.h"
 
 #include <QApplication>
 
@@ -27,9 +28,6 @@
 #include <hbtoolbar.h>
 #include <hbmenu.h>
 #include <hbmainwindow.h>
-#include <hbmessagebox.h>
-
-
 
 FmRestoreView::FmRestoreView(): FmViewBase( ERestoreView )
 {
@@ -37,8 +35,7 @@ FmRestoreView::FmRestoreView(): FmViewBase( ERestoreView )
 
 	initMainWidget();
 	initToolBar();
-	initMenu();
-    adjustActions();
+	initMenu();  
 	mOperationService = FmViewManager::viewManager()->operationService();
 
 	QMetaObject::connectSlotsByName( this );
@@ -63,6 +60,7 @@ void FmRestoreView::initMenu()
     mRestoreAction->setObjectName( "restoreAction" );
     mRestoreAction->setText( hbTrId( "Restore data" ) );
     menu()->addAction( mRestoreAction );
+    mRestoreAction->setEnabled(false);
 }
 
 void FmRestoreView::initMainWidget()
@@ -70,6 +68,7 @@ void FmRestoreView::initMainWidget()
 	mRestoreWigdet = new FmRestoreWigdet( this );
 
     setWidget( mRestoreWigdet );
+    connect(mRestoreWigdet, SIGNAL(stateChanged(int)), this, SLOT(onCheckBoxStateChange()));
 
 }
 
@@ -79,7 +78,7 @@ void FmRestoreView::initToolBar()
     mLeftAction->setObjectName( "leftAction" );
     mLeftAction->setText( hbTrId( "Restore" ) );
     toolBar()->addAction( mLeftAction );
-    
+    mLeftAction->setEnabled(false);
     toolBar()->setOrientation( Qt::Horizontal );
 }
 
@@ -98,13 +97,13 @@ void FmRestoreView::on_leftAction_triggered()
     case FmErrNone:
         break;
     case FmErrWrongParam:
-        HbMessageBox::information( QString( hbTrId("Operation canceled with wrong param!") ) );
+        FmDlgUtils::information( QString( hbTrId("Operation canceled with wrong param!") ) );
         break;
     case FmErrAlreadyStarted:
-        HbMessageBox::information( QString( hbTrId("Operation canceled because already started!") ) );
+        FmDlgUtils::information( QString( hbTrId("Operation canceled because already started!") ) );
         break;
     default:
-        HbMessageBox::information(tr("restore failed"));
+        FmDlgUtils::information(hbTrId("restore failed"));
         break;
     }
 }
@@ -126,19 +125,24 @@ void FmRestoreView::on_restoreAction_triggered()
     on_leftAction_triggered();
 }
 
-void FmRestoreView::adjustActions()
-{
-    if( mRestoreWigdet->backupDataCount() > 0 ) {
-        mRestoreAction->setDisabled( false );
-        mLeftAction->setDisabled( false );
-    } else {
-        mRestoreAction->setDisabled( true );
-        mLeftAction->setDisabled( true );
-    }
-}
-
 void FmRestoreView::removeToolBarAction()
 {
     toolBar()->removeAction( mLeftAction );
 }
 
+void FmRestoreView::onCheckBoxStateChange()
+{
+    QList<int> items = mRestoreWigdet->selectionIndexes();
+    if (items.count() > 0) {
+        mLeftAction->setEnabled(true);
+        mRestoreAction->setEnabled(true);
+    } else {
+        mLeftAction->setEnabled(false);
+        mRestoreAction->setEnabled(false);
+    }
+}
+
+void FmRestoreView::refreshRestoreView()
+{
+    mRestoreWigdet->refresh();
+}

@@ -30,7 +30,7 @@ FmBkupEngine::FmBkupEngine(QObject* parent):
 	connect( d, SIGNAL( notifyStart( bool, int ) ), this, SIGNAL( notifyStart( bool, int ) ) );
 	connect( d, SIGNAL( notifyUpdate(int) ), this, SIGNAL( notifyUpdate(int) ) );
 	connect( d, SIGNAL( notifyFinish(int) ), 
-			this, SIGNAL( notifyFinish(int) ) );
+			this, SIGNAL( notifyFinish(int) ), Qt::DirectConnection );
 	connect( d, SIGNAL( notifyMemoryLow(int, int& ) ), this, SIGNAL( notifyMemoryLow(int, int&) ) );
 	connect( d, SIGNAL( notifyBackupFilesExist( bool& )), this, SIGNAL( notifyBackupFilesExist( bool&) ) );
 }
@@ -88,7 +88,7 @@ FmRestoreSettings *FmBkupEngine::RestoreSettingsL()
     
 void FmBkupEngine::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > &drivesAndOperationList,
         QList< FmRestoreInfo > &restoreInfoList,
-        const int aDrive )
+        const QString& aDrive )
 {
     d->GetRestoreInfoArray( drivesAndOperationList, restoreInfoList, aDrive );
 }

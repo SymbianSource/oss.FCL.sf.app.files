@@ -30,21 +30,21 @@ class FmOperationService;
 class FmOperationBase;
 class QFileSystemWatcher;
 class FmDriveWatcher;
-class HbDialog;
+class FmDialog;
 
 class FmDlgCloseUnit
 {
 public:
-	FmDlgCloseUnit( HbDialog *dialog );
+	FmDlgCloseUnit( FmDialog *dialog );
 	~FmDlgCloseUnit();
 
 	void addAssociatedDrives( QString drives );
 	void removeAssociatedDrives( QString drives );
 	QString associatedDrives();
-	HbDialog *dialog();
+	FmDialog *dialog();
 
 private:
-	HbDialog *mDialog;
+	FmDialog *mDialog;
 	QString mAssociatedDrives;
 };
 
@@ -96,8 +96,12 @@ public slots:
     void on_fsWatcher_fileChanged(const QString &path);
     void on_fsWatcher_directoryChanged(const QString &path);
     void on_driveWatcher_driveAddedOrChanged();
+    void on_operationService_notifyFinish( FmOperationBase *operationBase );
 signals:
     void refreshModel( const QString &path  );
+    void refreshBackupDate();
+    void refreshDeleteBackupView();
+    void refreshRestoreView();
 
 private:
        /// create view will push current view to stack

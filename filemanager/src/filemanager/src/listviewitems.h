@@ -26,6 +26,7 @@
 
 class HbCheckBox;
 class HbLabel;
+class QGraphicsLinearLayout;
 
 class DiskListViewItem : public HbListViewItem
 {
@@ -38,7 +39,6 @@ public:
     virtual bool canSetModelIndex( const QModelIndex &index ) const;
     virtual HbAbstractViewItem *createItem();
     virtual void updateChildItems();
-
 private slots:
 	void setCheckedState( int state );
 
@@ -50,9 +50,10 @@ private:
 
     HbLabel *mIconLabel;
     HbLabel *mDiskNameLabel;
-    HbLabel *mSizeLabel;
-    HbLabel *mFreeLabel;
+    HbLabel *mFirstLabel;
+    HbLabel *mSecondLabel;
     HbCheckBox *mCheckBox;
+    QGraphicsLinearLayout *hLayout;
 };
 
 /* not used

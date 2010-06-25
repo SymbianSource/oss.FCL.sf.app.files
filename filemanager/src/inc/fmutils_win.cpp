@@ -25,7 +25,11 @@
 #include <QUrl>
 #include <QVariant>
 
+#include <hbglobal.h>
+
 #define BURCONFIGFILE  "burconfig.xml"
+const int KMaxFileName=0x100;
+const int KMaxPath=0x100;
 
 QString FmUtils::getDriveNameFromPath( const QString &path )
 {
@@ -73,6 +77,21 @@ FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
     if ( drvStatus == DRIVE_REMOVABLE  ) {
         state |= FmDriverInfo::EDriveRemovable;
     }
+#ifdef _DEBUG_DISABLE_DRIVE_D_TEST_DRIVEHIDE_
+	if ( driverName.contains( Drive_D, Qt::CaseInsensitive )  ) {
+		state |= FmDriverInfo::EDriveNotPresent;
+    }
+#endif
+
+#ifdef _DEBUG_LOCKED_DRIVE_Z
+	if ( driverName.contains( Drive_Z, Qt::CaseInsensitive )  ) {
+		state |= FmDriverInfo::EDriveLocked;
+    }
+#endif
+	if( !(state&FmDriverInfo::EDriveNotPresent) && !(state&FmDriverInfo::EDriveLocked) &&
+		!(state&FmDriverInfo::EDriveCorrupted) ) {
+		state |= FmDriverInfo::EDriveAvailable;
+	}
     return FmDriverInfo( size, freeSize, driverName, QString::fromWCharArray( &volumeName[0] ), state );
 }
 
@@ -88,6 +107,7 @@ QString FmUtils::formatStorageSize( quint64 size )
 	    return QString::number( size / ( 1024.0 * 1024.0 * 1024.0 ), 'f', 1 ) + " GB";	    
 	}
 }
+
 /*
 quint32 FmUtils::getDriverState( const QString &driverName )
 {
@@ -147,7 +167,7 @@ void FmUtils::emptyPwd( QString &pwd )
 int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeName)
 {
     Q_UNUSED( driverName );
-    foreach( QChar ch, newVolumeName )
+    foreach( const QChar &ch, newVolumeName )
     {
         // If not alphadigit or space, return error
         if( !ch.isLetterOrNumber() && !ch.isSpace() )
@@ -158,9 +178,10 @@ int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeNam
     return 0;
 }
 
-void FmUtils::ejectDrive( const QString &driverName )
+int FmUtils::ejectDrive( const QString &driverName )
 {
     Q_UNUSED( driverName );
+	return FmErrNone; 
 }
 
 QString FmUtils::getFileType( const QString &filePath  )
@@ -178,8 +199,12 @@ quint64 FmUtils::getDriveDetailsResult( const QString &folderPath, const QString
 
 bool FmUtils::isDriveC( const QString &driverName )
 {
-    Q_UNUSED( driverName );
-    return false;
+	if( driverName.contains(Drive_C,Qt::CaseInsensitive) ){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 bool FmUtils::isDrive( const QString &path )
@@ -199,14 +224,23 @@ void FmUtils::createDefaultFolders( const QString &driverName )
 
 QString FmUtils::fillPathWithSplash( const QString &filePath )
 {
-    QString newFilePath( filePath );
+	QString newFilePath;
     if( filePath.isEmpty() ) {
         return newFilePath;
     }
 
-    if( filePath.at( filePath.length()-1 ) != QChar( '/' ) ){
-        newFilePath.append( QChar( '/' ) );
+    foreach( QChar ch, filePath ) {
+        if( ch == QChar('\\') || ch == QChar('/') ) {
+			newFilePath.append( QDir::separator() );
+        } else {
+            newFilePath.append( ch );
+        }
     }
+    
+    if( newFilePath.right( 1 )!= QDir::separator() ){
+        newFilePath.append( QDir::separator() );
+    }
+    
     return newFilePath;
 }
 
@@ -219,10 +253,10 @@ QString FmUtils::removePathSplash( const QString &filePath )
     return newFilePath;
 }
 
-bool FmUtils::checkDriveFilter( const QString &driveName )
+bool FmUtils::checkDriveAccessFilter( const QString &driveName )
 {
 #ifdef _DEBUG_HIDE_VIEWFOLDER_WINDOWS_
-    if( driveName.contains( "D:" ) || driveName.contains( "Z:" ) ) {
+    if( driveName.contains( Drive_D, Qt::CaseInsensitive ) || driveName.contains( Drive_Z, Qt::CaseInsensitive ) ) {
         return false;
     }
 #endif
@@ -271,12 +305,12 @@ QString FmUtils::checkFolderToDriveFilter( const QString &path )
 
 }
 
-bool FmUtils::isPathAccessabel( const QString &path )
+int FmUtils::isPathAccessabel( const QString &path )
 {
-#ifdef _DEBUG_DISABLE_DRIVE_D_TEST_DRIVEHIDE_
-    if(path.contains("D:"))
-        return false;
-#endif
+    if(!isDriveAvailable( path ) ) { //used to filter locked drive
+        return FmErrDriveNotAvailable;
+    }
+
     QFileInfo fileInfo( path );
 
 #ifdef _DEBUG_HIDE_VIEWFOLDER_WINDOWS_
@@ -292,18 +326,22 @@ bool FmUtils::isPathAccessabel( const QString &path )
     }
 #endif
     if( !fileInfo.exists() ) {
-        return false;
+        return FmErrPathNotExist;
     }
-    return true;
+    return FmErrNone;
 }
 
 bool FmUtils::isDriveAvailable( const QString &path )
 {
-    QFileInfo fileInfo( path );
-    if( !fileInfo.exists() ) {
-        return false;
-    }
-    return true;
+#ifdef _DEBUG_DISABLE_DRIVE_D_TEST_DRIVEHIDE_
+	if(path.contains(Drive_D, Qt::CaseInsensitive))
+		return false;
+#endif
+#ifdef _DEBUG_LOCKED_DRIVE_Z
+	if(path.contains(Drive_Z, Qt::CaseInsensitive))
+		return false;
+#endif
+	return true;
 }
 
 void FmUtils::getDriveList( QStringList &driveList, bool isHideUnAvailableDrive )
@@ -312,7 +350,7 @@ void FmUtils::getDriveList( QStringList &driveList, bool isHideUnAvailableDrive 
 
     foreach( QFileInfo fileInfo, infoList ) {
         QString driveName = fileInfo.absolutePath();
-        if( checkDriveFilter( driveName ) ) {
+        if( checkDriveAccessFilter( driveName ) ) {
             if( !isHideUnAvailableDrive ) {
                 driveList.append( driveName );
             }
@@ -329,29 +367,33 @@ QString FmUtils::fillDriveVolume( QString driveName, bool isFillWithDefaultVolum
     QString ret;
     QString tempDriveName = fillPathWithSplash( driveName );
 
-    ret = removePathSplash( driveName );
+    QString checkedDriveName( removePathSplash( driveName ) );
     
     FmDriverInfo driverInfo = FmUtils::queryDriverInfo( tempDriveName );
     QString volumeName = driverInfo.volumeName();
 
     if( volumeName.isEmpty() && isFillWithDefaultVolume ){
-        FmDriverInfo::DriveState driveState = FmUtils::queryDriverInfo( tempDriveName ).FmDriverInfo::driveState();
-        if( !( driveState & FmDriverInfo::EDriveNotPresent ) ){
+    FmDriverInfo::DriveState driveState = queryDriverInfo( tempDriveName ).driveState();
+        if( driveState & FmDriverInfo::EDriveAvailable ){
             if( driveState & FmDriverInfo::EDriveRemovable ) {
                 if( driveState & FmDriverInfo::EDriveMassStorage ) {
-                    volumeName.append( QObject::tr( "Mass Storage" ) );  
+                    // Mass Storage
+                    ret = hbTrId( "txt_fmgr_dblist_1_mass_storage" ).arg( checkedDriveName );  
+                } else if( driveState & FmDriverInfo::EDriveUsbMemory ) {
+                    // USB Memory
+                    ret = hbTrId( "txt_fmgr_dblist_1_usb_memory" ).arg( checkedDriveName );
+                } else{
+                    // Memory Card
+                    ret = hbTrId( "txt_fmgr_dblist_1_memory_card" ).arg( checkedDriveName );
                 }
-                else{
-                    volumeName.append( QObject::tr( "Memory Card" ) );
-                }
-            }
-            else{
-                volumeName.append( QObject::tr( "Phone Memory" ) );
+            } else{
+				// phone memory
+				ret = hbTrId( "txt_fmgr_dblist_1_device_memory" ).arg( checkedDriveName );
             }
         }
+    } else {
+        ret = hbTrId( "txt_fmgr_dblist_1_2" ).arg( checkedDriveName ).arg( volumeName );
     }
-
-    ret += QString( " " ) + volumeName;
     return ret;
 }
 
@@ -397,6 +439,68 @@ bool FmUtils::isDefaultFolder( const QString &folderPath  )
 
 QString FmUtils::formatPath( const QString &path  )
 {
-    Q_UNUSED( path );
-    return false;
+    QString formatPath;
+	foreach( QChar ch, path ) {
+		if( ch == QChar('\\') || ch == QChar('/') ) {
+			formatPath.append( QDir::separator() );
+		} else {
+			formatPath.append( ch );
+		}
+    }
+
+    if( formatPath.right( 1 ) != QDir::separator() ){
+        formatPath.append( QDir::separator() );
+    }
+    return formatPath;
+}
+
+int FmUtils::getMaxFileNameLength()
+{
+	return KMaxFileName;
+}
+
+bool FmUtils::checkMaxPathLength( const QString& path )
+{
+	if( path.length() > KMaxPath ) {
+		return false;
+	}
+	return true;
+}
+bool FmUtils::checkFolderFileName( const QString& name )
+{
+    if( name.endsWith( QChar('.'),  Qt::CaseInsensitive ) ) {
+        return false;
+    }
+    if( name.contains( QChar('\\'), Qt::CaseInsensitive ) ||
+        name.contains( QChar('/'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar(':'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar('*'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar('?'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar('\"'), Qt::CaseInsensitive ) ||
+        name.contains( QChar('<'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar('>'),  Qt::CaseInsensitive ) ||
+        name.contains( QChar('|'),  Qt::CaseInsensitive ) ){
+        return false;
+    }
+    if( name.length() > KMaxFileName ) {
+        return false;
+    }
+    return true;
+}
+
+bool FmUtils::checkNewFolderOrFile( const QString &path, QString &errString )
+{
+    QFileInfo fileInfo( path );
+    bool ret( true );   
+    if (!FmUtils::checkFolderFileName( fileInfo.fileName() ) ) {
+        errString = hbTrId( "Invalid file or folder name, try again!" );
+        ret = false;
+    } else if( !FmUtils::checkMaxPathLength( path ) ) {
+        errString = hbTrId( "the path you specified is too long, try again!" );
+        ret = false;
+    } else if (fileInfo.exists()) {
+        errString = hbTrId( "%1 already exist!" ).arg( fileInfo.fileName() );
+        ret = false;
+    }
+    return ret;
 }

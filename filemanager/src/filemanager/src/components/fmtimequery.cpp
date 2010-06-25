@@ -24,7 +24,7 @@
 #include <hbdatetimeedit.h>
 
 
-FmTimeQuery::FmTimeQuery( QGraphicsItem *parent ) : HbDialog( parent )
+FmTimeQuery::FmTimeQuery( QGraphicsItem *parent ) : FmDialog( parent )
 {
 
     mContentWidget = new QGraphicsWidget();

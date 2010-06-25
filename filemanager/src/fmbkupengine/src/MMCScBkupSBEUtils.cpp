@@ -230,20 +230,19 @@ CSBGenericDataType* MMCScBkupSBEUtils::CopyLC(const CSBGenericDataType& aToBeCop
         {
         // Must first create a generic transfer type object... sigh...
         CSBGenericTransferType* transferType = CSBGenericTransferType::NewL( nonConstOriginal->Externalise() );
-        CleanupStack::PushL( transferType );
-        switch(type)
+        CleanupStack::PushL( transferType ); 
+        if ( ESIDTransferDerivedType == type )
             {
-        case ESIDTransferDerivedType:
             ret = CSBSIDTransferType::NewL( transferType );
-            break;
-        case EPackageTransferDerivedType:
+            }
+        else if ( EPackageTransferDerivedType == type )
+            {
             ret = CSBPackageTransferType::NewL( transferType );
-            break;
-        case EJavaTransferDerivedType:
+            }
+        // Type is EJavaTransferDerivedType
+        else
+            {
             ret = CSBJavaTransferType::NewL( transferType );
-            break;
-        default:
-            break;
             }
         CleanupStack::PopAndDestroy( transferType );
         }

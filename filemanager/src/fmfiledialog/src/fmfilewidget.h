@@ -24,11 +24,13 @@
 #include <QDir>
 #include <QString>
 
-class QDirModel;
+class QFileSystemModel;
 class FmDriveModel;
 class FmDriveWatcher;
 class HbListView;
 class QGraphicsLinearLayout;
+
+class FmFileIconProvider;
 
 class FmFileWidget : public HbWidget
 {
@@ -53,9 +55,11 @@ public:
 signals:
     void pathChanged( const QString &path );
     void fileActivated( const QString &path );
+    void listActivated();
 
 private slots:
     void on_list_activated( const QModelIndex &index );
+    void on_listActivated();
     void on_driveWatcher_driveAddedOrChanged();
 
 private:
@@ -66,11 +70,15 @@ private:
 private:
     HbListView *mListView;
     QGraphicsLinearLayout *mLayout;
-    QDirModel       *mDirModel;
-    FmDriveModel    *mDriveModel;
+    QFileSystemModel	*mFileSystemModel;
+    FmDriveModel		*mDriveModel;
 
     QAbstractItemModel *mCurrentModel;
     FmDriveWatcher  *mDriveWatcher;
+    
+    QModelIndex mActivatedModelIndex;
+    
+    FmFileIconProvider *mFileIconProvider;
 
 };
 

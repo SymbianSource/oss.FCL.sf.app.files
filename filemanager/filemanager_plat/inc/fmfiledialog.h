@@ -96,13 +96,21 @@ public:
                                     const QString &dir = QString(),
                                     const QStringList &nameFilters = QStringList(),
                                     Options options = 0 );
-                                   
+
+private slots:
+    void dialogClosed(HbAction *action);
+    
 private:
     explicit FmFileDialog( QGraphicsItem *parent );
     ~FmFileDialog();
 
     bool exec();
+    HbAction *primaryAction() const;
+    void setPrimaryAction( HbAction *action );
 
+    HbAction *secondaryAction() const;
+    void setSecondaryAction( HbAction *action );
+    
     FmFileDialogPrivate *d_ptr;
     
     Q_DISABLE_COPY( FmFileDialog)

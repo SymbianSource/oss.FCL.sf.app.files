@@ -29,7 +29,6 @@
 #include "fmoperationformat.h"
 
 #include <hbaction.h>
-#include <hbmessagebox.h>
 
 FmOperationService::FmOperationService( QObject *parent ) : QObject( parent ),
         mCurrentOperation( 0 )
@@ -292,6 +291,10 @@ void FmOperationService::on_operationThread_askForReplace( const QString &srcFil
 void FmOperationService::on_operationThread_refreshModel( const QString &path )
 {
     emit refreshModel( mCurrentOperation, path );
+}
+void FmOperationService::on_operationThread_showNote( const char *noteString )
+{
+    mOperationResultProcesser->onShowNote( mCurrentOperation, noteString );
 }
 void FmOperationService::on_operationThread_notifyWaiting( bool cancelable )
 {

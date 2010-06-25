@@ -60,7 +60,8 @@ void FmRestoreSettings::refreshList( QList<FmBkupDrivesAndOperation* > &drivesAn
 
     QList< FmRestoreInfo > restoreInfoList;
     
-    mEngine.GetRestoreInfoArray( drivesAndOperationList, restoreInfoList );
+    QString targetDrive = mEngine.BackupSettingsL()->availableTargetDrive();
+    mEngine.GetRestoreInfoArray( drivesAndOperationList, restoreInfoList, targetDrive );
     
 
     // fetch info list from engine, and then init the entry list for display

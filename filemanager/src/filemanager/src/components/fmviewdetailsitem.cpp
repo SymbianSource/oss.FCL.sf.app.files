@@ -26,10 +26,10 @@
 FmViewDetailsItem::FmViewDetailsItem( QGraphicsItem *parent )
     : HbListViewItem( parent ),
       mDetailsContentLabel( 0 ),
-      mDetailsLabel( 0 )
+      mDetailsLabel( 0 ),
+      mLayout( 0 )
 
 {
-    init();
 }
 
 FmViewDetailsItem::~FmViewDetailsItem()
@@ -38,7 +38,7 @@ FmViewDetailsItem::~FmViewDetailsItem()
 
 HbAbstractViewItem *FmViewDetailsItem::createItem()
 {
-    return new FmViewDetailsItem( parentItem() );
+    return new FmViewDetailsItem( *this );
 }
 
 bool FmViewDetailsItem::canSetModelIndex( const QModelIndex &index ) const
@@ -54,6 +54,9 @@ void FmViewDetailsItem::polish(HbStyleParameters& params)
 
 void FmViewDetailsItem::updateChildItems()
 {
+    if( !mLayout ) {
+        init();
+    }
     QString string = modelIndex().data( Qt::DisplayRole ).toString();   
     
     mDetailsContentLabel->setPlainText( string );
@@ -66,25 +69,25 @@ void FmViewDetailsItem::updateChildItems()
 
 void FmViewDetailsItem::init()
 {
-    QGraphicsLinearLayout *layout = new QGraphicsLinearLayout();
+    mLayout = new QGraphicsLinearLayout();
     
     if( FmViewManager::viewManager()->orientation() == Qt::Vertical ){
-        layout->setOrientation( Qt::Vertical );
+        mLayout->setOrientation( Qt::Vertical );
     }
     else{
-        layout->setOrientation( Qt::Horizontal );   
+        mLayout->setOrientation( Qt::Horizontal );   
     }
 
 
     mDetailsContentLabel = new HbLabel("");
     mDetailsContentLabel->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
-    layout->addItem( mDetailsContentLabel );
-    layout->setAlignment( mDetailsContentLabel, Qt::AlignLeft );
+    mLayout->addItem( mDetailsContentLabel );
+    mLayout->setAlignment( mDetailsContentLabel, Qt::AlignLeft );
 
     mDetailsLabel = new HbLabel("");
     mDetailsLabel->setFontSpec( HbFontSpec( HbFontSpec::Secondary ) );
-    layout->addItem( mDetailsLabel );
-    layout->setAlignment( mDetailsLabel, Qt::AlignLeft );
+    mLayout->addItem( mDetailsLabel );
+    mLayout->setAlignment( mDetailsLabel, Qt::AlignLeft );
 
-    setLayout( layout );
+    setLayout( mLayout );
 }

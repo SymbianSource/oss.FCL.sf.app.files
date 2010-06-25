@@ -65,8 +65,7 @@ private slots:
 
     void on_resultModel_finished();
     void on_resultModel_modelCountChanged( int count );
-    void on_resultModel_refresh();
-        
+    
 private:
     void init();
     void initSearchPanel();

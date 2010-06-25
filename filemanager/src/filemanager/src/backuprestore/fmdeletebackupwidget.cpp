@@ -20,7 +20,6 @@
 #include "fmrestoreviewitem.h"
 #include "fmoperationservice.h"
 #include "fmviewmanager.h"
-
 #include "fmbackupconfigloader.h"
 #include "fmbkupengine.h"
 #include "fmbackuprestorehandler.h"
@@ -28,7 +27,6 @@
 #include <QGraphicsLinearLayout>
 #include <QStringListModel>
 #include <QDateTime>
-
 #include <hblistview.h>
 
 FmDeleteBackupWidget::FmDeleteBackupWidget(  HbWidget *parent )
@@ -47,8 +45,16 @@ void FmDeleteBackupWidget::refresh()
 {
     mListView->setModel( 0 );
     loadData();
-    mListView->setModel( mModel );
+    mListView->setModel( mModel );    
+    for (int i = 0; i < mModel->rowCount(); ++i) {
+        QModelIndex index = mModel->index(i);
+        FmRestoreViewItem* restoreViewItem = static_cast< FmRestoreViewItem* >
+                                                 (mListView->itemByIndex(index));
+        connect(restoreViewItem, SIGNAL(stateChanged(int)), this, SIGNAL(stateChanged(int)));     
+    }
+    emit stateChanged(0);
 }
+
 QList<int> FmDeleteBackupWidget::selectionIndexes()
 {
     QList<int> selectionList;
@@ -84,19 +90,20 @@ void FmDeleteBackupWidget::loadData()
          it != retoreEntryList.end(); ++it ){
              QString string = ( *it )->text();
              QDateTime datetime = ( *it )->restoreInfo().dateTime();
+             QString drive = ( *it )->restoreInfo().drive();
              string.append( '\t' );
              string.append( datetime.toString( "hh:mm ap dd/MM/yyyy") );
-             QVariant variant( string );
-
+             string.append( '\t' );
+             string.append( drive );
+             QVariant variant( string );             
              mModel->setData( mModel->index( index ), variant, Qt::DisplayRole );
-
              ++index;
     }
 
 }
 
 void FmDeleteBackupWidget::init()
-{
+{    
     QGraphicsLinearLayout *vLayout = new QGraphicsLinearLayout( this );
     vLayout->setOrientation( Qt::Vertical );
 
@@ -112,6 +119,7 @@ void FmDeleteBackupWidget::init()
     mListView->setModel( mModel );
 
     mListView->setItemPrototype( new FmRestoreViewItem( this ) );
+   
 
 }
 

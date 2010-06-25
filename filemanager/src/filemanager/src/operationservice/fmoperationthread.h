@@ -55,6 +55,7 @@ signals:
     void askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted );
     void refreshModel( const QString &path );
 
+    void showNote(const char*);
     void notifyWaiting( bool cancelable );
     void notifyPreparing( bool cancelable );      // this step could not be used if not needed.
     void notifyStart( bool cancelable, int maxSteps );
@@ -67,6 +68,7 @@ signals:
 private slots:
     void onAskForRename( const QString &srcFile, QString *destFile );
     void onAskForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted );
+    void onShowNote( const char *noteString );
     void on_operationElement_notifyPreparing( bool cancelable );
     void on_operationElement_notifyStart( bool cancelable, int maxSteps );
     void on_operationElement_notifyProgress( int currentStep );

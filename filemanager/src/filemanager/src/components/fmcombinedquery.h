@@ -19,13 +19,12 @@
 #define FMCOMBINEDQUERY_H
 
 #include "fmcommon.h"
+#include "fmdialog.h"
 
 #include <QString>
 #include <QMap>
 #include <QStringList>
 #include <QGraphicsItem>
-
-#include <hbdialog.h>
 
 class HbListWidget;
 class QGraphicsWidget;
@@ -36,7 +35,7 @@ class QGraphicsWidget;
  *  Support multi, single select
  *
  */
-class FmCombinedQuery : public HbDialog
+class FmCombinedQuery : public FmDialog
 {
     Q_OBJECT
 public:

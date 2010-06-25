@@ -51,6 +51,8 @@
             <exclude_uids>0x1000484b</exclude_uids> <!--Message store (EBUCatMessages)-->   
             <exclude_uids>0x100058db</exclude_uids> <!--MMS-settings (EBUCatMessages)-->    
             <exclude_uids>0x100058eb</exclude_uids> <!--E-mail-settings (EBUCatMessages)--> 
+            <exclude_uids>0x2001FE79</exclude_uids> <!--Messaging 101 (EBUCatMessages)-->   
+            <exclude_uids>0x2002A542</exclude_uids> <!--CsServer.exe (EBUCatMessages)-->    
             <exclude_uids>0x10003a73</exclude_uids> <!--Contacts model (EBUCatContacts)-->  
             <exclude_uids>0x101f4cce</exclude_uids> <!--Phonebook-app (EBUCatContacts)-->   
             <exclude_uids>0x10003a5b</exclude_uids> <!--Agenda model (EBUCatCalendar)-->    
@@ -73,6 +75,8 @@
             <uids>0x1000484b</uids><!--Message store-->                                     
             <uids>0x100058db</uids><!--MMS-settings-->                                      
             <uids>0x100058eb</uids><!--E-mail-settings-->                                   
+            <uids>0x2001FE79</uids><!--Messaging 101  -->                                   
+            <uids>0x2002A542</uids><!--CsServer.exe   -->                                   
             <exclude_uids></exclude_uids>                                                   
         </backupCategory>                                                                   
                                                                                             
@@ -112,10 +116,10 @@
             <exclude_special_flags>EBUCatSpecNone</exclude_special_flags>                   
             <uids>0x101f401d</uids><!--Logs-->                                              
             <!-- removed MediaGallery <uids>0x101f8599</uids>MediaGallery, i.e. basically all user data-->    
-            <uids>0x101f84eb</uids><!--FileManager instead of MediaGallery backup c:/data/ -->              
+            <uids>0x2002bcc0</uids><!--FileManager instead of MediaGallery backup c:/data/ -->              
             <uids>0x20029f80</uids><!--Notepad changed from 0x10005907-->                                           
             <uids>0x1028246F</uids><!--Java Backup process-->                               
-            <uids>0x10282475</uids><!--Java Registry process-->                             
+            <uids>0x200211DC</uids><!--Java Captain. And Java registry process removed-->                             
             <uids>0x102033E6</uids><!--MIDP2 Runtime process-->                             
             <exclude_uids></exclude_uids>                                                   
         </backupCategory>                                                                   

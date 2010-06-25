@@ -35,28 +35,36 @@ class FmBackupWidget : public HbWidget
 public:
 	FmBackupWidget( QGraphicsItem *parent = 0  );
 	~FmBackupWidget();
+	void updateBackupDate();
 
 signals:
     void doModelRefresh();
+    void changeContents();
+    void changeScheduling();
+    void changeWeekday();
+    void changeTime();
+    void changeTargetDrive();
 
+public slots:
+    // refresh whole model immediately.
+    void refreshModel();
+    
 private slots:
     void on_list_released( const QModelIndex &index );
     void on_list_pressed( const QModelIndex &index );
     void on_list_scrollingStarted();
-
-    void refreshModel();
+    
+    void on_changeContents();
+    void on_changeScheduling();
+    void on_changeWeekday();
+    void on_changeTime();
+    void on_changeTargetDrive();
 
 private:
 
     void initModel();
     void init();
     void expandAllGroup();
-	
-	void ChangeContents();
-    void ChangeScheduling();
-	void ChangeWeekday();
-    void ChangeTime();
-    void ChangeTargetDrive();
 
 private:
 
@@ -70,12 +78,13 @@ private:
     HbDataFormModelItem *mSchedulingItem;
     HbDataFormModelItem *mWeekdayItem;
     HbDataFormModelItem *mTimeItem;
-
+    HbDataFormModelItem *mLastBackupDateItem;
 	FmBackupSettings        *mBackupSettings;
 	FmBackupConfigLoader    *mBackupConfigLoader;
     HbDataFormModelItem     *mLastPressedItem;
 
     bool mScrolled;
+    bool mListReleased;
 };
 
 #endif // FMBACKUPWIDGET_H

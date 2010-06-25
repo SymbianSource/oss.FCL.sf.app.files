@@ -21,5 +21,4 @@ symbian {
 }
 
 SUBDIRS += src/fmbkupenginewrapper
-SUBDIRS += src/fmfiledialog
 SUBDIRS += src/filemanager

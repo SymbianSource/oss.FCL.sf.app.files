@@ -28,13 +28,15 @@
 #include <hbwidget.h>
 #include <QDir>
 
-class QDirModel;
+class QFileSystemModel;
 class QGraphicsLinearLayout;
 class HbListView;
 class HbTreeView;
 class HbAbstractViewItem;
 class HbSearchPanel;
 class HbLabel;
+
+class FmFileIconProvider;
 
 class FmFileBrowseWidget : public HbWidget
 {
@@ -69,7 +71,7 @@ public:
     bool rename( const QString &oldName, const QString &newName );
     void setModelFilter( QDir::Filters filters );
     
-    bool checkPathAndSetStyle( const QString& path );
+    int checkPathAndSetStyle( const QString& path );
     void refreshModel( const QString& path );
     void sortFiles( TSortType sortType );
     void activeSearchPanel();
@@ -83,16 +85,19 @@ public slots:
     void on_searchPanel_exitClicked();
 
 signals:
-    void currentPathChanged( QString& );
+    void currentPathChanged( const QString& );
     void startSearch( const QString &targetPath, const QString &criteria );
     void setEmptyMenu( bool isMenuEmpty );
     void setTitle( const QString &title );
+    void listActivated();
 
 private slots:
     void on_list_activated( const QModelIndex &index );
+    void on_listActivated();
     void on_tree_activated( const QModelIndex &index );
 	void on_list_longPressed( HbAbstractViewItem *item, const QPointF &coords );
-    void on_tree_longPressed( HbAbstractViewItem *item, const QPointF &coords );
+	void on_list_pressed( const QModelIndex &  index ) ;
+    void on_tree_longPressed( HbAbstractViewItem *item, const QPointF &coords );    
     
     void on_viewAction_triggered();
     void on_copyAction_triggered();
@@ -116,13 +121,13 @@ private:
 	HbTreeView *mTreeView;
     HbListView *mListView;
     QGraphicsLinearLayout *mLayout;
-    QDirModel *mModel;
+    QFileSystemModel *mModel;
     
     bool mSelectable;
     
     //currentStyle
     Style mStyle;
-    //used to store orignal tree/list style
+    //used to store original tree/list style
     Style mFileBrowseStyle;
 
 	HbAbstractViewItem* mCurrentItem;	
@@ -133,6 +138,13 @@ private:
     HbLabel *mEmptyTipLabel;
     
     QString mCurrentDrive;
+    
+    //used to avoid activate when long press list.
+    bool mListLongPressed;
+    QModelIndex mActivatedModelIndex;
+    
+    // provide iocn from filemanger
+    FmFileIconProvider *mFileIconProvider;
 };
 
 #endif
