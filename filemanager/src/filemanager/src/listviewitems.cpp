@@ -20,7 +20,6 @@
 #include "listviewitems.h"
 #include "fmutils.h"
 
-#include <QFileIconProvider>
 #include <QGraphicsLinearLayout>
 
 #include <hblabel.h>
@@ -70,10 +69,7 @@ void DiskListViewItem::updateChildItems()
     }
 	QVariant variant = modelIndex().data( Qt::DecorationRole );
 	QIcon icon = qvariant_cast<QIcon>( variant );
-    if( icon.isNull() ) {
-        QFileIconProvider fileIconProvider;
-        icon = fileIconProvider.icon( QFileIconProvider::Drive );
-    }
+    // FmFileIconProvider in FmDriveModel already handle null icon issue
     QString displayString = modelIndex().data( Qt::DisplayRole ).toString();
 	QString diskName = modelIndex().data( Qt::UserRole ).toString();
 

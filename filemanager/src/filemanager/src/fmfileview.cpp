@@ -142,7 +142,7 @@ void FmFileView::initMenu()
     
     action = new HbAction();
     action->setObjectName( "newFolder" );
-    action->setText( hbTrId( "New Folder" ) );
+    action->setText( hbTrId( "txt_fmgr_opt_new_folder" ) );
     menu()->addAction( action );
     connect( action, SIGNAL( triggered() ),
         this, SLOT( on_newFolder_triggered() ), Qt::QueuedConnection );
@@ -225,7 +225,7 @@ void FmFileView::initToolBar()
     connect( mFindAction, SIGNAL( triggered() ),
                  this, SLOT( on_leftAction_triggered() ) );
     connect( mToolBarRightAction, SIGNAL( triggered() ),
-             this, SLOT( on_rightAction_triggered() ) );
+             this, SLOT( on_rightAction_triggered() ), Qt::QueuedConnection );
     
 }
 
@@ -254,7 +254,7 @@ void FmFileView::setSelectable( bool enable )
 
 void FmFileView::infoNoFileSelected()
 {
-	FmDlgUtils::information( tr("No File/Folder selected" ) );
+	FmDlgUtils::information( hbTrId("No File/Folder selected" ) );
 }
 
 #ifdef FM_CHANGE_ORIENT_ENABLE
@@ -289,7 +289,7 @@ void FmFileView::on_delete_triggered()
     if (files.size() == 0) {
 		infoNoFileSelected();
     } else {
-        if (FmDlgUtils::question( tr("Confirm Deletion?" ) )) {
+        if (FmDlgUtils::question( hbTrId("Confirm Deletion?" ) )) {
             QStringList fileList;
             for (int i = 0; i < files.size(); ++i) {
                 fileList.push_back( files[i].absoluteFilePath() );
@@ -360,7 +360,7 @@ void FmFileView::on_move_triggered()
     if (files.size() == 0) {
         infoNoFileSelected();
     } else {
-        QString targetPathName = FmFileDialog::getExistingDirectory( 0, tr( "move to" ),
+        QString targetPathName = FmFileDialog::getExistingDirectory( 0, hbTrId( "move to" ),
             QString(""), QStringList() );
 
         if( !targetPathName.isEmpty() && files.size() > 0 ) {
@@ -377,13 +377,13 @@ void FmFileView::on_move_triggered()
                     break;
                 case FmErrAlreadyStarted:
                     // last operation have not finished
-                    FmDlgUtils::information( tr( "Operatin already started!" ) );
+                    FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
                     break;
                 case FmErrWrongParam:
-                    FmDlgUtils::information( tr( "Wrong parameters!" ) );
+                    FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
                     break;
                 default:
-                    FmDlgUtils::information( tr( "Operation fail to start!" ) );
+                    FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
             }
             setSelectable( false );
         }
@@ -399,26 +399,18 @@ void FmFileView::on_newFolder_triggered()
     
     QDir dir( path );  
     if( dir.exists() ) {
-        while( FmDlgUtils::showTextQuery( hbTrId( "Enter name for " ), dirName,
+        while( FmDlgUtils::showTextQuery( hbTrId( "txt_fmgr_title_new_folder" ), dirName,
             true, maxFileNameLength, associatedDrive , false ) ){
             // remove whitespace from the start and the end.
             dirName = dirName.trimmed();
             QString newTargetPath = FmUtils::fillPathWithSplash(
                 dir.absolutePath() ) + dirName;
-            QFileInfo newFileInfo( newTargetPath );
-            if( !FmUtils::checkFolderFileName( dirName ) ) {
-                FmDlgUtils::information( hbTrId( "Invalid file or folder name!" ) );
+            QString errString;
+            // check if name/path is available for use
+            if( !FmUtils::checkNewFolderOrFile( newTargetPath, errString ) ) {
+                FmDlgUtils::information( errString );
                 continue;
             }
-            if( !FmUtils::checkMaxPathLength( newTargetPath ) ) {
-                FmDlgUtils::information( hbTrId( "the path you specified is too long!" ) );
-                continue;
-            }
-            if( newFileInfo.exists() ) {
-                FmDlgUtils::information( hbTrId( "%1 already exist!" ).arg( dirName ) );
-                continue;
-            }
-
             if( !dir.mkdir( dirName ) ) {
                 FmDlgUtils::information( hbTrId("Operation failed!") );
             }
@@ -515,21 +507,22 @@ void FmFileView::on_mainWidget_setTitle( const QString &title )
 
 QString FmFileView::createDefaultFolderName( const QString &path )
 {
-    QString dirBaseName( hbTrId( "New folder" ) );
-    QString dirName( dirBaseName );
-    QString dirAbsolutePath( path + dirName );
+    // create new folder name, for example, New folder(01), New folder(02)
+    QString checkedPath( FmUtils::fillPathWithSplash( path ) );
+    QString dirName( hbTrId( "txt_fmgr_dialog_entry_new_folder" ) );
+    QString dirAbsolutePath( checkedPath + dirName );
     QFileInfo fileInfo( dirAbsolutePath );
     int i = 0;    
     while ( fileInfo.exists() ) {
         ++i;
-        dirName = dirBaseName;
-        dirName.append( hbTrId("(") );
+		QString numName;
         if ( i < 10 ) {
-            dirName.append( hbTrId("0") );                        
+            numName.append( QString::number(0) );                        
         }
-        dirName.append( QString::number(i) );
-        dirName.append( hbTrId(")") );
-        dirAbsolutePath = path + dirName;
+        numName.append( QString::number(i) );
+        // txt_fmgr_dialog_entry_new_folder_l1 is not available now. use actual text instead of it.
+        dirName = hbTrId( "New folder (%L1)" ).arg( numName );
+        dirAbsolutePath = checkedPath + dirName;
         fileInfo.setFile( dirAbsolutePath );
     }
     return dirName;

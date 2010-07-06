@@ -31,7 +31,7 @@
 
 FmBackupView::FmBackupView() : FmViewBase( EBackupView )
 {
-	setTitle( tr( "Backup" ) );
+	setTitle( hbTrId( "Backup" ) );
 
 	initToolBar();
 	initMainWidget();

@@ -147,7 +147,7 @@ void FmBackupWidget::expandAllGroup()
 void FmBackupWidget::initModel()
 {
     mContentsGroup = mModel->appendDataFormGroup(
-        QString( tr( "Contents" ) ), mModel->invisibleRootItem());
+        QString( hbTrId( "Contents" ) ), mModel->invisibleRootItem());
 
     mContentsItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mContentsGroup );
@@ -158,7 +158,7 @@ void FmBackupWidget::initModel()
     mTargetItem->setContentWidgetData( QString("readOnly"), QString("true") );
 
     mSchedulingGroup = mModel->appendDataFormGroup(
-        QString( tr( "Scheduling" ) ), mModel->invisibleRootItem());
+        QString( hbTrId( "Scheduling" ) ), mModel->invisibleRootItem());
 
     mSchedulingItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mSchedulingGroup );
@@ -271,12 +271,10 @@ void FmBackupWidget::refreshModel()
     expandAllGroup();
 }
 
-
-
 void FmBackupWidget::on_changeContents()
 {
     
-    QString title = constFileManagerBackupSettingsTitleContents;  
+    QString title = mContentsItem->label();  
     QStringList queryStringList;
     quint32 contentMask = FmBackupSettings::EFileManagerBackupContentAll;
     while ( contentMask <= FmBackupSettings::EFileManagerBackupContentLast)
@@ -296,7 +294,7 @@ void FmBackupWidget::on_changeContents()
 
 void FmBackupWidget::on_changeScheduling()
 {
-    QString title = constFileManagerBackupSettingsTitleScheduling;  
+    QString title = mSchedulingItem->label();  
     QStringList queryStringList;
 
     FmBackupSettings::TFileManagerBackupSchedule schedule = FmBackupSettings::EFileManagerBackupScheduleNever;
@@ -318,7 +316,7 @@ void FmBackupWidget::on_changeScheduling()
 
 void FmBackupWidget::on_changeWeekday()
 {
-    QString title = constFileManagerBackupSettingsTitleWeekday;  
+    QString title = mWeekdayItem->label();
     QStringList queryStringList;
 
     FmBackupSettings::TFileManagerBackupWeekday weekday = FmBackupSettings::EFileManagerBackupWeekdayMonday;
@@ -340,7 +338,7 @@ void FmBackupWidget::on_changeWeekday()
 
 void FmBackupWidget::on_changeTime()
 {
-    QString title = constFileManagerBackupSettingsTitleTime;  
+    QString title = mTimeItem->label();  
     QTime queryTime = mBackupSettings->time();
 
     if( FmDlgUtils::showTimeSettingQuery( title, queryTime ) )
@@ -353,10 +351,10 @@ void FmBackupWidget::on_changeTime()
 
 void FmBackupWidget::on_changeTargetDrive()
 {
-    QString title = constFileManagerBackupSettingsTitleTargetDrive;  
+    QString title = mTargetItem->label();  
     QString drive = FmDlgUtils::showBackupDriveQuery( title );
-    if( !drive.isEmpty() && 
-            mBackupSettings->targetDrive().compare( drive, Qt::CaseInsensitive ) != 0 ) {
+    if( ( !drive.isEmpty() ) && 
+            ( mBackupSettings->targetDrive().compare( drive, Qt::CaseInsensitive ) != 0 ) ) {
         mBackupSettings->setTargetDrive( drive );
         emit doModelRefresh();
     }

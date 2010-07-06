@@ -93,11 +93,6 @@ void FmDeleteBackupView::initToolBar()
     toolBar()->addAction( mLeftAction );
     mLeftAction->setEnabled(false);
     toolBar()->setOrientation( Qt::Horizontal );
-
-    //action = new HbAction( this );
-    //action->setObjectName( "rightAction" );
-    //action->setText( tr( "" ) );
-    //toolBar()->addAction( action );
 }
 
 void FmDeleteBackupView::on_leftAction_triggered()
@@ -120,7 +115,7 @@ void FmDeleteBackupView::on_rotateAction_triggered()
 void FmDeleteBackupView::on_deleteAction_triggered()
 {
     QList<int > items = mDeleteBackupWidget->selectionIndexes();
-    if( items.count() <= 0 || !FmDlgUtils::question( tr("Confirm Deletion?" ) ) ){
+    if( items.count() <= 0 || !FmDlgUtils::question( hbTrId("Confirm Deletion?" ) ) ){
         return;
     }
 

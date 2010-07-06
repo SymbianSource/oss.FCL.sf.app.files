@@ -17,6 +17,8 @@
 */
 
 #include "fmoperationbase.h"
+#include "fmdrivedetailstype.h"
+#include <QtAlgorithms>
 
 FmOperationBase::FmOperationBase( QObject *parent, FmOperationService::TOperationType operationType ) : 
     QObject( parent ), mOperationType( operationType )
@@ -56,6 +58,7 @@ FmOperationDriveDetails::FmOperationDriveDetails( QObject *parent, QString drive
 }
 FmOperationDriveDetails::~FmOperationDriveDetails()
 {
+    qDeleteAll(mDetailsSizeList);
 }
 
 QString FmOperationDriveDetails::driverName()

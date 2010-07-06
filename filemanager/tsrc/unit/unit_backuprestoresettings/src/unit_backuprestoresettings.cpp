@@ -22,11 +22,18 @@
 #include "fmbkupengine.h"
 #include <QStringList>
 
+#include <hbglobal.h>
+#include <QTranslator>
+#include <QLocale>
+
 class TestSettings: public QObject
 {
     Q_OBJECT
 
 private slots:
+	// init test strings those are used to verify string fetch feature of FmBackupSettings.
+	void initTestCase();
+
     void testTestSettingsContentAll();
     void testTestSettingsContentOne();
     void testTestSettingsContentTwo();
@@ -48,8 +55,70 @@ private slots:
     void cleanupTestCase();       // Finalize test data
 
 private:
-      FmBackupSettings *settings;
+    FmBackupSettings *settings;
+	QString mFileManagerBackupWeekdayMonday;
+	QString mFileManagerBackupWeekdayTuesday;
+	QString mFileManagerBackupWeekdayWednesday;
+	QString mFileManagerBackupWeekdayThursday;
+	QString mFileManagerBackupWeekdayFirday;
+	QString mFileManagerBackupWeekdaySaturday;
+	QString mFileManagerBackupWeekdaySunday;
+
+	QString mFileManagerBackupScheduleNever;
+	QString mFileManagerBackupScheduleDaily;
+	QString mFileManagerBackupScheduleWeekly;
+
+	QString mFileManagerBackupSettingsTitleContents;
+	QString mFileManagerBackupSettingsTitleScheduling;
+	QString mFileManagerBackupSettingsTitleWeekday;
+	QString mFileManagerBackupSettingsTitleTime;
+	QString mFileManagerBackupSettingsTitleTargetDrive;
+
+	QString mFileManagerBackupSettingsContentAll;
+	QString mFileManagerBackupSettingsContentSettings;
+	QString mFileManagerBackupSettingsContentMessages;
+	QString mFileManagerBackupSettingsContentContacts;
+	QString mFileManagerBackupSettingsContentCalendar;
+	QString mFileManagerBackupSettingsContentBookmarks;
+	QString mFileManagerBackupSettingsContentUserFiles;
 };
+
+void TestSettings::initTestCase()
+{
+	// install translator
+	QTranslator translator;
+    QString lang = QLocale::system().name(); 
+    QString path = "z:/resource/qt/translations/"; 
+    translator.load( path + "filemanager_" + lang );
+    QCoreApplication::installTranslator(&translator);
+
+	// init localized string
+	mFileManagerBackupWeekdayMonday = hbTrId( "Monday" );
+	mFileManagerBackupWeekdayTuesday = hbTrId( "Tuesday" );
+	mFileManagerBackupWeekdayWednesday = hbTrId( "Wednesday" );
+	mFileManagerBackupWeekdayThursday = hbTrId( "Thursday" );
+	mFileManagerBackupWeekdayFirday = hbTrId( "Friday" );
+	mFileManagerBackupWeekdaySaturday = hbTrId( "Saturday" );
+	mFileManagerBackupWeekdaySunday = hbTrId( "Sunday" );
+
+	mFileManagerBackupScheduleNever = hbTrId( "Never" );
+	mFileManagerBackupScheduleDaily = hbTrId( "Daily" );
+	mFileManagerBackupScheduleWeekly = hbTrId( "Weekly" );
+
+	mFileManagerBackupSettingsTitleContents = hbTrId( "Backup Contents" );
+	mFileManagerBackupSettingsTitleScheduling = hbTrId( "Backup scheduling" );
+	mFileManagerBackupSettingsTitleWeekday = hbTrId( "Weekday" );
+	mFileManagerBackupSettingsTitleTime = hbTrId( "Time" );
+	mFileManagerBackupSettingsTitleTargetDrive = hbTrId( "Backup destination" );
+
+	mFileManagerBackupSettingsContentAll = hbTrId( "All" );
+	mFileManagerBackupSettingsContentSettings = hbTrId( "Settings" );
+	mFileManagerBackupSettingsContentMessages = hbTrId( "Messages" );
+	mFileManagerBackupSettingsContentContacts = hbTrId( "Contacts" );
+	mFileManagerBackupSettingsContentCalendar = hbTrId( "Calendar" );
+	mFileManagerBackupSettingsContentBookmarks = hbTrId( "Bookmarks" );
+	mFileManagerBackupSettingsContentUserFiles = hbTrId( "Files" );
+}
 
 void TestSettings::cleanupTestCase()
 {
@@ -89,27 +158,27 @@ void TestSettings::testTestSettingsContentAll()
         {
         case FmBackupEntry::EContents:
             {
-            QVERIFY( entry->title() == constFileManagerBackupSettingsTitleContents );
+            QVERIFY( entry->title() == mFileManagerBackupSettingsTitleContents );
             break;
             }
         case FmBackupEntry::EScheduling:
             {
-            QVERIFY( entry->title() == constFileManagerBackupSettingsTitleScheduling );
+            QVERIFY( entry->title() == mFileManagerBackupSettingsTitleScheduling );
             break;
             }
         case FmBackupEntry::EWeekday:
             {
-            QVERIFY( entry->title() == constFileManagerBackupSettingsTitleWeekday );
+            QVERIFY( entry->title() == mFileManagerBackupSettingsTitleWeekday );
             break;
             }
         case FmBackupEntry::ETime:
             {
-            QVERIFY( entry->title() == constFileManagerBackupSettingsTitleTime );
+            QVERIFY( entry->title() == mFileManagerBackupSettingsTitleTime );
             break;
             }
         case FmBackupEntry::ETarget:
             {
-            QVERIFY( entry->title() == constFileManagerBackupSettingsTitleTargetDrive );
+            QVERIFY( entry->title() == mFileManagerBackupSettingsTitleTargetDrive );
             break;
             }
 
@@ -188,13 +257,13 @@ void TestSettings::testContentToString_data()
     QTest::addColumn<quint32>("param");
     QTest::addColumn<QString>("value");
 
-    QTest::newRow("contentToString_0") << (quint32)FmBackupSettings::EFileManagerBackupContentAll << constFileManagerBackupSettingsContentAll;
-    QTest::newRow("contentToString_1") << (quint32)FmBackupSettings::EFileManagerBackupContentSettings << constFileManagerBackupSettingsContentSettings;
-    QTest::newRow("contentToString_2") << (quint32)FmBackupSettings::EFileManagerBackupContentMessages << constFileManagerBackupSettingsContentMessages;
-    QTest::newRow("contentToString_3") << (quint32)FmBackupSettings::EFileManagerBackupContentContacts << constFileManagerBackupSettingsContentContacts;
-    QTest::newRow("contentToString_4") << (quint32)FmBackupSettings::EFileManagerBackupContentCalendar << constFileManagerBackupSettingsContentCalendar;
-    QTest::newRow("contentToString_5") << (quint32)FmBackupSettings::EFileManagerBackupContentBookmarks << constFileManagerBackupSettingsContentBookmarks;
-    QTest::newRow("contentToString_6") << (quint32)FmBackupSettings::EFileManagerBackupContentUserFiles << constFileManagerBackupSettingsContentUserFiles;
+    QTest::newRow("contentToString_0") << (quint32)FmBackupSettings::EFileManagerBackupContentAll << mFileManagerBackupSettingsContentAll;
+    QTest::newRow("contentToString_1") << (quint32)FmBackupSettings::EFileManagerBackupContentSettings << mFileManagerBackupSettingsContentSettings;
+    QTest::newRow("contentToString_2") << (quint32)FmBackupSettings::EFileManagerBackupContentMessages << mFileManagerBackupSettingsContentMessages;
+    QTest::newRow("contentToString_3") << (quint32)FmBackupSettings::EFileManagerBackupContentContacts << mFileManagerBackupSettingsContentContacts;
+    QTest::newRow("contentToString_4") << (quint32)FmBackupSettings::EFileManagerBackupContentCalendar << mFileManagerBackupSettingsContentCalendar;
+    QTest::newRow("contentToString_5") << (quint32)FmBackupSettings::EFileManagerBackupContentBookmarks << mFileManagerBackupSettingsContentBookmarks;
+    QTest::newRow("contentToString_6") << (quint32)FmBackupSettings::EFileManagerBackupContentUserFiles << mFileManagerBackupSettingsContentUserFiles;
 }
 
 void TestSettings::testSchedulingToString()
@@ -211,9 +280,9 @@ void TestSettings::testSchedulingToString_data()
     QTest::addColumn<int>("param");
     QTest::addColumn<QString>("value");
 
-    QTest::newRow("schedulingToString_0") << (int)FmBackupSettings::EFileManagerBackupScheduleNever << constFileManagerBackupScheduleNever;
-    QTest::newRow("schedulingToString_1") << (int)FmBackupSettings::EFileManagerBackupScheduleDaily << constFileManagerBackupScheduleDaily;
-    QTest::newRow("schedulingToString_2") << (int)FmBackupSettings::EFileManagerBackupScheduleWeekly << constFileManagerBackupScheduleWeekly;
+    QTest::newRow("schedulingToString_0") << (int)FmBackupSettings::EFileManagerBackupScheduleNever << mFileManagerBackupScheduleNever;
+    QTest::newRow("schedulingToString_1") << (int)FmBackupSettings::EFileManagerBackupScheduleDaily << mFileManagerBackupScheduleDaily;
+    QTest::newRow("schedulingToString_2") << (int)FmBackupSettings::EFileManagerBackupScheduleWeekly << mFileManagerBackupScheduleWeekly;
 }
 
 void TestSettings::testWeekdayToString()
@@ -230,13 +299,13 @@ void TestSettings::testWeekdayToString_data()
     QTest::addColumn<int>("param");
     QTest::addColumn<QString>("value");
 
-    QTest::newRow("weekdayToString_0") << (int)FmBackupSettings::EFileManagerBackupWeekdayMonday << constFileManagerBackupWeekdayMonday;
-    QTest::newRow("weekdayToString_1") << (int)FmBackupSettings::EFileManagerBackupWeekdayTuesday << constFileManagerBackupWeekdayTuesday;
-    QTest::newRow("weekdayToString_2") << (int)FmBackupSettings::EFileManagerBackupWeekdayWednesday << constFileManagerBackupWeekdayWednesday;
-    QTest::newRow("weekdayToString_3") << (int)FmBackupSettings::EFileManagerBackupWeekdayThursday << constFileManagerBackupWeekdayThursday;
-    QTest::newRow("weekdayToString_4") << (int)FmBackupSettings::EFileManagerBackupWeekdayFriday << constFileManagerBackupWeekdayFirday;
-    QTest::newRow("weekdayToString_5") << (int)FmBackupSettings::EFileManagerBackupWeekdaySaturday << constFileManagerBackupWeekdaySaturday;
-    QTest::newRow("weekdayToString_6") << (int)FmBackupSettings::EFileManagerBackupWeekdaySunday << constFileManagerBackupWeekdaySunday;
+    QTest::newRow("weekdayToString_0") << (int)FmBackupSettings::EFileManagerBackupWeekdayMonday << mFileManagerBackupWeekdayMonday;
+    QTest::newRow("weekdayToString_1") << (int)FmBackupSettings::EFileManagerBackupWeekdayTuesday << mFileManagerBackupWeekdayTuesday;
+    QTest::newRow("weekdayToString_2") << (int)FmBackupSettings::EFileManagerBackupWeekdayWednesday << mFileManagerBackupWeekdayWednesday;
+    QTest::newRow("weekdayToString_3") << (int)FmBackupSettings::EFileManagerBackupWeekdayThursday << mFileManagerBackupWeekdayThursday;
+    QTest::newRow("weekdayToString_4") << (int)FmBackupSettings::EFileManagerBackupWeekdayFriday << mFileManagerBackupWeekdayFirday;
+    QTest::newRow("weekdayToString_5") << (int)FmBackupSettings::EFileManagerBackupWeekdaySaturday << mFileManagerBackupWeekdaySaturday;
+    QTest::newRow("weekdayToString_6") << (int)FmBackupSettings::EFileManagerBackupWeekdaySunday << mFileManagerBackupWeekdaySunday;
 }
 
 

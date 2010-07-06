@@ -94,7 +94,7 @@ public:
     static int setDrivePwd( const QString &driverName, const QString &oldPwd, const QString &newPwd);
     static void emptyPwd( QString &pwd );
     static int renameDrive( const QString &driverName, const QString &newVolumeName);
-    static void ejectDrive( const QString &driverName );
+    static int ejectDrive( const QString &driverName );
     static QString getFileType( const QString &filePath  );
     static quint64 getDriveDetailsResult( const QString &folderPath, const QString &extension );
     static bool isDriveC( const QString &driverName );
@@ -103,10 +103,10 @@ public:
     static QString fillPathWithSplash( const QString &filePath );
     static QString removePathSplash( const QString &filePath );
     static QString formatPath( const QString &path  );
-    static bool checkDriveFilter( const QString &driveName );
+    static bool checkDriveAccessFilter( const QString &driveName );
     static QString checkDriveToFolderFilter( const QString &path );
     static QString checkFolderToDriveFilter( const QString &path );
-    static bool isPathAccessabel( const QString &path );
+    static int isPathAccessabel( const QString &path );
     static bool isDriveAvailable( const QString &path );
     static bool isPathEqual( const QString &pathFst, const QString &pathLast );
 
@@ -123,6 +123,15 @@ public:
     static int getMaxFileNameLength();
     static bool checkMaxPathLength( const QString& path );
     static bool checkFolderFileName( const QString& name );
+    
+    /**
+     * check file or folder path is illegal or not.
+     *
+     * @param  path file/folder path.
+     * @param  errString if return false, errString will be set for error note.
+     * @return true for not illegal and false for illegal path.
+     */
+    static bool checkNewFolderOrFile( const QString &path, QString &errString );
 
 };
 

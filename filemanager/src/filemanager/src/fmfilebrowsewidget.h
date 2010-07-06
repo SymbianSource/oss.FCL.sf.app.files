@@ -28,13 +28,15 @@
 #include <hbwidget.h>
 #include <QDir>
 
-class QDirModel;
+class QFileSystemModel;
 class QGraphicsLinearLayout;
 class HbListView;
 class HbTreeView;
 class HbAbstractViewItem;
 class HbSearchPanel;
 class HbLabel;
+
+class FmFileIconProvider;
 
 class FmFileBrowseWidget : public HbWidget
 {
@@ -69,7 +71,7 @@ public:
     bool rename( const QString &oldName, const QString &newName );
     void setModelFilter( QDir::Filters filters );
     
-    bool checkPathAndSetStyle( const QString& path );
+    int checkPathAndSetStyle( const QString& path );
     void refreshModel( const QString& path );
     void sortFiles( TSortType sortType );
     void activeSearchPanel();
@@ -83,7 +85,7 @@ public slots:
     void on_searchPanel_exitClicked();
 
 signals:
-    void currentPathChanged( QString& );
+    void currentPathChanged( const QString& );
     void startSearch( const QString &targetPath, const QString &criteria );
     void setEmptyMenu( bool isMenuEmpty );
     void setTitle( const QString &title );
@@ -119,7 +121,7 @@ private:
 	HbTreeView *mTreeView;
     HbListView *mListView;
     QGraphicsLinearLayout *mLayout;
-    QDirModel *mModel;
+    QFileSystemModel *mModel;
     
     bool mSelectable;
     
@@ -140,6 +142,9 @@ private:
     //used to avoid activate when long press list.
     bool mListLongPressed;
     QModelIndex mActivatedModelIndex;
+    
+    // provide iocn from filemanger
+    FmFileIconProvider *mFileIconProvider;
 };
 
 #endif

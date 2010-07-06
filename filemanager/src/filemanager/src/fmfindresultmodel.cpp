@@ -18,9 +18,11 @@
 
 #include "fmfindresultmodel.h"
 #include "fmfindthread.h"
+#include "fmfileiconprovider.h"
 
 #include <QDateTime>
-#include <QFileIconProvider>
+
+#include <hbglobal.h>
 
 FmFindResultModel::FmFindResultModel( QObject *parent )
     : QAbstractListModel( parent )
@@ -93,10 +95,10 @@ QVariant FmFindResultModel::headerData( int section, Qt::Orientation orientation
             return QVariant();
 
         switch (section) {
-            case 0: return tr("Name");
-            case 1: return tr("Size");
-            case 2: return tr("Type");
-            case 3: return tr("Date Modified");
+            case 0: return hbTrId("Name");
+            case 1: return hbTrId("Size");
+            case 2: return hbTrId("Type");
+            case 3: return hbTrId("Date Modified");
             default: return QVariant();
         }
     }
@@ -204,7 +206,7 @@ void FmFindResultModel::init()
 {
     mFindThread = new FmFindThread( &mFindResult, this );
     mFindThread->setObjectName( "findThread" );
-    mIconProvider = new QFileIconProvider();
+    mIconProvider = new FmFileIconProvider();
 }
 
 bool FmFindResultModel::caseNameLessThan(const QString &s1, const QString &s2)
@@ -251,10 +253,7 @@ void FmFindResultModel::sort ( int column, Qt::SortOrder order )
            
 //    emit  layoutAboutToBeChanged();
     
-    QStringList lst;
-    for (int i = 0; i < mFindResult.size(); ++i)
-        lst.append( mFindResult.at(i) );
-  
+    QStringList lst( mFindResult );
     removeRows( 0, mFindResult.size() );
     
     switch( ( SortFlag )column )
@@ -273,8 +272,7 @@ void FmFindResultModel::sort ( int column, Qt::SortOrder order )
         break;
     }    
     
-    for (int i = 0; i < lst.count(); ++i)
-        mFindResult.append( lst.at(i) );
+    mFindResult = lst;
     insertRows( 0, mFindResult.size() );
     emit modelCountChanged( mFindResult.size() );
 }

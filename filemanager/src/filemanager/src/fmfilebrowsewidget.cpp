@@ -24,9 +24,10 @@
 #include "fmviewmanager.h"
 #include "fmfiledialog.h"
 #include "fmdlgutils.h"
+#include "fmfileiconprovider.h"
 
 #include <QFile>
-#include <QDirModel>
+#include <QFileSystemModel>
 #include <QSizePolicy>
 #include <QGraphicsLinearLayout>
 
@@ -37,6 +38,12 @@
 #include <hbaction.h>
 #include <hbsearchpanel.h>
 #include <hblabel.h>
+
+// These define comes from implementation of QFileSystemModel
+#define QFileSystemSortName 0
+#define QFileSystemSortSize 1 
+#define QFileSystemSortType 2
+#define QFileSystemSortTime 3
 
 FmFileBrowseWidget::FmFileBrowseWidget( HbWidget *parent, FmFileBrowseWidget::Style style )
     : HbWidget( parent ),
@@ -70,19 +77,11 @@ FmFileBrowseWidget::~FmFileBrowseWidget()
     //since there is a thread running in background
     //if the model destroy later, the thread might not quit properly.
 
-    if( mStyle == ListStyle || mStyle == TreeStyle ) {
-        QFileInfo oldFileInfo = mModel->fileInfo( mListView->rootIndex() );
-        if( oldFileInfo.exists() ) {
-            FmViewManager *viewManager = FmViewManager::viewManager();
-            if( viewManager ) {
-                viewManager->removeWatchPath( oldFileInfo.absoluteFilePath() );
-            }   
-        }
-    }
-
     mTreeView->setModel( 0 );
     mListView->setModel( 0 );
     delete mModel;
+    
+    delete mFileIconProvider;
 }
 
 QFileInfo FmFileBrowseWidget::currentPath() const
@@ -123,18 +122,35 @@ void FmFileBrowseWidget::setRootPath( const QString &pathName )
     QString logString = "FmFileBrowseWidget::setRootPath(" + pathName + ')';
     FmLogger::log( logString );
 
-    if( checkPathAndSetStyle( pathName ) ) {
-        mListView->setModel(0);
-        mTreeView->setModel(0);
-        delete mModel;
-        mModel = new QDirModel(this);
-        mListView->setModel(mModel);
-        mTreeView->setModel(mModel);
-        
-        mListView->setRootIndex( mModel->index( pathName ) );
-        mTreeView->setRootIndex( mModel->index( pathName ) );
-        FmViewManager::viewManager()->addWatchPath( pathName );
-    }
+    int err = checkPathAndSetStyle( pathName );
+    switch( err )
+        {
+        case FmErrNone:
+            {
+            mListView->setRootIndex( mModel->setRootPath( pathName ) );
+            emit currentPathChanged( pathName );
+            break;
+            }
+        case FmErrPathNotExist:
+            {
+            FmDlgUtils::information( hbTrId( "Path is not exist" ) );
+            break;
+            }
+        case FmErrDriveNotAvailable:
+            {
+            // do not take any action as widget set note in label already. 
+            break;
+            }
+        case FmErrDriveDenied:
+        case FmErrPathDenied:
+            {
+            FmDlgUtils::information( hbTrId( "Can not access" ) );
+            break;
+            }
+        default:
+            Q_ASSERT_X( false, "setRootPath", "please handle all error from isPathAccessabel" );
+            break;
+        }
     mCurrentDrive = pathName.left( 3 );
 }
 
@@ -214,11 +230,11 @@ bool FmFileBrowseWidget::rename( const QString &oldName, const QString &newName 
 
 bool FmFileBrowseWidget::cdUp()
 {
-    if (mStyle == ListStyle) {
-        QModelIndex index = mListView->rootIndex().parent();
-        mModel->refresh(index);
-        if (index.isValid()) {
-            changeRootIndex( index );
+	if (mStyle == ListStyle) {
+        QModelIndex parentIndex = mListView->rootIndex().parent();
+		// QFileSystemModel will auto refresh for file/folder change
+        if (parentIndex.isValid()) {
+			changeRootIndex( parentIndex );
             return true;
         }
     }
@@ -392,9 +408,11 @@ void FmFileBrowseWidget::initTreeView()
 
 void FmFileBrowseWidget::initFileModel()
 {
-    mModel = new QDirModel( this );
+    mModel = new QFileSystemModel( this );
     mModel->setReadOnly( false );
-    disconnect( mModel, SIGNAL( rowsInserted( const QModelIndex &, int, int ) ), 0 ,0 );
+    
+    mFileIconProvider = new FmFileIconProvider();
+    mModel->setIconProvider( mFileIconProvider );
 }
 
 void FmFileBrowseWidget::initLayout()
@@ -433,19 +451,8 @@ void FmFileBrowseWidget::initEmptyTipsLabel()
 
 void FmFileBrowseWidget::changeRootIndex( const QModelIndex &index )
 {
-    QFileInfo oldFileInfo = mModel->fileInfo( mListView->rootIndex() );
-    FmViewManager::viewManager()->removeWatchPath( oldFileInfo.absoluteFilePath() );
-
-    mModel->refresh(index);
-    if ( mStyle == ListStyle ) {
-        mListView->setRootIndex( index );
-    } else if ( mStyle == TreeStyle ) {
-        mTreeView->setRootIndex( index );
-    }
-    QFileInfo fileInfo = mModel->fileInfo( mListView->rootIndex() );
-    QString string = fileInfo.absoluteFilePath();
-    emit currentPathChanged( string );
-    FmViewManager::viewManager()->addWatchPath( string );
+	QString filePath = mModel->fileInfo( index ).absoluteFilePath();
+	setRootPath( filePath );
 }
 
 bool FmFileBrowseWidget::isDriver(const QModelIndex &index) const
@@ -471,77 +478,90 @@ void FmFileBrowseWidget::setModelFilter( QDir::Filters filters )
 void FmFileBrowseWidget::refreshModel( const QString& path )
 {
     FmLogger::log( "FmFileBrowseWidget::refreshModel start" );
+    // This slot will be triggered when drive inserted/ejected
+	// Because filemanger do not notify dir/files changed yet( QFileSystem will auto refresh.)
     QString currPath( currentPath().absoluteFilePath() );
-    QString refreshPath( path );
     
-    if( !currPath.isEmpty() ) {
-        if( refreshPath.isEmpty() ) {
-            refreshPath = currPath;
-        }
-        if(  !FmUtils::isPathEqual( refreshPath, currPath ) ) {
-            // no need refresh other path
-            return;
-        }
-        if( checkPathAndSetStyle( refreshPath ) ) {               
-            mModel->refresh( mModel->index( refreshPath ) );
-        } else {
-            FmViewManager *viewManager = FmViewManager::viewManager();
-            if( viewManager ) {
-                viewManager->removeWatchPath( currentPath().absoluteFilePath() );
-            } 
-        }
+    if( currPath.isEmpty() ) {
+        // label style and no data shown( dirve is not present or locked, or corrupt )
+    
+        //set path as drive root, cause refresh, so that data can be shown when insert MMC in device.
+        setRootPath( mCurrentDrive );
+        // update title
     } else {
-        // current path is empty, so change root path to Drive root.
-        refreshPath = mCurrentDrive;
-        setRootPath( refreshPath );
-        emit setTitle( FmUtils::fillDriveVolume( mCurrentDrive, true ) );
+        // display drive data normally
+        // ignore path refresh event as QFileSystemModel will auto refresh.
+    
+        // Handle drive refresh event as drive may be ejected.
+        if( path.isEmpty() ) { // path is empty means drive is changed.
+            checkPathAndSetStyle( currPath );
+        }
     }
+    emit setTitle( FmUtils::fillDriveVolume( mCurrentDrive, true ) );
     FmLogger::log( "FmFileBrowseWidget::refreshModel end" );
 }
 
-bool FmFileBrowseWidget::checkPathAndSetStyle( const QString& path )
+int FmFileBrowseWidget::checkPathAndSetStyle( const QString& path )
 {
-    if( !FmUtils::isPathAccessabel( path ) ){
-        QString driveName = FmUtils::getDriveNameFromPath( path );
-        FmDriverInfo::DriveState state = FmUtils::queryDriverInfo( driveName ).driveState();
-        
-        if( state & FmDriverInfo::EDriveLocked ) {
-            mEmptyTipLabel->setPlainText( hbTrId( "Drive is locked" ) );       
-        } else if( state & FmDriverInfo::EDriveNotPresent ) {
-            mEmptyTipLabel->setPlainText( hbTrId( "Drive is not present" ) );
-        } else if( state & FmDriverInfo::EDriveCorrupted ) {
-            mEmptyTipLabel->setPlainText( hbTrId( "Drive is Corrupted" ) );
-        } else {
-            mEmptyTipLabel->setPlainText( hbTrId( "Drive can not be opened " ) );
+    int err = FmUtils::isPathAccessabel( path );
+    switch( err )
+        {
+        case FmErrNone:
+            {
+            setStyle( mFileBrowseStyle );
+            emit setEmptyMenu( false );
+            break;
+            }
+        case FmErrDriveNotAvailable:
+            {
+            QString driveName = FmUtils::getDriveNameFromPath( path );
+            FmDriverInfo::DriveState state = FmUtils::queryDriverInfo( driveName ).driveState();
+            
+            if( state & FmDriverInfo::EDriveLocked ) {
+                mEmptyTipLabel->setPlainText( hbTrId( "Drive is locked" ) );       
+            } else if( state & FmDriverInfo::EDriveNotPresent ) {
+                mEmptyTipLabel->setPlainText( hbTrId( "Drive is not present" ) );
+            } else if( state & FmDriverInfo::EDriveCorrupted ) {
+                mEmptyTipLabel->setPlainText( hbTrId( "Drive is Corrupted" ) );
+            } else {
+                mEmptyTipLabel->setPlainText( hbTrId( "Drive can not be opened " ) );
+            }
+            setStyle( LabelStyle );
+            emit setEmptyMenu( true );
+            break;
+            }
+        case FmErrPathNotExist:
+        case FmErrDriveDenied:
+        case FmErrPathDenied:
+            {
+            // do not tack any action, error note shoule be shown by invoker.
+            // checkPathAndSetStyle just check path and set style.
+            break;
+            }
+        default:
+            Q_ASSERT_X( false, "checkPathAndSetStyle", "please handle all error from isPathAccessabel" );
+            break;
         }
-        setStyle( LabelStyle );
-        emit setEmptyMenu( true );
-        return false;
-    } else {
-        setStyle( mFileBrowseStyle );
-        emit setEmptyMenu( false );
-        return true;
-    }
-    
+    return err;
 }
 
 void FmFileBrowseWidget::sortFiles( TSortType sortType )
 {
     switch( sortType ){
         case ESortByName:{
-            mModel->setSorting( QDir::Name );
+			mModel->sort( QFileSystemSortName );
         }
             break;
         case ESortByTime:{
-            mModel->setSorting( QDir::Time );
+            mModel->sort( QFileSystemSortTime );
         }
             break;
         case ESortBySize:{
-            mModel->setSorting( QDir::Size );
+            mModel->sort( QFileSystemSortSize );
         }
             break;
         case ESortByType:{
-            mModel->setSorting( QDir::Type | QDir::DirsFirst );
+            mModel->sort( QFileSystemSortType );
         }
             break;
         default:
@@ -658,7 +678,7 @@ void FmFileBrowseWidget::on_moveAction_triggered()
     QStringList fileList;
     fileList.push_back( mModel->filePath( mCurrentItem->modelIndex() ) );
 
-    QString targetPathName = FmFileDialog::getExistingDirectory( 0, tr( "move to" ),
+    QString targetPathName = FmFileDialog::getExistingDirectory( 0, hbTrId( "move to" ),
             QString(""), QStringList() );
 
     if( !targetPathName.isEmpty() ) {
@@ -697,28 +717,21 @@ void FmFileBrowseWidget::on_renameAction_triggered()
         QString newTargetPath = FmUtils::fillPathWithSplash(
             fileInfo.absolutePath() ) + newName;
         QFileInfo newFileInfo( newTargetPath );
-		if( !FmUtils::checkFolderFileName( newName ) ) {
-            FmDlgUtils::information( hbTrId( "Invalid file or folder name!" ) );
+        QString errString;
+        // check if name/path is available for use
+        if( !FmUtils::checkNewFolderOrFile( newTargetPath, errString ) ) {
+            FmDlgUtils::information( errString );
             continue;
         }
-        if( !FmUtils::checkMaxPathLength( newTargetPath ) ) {
-            FmDlgUtils::information( hbTrId( "the path you specified is too long!" ) );
-            continue;
-        }
-        if( newFileInfo.exists() ) {
-            FmDlgUtils::information( hbTrId( "%1 already exist!" ).arg( newName ) );
-            continue;
-        }
-
         if( !rename( fileInfo.absoluteFilePath(), newTargetPath ) ) {
             FmDlgUtils::information( hbTrId("Rename failed!") );
         }
         else {
-            QString newSuffix( newFileInfo.suffix() );
-            if ( oldSuffix != newSuffix ) {
+            if ( oldSuffix != newFileInfo.suffix() ) {
                 FmDlgUtils::information( hbTrId( "File may become unusable when file name extension is changed" ) );        
             }   
         }
         break;
     }
 }
+

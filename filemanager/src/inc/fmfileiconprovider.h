@@ -20,15 +20,20 @@
 
 #include <QFileIconProvider>
 
+class FmFileTypeRecognizer;
+
 class FmFileIconProvider : public QFileIconProvider
 {
 public:
     FmFileIconProvider();
     virtual ~FmFileIconProvider();
 
+    // from QFileIconProvider
     virtual QIcon icon(const QFileInfo &info) const;
     
 private:
+
+    FmFileTypeRecognizer *mFileTypeRecognizer;
 
 };
 

@@ -153,12 +153,17 @@ void FmViewManager::on_operationService_refreshModel( FmOperationBase *operation
 
 void FmViewManager::on_operationService_notifyFinish( FmOperationBase *operationBase )
 {
+    if( !operationBase ){
+        Q_ASSERT_X( false, "FmViewManager",
+                "NULL is not accepted in on_operationService_notifyFinish()" );
+        return;
+    }
+    
     if( operationBase->operationType() == FmOperationService::EOperationTypeBackup )
         {
         // after finish backup, we need refresh backup date in backup view.
         emit refreshBackupDate();
         }
-
 }
 
 
@@ -187,7 +192,7 @@ void FmViewManager::createFileView( const QString &path,
 
     QString checkedPath = FmUtils::checkDriveToFolderFilter( absolutePath );
     if( FmUtils::isDriveAvailable( path ) ) {
-        if( !FmUtils::isPathAccessabel( checkedPath ) ) {
+        if( FmErrNone != FmUtils::isPathAccessabel( checkedPath )  ) {
             checkedPath.clear();
         }
     }

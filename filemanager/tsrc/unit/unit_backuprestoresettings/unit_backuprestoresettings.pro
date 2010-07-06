@@ -17,12 +17,15 @@
 QT += testlib
 CONFIG += qtestlib
 CONFIG += symbian_test
+CONFIG += hb
 TEMPLATE = app
 TARGET = 
 include ( ../../../src/inc/commoninc.pri )
+include ( ../../../src/common.pri )
 DEPENDPATH += .
 INCLUDEPATH += .
 INCLUDEPATH += ../../../src/fmbkupenginewrapper/inc
+INCLUDEPATH += ../../../src/inc
 TARGET.CAPABILITY = ALL -TCB
 # Input
 SOURCES += src/unit_backuprestoresettings.cpp

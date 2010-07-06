@@ -22,6 +22,8 @@
 #include <QDir>
 #include <QFileInfo>
 
+#include <hbglobal.h>
+
 FmDriveModel::FmDriveModel( QObject *parent, Options options,
         FmDriveListProvider *driveListProvider ) :
     QAbstractListModel( parent ), mOptions( options ), mDriveListProvider( driveListProvider )
@@ -108,10 +110,10 @@ QVariant FmDriveModel::headerData( int section, Qt::Orientation orientation, int
             return QVariant();
 
         switch (section) {
-            case 0: return tr("Name");
-            case 1: return tr("Size");
-            case 2: return tr("Type");
-            case 3: return tr("Date Modified");
+            case 0: return hbTrId("Name");
+            case 1: return hbTrId("Size");
+            case 2: return hbTrId("Type");
+            case 3: return hbTrId("Date Modified");
             default: return QVariant();
         }
     }

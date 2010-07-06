@@ -23,6 +23,7 @@
 #define HB_UPGRADABLE_APP_REG_RSC(NAME) data=DATAZ_\PRIVATE\10003A3F\IMPORT\APPS\ ## NAME ## _reg.rsc        Private\10003a3f\import\apps\ ## NAME ## _reg.rsc
 
 file=ABI_DIR\BUILD_DIR\filemngr.exe                   SHARED_LIB_DIR\filemngr.exe
+data = ZRESOURCE\apps\filemngr.mif                    APP_RESOURCE_DIR\filemngr.mif
 HB_UPGRADABLE_APP_REG_RSC(filemngr)
 
 

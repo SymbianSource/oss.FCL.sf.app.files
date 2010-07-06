@@ -66,10 +66,15 @@ private:
 
 signals:
     void notifyPreparing( bool cancelable );
-	void notifyStart( bool cancelable, int totalCount );
-	void notifyUpdate( int count );
-	void notifyFinish( int err );
-	void notifyMemoryLow( int memoryValue, int &userError );
+    void notifyStart( bool cancelable, int totalCount );
+    void notifyUpdate( int count );
+    void notifyFinish( int err );
+    void notifyMemoryLow( int memoryValue, int &userError );
+
+    // win32 source code is used to simulator backup action.
+    // add this signal in win32 to avoid warning when run test case
+    // though it is not used in win32 source code currently
+    void notifyBackupFilesExist( bool &isContinue );
 	
 public slots:
     void onNotifyPreparing( bool cancelable );

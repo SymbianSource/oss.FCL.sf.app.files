@@ -26,7 +26,7 @@
 #include <QAbstractListModel>
 
 class FmFindThread;
-class QFileIconProvider;
+class FmFileIconProvider;
 
 class FmFindResultModel : public QAbstractListModel
 {
@@ -89,7 +89,7 @@ private:
 
     FmFindThread *mFindThread;
     QStringList mFindResult;
-    QFileIconProvider *mIconProvider;
+    FmFileIconProvider *mIconProvider;
 };
 
 #endif

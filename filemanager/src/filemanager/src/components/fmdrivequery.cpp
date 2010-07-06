@@ -54,7 +54,8 @@ FmDriveQuery::FmDriveQuery( QGraphicsItem *parent ) : FmDialog( parent )
 
 FmDriveQuery::~FmDriveQuery(void)
 {
-    
+    delete mDriveModel;
+    mDriveModel = 0;
 }
 
 void FmDriveQuery::getDriveList( QStringList &driveList )

@@ -25,7 +25,7 @@
 #include "fmdrivemodel.h"
 #include "fmfiledialog.h"
 
-#include <QDirModel>
+#include <QDir>
 #include <QGraphicsLinearLayout>
 #include <QFileSystemWatcher>
 
@@ -257,7 +257,7 @@ void FmDriverListWidget::on_renameAction_triggered()
         return;
         }
 
-    QString title( tr( "Drive name ") );  
+    QString title( hbTrId( "Drive name ") );  
     QString volumeName = driverInfo.volumeName();
 
     QString associatedDrives( FmUtils::getDriveLetterFromPath( diskName ) );
@@ -343,8 +343,7 @@ void FmDriverListWidget::on_removePwdAction_triggered()
     QString oldPwd;
 
     QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
-    //QString password( tr( "a ") );
-    if( FmDlgUtils::question( tr( "Do you want to remove the password? Memory card becomes unlocked." ) ) ){
+    if( FmDlgUtils::question( hbTrId( "Do you want to remove the password? Memory card becomes unlocked." ) ) ){
         QString associatedDrives( FmUtils::getDriveLetterFromPath( diskName ) );
         while( FmDlgUtils::showSinglePasswordQuery( title, oldPwd, FmMaxLengthofDrivePassword, associatedDrives ) ) {
             if ( FmUtils::checkDrivePwd( diskName, oldPwd ) == 0 ) {

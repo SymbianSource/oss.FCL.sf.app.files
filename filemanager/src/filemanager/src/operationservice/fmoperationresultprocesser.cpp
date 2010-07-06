@@ -48,25 +48,14 @@ void FmOperationResultProcesser::onAskForRename(
     QFileInfo fileInfo(srcFile);
     bool ret = FmDlgUtils::showTextQuery( questionText, value, true, maxFileNameLength, QString(), false );
     while ( ret ) {
-        bool checkResult = true;
         // remove whitespace from the start and the end.
         value = value.trimmed();
         QString newTargetPath = FmUtils::fillPathWithSplash(
                                 fileInfo.absolutePath() ) + value;
-        QFileInfo newFileInfo( newTargetPath );
-        if (!FmUtils::checkFolderFileName(value)) {
-            FmDlgUtils::information( hbTrId( "Invalid file or folder name, try again!" ) );
-            checkResult = false;
-        }
-        if( !FmUtils::checkMaxPathLength( newTargetPath ) ) {
-            FmDlgUtils::information( hbTrId( "the path you specified is too long, try again!" ) );
-            checkResult = false;
-        }
-        if (newFileInfo.exists()) {
-            FmDlgUtils::information( hbTrId( "%1 already exist!" ).arg( value ) );
-            checkResult = false;
-        }
-        if( !checkResult ) {
+        QString errString;
+        // check if name/path is available for use.
+        if( !FmUtils::checkNewFolderOrFile( newTargetPath, errString ) ) {
+            FmDlgUtils::information( errString );
             ret = FmDlgUtils::showTextQuery( questionText, value, true, maxFileNameLength, QString(), false );
             continue;
         } else {
@@ -100,7 +89,7 @@ void FmOperationResultProcesser::onShowNote( FmOperationBase* operationBase, con
 
 void FmOperationResultProcesser::onNotifyWaiting( FmOperationBase* operationBase, bool cancelable )
 {
-    QString title = tr("Operation");
+    QString title = hbTrId("Operation");
     switch( operationBase->operationType() )
     {
     case FmOperationService::EOperationTypeBackup:
@@ -155,7 +144,7 @@ void FmOperationResultProcesser::onNotifyPreparing( FmOperationBase* operationBa
 
 void FmOperationResultProcesser::onNotifyStart( FmOperationBase* operationBase, bool cancelable, int maxSteps )
 {
-    QString title = tr("Operation");
+    QString title = hbTrId("Operation");
     switch( operationBase->operationType() )
     {
     case FmOperationService::EOperationTypeBackup:
@@ -217,7 +206,7 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
         {
             FmDlgUtils::information( QString( hbTrId("Format succeed!")) );
             FmOperationFormat *paramFormat = static_cast<FmOperationFormat*>( operationBase );
-            QString title( tr( "Drive name ") );  
+            QString title( hbTrId( "Drive name ") );  
             QString driveName( paramFormat->driverName() );
             FmDriverInfo driverInfo = FmUtils::queryDriverInfo( driveName );
             FmDriverInfo::DriveState state = driverInfo.driveState();

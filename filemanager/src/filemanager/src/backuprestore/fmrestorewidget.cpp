@@ -17,6 +17,7 @@
  */
 #include "fmrestorewidget.h"
 #include "fmrestoresettings.h"
+#include "fmbackupsettings.h"
 #include "fmrestoreviewitem.h"
 #include "fmoperationservice.h"
 #include "fmviewmanager.h"
@@ -75,6 +76,9 @@ void FmRestoreWigdet::init()
     mListView->setModel( mModel );    
     mRestoreSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->RestoreSettingsL();
     mBackupConfigLoader = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->backupConfigLoader();
+    
+    // load backup settings to refresh default target drive
+    FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->BackupSettingsL()->load();
     mRestoreSettings->load( mBackupConfigLoader->driversAndOperationList() );
 
     int index = 0;

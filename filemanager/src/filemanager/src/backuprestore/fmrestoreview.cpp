@@ -103,7 +103,7 @@ void FmRestoreView::on_leftAction_triggered()
         FmDlgUtils::information( QString( hbTrId("Operation canceled because already started!") ) );
         break;
     default:
-        FmDlgUtils::information(tr("restore failed"));
+        FmDlgUtils::information(hbTrId("restore failed"));
         break;
     }
 }

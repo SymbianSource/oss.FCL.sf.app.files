@@ -73,11 +73,7 @@ void FmRestoreViewItem::updateChildItems()
     if (stringList.size() > 1)
         {
         QIcon icon = mIconProvider->icon(QFileInfo(stringList.at(2)));
-        if (icon.isNull())
-            {
-            QFileIconProvider fileIconProvider;
-            icon = fileIconProvider.icon(QFileIconProvider::Drive);
-            }        
+        // FmFileIconProvider already handle null icon issue
         mIconLabel->setIcon(HbIcon(icon));
         }
     

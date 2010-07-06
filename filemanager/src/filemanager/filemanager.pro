@@ -18,6 +18,7 @@
 CONFIG      += hb
 TEMPLATE    = app
 TARGET = filemngr
+ICON = resources/qtg_large_filemgr.svg
 RESOURCES += filemanager.qrc
 INCLUDEPATH += ../fmbkupenginewrapper/inc
 # remove this path when export plat header to app layer path
@@ -32,7 +33,7 @@ LIBS += -lfmbkupenginewrapper
 LIBS += -lfmfiledialog
 
 symbian {
-
+    SKINICON = qtg_large_filemgr
     LIBS += -lplatformenv \
             -lapmime \
             -lxqservice \

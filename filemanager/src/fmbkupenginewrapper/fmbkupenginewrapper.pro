@@ -14,6 +14,7 @@
 # Description: The project file of FmBkupEngineWrapper
 #
 
+CONFIG += hb
 TARGET = 
 TEMPLATE = lib
 QT = core

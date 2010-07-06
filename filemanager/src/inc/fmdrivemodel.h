@@ -20,8 +20,9 @@
 
 #include <QAbstractItemModel>
 #include <QStringList>
-#include <QFileIconProvider>
 #include <QModelIndex>
+
+class FmFileIconProvider;
 
 /*!
     \class FmDriveListProvider
@@ -71,7 +72,7 @@ public:
     
 private:
     QStringList         mFindResult;
-    QFileIconProvider   *mIconProvider;
+    FmFileIconProvider  *mIconProvider;
     QStringList         mDriveList;
     Options             mOptions;
     

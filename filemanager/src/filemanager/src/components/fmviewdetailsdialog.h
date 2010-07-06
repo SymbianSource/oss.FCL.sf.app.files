@@ -22,8 +22,7 @@
 #include "fmcommon.h"
 #include "fmdialog.h"
 
-class FmDataListModel;
-class QDirModel;
+class QStandardItemModel;
 class HbListView;
 class HbLabel;
 class HbAction;
@@ -45,6 +44,7 @@ public:
         EMemoryNativeApps,
         EMemoryDocuments,
         EMemoryCalendar,
+        EMemoryContacts,
         EMemoryOthers,
         EDriveDetailEntryEnd
     };
@@ -95,20 +95,20 @@ private:
     HbLabel *mHeaderLabel;  
     HbAction *mOkAction;
     
-    FmDataListModel *mDataListModel;
-    QDirModel *mDirModel;
+    QStandardItemModel *mDataListModel;
     QString     mDrive;
     
     int mNumofSubFolers;
     int mNumofFiles;
-    int mSizeofFolder;
-    int mSizeofImage;
-    int mSizeofSounds;
-    int mSizeofVideo;
-    int mSizeofJava;
-    int mSizeofNativeFiles;
-    int mSizeofDocument;
-    int mSizeofCalendar;
+    quint64 mSizeofFolder;
+    quint64 mSizeofImage;
+    quint64 mSizeofSounds;
+    quint64 mSizeofVideo;
+    quint64 mSizeofJava;
+    quint64 mSizeofNativeFiles;
+    quint64 mSizeofDocument;
+    quint64 mSizeofCalendar;
+    quint64 mSizeofContacts;
 };
 
 #endif /* FMVIEWDETAILSDIALOG_H_ */

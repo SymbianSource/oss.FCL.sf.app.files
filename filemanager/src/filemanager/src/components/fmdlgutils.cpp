@@ -83,8 +83,8 @@ bool FmDlgUtils::showSingleSettingQuery(
 	cQuery->setMarkedListItem( selectedIndex );
     }
 
-    QString sk1 ( tr ( "ok" ) );
-    QString sk2 ( tr ("cancel" ) );
+    QString sk1 ( hbTrId( "txt_common_button_ok" ) );
+    QString sk2 ( hbTrId("txt_common_button_cancel" ) );
 
     if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
@@ -159,8 +159,8 @@ bool FmDlgUtils::showMultiSettingQuery(
     }
 
 
-    QString sk1 ( hbTrId( "ok" ) );
-    QString sk2 ( hbTrId( "cancel" ) );
+    QString sk1 ( hbTrId( "txt_common_button_ok" ) );
+    QString sk2 ( hbTrId( "txt_common_button_cancel" ) );
 
     if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
@@ -213,8 +213,8 @@ bool FmDlgUtils::showTimeSettingQuery(
     cQuery->setHeadingWidget( new HbLabel( title ) );
     cQuery->setTime( time );
 
-    QString sk1 ( hbTrId( "ok" ) );
-    QString sk2 ( hbTrId( "cancel" ) );
+    QString sk1 ( hbTrId( "txt_common_button_ok" ) );
+    QString sk2 ( hbTrId( "txt_common_button_cancel" ) );
 
     if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
@@ -262,8 +262,8 @@ bool FmDlgUtils::showTextQuery(
     }
     cQuery->setHeadingWidget( new HbLabel( title ) );
 
-    QString sk1 ( hbTrId ( "ok" ) );
-    QString sk2 ( hbTrId ( "cancel" ) );
+    QString sk1 ( hbTrId ( "txt_common_button_ok" ) );
+    QString sk2 ( hbTrId ( "txt_common_button_cancel" ) );
 
     if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
@@ -314,8 +314,8 @@ bool FmDlgUtils::showSinglePasswordQuery( const QString &title, QString &pwd, in
     }
     cQuery->setHeadingWidget( new HbLabel( title ) );
 
-    QString sk1 ( tr ("ok" ) );
-    QString sk2 ( tr ("cancel" ) );
+    QString sk1 ( hbTrId("txt_common_button_ok" ) );
+    QString sk2 ( hbTrId("txt_common_button_cancel" ) );
 
     if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
@@ -353,8 +353,8 @@ bool FmDlgUtils::showMultiPasswordQuery(
     cQuery->setFirstLabelText( firstLabel );
     cQuery->setSecondLabelText( secondLabel );
 
-    QString sk1 = ( hbTrId( "ok" ) );
-    QString sk2 = ( hbTrId( "cancel" ) );
+    QString sk1 = ( hbTrId( "txt_common_button_ok" ) );
+    QString sk2 = ( hbTrId( "txt_common_button_cancel" ) );
 
     if( !sk1.isEmpty() ) {
         HbAction *primary = new HbAction( sk1 );
@@ -404,7 +404,7 @@ QString FmDlgUtils::showBackupDriveQuery( const QString& title )
     FmDriveQuery *cQuery = new FmDriveQuery();
     cQuery->setHeadingWidget( new HbLabel( title ) );
     
-    QString sk = ( hbTrId( "cancel" ) );
+    QString sk = ( hbTrId( "txt_common_button_cancel" ) );
     
     HbAction *primary = new HbAction( sk );
     cQuery->setPrimaryAction( primary );

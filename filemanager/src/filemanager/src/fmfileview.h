@@ -85,7 +85,7 @@ private:
     /**
      * Create  Default folder name while create folder.
      *
-     * @param  Current path.
+     * @param  path Current path.
      * @return Default folder name for new folder.
      */
 	QString createDefaultFolderName( const QString &path );
