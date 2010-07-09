@@ -19,14 +19,14 @@
 #include "fmsingletextquery.h"
 
 #include <QGraphicsLinearLayout>
+#include <QRegExp>
 
 #include <hbwidget.h>
 #include <hblineedit.h>
 #include <hbaction.h>
 
-FmSingleTextQuery::FmSingleTextQuery( Options options,
-    HbLineEdit::EchoMode echoMode, QGraphicsItem *parent  ) :
-    FmDialog( parent ), mOptions( options ), mEchoMode( echoMode )
+FmSingleTextQuery::FmSingleTextQuery( HbLineEdit::EchoMode echoMode, QGraphicsItem *parent  ) :
+    FmDialog( parent ), mEchoMode( echoMode )
 {
     init();
 }
@@ -74,13 +74,26 @@ void FmSingleTextQuery::setLineEditMaxLength( int length )
     mTextEdit->setMaxLength( length );
 }
 
+void FmSingleTextQuery::setRegExpStringList( QStringList regExpStringList )
+{
+	mRegExpStringList = regExpStringList;
+}
+
 void FmSingleTextQuery::checkActions()
 {
-    if( mOptions & DimPrimereActionWhenEmpty ) {
-        if( !mTextEdit->text().isEmpty() ){
-            this->primaryAction()->setEnabled( true );
-        } else {
-            this->primaryAction()->setEnabled( false );
+    // check if all regExp match, disable primary action if not match
+    bool validateResult = true;
+    foreach( const QString &regExpString, mRegExpStringList ) {
+        if( !regExpString.isEmpty() ) {
+            QRegExp regExp( regExpString );
+            if( !regExp.exactMatch( mTextEdit->text() ) ) {
+                validateResult =  false;
+            }
         }
+    }
+    if( validateResult ) {
+        this->primaryAction()->setEnabled( true );
+    } else {
+        this->primaryAction()->setEnabled( false );
     }
 }

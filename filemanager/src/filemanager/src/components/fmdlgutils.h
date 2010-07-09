@@ -77,8 +77,8 @@ public:
 		const QString &associatedDrives = QString() );
 
     static bool showTextQuery(     
-       const QString &title, QString &driveName, bool isDimPrimaryActionWhenEmpty, int maxLength = -1,
-	   const QString &associatedDrives = QString(), bool isReturnFalseWhenNoTextChanged = true );
+       const QString &title, QString &text, QStringList validRegExpStringList = QStringList( Regex_ValidUnEmpty ),
+	   int maxLength = -1, const QString &associatedDrives = QString(), bool isReturnFalseWhenNoTextChanged = true );
 
     static bool showSinglePasswordQuery(     
        const QString &title, QString &pwd, int maxLength = -1,

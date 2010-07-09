@@ -127,11 +127,20 @@ public:
     /**
      * check file or folder path is illegal or not.
      *
-     * @param  path file/folder path.
+	 * @param  fileName file/folder name, used to check illegal characters
+     * @param  path file/folder path, used to check if path is available to use.
      * @param  errString if return false, errString will be set for error note.
      * @return true for not illegal and false for illegal path.
      */
-    static bool checkNewFolderOrFile( const QString &path, QString &errString );
+    static bool checkNewFolderOrFile( const QString& fileName, const QString &path, QString &errString );
+    
+    /*
+     * get the volume name of the disk, if it is null, then return the default name.
+     * @param diskName the driver letter.
+     * @param defaultName whether it is the default name.
+     * @return the volume name.
+     */
+    static QString getVolumeNameWithDefaultNameIfNull( const QString &diskName, bool &defaultName );
 
 };
 

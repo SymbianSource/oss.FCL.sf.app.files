@@ -94,7 +94,7 @@ FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
         }
     }
     
-    if( volumeName == KErrNone || driveInfoErr == KErrNone ) {
+    if( volumeInfoErr == KErrNone || driveInfoErr == KErrNone ) {
         //TDriveInfo driveInfo = volumeInfo.iDrive;
     
         quint32 drvStatus( 0 );
@@ -684,15 +684,19 @@ QString FmUtils::checkFolderToDriveFilter( const QString &path )
 int FmUtils::isPathAccessabel( const QString &path )
 {
     // Used to check if path is accessable, very important feature
-	// and will return filemanager error.
+    // and will return filemanager error.
     FmLogger::log( QString( "isPathAccessabel:" ) + path );
     if( path.isEmpty() ) {
         return FmErrPathNotExist;
     }
-    if( path.length() <= 3 && !isDriveAvailable( path ) ) { //used to filter locked drive
+
+    // used to filter locked/ejected/corrupted drive
+    // check if drive is available, no matter if it is a drive, a folder, or a file.
+    if( !isDriveAvailable( path ) ) {
         FmLogger::log( QString( "isPathAccessabel false: path is drive and not available" ) );
         return FmErrDriveNotAvailable;
     }
+
     QFileInfo fileInfo( path );
     if( fileInfo.absoluteFilePath().contains( Drive_C, Qt::CaseInsensitive ) &&
         !fileInfo.absoluteFilePath().contains( Folder_C_Data, Qt::CaseInsensitive ) ) {
@@ -917,33 +921,41 @@ bool FmUtils::checkMaxPathLength( const QString& path )
     }
     return true;
 }
+
 bool FmUtils::checkFolderFileName( const QString& name )
 {
-    if( name.endsWith( QChar('.'),  Qt::CaseInsensitive ) ) {
+    // trim space firest, because there may be some spaces after "." ,  it is also not valid
+    QString trimmedName( name.trimmed() );
+	if( trimmedName.isEmpty() ) {
+		return false;
+	}
+    if( trimmedName.endsWith( QChar('.'),  Qt::CaseInsensitive ) ) {
         return false;
     }
-    if( name.contains( QChar('\\'), Qt::CaseInsensitive ) ||
-        name.contains( QChar('/'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar(':'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar('*'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar('?'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar('\"'), Qt::CaseInsensitive ) ||
-        name.contains( QChar('<'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar('>'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar('|'),  Qt::CaseInsensitive ) ){
+    if( trimmedName.contains( QChar('\\'), Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('/'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar(':'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('*'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('?'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('\"'), Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('<'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('>'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('|'),  Qt::CaseInsensitive ) ){
         return false;
     }
+    // use orignal name to exam max size of file name
     if( name.length() > KMaxFileName ) {
         return false;
     }
     return true;
 }
 
-bool FmUtils::checkNewFolderOrFile( const QString &path, QString &errString )
+bool FmUtils::checkNewFolderOrFile( const QString &fileName, const QString &path, QString &errString )
 {
+    // first check if fileName is valid, then check if path length is valid, and check if file/foler is existed at last
     QFileInfo fileInfo( path );
     bool ret( true );   
-    if (!FmUtils::checkFolderFileName( fileInfo.fileName() ) ) {
+    if (!FmUtils::checkFolderFileName( fileName ) ) {
         errString = hbTrId( "Invalid file or folder name!" );
         ret = false;
     } else if( !FmUtils::checkMaxPathLength( path ) ) {
@@ -954,4 +966,31 @@ bool FmUtils::checkNewFolderOrFile( const QString &path, QString &errString )
         ret = false;
     }
     return ret;
+}
+
+QString FmUtils::getVolumeNameWithDefaultNameIfNull( const QString &diskName, bool &defaultName )
+{
+    FmDriverInfo driverInfo = FmUtils::queryDriverInfo( diskName );
+          
+    QString volumeName = driverInfo.volumeName();    
+    //save the volume status, whether it is default name
+    defaultName = false;
+    //volume name may be null if not set, it will be set at least for one time in the following while cycling.
+    if ( ( volumeName.isEmpty() ) &&
+            ( driverInfo.driveState() & FmDriverInfo::EDriveAvailable ) ) {
+        defaultName = true;
+        if ( driverInfo.driveState() & FmDriverInfo::EDriveRemovable ) {
+            if ( driverInfo.driveState() & FmDriverInfo::EDriveUsbMemory ) {
+                volumeName = hbTrId("USB memory");            
+            } else if ( driverInfo.driveState() & FmDriverInfo::EDriveMassStorage ) {
+                volumeName = hbTrId("Mass storage"); 
+            }
+            else {
+                volumeName = hbTrId("Memory card");
+            }
+        } else {
+            volumeName = hbTrId("Device memory");
+        }
+    }
+    return volumeName;
 }

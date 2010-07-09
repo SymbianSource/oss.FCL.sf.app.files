@@ -246,21 +246,19 @@ bool FmDlgUtils::showTimeSettingQuery(
 }
 
 bool FmDlgUtils::showTextQuery(
-        const QString& title, QString& text, bool isDimPrimaryActionWhenEmpty, int maxLength,
-		const QString &associatedDrives, bool isReturnFalseWhenNoTextChanged )
+        const QString& title, QString& text, QStringList validRegExpStringList,
+		int maxLength, const QString &associatedDrives, bool isReturnFalseWhenNoTextChanged )
 {
     bool ret( false );
     bool ok ( true );                // SK return (out parameter)
 
-    FmSingleTextQuery::Options options( 0 );
-    if( isDimPrimaryActionWhenEmpty ) {
-        options = FmSingleTextQuery::DimPrimereActionWhenEmpty;
-    }
-    FmSingleTextQuery *cQuery = new FmSingleTextQuery( options );
+    FmSingleTextQuery *cQuery = new FmSingleTextQuery();
     if( maxLength != -1 ){
         cQuery->setLineEditMaxLength( maxLength );
     }
     cQuery->setHeadingWidget( new HbLabel( title ) );
+
+	cQuery->setRegExpStringList( validRegExpStringList );
 
     QString sk1 ( hbTrId ( "txt_common_button_ok" ) );
     QString sk2 ( hbTrId ( "txt_common_button_cancel" ) );
@@ -307,13 +305,12 @@ bool FmDlgUtils::showSinglePasswordQuery( const QString &title, QString &pwd, in
 {
     bool ret( false );
 
-    FmSingleTextQuery *cQuery = new FmSingleTextQuery( FmSingleTextQuery::DimPrimereActionWhenEmpty,
-            HbLineEdit::Password );
+    FmSingleTextQuery *cQuery = new FmSingleTextQuery( HbLineEdit::Password );
     if( maxLength != -1 ){
         cQuery->setLineEditMaxLength( maxLength );
     }
     cQuery->setHeadingWidget( new HbLabel( title ) );
-
+    cQuery->setRegExpStringList( QStringList( Regex_ValidUnEmpty ) );
     QString sk1 ( hbTrId("txt_common_button_ok" ) );
     QString sk2 ( hbTrId("txt_common_button_cancel" ) );
 

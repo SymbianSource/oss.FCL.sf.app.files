@@ -466,33 +466,42 @@ bool FmUtils::checkMaxPathLength( const QString& path )
 	}
 	return true;
 }
+
 bool FmUtils::checkFolderFileName( const QString& name )
 {
-    if( name.endsWith( QChar('.'),  Qt::CaseInsensitive ) ) {
+    // trim space firest, because there may be some spaces after "." ,  it is also not valid
+    // or there may only have spaces in name
+    QString trimmedName( name.trimmed() );
+	if( trimmedName.isEmpty() ) {
+		return false;
+	}
+    if( trimmedName.endsWith( QChar('.'),  Qt::CaseInsensitive ) ) {
         return false;
     }
-    if( name.contains( QChar('\\'), Qt::CaseInsensitive ) ||
-        name.contains( QChar('/'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar(':'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar('*'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar('?'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar('\"'), Qt::CaseInsensitive ) ||
-        name.contains( QChar('<'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar('>'),  Qt::CaseInsensitive ) ||
-        name.contains( QChar('|'),  Qt::CaseInsensitive ) ){
+    if( trimmedName.contains( QChar('\\'), Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('/'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar(':'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('*'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('?'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('\"'), Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('<'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('>'),  Qt::CaseInsensitive ) ||
+        trimmedName.contains( QChar('|'),  Qt::CaseInsensitive ) ){
         return false;
     }
+    // use orignal name to exam max size of file name
     if( name.length() > KMaxFileName ) {
         return false;
     }
     return true;
 }
 
-bool FmUtils::checkNewFolderOrFile( const QString &path, QString &errString )
+bool FmUtils::checkNewFolderOrFile( const QString &fileName, const QString &path, QString &errString )
 {
+    // first check if fileName is valid, then check if path length is valid, and check if file/foler is existed at last
     QFileInfo fileInfo( path );
     bool ret( true );   
-    if (!FmUtils::checkFolderFileName( fileInfo.fileName() ) ) {
+    if (!FmUtils::checkFolderFileName( fileName ) ) {
         errString = hbTrId( "Invalid file or folder name, try again!" );
         ret = false;
     } else if( !FmUtils::checkMaxPathLength( path ) ) {
@@ -504,3 +513,12 @@ bool FmUtils::checkNewFolderOrFile( const QString &path, QString &errString )
     }
     return ret;
 }
+
+QString FmUtils::getVolumeNameWithDefaultNameIfNull( const QString &diskName, bool &defaultName )
+{
+    FmDriverInfo driverInfo = FmUtils::queryDriverInfo( diskName );
+
+    // do not add default volume for win32 version as this is only the dummy implememnt for debug on windows
+    return driverInfo.volumeName();
+}
+

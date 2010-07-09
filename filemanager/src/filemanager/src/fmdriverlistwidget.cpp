@@ -257,13 +257,21 @@ void FmDriverListWidget::on_renameAction_triggered()
         return;
         }
 
-    QString title( hbTrId( "Drive name ") );  
-    QString volumeName = driverInfo.volumeName();
-
+    QString title( hbTrId( "Drive name ") );
+    //save the volume status, empty or set
+    bool needToSetVolume = false;
+    QString volumeName = FmUtils::getVolumeNameWithDefaultNameIfNull( diskName, needToSetVolume );    
+    QString oldVolumeName( volumeName );
     QString associatedDrives( FmUtils::getDriveLetterFromPath( diskName ) );
-    while( FmDlgUtils::showTextQuery( title, volumeName, false, FmMaxLengthofDriveName, associatedDrives ) ){
+    //use isReturnFalseWhenNoTextChanged = false in order that FmUtils::renameDrive( driveName, volumeName ) will
+    //be excuted at lease once to set the volume name.
+    while( FmDlgUtils::showTextQuery( title, volumeName, QStringList(), FmMaxLengthofDriveName, associatedDrives, false ) ){
+        //if volume is not set or oldVolumeName != volumeName , FmUtils::renameDrive will be called
+        if ( oldVolumeName == volumeName && !needToSetVolume ) {
+            break;
+        }
         int err = FmUtils::renameDrive( diskName, volumeName );
-        if ( err == FmErrNone ){
+        if ( err == FmErrNone ) {
             FmDlgUtils::information( hbTrId( "The name has been changed!" ) );
             mModel->refresh();
             break;

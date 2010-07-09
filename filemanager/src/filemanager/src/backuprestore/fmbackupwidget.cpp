@@ -36,7 +36,7 @@
 
 
 FmBackupWidget::FmBackupWidget( QGraphicsItem *parent )
-: HbWidget( parent ), mLastPressedItem( 0 ), mScrolled( 0 ), mListReleased( false )
+: HbWidget( parent )
 {
     init();
 }
@@ -47,16 +47,12 @@ FmBackupWidget::~FmBackupWidget()
     delete mModel;
 }
 
-void FmBackupWidget::on_list_released( const QModelIndex &index )
-{
-    HbDataFormModelItem *item = mModel->itemFromIndex(index);
-    if( item != mLastPressedItem || mDataForm->isScrolling() || mScrolled ) {
-        mScrolled = false;
-        return;
-    }
-    mScrolled = false;
 
-    if( item == mContentsItem ){
+void FmBackupWidget::on_list_activated( const QModelIndex &index )
+{    
+    // change item data when receive activated signal
+	HbDataFormModelItem *item = mModel->itemFromIndex(index);
+	if( item == mContentsItem ){
         emit changeContents();
     } else if( item == mTargetItem ){
         emit changeTargetDrive();
@@ -67,16 +63,6 @@ void FmBackupWidget::on_list_released( const QModelIndex &index )
     } else if( item == mTimeItem ){
         emit changeTime();
     }
-}
-
-void FmBackupWidget::on_list_pressed( const QModelIndex &index )
-{
-    mLastPressedItem = mModel->itemFromIndex(index);
-}
-
-void FmBackupWidget::on_list_scrollingStarted()
-{
-    mScrolled = true;
 }
 
 void FmBackupWidget::init()
@@ -91,16 +77,9 @@ void FmBackupWidget::init()
     mDataForm = new HbDataForm( this );
     mDataForm->setModel( mModel );
     vLayout->addItem( mDataForm );
-    
-    
-    connect( mDataForm, SIGNAL( released( const QModelIndex & ) ),
-             this, SLOT( on_list_released( const QModelIndex & ) ) );
-
-    connect( mDataForm, SIGNAL( pressed( const QModelIndex & ) ),
-             this, SLOT( on_list_pressed( const QModelIndex & ) ) );
-
-    connect( mDataForm, SIGNAL( scrollingStarted() ),
-             this, SLOT( on_list_scrollingStarted() ) );
+        
+    connect( mDataForm, SIGNAL( activated( const QModelIndex & ) ),
+             this, SLOT( on_list_activated( const QModelIndex & ) ) );
 
     connect( this, SIGNAL( doModelRefresh() ),
              this, SLOT( refreshModel() ), Qt::QueuedConnection );

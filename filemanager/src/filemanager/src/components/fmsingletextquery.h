@@ -28,23 +28,18 @@ class FmSingleTextQuery : public FmDialog
 {
 Q_OBJECT
 public:
-    enum Option
-        {
-            DimPrimereActionWhenEmpty    = 0x00000001
-        };
-    Q_DECLARE_FLAGS(Options, Option)
     
-    FmSingleTextQuery( Options options = 0,
-            HbLineEdit::EchoMode echoMode = HbLineEdit::Normal, QGraphicsItem *parent = 0 );
+    FmSingleTextQuery( HbLineEdit::EchoMode echoMode = HbLineEdit::Normal, QGraphicsItem *parent = 0 );
     ~FmSingleTextQuery();
 
 public:
     void setLineEditText( const QString &text );
     QString getLineEditText();
     void setLineEditMaxLength( int length );
+	void setRegExpStringList( QStringList regExpStringList );
 
 public slots:
-        void checkActions();
+    void checkActions();
 
 private:
     void init();
@@ -52,8 +47,10 @@ private:
 private:
     HbWidget *mContentWidget;
     HbLineEdit  *mTextEdit;
-    Options mOptions;
     HbLineEdit::EchoMode mEchoMode;
+
+    // used to check if input text is vaild. Disable primary action when text is not vaild
+    QStringList mRegExpStringList;
 };
-Q_DECLARE_OPERATORS_FOR_FLAGS(FmSingleTextQuery::Options)
+
 #endif

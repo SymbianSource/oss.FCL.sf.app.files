@@ -50,9 +50,7 @@ public slots:
     void refreshModel();
     
 private slots:
-    void on_list_released( const QModelIndex &index );
-    void on_list_pressed( const QModelIndex &index );
-    void on_list_scrollingStarted();
+	void on_list_activated( const QModelIndex &index );
     
     void on_changeContents();
     void on_changeScheduling();
@@ -81,10 +79,6 @@ private:
     HbDataFormModelItem *mLastBackupDateItem;
 	FmBackupSettings        *mBackupSettings;
 	FmBackupConfigLoader    *mBackupConfigLoader;
-    HbDataFormModelItem     *mLastPressedItem;
-
-    bool mScrolled;
-    bool mListReleased;
 };
 
 #endif // FMBACKUPWIDGET_H

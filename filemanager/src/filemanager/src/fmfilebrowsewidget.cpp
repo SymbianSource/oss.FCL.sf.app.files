@@ -527,6 +527,11 @@ int FmFileBrowseWidget::checkPathAndSetStyle( const QString& path )
                 mEmptyTipLabel->setPlainText( hbTrId( "Drive can not be opened " ) );
             }
             setStyle( LabelStyle );
+			//hide search panel when the drive is removed 
+            if ( mSearchPanel->isVisible() ){
+                mSearchPanel->hide();
+                mLayout->removeItem( mSearchPanel );
+            }    
             emit setEmptyMenu( true );
             break;
             }
@@ -708,9 +713,12 @@ void FmFileBrowseWidget::on_renameAction_triggered()
     QString filePath = mModel->filePath( mCurrentItem->modelIndex() );
     QFileInfo fileInfo = mModel->fileInfo( mCurrentItem->modelIndex() );
     int maxFileNameLength = FmUtils::getMaxFileNameLength();
+    // regExpList used to disable primary action of text query dialog if input text is not match
+    QStringList regExpList = (QStringList() << Regex_ValidFileFolderName << Regex_ValidNotEndWithDot );
+
     QString oldSuffix( fileInfo.suffix() );
     QString newName( fileInfo.fileName() );
-    while( FmDlgUtils::showTextQuery( hbTrId( "Enter new name for %1" ).arg( newName ), newName, true,
+    while( FmDlgUtils::showTextQuery( hbTrId( "Enter new name for %1" ).arg( newName ), newName, regExpList,
             maxFileNameLength, QString() , true ) ){
         // remove whitespace from the start and the end.
         newName = newName.trimmed();
@@ -719,7 +727,8 @@ void FmFileBrowseWidget::on_renameAction_triggered()
         QFileInfo newFileInfo( newTargetPath );
         QString errString;
         // check if name/path is available for use
-        if( !FmUtils::checkNewFolderOrFile( newTargetPath, errString ) ) {
+        // add new Name to check, in order to avoid problem of newName is empty
+        if( !FmUtils::checkNewFolderOrFile( newName, newTargetPath, errString ) ) {
             FmDlgUtils::information( errString );
             continue;
         }

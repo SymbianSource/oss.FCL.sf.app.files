@@ -46,7 +46,10 @@ void FmOperationResultProcesser::onAskForRename(
         srcFile + QString( " already exist, please rename:" );
     QString value;   
     QFileInfo fileInfo(srcFile);
-    bool ret = FmDlgUtils::showTextQuery( questionText, value, true, maxFileNameLength, QString(), false );
+    QStringList regExpList = (QStringList() << Regex_ValidFileFolderName << Regex_ValidNotEndWithDot );
+
+    bool ret = FmDlgUtils::showTextQuery( questionText, value, regExpList,
+        maxFileNameLength, QString(), false );
     while ( ret ) {
         // remove whitespace from the start and the end.
         value = value.trimmed();
@@ -54,9 +57,9 @@ void FmOperationResultProcesser::onAskForRename(
                                 fileInfo.absolutePath() ) + value;
         QString errString;
         // check if name/path is available for use.
-        if( !FmUtils::checkNewFolderOrFile( newTargetPath, errString ) ) {
+        if( !FmUtils::checkNewFolderOrFile( value, newTargetPath, errString ) ) {
             FmDlgUtils::information( errString );
-            ret = FmDlgUtils::showTextQuery( questionText, value, true, maxFileNameLength, QString(), false );
+            ret = FmDlgUtils::showTextQuery( questionText, value, regExpList, maxFileNameLength, QString(), false );
             continue;
         } else {
             break;
@@ -213,10 +216,13 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
             if( ( state & FmDriverInfo::EDriveAvailable ) &&
                 ( state & FmDriverInfo::EDriveRemovable ) &&
                 !( state & FmDriverInfo::EDriveMassStorage ) ) { 
-                QString volumeName;
-                while( FmDlgUtils::showTextQuery( title, volumeName, false, FmMaxLengthofDriveName ) ){
+                bool needToSetVolume = false;
+                QString volumeName = FmUtils::getVolumeNameWithDefaultNameIfNull( driveName, needToSetVolume );                            
+                //use isReturnFalseWhenNoTextChanged = false in order that FmUtils::renameDrive( driveName, volumeName ) will
+                //be excuted at lease once to set the volume name.
+                while( FmDlgUtils::showTextQuery( title, volumeName, QStringList(), FmMaxLengthofDriveName, QString(), false ) ){                    
                     int err = FmUtils::renameDrive( driveName, volumeName );
-                    if ( err == FmErrNone ){
+                    if ( err == FmErrNone ) {
                         FmDlgUtils::information( hbTrId( "The name has been changed!" ) );
                         mOperationService->on_operationThread_refreshModel( driveName );
                         break;

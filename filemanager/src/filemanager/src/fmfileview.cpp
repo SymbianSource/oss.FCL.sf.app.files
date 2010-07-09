@@ -396,18 +396,19 @@ void FmFileView::on_newFolder_triggered()
     QString associatedDrive = FmUtils::getDriveLetterFromPath( mWidget->currentPath().absoluteFilePath() );
     QString path = FmUtils::fillPathWithSplash( mWidget->currentPath().absoluteFilePath() );
     QString dirName = createDefaultFolderName( path );
-    
+    QStringList regExpList = (QStringList() << Regex_ValidFileFolderName << Regex_ValidNotEndWithDot );
+
     QDir dir( path );  
     if( dir.exists() ) {
         while( FmDlgUtils::showTextQuery( hbTrId( "txt_fmgr_title_new_folder" ), dirName,
-            true, maxFileNameLength, associatedDrive , false ) ){
+            regExpList, maxFileNameLength, associatedDrive , false ) ){
             // remove whitespace from the start and the end.
             dirName = dirName.trimmed();
             QString newTargetPath = FmUtils::fillPathWithSplash(
                 dir.absolutePath() ) + dirName;
             QString errString;
             // check if name/path is available for use
-            if( !FmUtils::checkNewFolderOrFile( newTargetPath, errString ) ) {
+            if( !FmUtils::checkNewFolderOrFile( dirName, newTargetPath, errString ) ) {
                 FmDlgUtils::information( errString );
                 continue;
             }
