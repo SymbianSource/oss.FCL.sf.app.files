@@ -18,9 +18,11 @@
 
 #include "fmfindresultmodel.h"
 #include "fmfindthread.h"
+#include "fmfileiconprovider.h"
 
 #include <QDateTime>
-#include <QFileIconProvider>
+
+#include <hbglobal.h>
 
 FmFindResultModel::FmFindResultModel( QObject *parent )
     : QAbstractListModel( parent )
@@ -93,10 +95,10 @@ QVariant FmFindResultModel::headerData( int section, Qt::Orientation orientation
             return QVariant();
 
         switch (section) {
-            case 0: return tr("Name");
-            case 1: return tr("Size");
-            case 2: return tr("Type");
-            case 3: return tr("Date Modified");
+            case 0: return hbTrId("Name");
+            case 1: return hbTrId("Size");
+            case 2: return hbTrId("Type");
+            case 3: return hbTrId("Date Modified");
             default: return QVariant();
         }
     }
@@ -171,7 +173,6 @@ void FmFindResultModel::find()
         mFindThread->setLastResult( mFindResult );
     }
 	removeRows( 0, mFindResult.size() );
-    emit modelCountChanged( mFindResult.size() );
     mFindThread->start();
 }
 
@@ -188,8 +189,10 @@ bool FmFindResultModel::isFinding() const
 
 void FmFindResultModel::on_findThread_found( int count )
 {
-    int size = mFindResult.size();
-    insertRows( mFindResult.size() - count, count );
+    if( count > 0 ) {
+        int size = mFindResult.size();
+        insertRows( mFindResult.size() - count, count );
+    }
     emit modelCountChanged( mFindResult.size() );
 }
 
@@ -203,7 +206,7 @@ void FmFindResultModel::init()
 {
     mFindThread = new FmFindThread( &mFindResult, this );
     mFindThread->setObjectName( "findThread" );
-    mIconProvider = new QFileIconProvider();
+    mIconProvider = new FmFileIconProvider();
 }
 
 bool FmFindResultModel::caseNameLessThan(const QString &s1, const QString &s2)
@@ -250,21 +253,26 @@ void FmFindResultModel::sort ( int column, Qt::SortOrder order )
            
 //    emit  layoutAboutToBeChanged();
     
+    QStringList lst( mFindResult );
+    removeRows( 0, mFindResult.size() );
+    
     switch( ( SortFlag )column )
     {
     case Name:
-        qSort( mFindResult.begin(), mFindResult.end(), caseNameLessThan );
+        qSort( lst.begin(), lst.end(), caseNameLessThan );
         break;
     case Time:
-        qSort( mFindResult.begin(), mFindResult.end(), caseTimeLessThan );
+        qSort( lst.begin(), lst.end(), caseTimeLessThan );
         break;
     case Size:
-        qSort( mFindResult.begin(), mFindResult.end(), caseSizeLessThan );
+        qSort( lst.begin(), lst.end(), caseSizeLessThan );
         break;
     case Type:
-        qSort( mFindResult.begin(), mFindResult.end(), caseTypeLessThan );
+        qSort( lst.begin(), lst.end(), caseTypeLessThan );
         break;
-    }
-//    emit layoutChanged();
-    emit refresh();
+    }    
+    
+    mFindResult = lst;
+    insertRows( 0, mFindResult.size() );
+    emit modelCountChanged( mFindResult.size() );
 }

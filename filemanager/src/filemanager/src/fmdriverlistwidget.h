@@ -23,11 +23,12 @@
 #include "fmoperationservice.h"
 #include <hbwidget.h>
 
-class QFileSystemWatcher;
+class FmDriveModel;
 class HbListView;
 class HbAbstractViewItem;
 class HbSearchPanel;
-class FmDriveModel;
+class HbMenu;
+class QFileSystemWatcher;
 
 class QGraphicsLinearLayout;
 
@@ -80,6 +81,7 @@ private:
     
     QString mFindTargetPath;
     QGraphicsLinearLayout *mLayout;
+	HbMenu *mContextMenu;
     
     //used to avoid activate when long press list.
     bool mListLongPressed;

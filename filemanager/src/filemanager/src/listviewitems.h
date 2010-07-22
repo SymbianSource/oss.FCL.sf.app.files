@@ -50,8 +50,8 @@ private:
 
     HbLabel *mIconLabel;
     HbLabel *mDiskNameLabel;
-    HbLabel *mSizeLabel;
-    HbLabel *mFreeLabel;
+    HbLabel *mFirstLabel;
+    HbLabel *mSecondLabel;
     HbCheckBox *mCheckBox;
     QGraphicsLinearLayout *hLayout;
 };

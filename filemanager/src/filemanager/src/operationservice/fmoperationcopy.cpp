@@ -19,6 +19,7 @@
 #include "fmcommon.h"
 #include "fmoperationbase.h"
 #include "fmdrivedetailstype.h"
+#include "fmutils.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -96,7 +97,7 @@ int FmOperationCopy::start( volatile bool *isStopped, QString *errString )
                     }
                     destFi.setFile( destFi.absoluteFilePath() );
                 } else {
-                    emit askForRename( destFi.absoluteFilePath(), &newName );
+                    queryForRename( destFi.absoluteFilePath(), &newName );
                     if( newName.isEmpty() ) {
                         ret = FmErrCancel;
                         break;
@@ -106,7 +107,7 @@ int FmOperationCopy::start( volatile bool *isStopped, QString *errString )
                 }
             } else{
                 // destination is dir
-                emit askForRename( destFi.absoluteFilePath(), &newName );
+                queryForRename( destFi.absoluteFilePath(), &newName );
                 if( newName.isEmpty() ) {
                     ret = FmErrCancel;
                     break;
@@ -155,7 +156,7 @@ int FmOperationCopy::copy( const QString &source, const QString &targetPath,
             *mErrString = source;
             ret = FmErrCannotCopy;
         } else {
-        IncreaseProgress( fileSize );
+        increaseProgress( fileSize );
         }
     } else if (fi.isDir()) {
         ret = copyDirInsideContent( source, newName );
@@ -171,18 +172,21 @@ int FmOperationCopy::copy( const QString &source, const QString &targetPath,
 
 int FmOperationCopy::copyDirInsideContent( const QString &srcPath, const QString &destPath )
 {
-    if( destPath.contains( srcPath, Qt::CaseInsensitive ) ) {
+    QFileInfo srcInfo( srcPath );
+    QFileInfo destInfo( destPath );
+    
+    QString destUpPath = FmUtils::fillPathWithSplash( destInfo.absolutePath() );
+    if( destUpPath.contains( srcPath, Qt::CaseInsensitive ) ) {
         *mErrString = destPath;
         return FmErrCopyDestToSubFolderInSrc;
     }
 
-    QFileInfo srcInfo( srcPath );
+    
     if( !srcInfo.isDir() || !srcInfo.exists() ) {
         *mErrString = srcPath;
         return FmErrSrcPathDoNotExist;
     }
-
-    QFileInfo destInfo( destPath );
+    
     if( !destInfo.exists() ) {
         if( !destInfo.dir().mkdir( destInfo.absoluteFilePath() ) ) {
             *mErrString = destPath;
@@ -210,7 +214,7 @@ int FmOperationCopy::copyDirInsideContent( const QString &srcPath, const QString
                 *mErrString = fileInfo.absoluteFilePath();
                 return FmErrCannotCopy;
             }
-            IncreaseProgress( fileInfo.size() );
+            increaseProgress( fileInfo.size() );
         } else if( fileInfo.isDir() ) {
             //makedir
             QString newDirPath = destPath + fileInfo.absoluteFilePath().mid( srcPath.length() );
@@ -235,7 +239,7 @@ int FmOperationCopy::copyDirInsideContent( const QString &srcPath, const QString
     return FmErrNone;
 }
 
-void FmOperationCopy::IncreaseProgress( quint64 size )
+void FmOperationCopy::increaseProgress( quint64 size )
 {
     if( mTotalSize <=0 ) {
         return;
@@ -246,4 +250,9 @@ void FmOperationCopy::IncreaseProgress( quint64 size )
         mCurrentStep = step;
         emit notifyProgress( mCurrentStep );
     }
+}
+
+void FmOperationCopy::queryForRename( const QString &srcFile, QString *destFile )
+{
+    emit askForRename( srcFile, destFile );
 }

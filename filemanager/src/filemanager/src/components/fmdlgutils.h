@@ -25,6 +25,8 @@
 #include <QStringList>
 #include <QTime>
 
+#include <hbglobal.h>
+
 class FmDialog;
 class HbAction;
 
@@ -86,8 +88,18 @@ public:
        const QString &firstLabel, const QString &secondLabel, QString &pwd, int maxLength = -1,
 	   const QString &associatedDrives = QString() );
     
-    static bool question( const QString &questionText, const QString &primaryButtonText = tr("Yes"),
-            const QString &secondaryButtonText = tr("No") );
+    static bool question( const QString &questionText, const QString &primaryButtonText = QString( hbTrId("Yes") ),
+            const QString &secondaryButtonText = QString( hbTrId("No") )  );
+
+    static void information( const QString &informationText );
+    
+    /**
+     * Query drive for backup
+     *
+     * @param title Title for query dialog
+     * @return selected drive name. empty for cancel.
+     */
+    static QString showBackupDriveQuery( const QString& title );
 
     ~FmDlgUtils(void);
 private:

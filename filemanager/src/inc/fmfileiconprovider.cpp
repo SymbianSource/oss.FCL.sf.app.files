@@ -16,58 +16,171 @@
 */
 
 #include "fmfileiconprovider.h"
+#include "fmfiletyperecognizer.h"
 #include "fmutils.h"
 
 #include <QDir>
 #include <QFileInfo>
 
-#define mmcIcon         ":image/qgn_prop_mmc_memc.svg"
-#define mmcNoneIcon     ":image/qgn_prop_fmgr_mmc_no_sub.svg"
+#include "hbicon.h"
+
+//#define mmcIcon         ":image/qgn_prop_mmc_memc.svg"
+//#define mmcNoneIcon     ":image/qgn_prop_fmgr_mmc_no_sub.svg"
+//#define mmcLockedIcon   ":image/qgn_prop_mmc_locked.svg"
+//#define phoneMemoryIcon ":image/qgn_prop_phone_memc.svg"
+//#define usbMemoryIcon   ":image/qgn_prop_usb_memc.svg"
+//#define massMemoryIcon  ":image/qgn_prop_fmgr_ms.svg"
+
+#define phoneMemoryIcon "qtg_large_mobile"
+#define massMemoryIcon  "qtg_large_mass_storage"
+#define mmcIcon         "qtg_large_mmc"
+#define mmcNoneIcon     "qtg_large_mmc_removed"
+#define usbMemoryIcon   "qtg_large_usb_memory"
+
+//TODO: UI_Update: mmcl locked icon have not provided in icon spec
+// Just use orignal custom-defined icon
 #define mmcLockedIcon   ":image/qgn_prop_mmc_locked.svg"
-#define phoneMemoryIcon ":image/qgn_prop_phone_memc.svg"
-#define usbMemoryIcon   ":image/qgn_prop_usb_memc.svg"
-#define massMemoryIcon  ":image/qgn_prop_fmgr_ms.svg"
+
+
+#define folderIcon      "qtg_large_folder"
+
+#define imageIcon       "qtg_large_photos" 
+#define videoIcon       "qtg_large_video" 
+#define toneIcon        "qtg_large_tone"
+#define playlistIcon    "qtg_large_playlist" 
+#define textIcon        "qtg_large_text" 
+#define sisxIcon        "qtg_large_sisx" 
+#define javaIcon        "qtg_large_java" 
+#define flashIcon       "qtg_large_flash" 
+#define widgetIcon      "qtg_large_widget" 
+#define weblinkIcon     "qtg_large_web_link" 
+#define queryIcon       "qtg_large_query"
 
 FmFileIconProvider::FmFileIconProvider()
 {
-
+    mFileTypeRecognizer = new FmFileTypeRecognizer();
 }
 
 FmFileIconProvider::~FmFileIconProvider()
 {
+    delete mFileTypeRecognizer;
 }
-
+        
 QIcon FmFileIconProvider::icon(const QFileInfo &info) const
 {
-    QString filePath( info.path() );
-    if( FmUtils::isDrive( filePath ) ) {
-        FmDriverInfo::DriveState driveState = FmUtils::queryDriverInfo( filePath ).driveState();
-        if( driveState & FmDriverInfo::EDriveAvailable ){
-            if( driveState & FmDriverInfo::EDriveRemovable ) {
-                if( driveState & FmDriverInfo::EDriveMassStorage ) {
-                    // Mass Storage
-                    return QIcon( massMemoryIcon );
-                } else if( driveState & FmDriverInfo::EDriveUsbMemory ) {
-                    // Usb Memory
-                    return QIcon( usbMemoryIcon );
+    QIcon retIcon;
+    
+    QString filePath( info.absoluteFilePath() );
+    FmFileTypeRecognizer::FileType fileType = mFileTypeRecognizer->getType( filePath );
+    switch( fileType )
+        {
+        case FmFileTypeRecognizer::FileTypeDrive:
+            {
+            FmDriverInfo::DriveState driveState = FmUtils::queryDriverInfo( filePath ).driveState();
+            if( driveState & FmDriverInfo::EDriveAvailable ){
+                if( driveState & FmDriverInfo::EDriveRemovable ) {
+                    if( driveState & FmDriverInfo::EDriveMassStorage ) {
+                        // Mass Storage
+                        retIcon = HbIcon( massMemoryIcon ).qicon();
+                        break;
+                    } else if( driveState & FmDriverInfo::EDriveUsbMemory ) {
+                        // Usb Memory
+                        retIcon = HbIcon( usbMemoryIcon ).qicon();
+                        break;
+                    } else{
+                        //Memory Card
+                        retIcon = HbIcon( mmcIcon ).qicon();
+                        break;
+                    }
                 } else{
-                    //Memory Card
-                    return QIcon( mmcIcon );
+                    //Phone Memory
+                    retIcon = HbIcon( phoneMemoryIcon ).qicon();
+                    break;
                 }
-            } else{
-                //Phone Memory
-                return QIcon( phoneMemoryIcon );
+            } else if( driveState & FmDriverInfo::EDriveLocked ) {
+                retIcon = HbIcon( mmcLockedIcon ).qicon();
+                break;
+            } else if( driveState & FmDriverInfo::EDriveCorrupted ) {
+                retIcon = HbIcon( mmcNoneIcon ).qicon();
+                break;
+            } else if( driveState & FmDriverInfo::EDriveNotPresent ){
+                retIcon = HbIcon( mmcNoneIcon ).qicon();
+                break;
+            } else {
+                retIcon = HbIcon( mmcNoneIcon ).qicon();
+                break;
             }
-        } else if( driveState & FmDriverInfo::EDriveLocked ) {
-            return QIcon( mmcLockedIcon );
-        } else if( driveState & FmDriverInfo::EDriveCorrupted ) {
-            return QIcon( mmcNoneIcon );
-        } else if( driveState & FmDriverInfo::EDriveNotPresent ){
-            return QIcon( mmcNoneIcon );
-        } else {
-            return QIcon( mmcNoneIcon );
+            }
+        case FmFileTypeRecognizer::FileTypeFolder:
+            {
+            retIcon = HbIcon( folderIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypeImage:
+            {
+            retIcon = HbIcon( imageIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypeVideo:
+            {
+            retIcon = HbIcon( videoIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypeTone:
+            {
+            retIcon = HbIcon( toneIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypePlaylist:
+            {
+            retIcon = HbIcon( playlistIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypeText:
+            {
+            retIcon = HbIcon( textIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypeSisx:
+            {
+            retIcon = HbIcon( sisxIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypeJava:
+            {
+            retIcon = HbIcon( javaIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypeFlash:
+            {
+            retIcon = HbIcon( flashIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypeWidget:
+            {
+            retIcon = HbIcon( widgetIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypeWebLink:
+            {
+            retIcon = HbIcon( weblinkIcon ).qicon();
+            break;
+            }
+        case FmFileTypeRecognizer::FileTypeUnKnown:
+            {
+            // currently filemanger icon doc is not unified with icon name.
+            // for example, qtg_small_unknown  qtg_large_query both means for unknown type
+			// but the two icon name is not the same.
+            retIcon = HbIcon( queryIcon ).qicon();
+            break;
+            }
         }
-    } else {
-        return QFileIconProvider::icon( info );
+    
+    // if cannot get icon, return icon from QFileIconProvider
+    // this will be mostly used in win32 platform,
+    // because path for HbIcon only existed in hb theme of symbian 
+    if( retIcon.isNull() ) {
+        retIcon = QFileIconProvider::icon( info );
     }
+    return retIcon;
 }

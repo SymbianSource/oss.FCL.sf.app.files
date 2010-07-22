@@ -16,9 +16,9 @@
  *     The source file of the restore view list item of file manager
  */
 #include "fmrestoreviewitem.h"
-
+#include "fmfileiconprovider.h"
 #include <QGraphicsLinearLayout>
-
+#include <QGraphicsGridLayout>
 #include <hblabel.h>
 #include <hbcheckbox.h>
 #include <hbwidget.h>
@@ -29,10 +29,11 @@ FmRestoreViewItem::FmRestoreViewItem( QGraphicsItem *parent )
   : HbListViewItem( parent ),
     mRestoreContentLabel( 0 ),
     mDateTimeLabel( 0 ),
-    mCheckBox( 0 )
-
+    mCheckBox( 0 ),
+    hLayout( 0 ),
+    mParentWidget((HbWidget *)parent)
 {
-	init();
+	//init();
 }
 
 FmRestoreViewItem::~FmRestoreViewItem()
@@ -42,7 +43,7 @@ FmRestoreViewItem::~FmRestoreViewItem()
 
 HbAbstractViewItem *FmRestoreViewItem::createItem()
 {
-	return new FmRestoreViewItem( parentItem() );
+	return new FmRestoreViewItem( *this );
 }
 
 void FmRestoreViewItem::polish(HbStyleParameters& params)
@@ -52,6 +53,9 @@ void FmRestoreViewItem::polish(HbStyleParameters& params)
 
 void FmRestoreViewItem::updateChildItems()
 {
+    if( !hLayout ) {
+       init();
+    }
 	QString string = modelIndex().data( Qt::DisplayRole ).toString();	
 
 	QStringList stringList = string.split( '\t' );
@@ -60,57 +64,70 @@ void FmRestoreViewItem::updateChildItems()
 		return;
 	}
 
-	 mRestoreContentLabel->setPlainText( stringList.first() );
+    mRestoreContentLabel->setPlainText(stringList.first());
 
-	 if( stringList.first() != stringList.last() ){
-	     mDateTimeLabel->setPlainText( stringList.last() );
-	 }
+    if (stringList.size() > 0)
+        {
+        mDateTimeLabel->setPlainText(stringList.at(1));
+        }
+    if (stringList.size() > 1)
+        {
+        QIcon icon = mIconProvider->icon(QFileInfo(stringList.at(2)));
+        // FmFileIconProvider already handle null icon issue
+        mIconLabel->setIcon(HbIcon(icon));
+        }
+    
+    connect(this, SIGNAL(stateChanged(int)), mParentWidget,
+            SIGNAL(stateChanged(int)));
 
 }
 
-
 void FmRestoreViewItem::init()
 {
-	QGraphicsLinearLayout *hLayout = new QGraphicsLinearLayout();
-	hLayout->setOrientation( Qt::Horizontal );
+    mIconProvider = new FmFileIconProvider(); 
+    hLayout = new QGraphicsLinearLayout();
+    hLayout->setOrientation(Qt::Horizontal);
+    hLayout->addItem(layout());
 
-	mCheckBox = new HbCheckBox( this );
-    hLayout->addItem( mCheckBox );
-	hLayout->setAlignment( mCheckBox, Qt::AlignVCenter );
+    mCheckBox = new HbCheckBox(this);
+    hLayout->addItem(mCheckBox);
+    hLayout->setAlignment(mCheckBox, Qt::AlignVCenter);
 
-	QGraphicsLinearLayout *vLayout = new QGraphicsLinearLayout();
-	vLayout->setOrientation( Qt::Vertical );
+    QGraphicsGridLayout *vLayout = new QGraphicsGridLayout();
 
-	mRestoreContentLabel = new HbLabel("");
-	mRestoreContentLabel->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
-	vLayout->addItem( mRestoreContentLabel );
-	vLayout->setAlignment( mRestoreContentLabel, Qt::AlignLeft );
+    mRestoreContentLabel = new HbLabel("");
+    mRestoreContentLabel->setFontSpec(HbFontSpec(HbFontSpec::Primary));
+    
+    mIconLabel = new HbLabel();    
 
-	mDateTimeLabel = new HbLabel("");
-	mDateTimeLabel->setFontSpec( HbFontSpec( HbFontSpec::Secondary ) );
-	vLayout->addItem( mDateTimeLabel );
-	vLayout->setAlignment( mDateTimeLabel, Qt::AlignLeft );
+    mDateTimeLabel = new HbLabel("");
+    mDateTimeLabel->setFontSpec(HbFontSpec(HbFontSpec::Secondary));
 
-	HbWidget *textWidget = new HbWidget();
-	textWidget->setLayout(vLayout);
+    vLayout->addItem(mRestoreContentLabel, 0, 0);
+    vLayout->addItem(mIconLabel, 0, 1);
+    vLayout->addItem(mDateTimeLabel, 1, 0);
 
-	hLayout->addItem( textWidget );
-	hLayout->setAlignment( textWidget, Qt::AlignVCenter );
+    HbWidget *textWidget = new HbWidget();
+    textWidget->setLayout(vLayout);
 
-	setLayout( hLayout );
-
+    hLayout->addItem(textWidget);
+    hLayout->setAlignment(textWidget, Qt::AlignVCenter);
+    
+    connect(mCheckBox, SIGNAL(stateChanged(int)), this,
+            SIGNAL(stateChanged(int)));
+    setLayout(hLayout);
 }
 
 void FmRestoreViewItem::setCheckBoxState()
 {
 	if ( mCheckBox->checkState() ==  Qt::Unchecked ){
 		mCheckBox->setCheckState( Qt::Checked );
-		setSelected( true );
+		setSelected( true );		
 	}
 	else if( mCheckBox->checkState() ==  Qt::Checked ){
 		mCheckBox->setCheckState( Qt::Unchecked );
 		setSelected( false );
-	}
+	}	
 }
 
 bool FmRestoreViewItem::getCheckBoxState()
@@ -121,3 +138,4 @@ bool FmRestoreViewItem::getCheckBoxState()
         return true;
     }
 }
+

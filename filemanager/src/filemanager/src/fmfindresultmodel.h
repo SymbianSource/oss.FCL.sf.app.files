@@ -26,7 +26,7 @@
 #include <QAbstractListModel>
 
 class FmFindThread;
-class QFileIconProvider;
+class FmFileIconProvider;
 
 class FmFindResultModel : public QAbstractListModel
 {
@@ -79,7 +79,6 @@ signals:
     // pass modelCountChanged signal to parent widget
     // so parent widget could change contentWiget between emptyTipsWidget and listWidget
     void modelCountChanged( int count );
-    void refresh();
 
 private slots:
     void on_findThread_found( int count );
@@ -90,7 +89,7 @@ private:
 
     FmFindThread *mFindThread;
     QStringList mFindResult;
-    QFileIconProvider *mIconProvider;
+    FmFileIconProvider *mIconProvider;
 };
 
 #endif

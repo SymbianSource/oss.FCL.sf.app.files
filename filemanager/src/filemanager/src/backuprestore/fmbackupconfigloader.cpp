@@ -25,8 +25,6 @@
 #include <QByteArray>
 #include <QCoreApplication>
 
-#include <hbmessagebox.h>
-
 FmBackupConfigLoader::FmBackupConfigLoader(void)
 {
     

@@ -26,6 +26,12 @@
 class FmDriveDetailsDataGroup
 {
 public:
+    // used to identify recognize method
+    enum TDataRecognizeType{
+        EDataRecognizeExtName = 0,  // recognize data by extension of filename
+        EDataRecognizeAbsolutePath  // recognize data by ablsolute file path
+    };
+    
     enum TDataGroups{
         EGroupImages = 0,
         EGroupSoundFiles,
@@ -40,8 +46,13 @@ public:
     };
     
 public:
-        FmDriveDetailsDataGroup( TDataGroups dataGroups, QStringList typeFilters ) 
-            : mDataGroups( dataGroups ), mTypeFilters( typeFilters ) {}
+       FmDriveDetailsDataGroup( TDataGroups dataGroups,
+                    QStringList typeFilters,
+                    TDataRecognizeType recognizeType ) 
+                   : mDataGroups( dataGroups ), mTypeFilters( typeFilters ),
+                     mDataRecognizeType( recognizeType )
+        {
+        }
         FmDriveDetailsDataGroup( const FmDriveDetailsDataGroup &other )
         {
             *this = other;
@@ -56,10 +67,12 @@ public:
         
         TDataGroups dataGroups() const { return mDataGroups; }
         QStringList typeFilters() const { return mTypeFilters; }
+        TDataRecognizeType dataRecognizeType() const { return mDataRecognizeType; }
     
 private:
       TDataGroups mDataGroups;
       QStringList mTypeFilters;
+      TDataRecognizeType mDataRecognizeType;
 };
 
 class FmDriveDetailsSize
@@ -93,7 +106,27 @@ public:
     static QList<FmDriveDetailsDataGroup*> queryDetailsContent(); 
     static int querySizeofContent(
             const QString &driveName, QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped );
-   
+    /**
+     * Gets data size for single FmDriveDetailsDataGroup, the method is scan files for extension.
+     * @param driveName which drive is searching
+     * @param dataGroup which dataGroup is searching, for example, EGroupImages, EGroupSoundFiles...
+     * @param detailsSizeList if got result, new FmDriveDetailsSize will be appended to detailsSizeList
+     * @param isStopped isStopped will be set as true if user cancel this operation
+     * @return Filemanage wide error. Please refer to fmdefine.h
+     */
+    static int getDataSizeByExtName( const QString &driveName, const FmDriveDetailsDataGroup* const dataGroup,
+               QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped );
+    
+    /**
+     * Gets data size for single FmDriveDetailsDataGroup, the method is find file of absolute path
+     * @param driveName which drive is searching
+     * @param dataGroup which dataGroup is searching, for example, EGroupContacts...
+     * @param detailsSizeList if got result, new FmDriveDetailsSize will be appended to detailsSizeList
+     * @param isStopped isStopped will be set as true if user cancel this operation
+     * @return Filemanage wide error. Please refer to fmdefine.h
+     */
+    static int getDataSizeByAbsolutePath( const QString &driveName, const FmDriveDetailsDataGroup* const dataGroup, 
+               QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped );
 };
 
 class FmFolderDetails

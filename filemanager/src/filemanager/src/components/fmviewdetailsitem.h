@@ -22,6 +22,7 @@
 #include <hblistviewitem.h>
 
 class HbLabel;
+class QGraphicsLinearLayout;
 
 class FmViewDetailsItem : public HbListViewItem
 {
@@ -45,6 +46,8 @@ private:
 private:
     HbLabel *mDetailsContentLabel;
     HbLabel *mDetailsLabel;   
+
+    QGraphicsLinearLayout *mLayout;
 };
 
 #endif /* FMVIEWDETAILSITEM_H */

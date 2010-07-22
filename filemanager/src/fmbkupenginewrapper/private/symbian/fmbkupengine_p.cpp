@@ -435,6 +435,8 @@ int FmBkupEnginePrivate::error()
         return FmErrCorrupt;
     case KErrNotReady:
         return FmErrNotReady;
+    case KErrDisMounted:
+        return FmErrDisMounted;
     default: 
         return FmErrUnKnown;
     }    
@@ -722,7 +724,7 @@ void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* >
         int s       = iDateTime.Second();
         int year    = iDateTime.Year();
         int month   = iDateTime.Month() + 1;
-        int day     = iDateTime.Day();
+        int day     = iDateTime.Day()+1;
         QTime time( h, m, s);
         QDate date( year, month, day );
         

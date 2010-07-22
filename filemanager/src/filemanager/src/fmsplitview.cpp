@@ -21,7 +21,6 @@
 #include "fmdriverlistwidget.h"
 #include <QGraphicsLinearLayout>
 
-#include <hbmessagebox.h>
 #include <hbmenu.h>
 #include <hbaction.h>
 #include <hbmainwindow.h>

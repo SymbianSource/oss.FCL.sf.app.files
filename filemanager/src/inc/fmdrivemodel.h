@@ -20,8 +20,30 @@
 
 #include <QAbstractItemModel>
 #include <QStringList>
-#include <QFileIconProvider>
 #include <QModelIndex>
+
+class FmFileIconProvider;
+
+/*!
+    \class FmDriveListProvider
+    \brief The class FmDriveListProvider provide drive list which is used in FmDriveModel
+ */
+class FmDriveListProvider
+{
+public:
+    FmDriveListProvider()
+    {
+    }
+    
+    virtual ~FmDriveListProvider()
+    {
+    }
+    
+    /*!
+     implement this function to provide drive list.
+     */
+    virtual void getDriveList( QStringList &driveList ) = 0;
+};
 
 class FmDriveModel : public QAbstractListModel
 {
@@ -35,7 +57,8 @@ public:
     };
     Q_DECLARE_FLAGS(Options, Option)
 
-    explicit FmDriveModel( QObject *parent = 0, Options options = 0 );
+    explicit FmDriveModel( QObject *parent = 0, Options options = 0,
+            FmDriveListProvider *driveListProvider = 0 );
     virtual ~FmDriveModel();
 
     void refresh();
@@ -49,9 +72,13 @@ public:
     
 private:
     QStringList         mFindResult;
-    QFileIconProvider   *mIconProvider;
+    FmFileIconProvider  *mIconProvider;
     QStringList         mDriveList;
     Options             mOptions;
+    
+    // DriveListProvider will ignore HideUnAvailableDrive option.
+    // DriveListProvide can be set by others to provide special drive list
+    FmDriveListProvider *mDriveListProvider;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(FmDriveModel::Options)

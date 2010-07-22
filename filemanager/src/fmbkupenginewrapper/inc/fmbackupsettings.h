@@ -24,31 +24,7 @@
 #include <QString>
 #include <QList>
 
-const QString constFileManagerBackupWeekdayMonday = "Monday";
-const QString constFileManagerBackupWeekdayTuesday = "Tuesday";
-const QString constFileManagerBackupWeekdayWednesday = "Wednesday";
-const QString constFileManagerBackupWeekdayThursday = "Thursday";
-const QString constFileManagerBackupWeekdayFirday = "Friday";
-const QString constFileManagerBackupWeekdaySaturday = "Saturday";
-const QString constFileManagerBackupWeekdaySunday = "Sunday";
-
-const QString constFileManagerBackupScheduleNever = "Never";
-const QString constFileManagerBackupScheduleDaily = "Daily";
-const QString constFileManagerBackupScheduleWeekly = "Weekly";
-
-const QString constFileManagerBackupSettingsTitleContents = "Backup Contents";
-const QString constFileManagerBackupSettingsTitleScheduling = "Backup scheduling";
-const QString constFileManagerBackupSettingsTitleWeekday = "Weekday";
-const QString constFileManagerBackupSettingsTitleTime = "Time";
-const QString constFileManagerBackupSettingsTitleTargetDrive = "Backup destination";
-
-const QString constFileManagerBackupSettingsContentAll = "All";
-const QString constFileManagerBackupSettingsContentSettings = "Settings";
-const QString constFileManagerBackupSettingsContentMessages = "Messages";
-const QString constFileManagerBackupSettingsContentContacts = "Contacts";
-const QString constFileManagerBackupSettingsContentCalendar = "Calendar entries";
-const QString constFileManagerBackupSettingsContentBookmarks = "Bookmarks";
-const QString constFileManagerBackupSettingsContentUserFiles = "Files";
+#include <hbglobal.h>
 
 class FmBkupEngine;
 

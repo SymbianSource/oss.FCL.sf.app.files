@@ -31,7 +31,6 @@ int main( int argc, char *argv[] )
 {
     FmLogger::log( "main start" );
     HbApplication app( argc, argv );
-    app.setApplicationName( "filemanager" );
 
     QTranslator translator;
     QString lang = QLocale::system().name(); 
@@ -39,6 +38,8 @@ int main( int argc, char *argv[] )
     translator.load( path + "filemanager_" + lang );
     app.installTranslator(&translator);
 
+    app.setApplicationName( hbTrId("txt_fmgr_title_file_manager") );
+    
     FmLogger::log( "main_createMainwindow start" );
     FmMainWindow mw;
     FmLogger::log( "main_createMainwindow end" );

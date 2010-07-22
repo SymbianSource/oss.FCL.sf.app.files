@@ -17,6 +17,7 @@
  */
 #include "fmrestorewidget.h"
 #include "fmrestoresettings.h"
+#include "fmbackupsettings.h"
 #include "fmrestoreviewitem.h"
 #include "fmoperationservice.h"
 #include "fmviewmanager.h"
@@ -72,10 +73,12 @@ void FmRestoreWigdet::init()
     vLayout->addItem( mListView );
 
     mModel = new QStringListModel();
-    mListView->setModel( mModel );
-
+    mListView->setModel( mModel );    
     mRestoreSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->RestoreSettingsL();
     mBackupConfigLoader = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->backupConfigLoader();
+    
+    // load backup settings to refresh default target drive
+    FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->BackupSettingsL()->load();
     mRestoreSettings->load( mBackupConfigLoader->driversAndOperationList() );
 
     int index = 0;
@@ -89,6 +92,9 @@ void FmRestoreWigdet::init()
              QDateTime datetime = ( *it )->restoreInfo().dateTime();
              string.append( '\t' );
              string.append( datetime.toString( "hh:mm ap dd/MM/yyyy") );
+             QString drive = ( *it )->restoreInfo().drive();             
+             string.append( '\t' );
+             string.append( drive );
              QVariant variant( string );
 
              mModel->setData( mModel->index( index ), variant, Qt::DisplayRole );
@@ -96,8 +102,7 @@ void FmRestoreWigdet::init()
              ++index;
     }
 
-    mListView->setItemPrototype( new FmRestoreViewItem( this ) );
-
+    mListView->setItemPrototype( new FmRestoreViewItem(this) );
 }
 
 void FmRestoreWigdet::on_list_activated( const QModelIndex &index )
@@ -105,11 +110,51 @@ void FmRestoreWigdet::on_list_activated( const QModelIndex &index )
     FmRestoreViewItem *restoreViewItem = static_cast< FmRestoreViewItem* >
                                          ( mListView->itemByIndex( index ) );
 
-    restoreViewItem->setCheckBoxState();
-    emit checkStatusChanged();
+    restoreViewItem->setCheckBoxState();    
 }
 
 int FmRestoreWigdet::backupDataCount()
 {
     return mModel->rowCount();
+}
+
+void FmRestoreWigdet::refresh()
+{
+    mListView->setModel( 0 );
+    if( !mModel ) {
+            mModel = new QStringListModel();
+        }
+    mModel->removeRows( 0, mModel->rowCount() );
+
+    mRestoreSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->RestoreSettingsL();
+    mBackupConfigLoader = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->backupConfigLoader();
+    mRestoreSettings->load( mBackupConfigLoader->driversAndOperationList() );
+
+    int index = 0;
+    QList< FmRestoreEntry* > retoreEntryList = mRestoreSettings->restoreEntryList();
+    mModel->insertRows( 0, retoreEntryList.count() );
+    for ( QList< FmRestoreEntry* >::iterator it = retoreEntryList.begin(); 
+        it != retoreEntryList.end(); ++it ){
+            QString string = ( *it )->text();
+            QDateTime datetime = ( *it )->restoreInfo().dateTime();
+            QString drive = ( *it )->restoreInfo().drive();
+            string.append( '\t' );
+            string.append( datetime.toString( "hh:mm ap dd/MM/yyyy") );
+            string.append( '\t' );
+            string.append( drive );
+            QVariant variant( string );             
+            mModel->setData( mModel->index( index ), variant, Qt::DisplayRole );
+            ++index;
+        }   
+    mListView->setModel( mModel );   
+    mListView->setItemPrototype( new FmRestoreViewItem( this ) );
+      
+    for (int i = 0; i < mModel->rowCount(); ++i) {
+        QModelIndex index = mModel->index(i);
+        FmRestoreViewItem* restoreViewItem = static_cast< FmRestoreViewItem* >
+                                                 (mListView->itemByIndex(index));
+        connect(restoreViewItem, SIGNAL(stateChanged(int)), this, SIGNAL(stateChanged(int)));               
+    }
+    emit stateChanged(0);
+    
 }

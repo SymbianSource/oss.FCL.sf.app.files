@@ -68,7 +68,7 @@ QString FmFileDialog::getExistingDirectory( HbWidget *parent,
     FmFileDialog dialog( parent );
     dialog.d_ptr->init( args );
     if( dialog.exec() ) {
-        ret = FmUtils::fillPathWithSplash( dialog.d_ptr->currentPath() );
+        ret = FmUtils::formatPath( dialog.d_ptr->currentPath() );
     }
     return ret;
 }
@@ -97,7 +97,7 @@ QString FmFileDialog::getOpenFileName( HbWidget *parent,
     FmFileDialog dialog( parent );
     dialog.d_ptr->init( args );
     if( dialog.exec() ) {
-        ret = FmUtils::fillPathWithSplash( dialog.d_ptr->currentPath() )
+        ret = FmUtils::formatPath( dialog.d_ptr->currentPath() )
             + dialog.d_ptr->selectedFile();
     }
     return ret;
@@ -127,7 +127,7 @@ QString FmFileDialog::getSaveFileName( HbWidget * parent,
     FmFileDialog dialog( parent );
     dialog.d_ptr->init( args );
     if( dialog.exec() ) {
-        ret = FmUtils::fillPathWithSplash( dialog.d_ptr->currentPath() )
+        ret = FmUtils::formatPath( dialog.d_ptr->currentPath() )
             + dialog.d_ptr->selectedFile();
     }
     return ret;
@@ -152,3 +152,55 @@ void FmFileDialog::dialogClosed(HbAction *action)
     d_ptr->setRetAction( action );
     d_ptr->eventLoop().exit();
 }
+
+
+HbAction *FmFileDialog::primaryAction() const
+{
+    QList<QAction *> actionList = QGraphicsWidget::actions();
+    if (actionList.size() > 0) {
+        return (HbAction *)(actionList.at(0));
+    } else {
+        return 0;
+    }
+    
+}
+
+void FmFileDialog::setPrimaryAction( HbAction *action )
+{
+    QList<QAction *> actionList = QGraphicsWidget::actions();
+    if (actionList.size() == 0) {
+        QGraphicsWidget::addAction(action);
+    } else if (actionList.size() ==  1) {
+        actionList.clear();
+        QGraphicsWidget::addAction(action);
+    } else if (actionList.size() == 2) {
+        actionList.removeAt(0);
+        actionList.insert(0, action);
+    }    
+}
+
+HbAction *FmFileDialog::secondaryAction() const
+{
+    QList<QAction *> actionList = QGraphicsWidget::actions();
+    if (actionList.size() > 1) {
+        return (HbAction *)(actionList.at(1));
+    } else {
+        return 0;
+    }    
+}
+
+void FmFileDialog::setSecondaryAction( HbAction *action )
+{
+    QList<QAction *> actionList = QGraphicsWidget::actions();
+    if (actionList.size() == 0) {
+        QGraphicsWidget::addAction(new HbAction(hbTrId("Ok")));
+        QGraphicsWidget::addAction(action);          
+    } else if (actionList.size() == 1) {
+        QGraphicsWidget::addAction(action);
+    } else if (actionList.size() == 2) {
+        actionList.removeAt(1);
+        actionList.insert(1, action);
+    }
+        
+}
+

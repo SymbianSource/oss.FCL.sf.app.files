@@ -36,11 +36,12 @@ public:
 
     QList<int> selectionIndexes();
     int backupDataCount();
+    void refresh();
 private:
     void init();
 
-signals:
-    void checkStatusChanged();
+signals:    
+    void stateChanged(int state);
 
 private slots:
     void on_list_activated( const QModelIndex &index );

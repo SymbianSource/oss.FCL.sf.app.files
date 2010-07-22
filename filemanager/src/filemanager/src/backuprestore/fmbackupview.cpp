@@ -20,7 +20,7 @@
 #include "fmbackupwidget.h"
 #include "fmviewmanager.h"
 #include "fmoperationbase.h"
-
+#include "fmdlgutils.h"
 
 #include <QApplication>
 
@@ -28,12 +28,10 @@
 #include <hbtoolbar.h>
 #include <hbmenu.h>
 #include <hbmainwindow.h>
-#include <hbmessagebox.h>
-
 
 FmBackupView::FmBackupView() : FmViewBase( EBackupView )
 {
-	setTitle( tr( "Backup" ) );
+	setTitle( hbTrId( "Backup" ) );
 
 	initToolBar();
 	initMainWidget();
@@ -97,19 +95,19 @@ void FmBackupView::on_leftAction_triggered()
     case FmErrNone:
         break;
     case FmErrWrongParam:
-        HbMessageBox::information( QString( hbTrId("Operation canceled with wrong param!") ) );
+        FmDlgUtils::information( QString( hbTrId("Operation canceled with wrong param!") ) );
         break;
     case FmErrAlreadyStarted:
-        HbMessageBox::information( QString( hbTrId("Operation canceled because already started!") ) );
+        FmDlgUtils::information( QString( hbTrId("Operation canceled because already started!") ) );
         break;
     case FmErrPathNotFound:
-        HbMessageBox::information( QString( hbTrId("Operation canceled because can not find target path or drive is not available!") ) );
+        FmDlgUtils::information( QString( hbTrId("Operation canceled because can not find target path or drive is not available!") ) );
         break;
     case FmErrAlreadyExists:
-        HbMessageBox::information( QString( hbTrId("backup canceled") ) );
+        FmDlgUtils::information( QString( hbTrId("backup canceled") ) );
         break;
     default:
-        HbMessageBox::information( QString( hbTrId("backup failed") ) );
+        FmDlgUtils::information( QString( hbTrId("backup failed") ) );
         break;
     }
 }
@@ -140,7 +138,16 @@ void FmBackupView::removeToolBarAction()
     toolBar()->removeAction( mToolBarAction );
 }
 
-void FmBackupView::refreshBackupView()
+void FmBackupView::refreshBackupDate()
 {
     mMainWidget->updateBackupDate();
+}
+
+void FmBackupView::refreshModel( const QString& path )
+{
+    if( !path.isEmpty() ) {
+        // ignore non-empty refresh signal as it means change of folder/file, not drive.
+        return;
+    }
+    mMainWidget->refreshModel();
 }

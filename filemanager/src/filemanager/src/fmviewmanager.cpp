@@ -29,9 +29,9 @@
 #include "fmoperationbase.h"
 #include "fmdrivewatcher.h"
 #include "fmdialog.h"
+#include "fmdlgutils.h"
 
 #include <hbview.h>
-#include <hbmessagebox.h>
 #include <QFileSystemWatcher>
 #include <QFileInfo>
 
@@ -153,11 +153,17 @@ void FmViewManager::on_operationService_refreshModel( FmOperationBase *operation
 
 void FmViewManager::on_operationService_notifyFinish( FmOperationBase *operationBase )
 {
+    if( !operationBase ){
+        Q_ASSERT_X( false, "FmViewManager",
+                "NULL is not accepted in on_operationService_notifyFinish()" );
+        return;
+    }
+    
     if( operationBase->operationType() == FmOperationService::EOperationTypeBackup )
         {
-        emit refreshBackupView();
+        // after finish backup, we need refresh backup date in backup view.
+        emit refreshBackupDate();
         }
-
 }
 
 
@@ -186,13 +192,13 @@ void FmViewManager::createFileView( const QString &path,
 
     QString checkedPath = FmUtils::checkDriveToFolderFilter( absolutePath );
     if( FmUtils::isDriveAvailable( path ) ) {
-        if( !FmUtils::isPathAccessabel( checkedPath ) ) {
+        if( FmErrNone != FmUtils::isPathAccessabel( checkedPath )  ) {
             checkedPath.clear();
         }
     }
    
     if( checkedPath.isEmpty() ) {
-        HbMessageBox::information( QString( hbTrId("Path: %1 is unavailable!").arg( path )) );
+        FmDlgUtils::information( QString( hbTrId("Path: %1 is unavailable!").arg( path )) );
         return;
     }
 
@@ -238,8 +244,10 @@ void FmViewManager::createBackupView()
 
     mMainWindow->addView( backupView );
     mMainWindow->setCurrentView( backupView );
-    connect( this, SIGNAL( refreshBackupView() ), backupView, SLOT( refreshBackupView() ) );
-
+    connect( this, SIGNAL( refreshModel( QString ) ), //emit when need refresh models
+            backupView, SLOT( refreshModel( QString ) ) );
+    connect( this, SIGNAL( refreshBackupDate() ),  //emit when need refresh backup date
+            backupView, SLOT( refreshBackupDate() ) );
 }
 
 void FmViewManager::createRestoreView()
@@ -248,6 +256,7 @@ void FmViewManager::createRestoreView()
 
     mMainWindow->addView( restoreView );
     mMainWindow->setCurrentView( restoreView );
+    connect( this, SIGNAL( refreshRestoreView() ), restoreView, SLOT( refreshRestoreView() ) );
 
 }
 
@@ -257,6 +266,7 @@ void FmViewManager::createDeleteBackupView()
 
     mMainWindow->addView( deleteBackupView );
     mMainWindow->setCurrentView( deleteBackupView );
+    connect( this, SIGNAL( refreshDeleteBackupView() ), deleteBackupView, SLOT( refreshDeleteBackupView() ) );
 
 }
 
@@ -289,6 +299,8 @@ void FmViewManager::on_driveWatcher_driveAddedOrChanged()
 {
     FmLogger::log( QString( "FmViewManager::on_driveWatcher_driveAddedOrChanged start" ) );
     emit refreshModel( QString("") );
+    emit refreshDeleteBackupView();
+    emit refreshRestoreView();
 	checkDlgCloseUnit();
     FmLogger::log( QString( "FmViewManager::on_driveWatcher_driveAddedOrChanged end" ) );
 

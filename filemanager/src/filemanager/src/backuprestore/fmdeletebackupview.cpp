@@ -28,9 +28,6 @@
 #include <hbtoolbar.h>
 #include <hbmenu.h>
 #include <hbmainwindow.h>
-#include <hbmessagebox.h>
-
-
 
 FmDeleteBackupView::FmDeleteBackupView() : FmViewBase( EDeleteBackupView )
 {
@@ -38,8 +35,7 @@ FmDeleteBackupView::FmDeleteBackupView() : FmViewBase( EDeleteBackupView )
 
 	initMainWidget();
 	initToolBar();
-	initMenu();
-    adjustActions();
+	initMenu();    
 	mOperationService = FmViewManager::viewManager()->operationService();
 
 	QMetaObject::connectSlotsByName( this );
@@ -64,6 +60,7 @@ void FmDeleteBackupView::initMenu()
     mDeleteAction->setObjectName( "deleteAction" );
     mDeleteAction->setText( hbTrId( "Delete backups" ) );
     menu()->addAction( mDeleteAction );
+    mDeleteAction->setEnabled(false);
 }
 
 void FmDeleteBackupView::initMainWidget()
@@ -71,7 +68,21 @@ void FmDeleteBackupView::initMainWidget()
 	mDeleteBackupWidget = new FmDeleteBackupWidget( this );
     mDeleteBackupWidget->setObjectName( "deleteBackupWidget" );
     setWidget( mDeleteBackupWidget );
+    connect(mDeleteBackupWidget, SIGNAL(stateChanged(int)), this, SLOT(on_deleteBackupWidget_stateChanged(int)));
 
+}
+
+void FmDeleteBackupView::on_deleteBackupWidget_stateChanged(int state)
+{
+    Q_UNUSED(state);
+    QList<int> items = mDeleteBackupWidget->selectionIndexes();
+    if (items.count() > 0) {
+        mLeftAction->setEnabled(true);
+        mDeleteAction->setEnabled(true);
+    } else {
+        mLeftAction->setEnabled(false);
+        mDeleteAction->setEnabled(false);
+    }
 }
 
 void FmDeleteBackupView::initToolBar()
@@ -80,13 +91,8 @@ void FmDeleteBackupView::initToolBar()
     mLeftAction->setObjectName( "leftAction" );
     mLeftAction->setText( hbTrId( "delete" ) );
     toolBar()->addAction( mLeftAction );
-    
+    mLeftAction->setEnabled(false);
     toolBar()->setOrientation( Qt::Horizontal );
-
-    //action = new HbAction( this );
-    //action->setObjectName( "rightAction" );
-    //action->setText( tr( "" ) );
-    //toolBar()->addAction( action );
 }
 
 void FmDeleteBackupView::on_leftAction_triggered()
@@ -109,7 +115,7 @@ void FmDeleteBackupView::on_rotateAction_triggered()
 void FmDeleteBackupView::on_deleteAction_triggered()
 {
     QList<int > items = mDeleteBackupWidget->selectionIndexes();
-    if( items.count() <= 0 || !FmDlgUtils::question( tr("Confirm Deletion?" ) ) ){
+    if( items.count() <= 0 || !FmDlgUtils::question( hbTrId("Confirm Deletion?" ) ) ){
         return;
     }
 
@@ -121,18 +127,7 @@ void FmDeleteBackupView::on_deleteAction_triggered()
                    
     mOperationService->syncDeleteBackup( selection );
     mDeleteBackupWidget->refresh();
-    adjustActions();
-}
-
-void FmDeleteBackupView::adjustActions()
-{
-    if( mDeleteBackupWidget->backupDataCount() > 0 ) {
-        mDeleteAction->setDisabled( false );
-        mLeftAction->setDisabled( false );
-    } else {
-        mDeleteAction->setDisabled( true );
-        mLeftAction->setDisabled( true );
-    }
+    on_deleteBackupWidget_stateChanged(0);
 }
 
 void FmDeleteBackupView::removeToolBarAction()
@@ -140,3 +135,7 @@ void FmDeleteBackupView::removeToolBarAction()
     toolBar()->removeAction( mLeftAction );
 }
 
+void FmDeleteBackupView::refreshDeleteBackupView()
+{
+    mDeleteBackupWidget->refresh();
+}

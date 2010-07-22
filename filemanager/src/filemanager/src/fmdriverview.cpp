@@ -23,7 +23,6 @@
 
 #include <QApplication>
 
-#include <hbmessagebox.h>
 #include <hbmenu.h>
 #include <hbaction.h>
 #include <hbtoolbar.h>
@@ -82,7 +81,7 @@ void FmDriverView::initDiskListWidget()
 {
     mDriverList = new FmDriverListWidget( this );
     connect( mDriverList, SIGNAL( activated( const QString& ) ),
-             this, SLOT( activated( const QString& ) ) );
+             this, SLOT( activated( const QString& ) ), Qt::QueuedConnection );
     
     connect( mDriverList, SIGNAL( startSearch( const QString&,  const QString& ) ),
              this, SLOT( startSearch( const QString&, const QString& ) ) );

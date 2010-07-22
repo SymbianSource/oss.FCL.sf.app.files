@@ -23,6 +23,7 @@
 FmFindThread::FmFindThread( QStringList *r, QObject *parent )
     : QThread( parent )
 {
+    setPriority( LowPriority );
     mResult = r;
 }
 
@@ -58,7 +59,6 @@ void FmFindThread::stop()
 void FmFindThread::run()
 {
     mStop = false;
-    setPriority( LowPriority );
     if (findPattern.isEmpty() || !findPattern.isValid())
         return;
 
@@ -105,9 +105,7 @@ void FmFindThread::run()
         findDirs.removeFirst();
     }
     
-    if( count > 0 ) {
-        emitFound();
-    }
+    emitFound();
 }
 
 void FmFindThread::emitFound()
@@ -125,7 +123,7 @@ void FmFindThread::setLastResult( QStringList r )
 void FmFindThread::findInResult()
 {
     if( mFindPath.isEmpty() ){
-        int count = mLastResult.count();
+        int count = mResult->count();
         for (QStringList::Iterator it = mLastResult.begin(); it != mLastResult.end(); ++it) { 
             if (mStop){
                 return;
@@ -144,4 +142,5 @@ void FmFindThread::findInResult()
             }
         }    
     }
+    emitFound();
 }

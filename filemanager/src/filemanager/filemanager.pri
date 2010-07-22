@@ -52,14 +52,14 @@ HEADERS += src/fmdriverlistwidget.h \
            src/components/fmcombinedquery.h \
            src/components/fmdlgutils.h \
            src/components/fmtimequery.h \
-           src/components/fmdatalistmodel.h \
            src/components/fmsingletextquery.h \
            src/components/fmmultitextquery.h \
            src/components/fmviewdetailsdialog.h \
            src/components/fmviewdetailsitem.h \
            src/components/fmdrivedetailstype.h \
            src/components/fmmessagebox.h \
-           src/components/fmdialog.h
+           src/components/fmdialog.h \
+           src/components/fmdrivequery.h
 
 SOURCES += src/main.cpp \
            src/fmdriverlistwidget.cpp \
@@ -94,14 +94,14 @@ SOURCES += src/main.cpp \
            src/components/fmcombinedquery.cpp \
            src/components/fmdlgutils.cpp \
            src/components/fmtimequery.cpp \
-           src/components/fmdatalistmodel.cpp \
            src/components/fmsingletextquery.cpp \
            src/components/fmmultitextquery.cpp \
            src/components/fmviewdetailsdialog.cpp \
            src/components/fmviewdetailsitem.cpp \
            src/components/fmdrivedetailstype.cpp \
            src/components/fmmessagebox.cpp \
-           src/components/fmdialog.cpp
+           src/components/fmdialog.cpp \
+           src/components/fmdrivequery.cpp
 
 win32 {
     SOURCES += src/operationservice/fmoperationformat_win.cpp

@@ -95,6 +95,7 @@ public slots:
     void on_operationThread_askForRename( const QString &srcFile, QString *destFile );
     void on_operationThread_askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted );
     void on_operationThread_refreshModel( const QString &path );
+    void on_operationThread_showNote( const char *noteString );
     void on_operationThread_notifyWaiting( bool cancelable );
     void on_operationThread_notifyPreparing( bool cancelable );
     void on_operationThread_notifyStart( bool cancelable, int maxSteps );

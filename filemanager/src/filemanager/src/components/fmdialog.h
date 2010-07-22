@@ -20,16 +20,21 @@
 #define FMDIALOG_H
 
 #include <QEventLoop>
-#include <hbmessagebox.h>
 #include <hbaction.h>
-
-#include "hbmenu.h"
+#include <hbdialog.h>
+#include <hbmenu.h>
 class FmDialog : public HbDialog
 {
 Q_OBJECT
 public:
     explicit FmDialog( QGraphicsItem *parent = 0 );
     HbAction *exec();
+    
+    HbAction *primaryAction() const;
+    void setPrimaryAction( HbAction *action );
+
+    HbAction *secondaryAction() const;
+    void setSecondaryAction( HbAction *action );
 public slots:
     void dialogClosed(HbAction *action);
 private:

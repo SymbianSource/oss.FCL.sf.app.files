@@ -19,6 +19,13 @@
 #include "fmmessagebox.h"
 #include <hbmessagebox.h>
 
+void FmMessageBox::information( const QString &informationText )
+{
+    HbMessageBox::information ( informationText,
+         this, SLOT(dialogClosed(HbAction*)) );
+    mEventLoop.exec();
+}
+
 bool FmMessageBox::question( const QString &questionText, const QString &primaryButtonText,
         const QString &secondaryButtonText )
 {

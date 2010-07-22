@@ -34,7 +34,6 @@
 #include <hbaction.h>
 #include <hbtoolbar.h>
 #include <hblineedit.h>
-#include <hbmessagebox.h>
 #include <hbpushbutton.h>
 #include <hbmainwindow.h>
 
@@ -109,33 +108,44 @@ void FmFileView::initMenu()
 	menu()->addAction( action );
 #endif
 
-	mStyleAction = new HbAction( this );
-	mStyleAction->setObjectName( "switchStyle" );
+//	mStyleAction = new HbAction();
+//	mStyleAction->setObjectName( "switchStyle" );
 //	menu()->addAction( mStyleAction );
 
-	mSelectableAction = new HbAction( this );
+	mSelectableAction = new HbAction();
 	mSelectableAction->setObjectName( "setSelectable" );
 	menu()->addAction( mSelectableAction );
+    connect( mSelectableAction, SIGNAL( triggered() ),
+        this, SLOT( on_setSelectable_triggered() ), Qt::QueuedConnection );
 
-	action = new HbAction( this );
+
+	action = new HbAction();
 	action->setObjectName( "delete" );
 	action->setText( hbTrId( "txt_fmgr_menu_delete" ) );
 	menu()->addAction( action );
+    connect( action, SIGNAL( triggered() ),
+        this, SLOT( on_delete_triggered() ), Qt::QueuedConnection );
 
-    action = new HbAction( this );
+    action = new HbAction();
     action->setObjectName( "copy" );
     action->setText( hbTrId( "txt_fmgr_menu_copy" ) );
     menu()->addAction( action );
+    connect( action, SIGNAL( triggered() ),
+        this, SLOT( on_copy_triggered() ), Qt::QueuedConnection );
 
-    action = new HbAction( this );
+    action = new HbAction();
     action->setObjectName( "move" );
     action->setText( hbTrId( "txt_fmgr_menu_move" ) );
     menu()->addAction( action );
+    connect( action, SIGNAL( triggered() ),
+        this, SLOT( on_move_triggered() ), Qt::QueuedConnection );
     
-    action = new HbAction( this );
+    action = new HbAction();
     action->setObjectName( "newFolder" );
-    action->setText( hbTrId( "New Folder" ) );
+    action->setText( hbTrId( "txt_fmgr_opt_new_folder" ) );
     menu()->addAction( action );
+    connect( action, SIGNAL( triggered() ),
+        this, SLOT( on_newFolder_triggered() ), Qt::QueuedConnection );
     
     HbMenu *subMenu = new HbMenu( hbTrId( "Sort" ) );
     HbAction *sortNameAction = new HbAction( subMenu );
@@ -161,13 +171,13 @@ void FmFileView::initMenu()
     menu()->addMenu( subMenu );
 	
     connect( sortNameAction, SIGNAL( triggered() ),
-             this, SLOT( on_sortNameAction_triggered() ) );
+             this, SLOT( on_sortNameAction_triggered() ), Qt::QueuedConnection );
     connect( sortTimeAction, SIGNAL( triggered() ),
-             this, SLOT( on_sortTimeAction_triggered() ) );
+             this, SLOT( on_sortTimeAction_triggered() ), Qt::QueuedConnection );
     connect( sortSizeAction, SIGNAL( triggered() ),
-             this, SLOT( on_sortSizeAction_triggered() ) );
+             this, SLOT( on_sortSizeAction_triggered() ), Qt::QueuedConnection );
     connect( sortTypeAction, SIGNAL( triggered() ),
-             this, SLOT( on_sortTypeAction_triggered() ) );
+             this, SLOT( on_sortTypeAction_triggered() ), Qt::QueuedConnection );
     
     mMenu = takeMenu();
 }
@@ -215,18 +225,19 @@ void FmFileView::initToolBar()
     connect( mFindAction, SIGNAL( triggered() ),
                  this, SLOT( on_leftAction_triggered() ) );
     connect( mToolBarRightAction, SIGNAL( triggered() ),
-             this, SLOT( on_rightAction_triggered() ) );
+             this, SLOT( on_rightAction_triggered() ), Qt::QueuedConnection );
     
 }
 
 void FmFileView::setStyle( FmFileBrowseWidget::Style style )
 {
+    /*
 	if ( style == FmFileBrowseWidget::ListStyle ) {
 		mStyleAction->setText( hbTrId("Tree") );
 	} else if ( style == FmFileBrowseWidget::TreeStyle ) {
 		mStyleAction->setText( hbTrId("List") );
 	}
-	
+	*/
 	mWidget->setStyle( style );
 }
 
@@ -243,7 +254,7 @@ void FmFileView::setSelectable( bool enable )
 
 void FmFileView::infoNoFileSelected()
 {
-	HbMessageBox::information( tr("No File/Folder selected" ) );
+	FmDlgUtils::information( hbTrId("No File/Folder selected" ) );
 }
 
 #ifdef FM_CHANGE_ORIENT_ENABLE
@@ -278,7 +289,7 @@ void FmFileView::on_delete_triggered()
     if (files.size() == 0) {
 		infoNoFileSelected();
     } else {
-        if (FmDlgUtils::question( tr("Confirm Deletion?" ) )) {
+        if (FmDlgUtils::question( hbTrId("Confirm Deletion?" ) )) {
             QStringList fileList;
             for (int i = 0; i < files.size(); ++i) {
                 fileList.push_back( files[i].absoluteFilePath() );
@@ -290,13 +301,13 @@ void FmFileView::on_delete_triggered()
                     break;
                 case FmErrAlreadyStarted:
                     // last operation have not finished
-                    HbMessageBox::information( hbTrId( "Operatin already started!" ) );
+                    FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
                     break;
                 case FmErrWrongParam:
-                    HbMessageBox::information( hbTrId( "Wrong parameters!" ) );
+                    FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
                     break;
                 default:
-                    HbMessageBox::information( hbTrId( "Operation fail to start!" ) );
+                    FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
             }
             setSelectable( false );
         }
@@ -328,13 +339,13 @@ void FmFileView::on_copy_triggered()
                     break;
                 case FmErrAlreadyStarted:
                     // last operation have not finished
-                    HbMessageBox::information( hbTrId( "Operatin already started!" ) );
+                    FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
                     break;
                 case FmErrWrongParam:
-                    HbMessageBox::information( hbTrId( "Wrong parameters!" ) );
+                    FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
                     break;
                 default:
-                    HbMessageBox::information( hbTrId( "Operation fail to start!" ) );
+                    FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
             }
             setSelectable( false );
         }
@@ -349,7 +360,7 @@ void FmFileView::on_move_triggered()
     if (files.size() == 0) {
         infoNoFileSelected();
     } else {
-        QString targetPathName = FmFileDialog::getExistingDirectory( 0, tr( "move to" ),
+        QString targetPathName = FmFileDialog::getExistingDirectory( 0, hbTrId( "move to" ),
             QString(""), QStringList() );
 
         if( !targetPathName.isEmpty() && files.size() > 0 ) {
@@ -366,13 +377,13 @@ void FmFileView::on_move_triggered()
                     break;
                 case FmErrAlreadyStarted:
                     // last operation have not finished
-                    HbMessageBox::information( tr( "Operatin already started!" ) );
+                    FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
                     break;
                 case FmErrWrongParam:
-                    HbMessageBox::information( tr( "Wrong parameters!" ) );
+                    FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
                     break;
                 default:
-                    HbMessageBox::information( tr( "Operation fail to start!" ) );
+                    FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
             }
             setSelectable( false );
         }
@@ -383,35 +394,29 @@ void FmFileView::on_newFolder_triggered()
 {
     int maxFileNameLength = FmUtils::getMaxFileNameLength();
     QString associatedDrive = FmUtils::getDriveLetterFromPath( mWidget->currentPath().absoluteFilePath() );
-    
-    QString dirName( hbTrId( "New folder" ) );
     QString path = FmUtils::fillPathWithSplash( mWidget->currentPath().absoluteFilePath() );
-    QDir dir( path );
-    if( dir.exists() ) {
-        while( FmDlgUtils::showTextQuery( hbTrId( "Enter name for " ), dirName,
-                true, maxFileNameLength, associatedDrive , false ) ){
-                QString newTargetPath = FmUtils::fillPathWithSplash(
-                    dir.absolutePath() ) + dirName;
-                QFileInfo newFileInfo( newTargetPath );
-                if( !FmUtils::checkFolderFileName( dirName ) ) {
-                    HbMessageBox::information( hbTrId( "Invalid file or folder name!" ) );
-                    continue;
-                }
-                if( !FmUtils::checkMaxPathLength( newTargetPath ) ) {
-                    HbMessageBox::information( hbTrId( "the path you specified is too long!" ) );
-                    continue;
-                }
-                if( newFileInfo.exists() ) {
-                    HbMessageBox::information( hbTrId( "%1 already exist!" ).arg( dirName ) );
-                    continue;
-                }
+    QString dirName = createDefaultFolderName( path );
     
-                if( !dir.mkdir( dirName ) ) {
-                    HbMessageBox::information( hbTrId("Operation failed!") );
-                }
-                refreshModel( path );
-                break;
+    QDir dir( path );  
+    if( dir.exists() ) {
+        while( FmDlgUtils::showTextQuery( hbTrId( "txt_fmgr_title_new_folder" ), dirName,
+            true, maxFileNameLength, associatedDrive , false ) ){
+            // remove whitespace from the start and the end.
+            dirName = dirName.trimmed();
+            QString newTargetPath = FmUtils::fillPathWithSplash(
+                dir.absolutePath() ) + dirName;
+            QString errString;
+            // check if name/path is available for use
+            if( !FmUtils::checkNewFolderOrFile( newTargetPath, errString ) ) {
+                FmDlgUtils::information( errString );
+                continue;
             }
+            if( !dir.mkdir( dirName ) ) {
+                FmDlgUtils::information( hbTrId("Operation failed!") );
+            }
+            refreshModel( path );
+            break;
+        }
         
     }
 }
@@ -423,13 +428,6 @@ void FmFileView::on_upAction_triggered()
 
 void FmFileView::on_leftAction_triggered()
 {
-//    FmFindDialog findDialog;
-//    QString keyword;
-//    QString findFolder;
-//    bool ret = findDialog.exec( keyword, findFolder );
-//
-//    if ( ret && !keyword.isEmpty() && !findFolder.isEmpty() )
-//        FmViewManager::viewManager()->createFindView( keyword, findFolder );
     mWidget->activeSearchPanel();
 }
 
@@ -505,4 +503,27 @@ void FmFileView::on_mainWidget_setEmptyMenu( bool isMenuEmpty )
 void FmFileView::on_mainWidget_setTitle( const QString &title )
 {
     this->setTitle( title );
+}
+
+QString FmFileView::createDefaultFolderName( const QString &path )
+{
+    // create new folder name, for example, New folder(01), New folder(02)
+    QString checkedPath( FmUtils::fillPathWithSplash( path ) );
+    QString dirName( hbTrId( "txt_fmgr_dialog_entry_new_folder" ) );
+    QString dirAbsolutePath( checkedPath + dirName );
+    QFileInfo fileInfo( dirAbsolutePath );
+    int i = 0;    
+    while ( fileInfo.exists() ) {
+        ++i;
+		QString numName;
+        if ( i < 10 ) {
+            numName.append( QString::number(0) );                        
+        }
+        numName.append( QString::number(i) );
+        // txt_fmgr_dialog_entry_new_folder_l1 is not available now. use actual text instead of it.
+        dirName = hbTrId( "New folder (%L1)" ).arg( numName );
+        dirAbsolutePath = checkedPath + dirName;
+        fileInfo.setFile( dirAbsolutePath );
+    }
+    return dirName;
 }

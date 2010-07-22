@@ -37,6 +37,8 @@
 #include <QDir>
 #include <QFile>
 
+#include <hbglobal.h>
+
 #include <xqaiwrequest.h>
 #include <xqappmgr.h>
 
@@ -46,10 +48,12 @@
 
 QString FmUtils::getDriveNameFromPath( const QString &path )
 {
-    if( path.length() <3 ) {
+    // fillPathWithSplash make sure path length will be at least 3 if it is not empty.
+    QString checkedPath( fillPathWithSplash( path ) );
+    if( checkedPath.length() < 3 ) {
         return QString();
     }
-    return path.left( 3 );
+    return checkedPath.left( 3 );
 }
 
 QString FmUtils::getDriveLetterFromPath( const QString &path )
@@ -62,6 +66,9 @@ QString FmUtils::getDriveLetterFromPath( const QString &path )
 
 FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
 {
+    if( driverName.isEmpty() ) {
+        return FmDriverInfo( 0, 0, driverName, QString(), FmDriverInfo::EDriveNotPresent );
+    }
     CCoeEnv *env = CCoeEnv::Static();
     RFs& fs = env->FsSession();
 
@@ -207,6 +214,9 @@ QString FmUtils::formatStorageSize( quint64 size )
 
 int FmUtils::removeDrivePwd( const QString &driverName,  const QString &Pwd )
 {
+    if( driverName.isEmpty() ) {
+        return FmErrWrongParam;
+    }
     QString logString = "Drive name:" + driverName;
     FmLogger::log( logString );
     logString = "Password:" + Pwd;
@@ -245,6 +255,9 @@ int FmUtils::removeDrivePwd( const QString &driverName,  const QString &Pwd )
 
 int FmUtils::unlockDrive( const QString &driverName,  const QString &Pwd )
 {
+    if( driverName.isEmpty() ) {
+        return FmErrWrongParam;
+    }
     QString logString = "Drive name:" + driverName;
     FmLogger::log( logString );
     logString = "Password:" + Pwd;
@@ -287,6 +300,9 @@ int FmUtils::unlockDrive( const QString &driverName,  const QString &Pwd )
 
 int FmUtils::checkDrivePwd( const QString &driverName, const QString &pwd )
 {
+    if( driverName.isEmpty() ) {
+        return FmErrWrongParam;
+    }
     QString logString = "checkDrivePwd Drive name:" + driverName;
     logString += " password:" + pwd;
     FmLogger::log( logString );
@@ -296,6 +312,9 @@ int FmUtils::checkDrivePwd( const QString &driverName, const QString &pwd )
 
 int FmUtils::setDrivePwd( const QString &driverName, const QString &oldPwd, const QString &newPwd)
 {
+    if( driverName.isEmpty() ) {
+        return FmErrWrongParam;
+    }
     QString logString = "setDrivePwd Drive name:" + driverName ;
     logString += " Old password:" + oldPwd;
     logString += " New password:" + newPwd;
@@ -347,6 +366,9 @@ void FmUtils::emptyPwd( QString &pwd )
 
 int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeName)
 {
+    if( driverName.isEmpty() ) {
+        return FmErrWrongParam;
+    }
     foreach( const QChar &ch, newVolumeName )
     {
         bool a = ch.isSpace();
@@ -382,8 +404,11 @@ int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeNam
     }
 }
 
-void FmUtils::ejectDrive( const QString &driverName )
+int FmUtils::ejectDrive( const QString &driverName )
 {
+    if( driverName.isEmpty() ) {
+        return FmErrWrongParam;
+    }
     QString logString = "FmUtils::ejectDrive start";
     FmLogger::log( logString );
 
@@ -398,6 +423,7 @@ void FmUtils::ejectDrive( const QString &driverName )
         KCoreAppUIsMmcRemovedWithoutEject,
         ECoreAppUIsEjectCommandUsedToDrive | ( drive << KDriveShift )
         );
+    return FmErrNone;
 }
 
 QString FmUtils::getFileType( const QString &filePath  )
@@ -480,6 +506,9 @@ quint64 FmUtils::getDriveDetailsResult( const QString &folderPath, const QString
 
 bool FmUtils::isDriveC( const QString &driverName )
 {
+    if( driverName.isEmpty() ) {
+        return false;
+    }
     TInt drive = 0;
     drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
     if( drive == EDriveC ){
@@ -503,6 +532,9 @@ bool FmUtils::isDrive( const QString &path )
 
 void FmUtils::createDefaultFolders( const QString &driverName )
 {
+    if( driverName.isEmpty() ) {
+        return;
+    }
     int err;
     
     TInt drive = 0;
@@ -571,14 +603,23 @@ void FmUtils::createDefaultFolders( const QString &driverName )
 
 QString FmUtils::fillPathWithSplash( const QString &filePath )
 {
-    QString newFilePath( filePath );
+	QString newFilePath;
     if( filePath.isEmpty() ) {
         return newFilePath;
     }
 
-    if( filePath.at( filePath.length()-1 ) != QChar( '/' ) ){
-        newFilePath.append( QChar( '/' ) );
+    foreach( QChar ch, filePath ) {
+        if( ch == QChar('\\') || ch == QChar('/') ) {
+			newFilePath.append( QDir::separator() );
+        } else {
+            newFilePath.append( ch );
+        }
     }
+    
+    if( newFilePath.right( 1 )!= QDir::separator() ){
+        newFilePath.append( QDir::separator() );
+    }
+    
     return newFilePath;
 }
 
@@ -591,10 +632,15 @@ QString FmUtils::removePathSplash( const QString &filePath )
     return newFilePath;
 }
 
-// used to filter drive which need be hide.
-bool FmUtils::checkDriveFilter( const QString &driveName )
+// filter un-accessable drive
+bool FmUtils::checkDriveAccessFilter( const QString &driveName )
 {
-    if( driveName.contains( "D:" ) || driveName.contains( "Z:" ) ) {
+    if( driveName.isEmpty() ) {
+        return false;
+    }
+    FmDriverInfo driveInfo = queryDriverInfo( driveName );
+    if( ( driveInfo.driveState()& FmDriverInfo::EDriveRam ) ||
+        ( driveInfo.driveState()& FmDriverInfo::EDriveRom ) ) {
         return false;
     }
     return true;
@@ -609,8 +655,8 @@ QString FmUtils::checkDriveToFolderFilter( const QString &path )
         }
     */
     QString checkedPath = fillPathWithSplash( path );
-    if( checkedPath.compare( QString( "C:/"), Qt::CaseInsensitive ) == 0 ) {
-        checkedPath += QString( "data/" );
+    if( checkedPath.compare( Drive_C, Qt::CaseInsensitive ) == 0 ) {
+        checkedPath += QString( "data" ) + QDir::separator();
         return checkedPath;
     }
     return path;
@@ -627,47 +673,50 @@ QString FmUtils::checkFolderToDriveFilter( const QString &path )
     logString = QString( "checkFolderToDriveFilter_fillPathWithSplash: " ) + checkedPath;
     FmLogger::log( logString );
     
-    if( checkedPath.compare( QString( "C:/data/"), Qt::CaseInsensitive ) == 0 ) {
+    if( checkedPath.compare( Folder_C_Data, Qt::CaseInsensitive ) == 0 ) {
         FmLogger::log( QString( " change from c:/data/ to C:/" ) );
-        return QString( "C:/" );
+        return Drive_C;
     }
     return path;
 
 }
 
-bool FmUtils::isPathAccessabel( const QString &path )
+int FmUtils::isPathAccessabel( const QString &path )
 {
+    // Used to check if path is accessable, very important feature
+	// and will return filemanager error.
     FmLogger::log( QString( "isPathAccessabel:" ) + path );
+    if( path.isEmpty() ) {
+        return FmErrPathNotExist;
+    }
     if( path.length() <= 3 && !isDriveAvailable( path ) ) { //used to filter locked drive
         FmLogger::log( QString( "isPathAccessabel false: path is drive and not available" ) );
-        return false;
+        return FmErrDriveNotAvailable;
     }
     QFileInfo fileInfo( path );
-    if( fileInfo.absoluteFilePath().contains( QString( Drive_C ), Qt::CaseInsensitive ) &&
-        !fileInfo.absoluteFilePath().contains( QString( Folder_C_Data ), Qt::CaseInsensitive ) ) {
+    if( fileInfo.absoluteFilePath().contains( Drive_C, Qt::CaseInsensitive ) &&
+        !fileInfo.absoluteFilePath().contains( Folder_C_Data, Qt::CaseInsensitive ) ) {
         FmLogger::log( QString( "isPathAccessabel false: path contain C and not in data folder" ) );
-        return false;
+        return FmErrPathDenied;
     }
-    if( fileInfo.absoluteFilePath().contains( QString( Drive_D ), Qt::CaseInsensitive ) ) {
-        FmLogger::log( QString( "isPathAccessabel false: path contain D" ) );
-        return false;
-    }
-    if( fileInfo.absoluteFilePath().contains( QString( Drive_Z ), Qt::CaseInsensitive ) ) {
-        FmLogger::log( QString( "isPathAccessabel false: path contain Z" ) );
-        return false;
+    if( !checkDriveAccessFilter( FmUtils::getDriveNameFromPath( fileInfo.absoluteFilePath() ) ) ){
+        return FmErrDriveDenied;
     }
     if( !fileInfo.exists() ) {
         FmLogger::log( QString( "isPathAccessabel false: path not exist" ) );
-        return false;
+        return FmErrPathNotExist;
     }
-    FmLogger::log( QString( "isPathAccessabel true" ) );
-    return true;
+    FmLogger::log( QString( "isPathAccessabel FmErrNone" ) );
+    return FmErrNone;
 }
 
 // only used to check drive, when MMC is not inserted, also return false
 bool FmUtils::isDriveAvailable( const QString &path )
 {
     FmLogger::log( QString( "isDriveAvailable:" ) + path );
+    if( path.isEmpty() ) {
+        return false;
+    }
     FmDriverInfo::DriveState driveState = queryDriverInfo( path ).driveState();
     if( ( driveState & FmDriverInfo::EDriveAvailable ) ) {
         FmLogger::log( QString( "isDriveAvailable true" ) );
@@ -688,7 +737,7 @@ void FmUtils::getDriveList( QStringList &driveList, bool isHideUnAvailableDrive 
 
     foreach( QFileInfo fileInfo, infoList ) {
         QString driveName = fileInfo.absolutePath();
-        if( checkDriveFilter( driveName ) ) {
+        if( checkDriveAccessFilter( driveName ) ) {
             if( !isHideUnAvailableDrive ) {
                 driveList.append( driveName );
             }
@@ -703,9 +752,12 @@ void FmUtils::getDriveList( QStringList &driveList, bool isHideUnAvailableDrive 
 QString FmUtils::fillDriveVolume( QString driveName, bool isFillWithDefaultVolume )
 {
     QString ret;
+    if( driveName.isEmpty() ) {
+        return ret;
+    }
     QString tempDriveName = fillPathWithSplash( driveName );
 
-    ret = removePathSplash( driveName );
+    QString checkedDriveName( removePathSplash( driveName ) );
     
     FmDriverInfo driverInfo = FmUtils::queryDriverInfo( tempDriveName );
     QString volumeName = driverInfo.volumeName();
@@ -715,25 +767,37 @@ QString FmUtils::fillDriveVolume( QString driveName, bool isFillWithDefaultVolum
         if( driveState & FmDriverInfo::EDriveAvailable ){
             if( driveState & FmDriverInfo::EDriveRemovable ) {
                 if( driveState & FmDriverInfo::EDriveMassStorage ) {
-                    volumeName.append( QObject::tr( "Mass Storage" ) );  
+                    // Mass Storage
+                    ret = hbTrId( "txt_fmgr_dblist_1_mass_storage" ).arg( checkedDriveName );  
                 } else if( driveState & FmDriverInfo::EDriveUsbMemory ) {
-                    volumeName.append( QObject::tr( "Usb Memory" ) );
+                    // USB Memory
+                    ret = hbTrId( "txt_fmgr_dblist_1_usb_memory" ).arg( checkedDriveName );
                 } else{
-                    volumeName.append( QObject::tr( "Memory Card" ) );
+                    // Memory Card
+                    ret = hbTrId( "txt_fmgr_dblist_1_memory_card" ).arg( checkedDriveName );
                 }
             } else{
-                volumeName.append( QObject::tr( "Phone Memory" ) );
+                // phone memory
+                ret = hbTrId( "txt_fmgr_dblist_1_device_memory" ).arg( checkedDriveName );
             }
-        }
+        }  
     }
-
-    ret += QString( " " ) + volumeName;
+    
+    if( ret.isEmpty() ) {
+        // set ret as volumeName
+        // txt_fmgr_dblist_1_2 is not correct, can not use.
+        ret = hbTrId( "%1 %2" ).arg( checkedDriveName ).arg( volumeName );
+    }
     return ret;
 }
 
 int FmUtils::launchFile( const QString &filePath )
 {
     QFile file( filePath );
+    if( !file.exists() ) {
+        return false;
+    }
+        
     XQApplicationManager mAiwMgr;
     XQAiwRequest *request = mAiwMgr.create(file);
     if ( request == 0 ) {
@@ -826,28 +890,33 @@ QString FmUtils::Localize( const QString &path )
 
 QString FmUtils::formatPath( const QString &path  )
 {
-    QString formatPath = path;
-    QRegExp regExp( "/" );
-    formatPath.replace( regExp, "\\" );
-    
-    if( path.right( 1 )!= "\\"){
-        formatPath.append( "\\" );
+    QString formatPath;
+	foreach( QChar ch, path ) {
+		if( ch == QChar('\\') || ch == QChar('/') ) {
+			formatPath.append( QDir::separator() );
+		} else {
+			formatPath.append( ch );
+		}
+    }
+
+    if( formatPath.right( 1 ) != QDir::separator() ){
+        formatPath.append( QDir::separator() );
     }
     return formatPath;
 }
 
 int FmUtils::getMaxFileNameLength()
-    {
+{
     return KMaxFileName;
-    }
+}
 
 bool FmUtils::checkMaxPathLength( const QString& path )
-    {
+{
     if( path.length() > KMaxPath ) {
         return false;
     }
     return true;
-    }
+}
 bool FmUtils::checkFolderFileName( const QString& name )
 {
     if( name.endsWith( QChar('.'),  Qt::CaseInsensitive ) ) {
@@ -868,4 +937,21 @@ bool FmUtils::checkFolderFileName( const QString& name )
         return false;
     }
     return true;
+}
+
+bool FmUtils::checkNewFolderOrFile( const QString &path, QString &errString )
+{
+    QFileInfo fileInfo( path );
+    bool ret( true );   
+    if (!FmUtils::checkFolderFileName( fileInfo.fileName() ) ) {
+        errString = hbTrId( "Invalid file or folder name!" );
+        ret = false;
+    } else if( !FmUtils::checkMaxPathLength( path ) ) {
+        errString = hbTrId( "the path you specified is too long!" );
+        ret = false;
+    } else if (fileInfo.exists()) {
+        errString = hbTrId( "%1 already exist!" ).arg( fileInfo.fileName() );
+        ret = false;
+    }
+    return ret;
 }

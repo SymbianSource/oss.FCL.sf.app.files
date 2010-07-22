@@ -25,6 +25,7 @@ class HbListView;
 class QStringListModel;
 class FmRestoreSettings;
 class FmBackupConfigLoader;
+class FmRestoreViewItem;
 
 class FmDeleteBackupWidget : public HbWidget
 {
@@ -37,6 +38,8 @@ public:
     void refresh();
     QList<int> selectionIndexes();
     int backupDataCount();
+signals:
+    void stateChanged(int state);
 private:
     void loadData();
     void init();
@@ -50,7 +53,7 @@ private:
     QStringListModel  *mModel;
 
     FmRestoreSettings *mRestoreSettings;
-    FmBackupConfigLoader *mBackupConfigLoader;
+    FmBackupConfigLoader *mBackupConfigLoader;    
 };
 
 #endif
