@@ -31,7 +31,7 @@
 
 FmDriverView::FmDriverView() : FmViewBase( EDriverView )
 {
-    FmLogger::log( "FmDriverView::FmDriverView" );
+    FM_LOG( "FmDriverView::FmDriverView" );
     initMenu(); 
     initToolBar();
     initDiskListWidget();
@@ -109,13 +109,11 @@ void FmDriverView::activated( const QString& pathName )
     FmViewManager::viewManager()->createFileView( pathName );
 }
 
-void FmDriverView::refreshModel( const QString &path  )
+void FmDriverView::refreshDrive()
 {
-    FmLogger::log( QString( "FmDriverView::refreshModel start" ) );
-    QString logstring = QString( "Refresh Path:" );
-    logstring.append( path );
-    mDriverList->refreshModel( path );
-    FmLogger::log( QString( "FmDriverView::refreshModel end" ) );
+    FM_LOG( QString( "FmDriverView::refreshDrive start" ) );
+    mDriverList->refreshDrive();
+    FM_LOG( QString( "FmDriverView::refreshDrive end" ) );
 }
 
 void FmDriverView::on_leftAction_triggered()

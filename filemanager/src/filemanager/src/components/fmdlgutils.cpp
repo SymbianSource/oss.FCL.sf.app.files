@@ -45,7 +45,7 @@ HbAction *FmDlgUtils::executeDialog( FmDialog *dialog, const QString &associated
     for( int i = 0; i < associatedDrives.length(); i++ ) {
         QString drive( associatedDrives[i] + QString( ":/" ) );
         if( !FmUtils::isDriveAvailable( drive ) ) {
-            FmLogger::log( "executeDialog return 0_ " + associatedDrives );
+            FM_LOG( "executeDialog return 0_ " + associatedDrives );
             return 0;
         }
     }

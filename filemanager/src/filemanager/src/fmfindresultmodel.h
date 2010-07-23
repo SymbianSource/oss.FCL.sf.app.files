@@ -21,6 +21,7 @@
 
 #include "fmcommon.h"
 
+#include <QPair>
 #include <QFileInfo>
 #include <QStringList>
 #include <QAbstractListModel>
@@ -50,7 +51,7 @@ public:
     int columnCount( const QModelIndex &parent = QModelIndex() ) const;
     QVariant data( const QModelIndex &index, int role = Qt::DisplayRole ) const;
     QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-	bool insertRows( int row, int count, const QModelIndex &parent = QModelIndex() );
+    bool insertRows( int row, const QStringList &dataList, const QModelIndex &parent = QModelIndex() );
 	bool removeRows( int row, int count, const QModelIndex &parent = QModelIndex() );
     QString filePath ( const QModelIndex & index ) const;
 
@@ -68,20 +69,21 @@ public:
 
     virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
 
-    static bool caseNameLessThan( const QString &s1, const QString &s2 );
-    static bool caseTimeLessThan( const QString &s1, const QString &s2 );
-    static bool caseSizeLessThan( const QString &s1, const QString &s2 );
-    static bool caseTypeLessThan( const QString &s1, const QString &s2 );
+    static bool caseNameLessThan( const QPair<QString,int> &s1,
+                                  const QPair<QString,int> &s2 );
+    static bool caseTimeLessThan( const QPair<QString,int> &s1,
+                                  const QPair<QString,int> &s2 );
+    static bool caseSizeLessThan( const QPair<QString,int> &s1,
+                                  const QPair<QString,int> &s2 );
+    static bool caseTypeLessThan( const QPair<QString,int> &s1,
+                                  const QPair<QString,int> &s2 );
 
 signals:
     void finished();
-
-    // pass modelCountChanged signal to parent widget
-    // so parent widget could change contentWiget between emptyTipsWidget and listWidget
     void modelCountChanged( int count );
 
 private slots:
-    void on_findThread_found( int count );
+    void on_findThread_found( const QStringList &dataList );
 
 private:
     bool indexValid( const QModelIndex &index ) const;

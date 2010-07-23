@@ -288,9 +288,9 @@ void FmOperationService::on_operationThread_askForReplace( const QString &srcFil
         mCurrentOperation, srcFile, destFile, isAccepted );
 }
 
-void FmOperationService::on_operationThread_refreshModel( const QString &path )
+void FmOperationService::on_operationThread_driveSpaceChanged()
 {
-    emit refreshModel( mCurrentOperation, path );
+    emit driveSpaceChanged( mCurrentOperation );
 }
 void FmOperationService::on_operationThread_showNote( const char *noteString )
 {

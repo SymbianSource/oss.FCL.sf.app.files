@@ -23,95 +23,69 @@
 
 FmFileTypeRecognizer::FmFileTypeRecognizer()
 {
-    QStringList fileExtensionList;
-    
-    fileExtensionList.append( QString( "bmp" ) );
-    fileExtensionList.append( QString( "gif" ) );
-    fileExtensionList.append( QString( "jpe" ) );
-    fileExtensionList.append( QString( "jpeg" ) );
-    fileExtensionList.append( QString( "jpg" ) );
-    fileExtensionList.append( QString( "ota" ) );
-    fileExtensionList.append( QString( "png" ) );
-    fileExtensionList.append( QString( "tif" ) );
-    fileExtensionList.append( QString( "tiff" ) );
-    fileExtensionList.append( QString( "wbmp" ) );
-    fileExtensionList.append( QString( "wmf" ) );
-    fileExtensionList.append( QString( "jp2" ) );
-    fileExtensionList.append( QString( "jpg2" ) );
-    fileExtensionList.append( QString( "jp3" ) );
-    fileExtensionList.append( QString( "ico" ) );
-    fileExtensionList.append( QString( "vcf" ) );
-    mFileTypeMap.insert( FileTypeImage, fileExtensionList );
-   
-    fileExtensionList.clear();
-    fileExtensionList.append( QString( "3gp" ) );
-    fileExtensionList.append( QString( "mp4" ) );
-    fileExtensionList.append( QString( "nim" ) );
-    fileExtensionList.append( QString( "rm"  ) );
-    fileExtensionList.append( QString( "rv"  ) );
-    fileExtensionList.append( QString( "wmv" ) );
-    fileExtensionList.append( QString( "3g2" ) );
-    fileExtensionList.append( QString( "rmvb") );
-    fileExtensionList.append( QString( "mkv" ) );
-    mFileTypeMap.insert( FileTypeVideo, fileExtensionList );
-    
-    fileExtensionList.clear();
-    fileExtensionList.append( QString( "aac" ) );
-    fileExtensionList.append( QString( "amr" ) );
-    fileExtensionList.append( QString( "au" ) );
-    fileExtensionList.append( QString( "awb" ) );
-    fileExtensionList.append( QString( "mid" ) );
-    fileExtensionList.append( QString( "mp3" ) );
-    fileExtensionList.append( QString( "ra" ) );
-    fileExtensionList.append( QString( "rmf" ) );
-    fileExtensionList.append( QString( "rng" ) );
-    fileExtensionList.append( QString( "snd" ) );
-    fileExtensionList.append( QString( "wav" ) );
-    fileExtensionList.append( QString( "wve" ) );
-    fileExtensionList.append( QString( "wma" ) );
-    fileExtensionList.append( QString( "m4a" ) );
-    fileExtensionList.append( QString( "ott" ) );
-    fileExtensionList.append( QString( "mxmf" ) );
-    mFileTypeMap.insert( FileTypeTone, fileExtensionList );
+    mFileExtensionMap.insert( QString( "bmp" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "gif" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "jpe" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "jpeg" ),FileTypeImage );
+    mFileExtensionMap.insert( QString( "jpg" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "ota" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "png" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "tif" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "tiff" ),FileTypeImage );
+    mFileExtensionMap.insert( QString( "wbmp" ),FileTypeImage );
+    mFileExtensionMap.insert( QString( "wmf" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "jp2" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "jpg2" ),FileTypeImage );
+    mFileExtensionMap.insert( QString( "jp3" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "ico" ), FileTypeImage );
+    mFileExtensionMap.insert( QString( "vcf" ), FileTypeImage );
 
-    fileExtensionList.clear();
-    fileExtensionList.append( QString( "doc" ) );
-    fileExtensionList.append( QString( "pdf" ) );
-    fileExtensionList.append( QString( "pps" ) );
-    fileExtensionList.append( QString( "ppt" ) );
-    fileExtensionList.append( QString( "txt" ) );
-    fileExtensionList.append( QString( "xls" ) );
-    mFileTypeMap.insert( FileTypeText, fileExtensionList );
+    mFileExtensionMap.insert( QString( "3gp" ), FileTypeVideo );
+    mFileExtensionMap.insert( QString( "mp4" ), FileTypeVideo );
+    mFileExtensionMap.insert( QString( "nim" ), FileTypeVideo );
+    mFileExtensionMap.insert( QString( "rm" ),  FileTypeVideo );
+    mFileExtensionMap.insert( QString( "rv" ),  FileTypeVideo );
+    mFileExtensionMap.insert( QString( "wmv" ), FileTypeVideo );
+    mFileExtensionMap.insert( QString( "3g2" ), FileTypeVideo );
+    mFileExtensionMap.insert( QString( "rmvb" ),FileTypeVideo );
+    mFileExtensionMap.insert( QString( "mkv" ), FileTypeVideo );
+    
+
+    mFileExtensionMap.insert( QString( "aac" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "amr" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "au" ),  FileTypeTone );
+    mFileExtensionMap.insert( QString( "awb" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "mid" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "mp3" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "ra" ),  FileTypeTone );
+    mFileExtensionMap.insert( QString( "rmf" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "rng" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "snd" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "wav" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "wve" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "wma" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "m4a" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "ott" ), FileTypeTone );
+    mFileExtensionMap.insert( QString( "mxmf" ),FileTypeTone );
+    
+    mFileExtensionMap.insert( QString( "doc" ), FileTypeText );
+    mFileExtensionMap.insert( QString( "pdf" ), FileTypeText );
+    mFileExtensionMap.insert( QString( "pps" ), FileTypeText );
+    mFileExtensionMap.insert( QString( "ppt" ), FileTypeText );
+    mFileExtensionMap.insert( QString( "txt" ), FileTypeText );
+    mFileExtensionMap.insert( QString( "xls" ), FileTypeText );
             
-    fileExtensionList.clear();
-    fileExtensionList.append( QString( "sis" ) );
-    fileExtensionList.append( QString( "sisx" ) );
-    mFileTypeMap.insert( FileTypeSisx, fileExtensionList );
+    mFileExtensionMap.insert( QString( "sis" ), FileTypeSisx );
+    mFileExtensionMap.insert( QString( "sisx" ),FileTypeSisx );
+        
+    mFileExtensionMap.insert( QString( "jad" ), FileTypeJava );
+    mFileExtensionMap.insert( QString( "jar" ), FileTypeJava );
     
-    fileExtensionList.clear();
-    fileExtensionList.append( QString( "jad" ) );
-    fileExtensionList.append( QString( "jar" ) );
-    mFileTypeMap.insert( FileTypeJava, fileExtensionList );
-    
-    fileExtensionList.clear();
-    fileExtensionList.append( QString( "swf" ) );
-    mFileTypeMap.insert( FileTypeFlash, fileExtensionList );
+    mFileExtensionMap.insert( QString( "swf" ), FileTypeFlash );
 
     // have not handle FileTypePlaylist
     // have not handle FileTypeWidget
     // have not handle FileTypeWebLink 
-    
-    // make mFileExtensionMap( data map for extenstion ) from mFileTypeMap
-    // this map is used to speed up recognize    
-    QMapIterator<FileType, QStringList> i( mFileTypeMap );
-    while (i.hasNext()) {
-        i.next();
-        foreach( const QString extension, i.value() ) {
-            mFileExtensionMap.insert( extension, i.key() );
-        }
-    }
-    
-
 }
 
 FmFileTypeRecognizer::~FmFileTypeRecognizer()
@@ -132,9 +106,4 @@ FmFileTypeRecognizer::FileType FmFileTypeRecognizer::getType( const QString& pat
     
     //if can not find key, return default value: FileTypeUnKnown
     return mFileExtensionMap.value( fileInfo.suffix().toLower(), FileTypeUnKnown );
-}
-
-const QStringList FmFileTypeRecognizer::getFileListFromFileType( const FmFileTypeRecognizer::FileType fileType ) const
-{
-    return mFileTypeMap.value( fileType, QStringList() );
 }

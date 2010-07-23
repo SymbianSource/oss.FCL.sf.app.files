@@ -41,7 +41,7 @@ public:
 
 public:
     int updatePwd( const QString& oldPwd, const QString& pwd);
-    void refreshModel( const QString &path );
+    void refreshDrive();
     void activeSearchPanel();
 
 signals:

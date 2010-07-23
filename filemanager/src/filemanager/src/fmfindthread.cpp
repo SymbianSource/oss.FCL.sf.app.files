@@ -20,11 +20,28 @@
 
 #include <QDir>
 
-FmFindThread::FmFindThread( QStringList *r, QObject *parent )
+// current path, it may come from findDirs.first().entryInfoList()
+#define CurrentDir QString( "." )
+
+// parent path, it may come from findDirs.first().entryInfoList()
+#define ParentDir QString( ".." )
+
+// if got 5 result and have not send notify event, then send notify event
+#define notifyPerCount 5
+
+// if got notifyPerElapsedTime milliseconds and have not send notify event, then send notify event.
+#define notifyPerElapsedTime 500
+
+/*!
+    \fn void found( const QStringList &dataList )
+    This signal is emitted when some data has been found and \a dataList is provided as data list.
+    Please connect this signal by Qt::BlockingQueuedConnection as dataList will be cleared immediately
+*/
+
+FmFindThread::FmFindThread( QObject *parent )
     : QThread( parent )
 {
     setPriority( LowPriority );
-    mResult = r;
 }
 
 FmFindThread::~FmFindThread()
@@ -59,6 +76,7 @@ void FmFindThread::stop()
 void FmFindThread::run()
 {
     mStop = false;
+    tempResultList.clear();
     if (findPattern.isEmpty() || !findPattern.isValid())
         return;
 
@@ -73,7 +91,6 @@ void FmFindThread::run()
 
     QList<QDir> findDirs;
     findDirs.append( dir );
-    count = 0;
     time.restart();
     mStop = false;
     while (!findDirs.isEmpty()) {
@@ -82,24 +99,26 @@ void FmFindThread::run()
 			QString name = it->fileName();
 			QString absolutPath = it->absoluteFilePath();
             if (findPattern.exactMatch( it->fileName() )) {
-                mResult->append( it->absoluteFilePath() );
-                ++count;
-                if (count > 5)
+                tempResultList.append( it->absoluteFilePath() );
+                if (tempResultList.count() > notifyPerCount) {
                     emitFound();
-                if (time.elapsed() > 500 && count > 0)
+                } else if (time.elapsed() > notifyPerElapsedTime && tempResultList.count() > 0) {
                     emitFound();
+                }
             }
 
             //We are stopped;
             if (mStop) {
-                if( count > 0 ) {
+                if( tempResultList.count() > 0 ) {
                     emitFound();
                 }
                 return;
             }
-            
-            if (it->isDir() && it->fileName() != ".." && it->fileName() != "." )
+
+            // exclude directory named ".." and "."
+            if (it->isDir() && it->fileName() != ParentDir && it->fileName() != CurrentDir ) {
                 findDirs.append( QDir( it->absoluteFilePath() ) );
+            }
         }
 
         findDirs.removeFirst();
@@ -108,11 +127,16 @@ void FmFindThread::run()
     emitFound();
 }
 
+/*
+    Emit signal "found" to send out found data
+*/
 void FmFindThread::emitFound()
 {
-    emit found( count );
-    count = 0;
-    time.restart();
+    if( tempResultList.count() > 0 ) {
+        emit found( tempResultList );
+        tempResultList.clear();
+        time.restart();
+    }
 }
 
 void FmFindThread::setLastResult( QStringList r )
@@ -120,10 +144,13 @@ void FmFindThread::setLastResult( QStringList r )
     mLastResult = r;
 }
 
+/*
+    Find keyword in last result
+    \sa setLastResult, this function must be called to set last result for findInResult
+*/
 void FmFindThread::findInResult()
 {
     if( mFindPath.isEmpty() ){
-        int count = mResult->count();
         for (QStringList::Iterator it = mLastResult.begin(); it != mLastResult.end(); ++it) { 
             if (mStop){
                 return;
@@ -133,12 +160,12 @@ void FmFindThread::findInResult()
             QString fileName = fileInfo.fileName();
             
             if (findPattern.exactMatch( fileName ) ) {
-                mResult->append( absolutPath );
-                ++count;
-                if (count > 5)
+                tempResultList.append( absolutPath );
+                if ( tempResultList.count() > notifyPerCount ) {
                     emitFound();
-                if (time.elapsed() > 500 && count > 0)
-                   emitFound();
+                } else if (time.elapsed() > notifyPerElapsedTime && tempResultList.count() > 0) {
+                    emitFound();
+                }
             }
         }    
     }

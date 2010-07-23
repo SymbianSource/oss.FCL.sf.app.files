@@ -39,7 +39,7 @@
 
 FmFileView::FmFileView() : FmViewBase( EFileView ), mWidget( 0 ),
     mUpButton( 0 ), mStyleAction( 0 ), mSelectableAction( 0 ),
-    mFindAction( 0 ), mOperationService( 0 ), mMenu( 0 ) 
+    mFindAction( 0 ), mOperationService( 0 ), mMenu( 0 ), mIsFindDisabled( false )
 {
     mOperationService = FmViewManager::viewManager()->operationService();
 	initMenu();
@@ -93,8 +93,9 @@ void FmFileView::setRootLevelPath( const QString &pathName )
 
 void FmFileView::setFindDisabled( bool disable )
 {
+    mIsFindDisabled = disable;
     if( mFindAction ) {
-        mFindAction->setDisabled( disable );
+        mFindAction->setDisabled( mIsFindDisabled );
     }
 }
 
@@ -212,6 +213,7 @@ void FmFileView::initToolBar()
     mFindAction = new HbAction( this );
     mFindAction->setObjectName( "leftAction" );
     mFindAction->setText( hbTrId("txt_fmgr_opt_find") );
+    mFindAction->setDisabled( mIsFindDisabled );
     toolBar()->addAction( mFindAction );
 
     mToolBarRightAction = new HbAction( this );
@@ -415,7 +417,6 @@ void FmFileView::on_newFolder_triggered()
             if( !dir.mkdir( dirName ) ) {
                 FmDlgUtils::information( hbTrId("Operation failed!") );
             }
-            refreshModel( path );
             break;
         }
         
@@ -445,9 +446,9 @@ void FmFileView::on_rightAction_triggered()
 	}
 }
 
-void FmFileView::refreshModel( const QString &path )
+void FmFileView::on_driveChanged()
 {
-    mWidget->refreshModel( path );  
+    mWidget->on_driveChanged();  
 }
 
 void FmFileView::on_sortNameAction_triggered()
@@ -485,14 +486,14 @@ void FmFileView::removeToolBarAction()
 void FmFileView::on_mainWidget_setEmptyMenu( bool isMenuEmpty )
 {
     if( isMenuEmpty ){
-        FmLogger::log( "setEmptyMenu true" );
+        FM_LOG( "setEmptyMenu true" );
         if( !mMenu ) {
             mMenu = takeMenu();
         }
         toolBar()->clearActions();
     }
     else {
-        FmLogger::log( "setEmptyMenu false" );
+        FM_LOG( "setEmptyMenu false" );
         if( mMenu ) {
             setMenu( mMenu );
             mMenu = 0;

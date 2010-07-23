@@ -17,197 +17,116 @@
  */
 
 #include "fmdrivedetailstype.h"
+#include "fmfiletyperecognizer.h"
 #include "fmutils.h"
 
 #include <QDir>
 #include <QFileInfo>
 #include <QStringList>
 
-QList<FmDriveDetailsDataGroup*> FmDriveDetailsContent::queryDetailsContent()
-{    
-    QStringList typeFilters;
-    QList< FmDriveDetailsDataGroup* > dataGroupList;
-    typeFilters.append( QString( "*.bmp" ) );
-    typeFilters.append( QString( "*.gif" ) );
-    typeFilters.append( QString( "*.jpe" ) );
-    typeFilters.append( QString( "*.jpeg" ) );
-    typeFilters.append( QString( "*.jpg" ) );
-    typeFilters.append( QString( "*.ota" ) );
-    typeFilters.append( QString( "*.png" ) );
-    typeFilters.append( QString( "*.tif" ) );
-    typeFilters.append( QString( "*.tiff" ) );
-    typeFilters.append( QString( "*.wbmp" ) );
-    typeFilters.append( QString( "*.wmf" ) );
-    typeFilters.append( QString( "*.jp2" ) );
-    typeFilters.append( QString( "*.jpg2" ) );
-    typeFilters.append( QString( "*.jp3" ) );
-    typeFilters.append( QString( "*.ico" ) );
-    typeFilters.append( QString( "*.vcf" ) );
-
-    dataGroupList.append( new FmDriveDetailsDataGroup( FmDriveDetailsDataGroup::EGroupImages,
-            typeFilters, FmDriveDetailsDataGroup::EDataRecognizeExtName  ));
-    
-    typeFilters.clear();
-    typeFilters.append( QString( "*.aac" ) );
-    typeFilters.append( QString( "*.amr" ) );
-    typeFilters.append( QString( "*.au" ) );
-    typeFilters.append( QString( "*.awb" ) );
-    typeFilters.append( QString( "*.mid" ) );
-    typeFilters.append( QString( "*.mp3" ) );
-    typeFilters.append( QString( "*.ra" ) );
-    typeFilters.append( QString( "*.rmf" ) );
-    typeFilters.append( QString( "*.rng" ) );
-    typeFilters.append( QString( "*.snd" ) );
-    typeFilters.append( QString( "*.wav" ) );
-    typeFilters.append( QString( "*.wve" ) );
-    typeFilters.append( QString( "*.wma" ) );
-    typeFilters.append( QString( "*.m4a" ) );
-    typeFilters.append( QString( "*.ott" ) );
-    typeFilters.append( QString( "*.mxmf" ) );
-
-    dataGroupList.append( new FmDriveDetailsDataGroup( FmDriveDetailsDataGroup::EGroupSoundFiles,
-            typeFilters, FmDriveDetailsDataGroup::EDataRecognizeExtName  ));
-    
-    typeFilters.clear();
-    typeFilters.append( QString( "*.jad" ) );
-    typeFilters.append( QString( "*.jar" ) );
- 
-    dataGroupList.append( new FmDriveDetailsDataGroup( FmDriveDetailsDataGroup::EGroupMidpJava,
-            typeFilters, FmDriveDetailsDataGroup::EDataRecognizeExtName  ));
-
-    typeFilters.clear();
-    typeFilters.append( QString( "*.sis" ) );
-    typeFilters.append( QString( "*.sisx" ) );
-
-    dataGroupList.append( new FmDriveDetailsDataGroup( FmDriveDetailsDataGroup::EGroupNativeApps,
-            typeFilters, FmDriveDetailsDataGroup::EDataRecognizeExtName  ));
-
-    typeFilters.clear();
-    typeFilters.append( QString( "*.3gp" ) );
-    typeFilters.append( QString( "*.mp4" ) );
-    typeFilters.append( QString( "*.nim" ) );
-    typeFilters.append( QString( "*.rm"  ) );
-    typeFilters.append( QString( "*.rv"  ) );
-    typeFilters.append( QString( "*.wmv" ) );
-    typeFilters.append( QString( "*.3g2" ) );
-    typeFilters.append( QString( "*.rmvb") );
-    typeFilters.append( QString( "*.mkv" ) );
- 
-    dataGroupList.append( new FmDriveDetailsDataGroup( FmDriveDetailsDataGroup::EGroupVideos,
-            typeFilters, FmDriveDetailsDataGroup::EDataRecognizeExtName  ));
- 
-    typeFilters.clear();
-    typeFilters.append( QString( "*.doc" ) );
-    typeFilters.append( QString( "*.pdf" ) );
-    typeFilters.append( QString( "*.pps" ) );
-    typeFilters.append( QString( "*.ppt" ) );
-    typeFilters.append( QString( "*.txt" ) );
-    typeFilters.append( QString( "*.xls" ) );
-
-    dataGroupList.append( new FmDriveDetailsDataGroup( FmDriveDetailsDataGroup::EGroupDocuments,
-            typeFilters, FmDriveDetailsDataGroup::EDataRecognizeExtName  ));
-
-    typeFilters.clear();
-    typeFilters.append( QString( "*.vcs" ) );
-
-    dataGroupList.append( new FmDriveDetailsDataGroup( FmDriveDetailsDataGroup::EGroupCalendar,
-            typeFilters, FmDriveDetailsDataGroup::EDataRecognizeExtName ));
-    
-    // Add absolute path and use EDataRecognizeAbsolutePath method for Contacts
-    typeFilters.clear();
-    typeFilters.append( QString( FmViewDetail_Contacts ) );    
-    dataGroupList.append( new FmDriveDetailsDataGroup( FmDriveDetailsDataGroup::EGroupContacts,
-            typeFilters, FmDriveDetailsDataGroup::EDataRecognizeAbsolutePath ));
-    return dataGroupList;
-    
-}
-
 int FmDriveDetailsContent::querySizeofContent( const QString &driveName,
         QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped )
 {      
     int err = FmErrNone;
-    QList< FmDriveDetailsDataGroup* > dataGroupList = queryDetailsContent();   
     detailsSizeList.clear();
-    for( QList< FmDriveDetailsDataGroup* >::iterator it = dataGroupList.begin(); 
-            it!= dataGroupList.end(); ++it ) {
-        if ( *isStopped ){
-            return FmErrCancel;
-        }
-        FmDriveDetailsDataGroup* driveDetailsDataGroup = *it;
-        
-        switch( (*it)->dataRecognizeType() )
-            {
-            case FmDriveDetailsDataGroup::EDataRecognizeExtName:
-                err = getDataSizeByExtName(driveName, driveDetailsDataGroup, detailsSizeList, isStopped) ;
-                break;
-            case FmDriveDetailsDataGroup::EDataRecognizeAbsolutePath:
-                err = getDataSizeByAbsolutePath(driveName, driveDetailsDataGroup, detailsSizeList, isStopped);
-                break;
-            default:
-                Q_ASSERT_X( false, "querySizeofContent", "please handle all recognize methods ");
-                break;
-            }
-        
-        // return if error occur.
-        if( err != FmErrNone ) {
-            return err;
-        }
+    err = getDataSizeByTraversePath( driveName, detailsSizeList, isStopped );
+    if( err != FmErrNone ) {
+        return err;
     }
+    
+    QStringList dataPathList;
+    dataPathList.append( QString( FmViewDetail_Contacts ) );    
+    FmDriveDetailsDataGroup driveDetailsDataGroup( FmDriveDetailsSize::ETypeContacts, dataPathList );
+    
+    err = getDataSizeByAbsolutePath(driveName, driveDetailsDataGroup, detailsSizeList, isStopped);
+    if( err != FmErrNone ) {
+        return err;
+    }
+    
+    return FmErrNone;
+}
+int FmDriveDetailsContent::getDataSizeByTraversePath( const QString &driveName,
+            QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped )
+{
+    qint64 imageSize( 0 );
+    qint64 soundSize( 0 );
+    qint64 midpJavaSize( 0 );
+    qint64 nativeAppsSize( 0 );
+    qint64 videoSize( 0 );
+    qint64 documentsSize( 0 );
+   
+    FmFileTypeRecognizer fileTypeRecognizer;
+    
+    QList<QDir> dirs;
+    dirs.append( QDir( driveName ) );
+    
+    // traverse the whole drive
+    while (!dirs.isEmpty()) {
+        QDir::Filters filter = QDir::NoDotAndDotDot | QDir::AllEntries;
+        // do not summarize system and hidden files, these size will go into others category
+        // if( isSysHiddenIncluded ) {
+        // filter = filter | QDir::Hidden | QDir::System;
+        // }
+
+        QFileInfoList infoList = dirs.first().entryInfoList( filter );
+        for ( QFileInfoList::const_iterator it = infoList.begin(); it != infoList.end(); ++it ) {
+            if ( *isStopped ){
+                return FmErrCancel;
+            }
+            
+            if ( it->isFile() ) {
+            FmFileTypeRecognizer::FileType fileType = 
+                    fileTypeRecognizer.getType( it->absoluteFilePath() );
+            switch ( fileType )
+                {
+                case FmFileTypeRecognizer::FileTypeImage:
+                    imageSize += it->size();
+                    break;
+                case FmFileTypeRecognizer::FileTypeTone:
+                    soundSize += it->size();
+                    break;
+                case FmFileTypeRecognizer::FileTypeJava:
+                    midpJavaSize += it->size();
+                    break;
+                case FmFileTypeRecognizer::FileTypeSisx:
+                    nativeAppsSize += it->size();
+                    break;
+                case FmFileTypeRecognizer::FileTypeVideo:
+                    videoSize += it->size();
+                    break;
+                case FmFileTypeRecognizer::FileTypeText:
+                    documentsSize += it->size();
+                    break;
+                default:
+                    // do not need handle other type 
+                    break;
+                }
+            }
+            else if ( it->isDir() ) {
+                dirs.append( QDir( it->absoluteFilePath() ) );
+            } 
+        }
+        dirs.removeFirst();
+    }
+       
+    // store result to detailsSizeList.
+    detailsSizeList.append( new FmDriveDetailsSize( FmDriveDetailsSize::ETypeImages, imageSize ) ) ;
+    detailsSizeList.append( new FmDriveDetailsSize( FmDriveDetailsSize::ETypeSoundFiles, soundSize ) );
+    detailsSizeList.append( new FmDriveDetailsSize( FmDriveDetailsSize::ETypeMidpJava, midpJavaSize ) );
+    detailsSizeList.append( new FmDriveDetailsSize( FmDriveDetailsSize::ETypeNativeApps, nativeAppsSize ) );
+    detailsSizeList.append( new FmDriveDetailsSize( FmDriveDetailsSize::ETypeVideos, videoSize ) );
+    detailsSizeList.append( new FmDriveDetailsSize( FmDriveDetailsSize::ETypeDocuments, documentsSize ) );
     return FmErrNone;
 }
 
-int FmDriveDetailsContent::getDataSizeByExtName( const QString &driveName,
-        const FmDriveDetailsDataGroup* const dataGroup,
-        QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped )
-{
-    quint64 totalSize = 0;        
-    QString path;
-    path.clear();
-    
-    if( FmUtils::isDriveC( driveName )){
-        path = QString( "c:\\Data\\" );
-    }
-    else{
-        path = driveName;
-    }    
-    QStringList typeFilter = dataGroup->typeFilters();
-    QList<QDir> dirs;
-    dirs.append( QDir( path ) );
-    while (!dirs.isEmpty()) {
-       QFileInfoList infoList = dirs.first().entryInfoList( QDir::NoDotAndDotDot | QDir::AllEntries );
-       QFileInfoList filterInforList = dirs.first().entryInfoList( typeFilter, QDir::NoDotAndDotDot | QDir::Files );
-       
-       for ( QFileInfoList::Iterator it = filterInforList.begin(); it != filterInforList.end(); ++it ) {
-           if ( *isStopped ){
-               return FmErrCancel;
-           }           
-           if ( it->isFile() ) {
-               totalSize += it->size();
-           }
-       }       
-       for ( QFileInfoList::Iterator it = infoList.begin(); it != infoList.end(); ++it ) {
-           if ( *isStopped ){
-               return FmErrCancel;
-           }           
-           if ( it->isDir() ) {
-               dirs.append( QDir( it->absoluteFilePath() ) );
-           }
-       }       
-       dirs.removeFirst();
-   }
-   detailsSizeList.append( new FmDriveDetailsSize( dataGroup->dataGroups(), totalSize ) );
-   return FmErrNone;
-        
-}
-
 int FmDriveDetailsContent::getDataSizeByAbsolutePath( const QString &driveName,
-        const FmDriveDetailsDataGroup* const dataGroup,
+        const FmDriveDetailsDataGroup &dataGroup,
             QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped )
 {
     quint64 totalSize = 0;
-    QStringList typeFilter = dataGroup->typeFilters();
+    QStringList typeFilter = dataGroup.pathList();
     
-    for( QStringList::iterator it = typeFilter.begin(); 
+    for( QStringList::const_iterator it = typeFilter.begin(); 
            it!= typeFilter.end(); ++it ) {
         if ( *isStopped ){
             return FmErrCancel;
@@ -219,7 +138,7 @@ int FmDriveDetailsContent::getDataSizeByAbsolutePath( const QString &driveName,
         }
     }
  
-    detailsSizeList.append( new FmDriveDetailsSize( dataGroup->dataGroups(), totalSize ) );
+    detailsSizeList.append( new FmDriveDetailsSize( dataGroup.dataType(), totalSize ) );
     return FmErrNone;
 }
 
@@ -284,7 +203,7 @@ int FmFolderDetails::getNumofSubfolders( const QString &folderPath, int &numofSu
         }
 
         QFileInfoList infoList = dirs.first().entryInfoList( filter );
-        for ( QFileInfoList::Iterator it = infoList.begin(); it != infoList.end(); ++it ) {
+        for ( QFileInfoList::const_iterator it = infoList.begin(); it != infoList.end(); ++it ) {
             if ( *isStopped ){
                 return FmErrCancel;
             }

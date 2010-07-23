@@ -29,7 +29,7 @@
 
 int main( int argc, char *argv[] )
 {
-    FmLogger::log( "main start" );
+    FM_LOG( "main start" );
     HbApplication app( argc, argv );
 
     QTranslator translator;
@@ -40,11 +40,11 @@ int main( int argc, char *argv[] )
 
     app.setApplicationName( hbTrId("txt_fmgr_title_file_manager") );
     
-    FmLogger::log( "main_createMainwindow start" );
+    FM_LOG( "main_createMainwindow start" );
     FmMainWindow mw;
-    FmLogger::log( "main_createMainwindow end" );
+    FM_LOG( "main_createMainwindow end" );
 
     mw.show(); 
-    FmLogger::log( "main end" );
+    FM_LOG( "main end" );
     return app.exec();
 }

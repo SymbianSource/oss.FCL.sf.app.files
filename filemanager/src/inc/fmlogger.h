@@ -20,11 +20,17 @@
 
 #define FMLOG_PATH QString( "C:\\data\\fileman.txt" )
 
-
 #include <QString>
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
+
+#ifdef _DEBUG_LOG_ENABLE_
+    #define FM_LOG(str) FmLogger::log( str );
+#else
+    #define FM_LOG(str)
+#endif
+
 class FmLogger
 {
 public:

@@ -177,7 +177,6 @@ void FmOperationThread::run()
         {
         mErrString.clear();
         FmOperationCopy *operationCopy = static_cast<FmOperationCopy*>(mOperationBase);
-        QString refreshDestPath = QFileInfo( operationCopy->targetPath() ).dir().absolutePath();
         
         int ret = operationCopy->start( &mStop, &mErrString );
         switch( ret )
@@ -187,14 +186,15 @@ void FmOperationThread::run()
             break;
         case FmErrNone:
             emit notifyFinish();
-            emit refreshModel( refreshDestPath );
             break;
         default:
             emit notifyError( ret, mErrString );
             break;
         }
-        // refresh driveview no care if cancel, error or finished.
-        emit refreshModel( QString("") );
+        // refresh drive space no care if cancel, error or finished.
+        // as filemanger cannot notify drive space changed
+        // do not refresh path as QFileSystemModel will do auto-refresh
+        emit driveSpaceChanged();
         break;
         }
     case FmOperationService::EOperationTypeMove:
@@ -202,8 +202,6 @@ void FmOperationThread::run()
         mErrString.clear();
         FmOperationMove *operationMove = static_cast<FmOperationMove*>(mOperationBase);
         
-        QString refreshSrcPath = QFileInfo( operationMove->sourceList().front() ).dir().absolutePath();
-
         int ret = operationMove->start( &mStop, &mErrString );
         switch( ret )
         {
@@ -212,22 +210,20 @@ void FmOperationThread::run()
             break;
         case FmErrNone:
             emit notifyFinish();
-            emit refreshModel( refreshSrcPath );
-            emit refreshModel( operationMove->targetPath() );
             break;
         default:
             emit notifyError( ret, mErrString );
         }
-        // refresh driveview no care if cancel, error or finished.
-        emit refreshModel( QString("") );
+        // refresh drive space no care if cancel, error or finished.
+        // as filemanger cannot notify drive space changed
+        // do not refresh path as QFileSystemModel will do auto-refresh
+        emit driveSpaceChanged();
         break;
         }
     case FmOperationService::EOperationTypeRemove:
         {
         mErrString.clear();
         FmOperationRemove *operationRemove = static_cast<FmOperationRemove*>(mOperationBase);
-        
-        QString refreshSrcPath = QFileInfo( operationRemove->pathList().front() ).dir().absolutePath();
         
         int ret = operationRemove->start( &mStop, &mErrString );
         switch( ret )
@@ -241,27 +237,30 @@ void FmOperationThread::run()
         default:
             emit notifyError( ret, mErrString );
         }
-        // refresh driveview no care if cancel, error or finished.
-        emit refreshModel( QString("") );
+        // refresh drive space no care if cancel, error or finished.
+        // as filemanger cannot notify drive space changed
+        // do not refresh path as QFileSystemModel will do auto-refresh
+        emit driveSpaceChanged();
         break;
         }
     case FmOperationService::EOperationTypeFormat:
         {
 //        emit notifyWaiting( false );
-        FmLogger::log(QString("start format"));
+        FM_LOG(QString("start format"));
         FmOperationFormat *operationFormat = static_cast<FmOperationFormat*>( mOperationBase );
-        FmLogger::log(QString("get param and start format"));
+        FM_LOG(QString("get param and start format"));
 
-        QString refreshSrcPath = operationFormat->driverName();
-//        if ( FmErrNone != FmUtils::formatDrive( operationFormat->driverName() ) ) {
         if ( FmErrNone != operationFormat->start() ) {
             emit notifyError(  FmErrTypeFormatFailed, operationFormat->driverName() );
             return;
         }
-        FmLogger::log(QString("format done"));
+        FM_LOG(QString("format done"));
         emit notifyFinish();
-        emit refreshModel( refreshSrcPath );
-        FmLogger::log(QString("format done and emit finish"));
+        // refresh drive space no care if cancel, error or finished.
+        // as filemanger cannot notify drive space changed
+        // do not refresh path as QFileSystemModel will do auto-refresh
+        emit driveSpaceChanged();
+        FM_LOG(QString("format done and emit finish"));
         break;
         }
     case FmOperationService::EOperationTypeDriveDetails:

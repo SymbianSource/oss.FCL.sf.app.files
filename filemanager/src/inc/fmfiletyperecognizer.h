@@ -19,6 +19,7 @@
 #ifndef FMFILERECOGNIZER_H
 #define FMFILERECOGNIZER_H
 
+#include "fmcommon.h"
 #include <QString>
 #include <QList>
 #include <QStringList>
@@ -57,17 +58,8 @@ public:
      */
     FmFileTypeRecognizer::FileType getType( const QString& path ) const ;
     
-    /*!
-     Profide a list of extension name by designate the FileType.
-     */
-    const QStringList getFileListFromFileType( const FmFileTypeRecognizer::FileType fileType ) const;
-    
 private:    
-    // used to store FileType, extension name list pare.
-    QMap<FileType, QStringList> mFileTypeMap;
-    
     // used to store single extension name, FileType pare.
-    // this map comes from mFileTypeMap
     QMap<QString, FileType>     mFileExtensionMap;
 };
 

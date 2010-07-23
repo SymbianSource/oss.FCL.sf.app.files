@@ -100,7 +100,7 @@ void FmBackupWidget::init()
 
 void FmBackupWidget::expandAllGroup()
 {
-    FmLogger::log( QString( "function expandAllGroup start" ) );
+    FM_LOG( QString( "function expandAllGroup start" ) );
     
     mDataForm->setModel( 0 );
     mDataForm->setModel( mModel );
@@ -108,19 +108,19 @@ void FmBackupWidget::expandAllGroup()
     HbDataFormViewItem *itemScheduling = 
         (HbDataFormViewItem *)(mDataForm->itemByIndex(mModel->indexFromItem(mSchedulingGroup)));
     if( itemScheduling ){
-        FmLogger::log( QString( "expand itemScheduling start" ) );
+        FM_LOG( QString( "expand itemScheduling start" ) );
         itemScheduling->setExpanded( true );
-        FmLogger::log( QString( "expand itemScheduling end" ) );
+        FM_LOG( QString( "expand itemScheduling end" ) );
     }
 
     HbDataFormViewItem *itemGroup = 
         (HbDataFormViewItem *)(mDataForm->itemByIndex(mModel->indexFromItem(mContentsGroup)));
     if( itemGroup ){
-        FmLogger::log( QString( "expand itemGroup start" ) );
+        FM_LOG( QString( "expand itemGroup start" ) );
         itemGroup->setExpanded( true );
-        FmLogger::log( QString( "expand itemGroup end" ) );
+        FM_LOG( QString( "expand itemGroup end" ) );
     }
-    FmLogger::log( QString( "function expandAllGroup end" ) );
+    FM_LOG( QString( "function expandAllGroup end" ) );
 }
 
 void FmBackupWidget::initModel()

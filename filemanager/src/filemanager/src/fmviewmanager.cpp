@@ -76,9 +76,6 @@ FmViewManager::FmViewManager( FmMainWindow* mainWindow )
     mOperationService = new FmOperationService( this );
     mOperationService->setObjectName( "operationService" );
 
-    mFsWatcher = new QFileSystemWatcher( this );
-    mFsWatcher->setObjectName( "fsWatcher" );
-
     mDriveWatcher = new FmDriveWatcher( this );
     mDriveWatcher->setObjectName( "driveWatcher" );
     mDriveWatcher->startWatch();
@@ -98,8 +95,6 @@ FmViewManager::~FmViewManager(void)
 
     delete mOperationService;
     mOperationService = 0;
-    delete mFsWatcher;
-    mFsWatcher = 0;
 
     mDriveWatcher->cancelWatch();
     delete mDriveWatcher;
@@ -145,10 +140,11 @@ void FmViewManager::popViewAndShow()
     }
 }
 
-void FmViewManager::on_operationService_refreshModel( FmOperationBase *operationBase, const QString &path )
+void FmViewManager::on_operationService_driveSpaceChanged( FmOperationBase *operationBase )
 {
     Q_UNUSED( operationBase );
-    emit refreshModel( path );
+    // request drive view to refresh
+    emit driveSpaceChanged();
 }
 
 void FmViewManager::on_operationService_notifyFinish( FmOperationBase *operationBase )
@@ -180,8 +176,11 @@ void FmViewManager::createDriverView()
     mMainWindow->addView( driverView );
     mMainWindow->setCurrentView( driverView );
 
-    connect( this, SIGNAL( refreshModel( QString ) ), 
-        driverView, SLOT( refreshModel( QString ) ) );
+    connect( this, SIGNAL( driveSpaceChanged() ), 
+        driverView, SLOT( refreshDrive() ) );
+    
+    connect( this, SIGNAL( driveChanged() ), 
+        driverView, SLOT( refreshDrive() ) );
 }
 
 void FmViewManager::createFileView( const QString &path,
@@ -213,8 +212,8 @@ void FmViewManager::createFileView( const QString &path,
     mMainWindow->addView( fileView );
     mMainWindow->setCurrentView( fileView );
     
-    connect( this, SIGNAL( refreshModel( const QString& ) ), //emit when need refresh models
-        fileView, SLOT( refreshModel( const QString& ) ) );
+    connect( this, SIGNAL( driveChanged() ), //emit when drive changed.
+        fileView, SLOT( on_driveChanged() ) );
 
     connect( fileView, SIGNAL( popViewAndShow() ),                  //emit when fileView need delete itself and pop&show view from stack.
         this, SLOT( popViewAndShow() ), Qt::QueuedConnection );
@@ -244,8 +243,8 @@ void FmViewManager::createBackupView()
 
     mMainWindow->addView( backupView );
     mMainWindow->setCurrentView( backupView );
-    connect( this, SIGNAL( refreshModel( QString ) ), //emit when need refresh models
-            backupView, SLOT( refreshModel( QString ) ) );
+    connect( this, SIGNAL( driveChanged() ), //emit when need refresh model
+            backupView, SLOT( refreshModel() ) );
     connect( this, SIGNAL( refreshBackupDate() ),  //emit when need refresh backup date
             backupView, SLOT( refreshBackupDate() ) );
 }
@@ -256,7 +255,7 @@ void FmViewManager::createRestoreView()
 
     mMainWindow->addView( restoreView );
     mMainWindow->setCurrentView( restoreView );
-    connect( this, SIGNAL( refreshRestoreView() ), restoreView, SLOT( refreshRestoreView() ) );
+    connect( this, SIGNAL( driveChanged() ), restoreView, SLOT( refreshRestoreView() ) );
 
 }
 
@@ -266,7 +265,7 @@ void FmViewManager::createDeleteBackupView()
 
     mMainWindow->addView( deleteBackupView );
     mMainWindow->setCurrentView( deleteBackupView );
-    connect( this, SIGNAL( refreshDeleteBackupView() ), deleteBackupView, SLOT( refreshDeleteBackupView() ) );
+    connect( this, SIGNAL( driveChanged() ), deleteBackupView, SLOT( refreshDeleteBackupView() ) );
 
 }
 
@@ -274,35 +273,12 @@ Qt::Orientation FmViewManager::orientation(){
     return mMainWindow->orientation();
 }
 
-void FmViewManager::on_fsWatcher_fileChanged(const QString &path)
-{
-    emit refreshModel( path );
-}
-void FmViewManager::on_fsWatcher_directoryChanged(const QString &path)
-{
-    emit refreshModel( path );
-}
-void FmViewManager::addWatchPath( const QString &path )
-{
-    mFsWatcher->addPath( path );
-}
-void FmViewManager::removeWatchPath( const QString &path )
-{
-    if( !mViewManager || !mFsWatcher ) {
-        return;
-    }
-    mFsWatcher->removePath( path );
-}
-
-
 void FmViewManager::on_driveWatcher_driveAddedOrChanged()
 {
-    FmLogger::log( QString( "FmViewManager::on_driveWatcher_driveAddedOrChanged start" ) );
-    emit refreshModel( QString("") );
-    emit refreshDeleteBackupView();
-    emit refreshRestoreView();
+    FM_LOG( QString( "FmViewManager::on_driveWatcher_driveAddedOrChanged start" ) );
+    emit driveChanged();
 	checkDlgCloseUnit();
-    FmLogger::log( QString( "FmViewManager::on_driveWatcher_driveAddedOrChanged end" ) );
+    FM_LOG( QString( "FmViewManager::on_driveWatcher_driveAddedOrChanged end" ) );
 
 }
 
@@ -314,9 +290,9 @@ void FmViewManager::checkDlgCloseUnit()
 		for( int i = 0; i < drives.length(); i++ ) {
 			QString drive( drives[i] + QString( ":/" ) );
 			if( !FmUtils::isDriveAvailable( drive ) ) {
-				FmLogger::log( " close Dialog start " );
+				FM_LOG( " close Dialog start " );
 				unit->dialog()->close();
-				FmLogger::log( " close Dialog end " );
+				FM_LOG( " close Dialog end " );
 			}
 		}
 	}

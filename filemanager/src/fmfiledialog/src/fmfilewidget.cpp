@@ -68,23 +68,23 @@ QFileInfo FmFileWidget::currentPath() const
 
 void FmFileWidget::setRootPath( const QString &pathName )
 {
-    FmLogger::log( "FmFileWidget::setRootPath start" );
+    FM_LOG( "FmFileWidget::setRootPath start" );
 	// If path is empty or can not access, set model as DriveModel
 	// Otherwise set model as FileSystemModel, means it will return to drive view if error occur.
     if( ( pathName.isEmpty() ) || ( FmErrNone != FmUtils::isPathAccessabel( pathName ) ) ) {
-        FmLogger::log( "FmFileWidget::setRootPath set drive model" );
+        FM_LOG( "FmFileWidget::setRootPath set drive model" );
         setModel( mDriveModel );
-        FmLogger::log( "FmFileWidget::setRootPath set drive model end" );
+        FM_LOG( "FmFileWidget::setRootPath set drive model end" );
         emit pathChanged( QString() );
     } else {
-        FmLogger::log( "FmFileWidget::setRootPath set dir model end" );
+        FM_LOG( "FmFileWidget::setRootPath set dir model end" );
         setModel( mFileSystemModel );
-        FmLogger::log( "FmFileWidget::setRootPath set dir model end" );
+        FM_LOG( "FmFileWidget::setRootPath set dir model end" );
 		mListView->setRootIndex( mFileSystemModel->setRootPath( pathName ) );
-        FmLogger::log( "FmFileWidget::setRootPath set rootIndex" );
+        FM_LOG( "FmFileWidget::setRootPath set rootIndex" );
         emit pathChanged( pathName );
     }    
-    FmLogger::log( "FmFileWidget::setRootPath end" );
+    FM_LOG( "FmFileWidget::setRootPath end" );
 }
 void FmFileWidget::on_list_activated( const QModelIndex &index )
     {
@@ -94,41 +94,41 @@ void FmFileWidget::on_list_activated( const QModelIndex &index )
 
 void FmFileWidget::on_listActivated()
 {
-    FmLogger::log("FmFileWidget::on_list_activated start" );
+    FM_LOG("FmFileWidget::on_list_activated start" );
     if( mCurrentModel == mDriveModel ) {
     //If currenty model is DriveModel, open drive and set path
         QString driveName = mDriveModel->driveName( mActivatedModelIndex );
         QString checkedPath = FmUtils::checkDriveToFolderFilter( driveName );
         if( checkedPath.isEmpty() ) {
-            FmLogger::log("FmFileWidget::on_list_activated end becaise checkedpath empty" );
+            FM_LOG("FmFileWidget::on_list_activated end becaise checkedpath empty" );
             return;
         }
 
-        FmLogger::log("FmFileWidget::on_list_activated setModel dir start" );
+        FM_LOG("FmFileWidget::on_list_activated setModel dir start" );
         setModel( mFileSystemModel );
-        FmLogger::log("FmFileWidget::on_list_activated setModel dir end" );
+        FM_LOG("FmFileWidget::on_list_activated setModel dir end" );
         setRootPath( checkedPath );
-        FmLogger::log("FmFileWidget::on_list_activated setRootIndex" );
+        FM_LOG("FmFileWidget::on_list_activated setRootIndex" );
         emit pathChanged( checkedPath );
-        FmLogger::log("FmFileWidget::on_list_activated finish emit pathChanged" );
+        FM_LOG("FmFileWidget::on_list_activated finish emit pathChanged" );
     }
     else if( mCurrentModel == mFileSystemModel ) {
     //If currenty model is FileSystemModel, open path or emit file activate signal.
         if ( mFileSystemModel->isDir( mActivatedModelIndex ) ) {
-            FmLogger::log("FmFileWidget::on_list_activated start changeRootIndex" );
+            FM_LOG("FmFileWidget::on_list_activated start changeRootIndex" );
             changeRootIndex( mActivatedModelIndex );
-            FmLogger::log("FmFileWidget::on_list_activated finish changeRootIndex" );
+            FM_LOG("FmFileWidget::on_list_activated finish changeRootIndex" );
         } else {
             QFileInfo fileInfo( mFileSystemModel->filePath( mActivatedModelIndex ) );
             if( fileInfo.isFile() ) {
                 emit fileActivated( fileInfo.fileName() );
-                FmLogger::log("FmFileWidget::on_list_activated finish emit fileActivated" );
+                FM_LOG("FmFileWidget::on_list_activated finish emit fileActivated" );
             }
         }
     } else {
         Q_ASSERT( false );
     }
-    FmLogger::log("FmFileWidget::on_list_activated end" );
+    FM_LOG("FmFileWidget::on_list_activated end" );
 }
 
 void FmFileWidget::setModelFilter( QDir::Filters filters )
@@ -143,9 +143,9 @@ void FmFileWidget::setNameFilters( const QStringList &nameFilters )
 
 void FmFileWidget::changeRootIndex( const QModelIndex &index )
 {
-    FmLogger::log("FmFileWidget::changeRootIndex start" );
+    FM_LOG("FmFileWidget::changeRootIndex start" );
     if( mCurrentModel != mFileSystemModel ) {
-        FmLogger::log("FmFileWidget::changeRootIndex end because model not equal mFileSystemModel" );
+        FM_LOG("FmFileWidget::changeRootIndex end because model not equal mFileSystemModel" );
         return;
     }
 
@@ -153,7 +153,7 @@ void FmFileWidget::changeRootIndex( const QModelIndex &index )
 	QString filePath = mFileSystemModel->fileInfo( index ).absoluteFilePath();
     // pathChanged signal will be emitted in setRootPath
 	setRootPath( filePath );
-    FmLogger::log("FmFileWidget::changeRootIndex end" );
+    FM_LOG("FmFileWidget::changeRootIndex end" );
 }
 
 void FmFileWidget::init()
@@ -232,7 +232,7 @@ bool FmFileWidget::cdUp()
 
 void FmFileWidget::on_driveWatcher_driveAddedOrChanged()
 {
-    FmLogger::log( QString( "FmFileDialog_FmFileWidget::on_driveWatcher_driveAddedOrChanged start" ) );
+    FM_LOG( QString( "FmFileDialog_FmFileWidget::on_driveWatcher_driveAddedOrChanged start" ) );
     mDriveModel->refresh();
     if( currentViewType() == DriveView ) {
         setModel( 0 );
@@ -241,11 +241,11 @@ void FmFileWidget::on_driveWatcher_driveAddedOrChanged()
     } else if( currentViewType() == DirView ) {
         if( FmErrNone != FmUtils::isPathAccessabel( currentPath().absoluteFilePath() ) ) {
             // path not available, set model to drive
-            FmLogger::log( QString( "FmFileDialog_FmFileWidget::on_driveWatcher_driveAddedOrChanged path not availeable, set drivemodel:"
+            FM_LOG( QString( "FmFileDialog_FmFileWidget::on_driveWatcher_driveAddedOrChanged path not availeable, set drivemodel:"
                     + currentPath().absoluteFilePath() ) );
             setModel( mDriveModel );
             emit pathChanged( QString() );
         }
     }
-    FmLogger::log( QString( "FmFileDialog_FmFileWidget::on_driveWatcher_driveAddedOrChanged end" ) );
+    FM_LOG( QString( "FmFileDialog_FmFileWidget::on_driveWatcher_driveAddedOrChanged end" ) );
 }

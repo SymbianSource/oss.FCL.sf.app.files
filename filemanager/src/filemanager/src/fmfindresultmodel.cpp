@@ -24,12 +24,24 @@
 
 #include <hbglobal.h>
 
+/*!
+    \fn void finished()
+    This signal is emitted when find is finished.
+*/
+
+/*!
+    \fn void modelCountChanged( int count )
+    This signal is emitted when data count in model is changed
+    \a count is current data count in model.
+    Currently only start find and get more find result will emit this signal.
+*/
+
 FmFindResultModel::FmFindResultModel( QObject *parent )
     : QAbstractListModel( parent )
 {
     init();
     connect( mFindThread, SIGNAL(finished()), this, SIGNAL(finished()) );
-	connect( mFindThread, SIGNAL(found(int)), this, SLOT(on_findThread_found( int) ), Qt::BlockingQueuedConnection ); 
+	connect( mFindThread, SIGNAL(found(QStringList)), this, SLOT(on_findThread_found( QStringList) ), Qt::BlockingQueuedConnection ); 
 }
 
 FmFindResultModel::~FmFindResultModel()
@@ -37,17 +49,27 @@ FmFindResultModel::~FmFindResultModel()
 	delete mIconProvider;
 }
 
+/*!
+    Returns the number of rows in the model. This value corresponds to the
+    number of items in the model's internal string list.
+
+    The optional \a parent argument is in most models used to specify
+    the parent of the rows to be counted. Because this is a list if a
+    valid parent is specified, the result will always be 0.
+
+    \sa insertRows(), removeRows(), QAbstractItemModel::rowCount()
+*/
 int FmFindResultModel::rowCount( const QModelIndex &parent ) const
 {
-    if (!parent.isValid())
-        return mFindResult.size();
+    if ( !parent.isValid() )
+        return mFindResult.count();
 
     return 0;
 }
 
 int FmFindResultModel::columnCount( const QModelIndex &parent ) const
 {
-    if (!parent.isValid())
+    if ( !parent.isValid() )
         return 4;
     
     return 0;
@@ -106,24 +128,46 @@ QVariant FmFindResultModel::headerData( int section, Qt::Orientation orientation
     return QAbstractItemModel::headerData( section, orientation, role );
 }
 
-bool FmFindResultModel::insertRows( int row, int count, const QModelIndex &parent )
+/*!
+    Inserts \a dataList into the model, beginning at the given \a row.
+
+    The \a parent index of the rows is optional and is only used for
+    consistency with QAbstractItemModel. By default, a null index is
+    specified, indicating that the rows are inserted in the top level of
+    the model.
+
+    \sa QAbstractItemModel::insertRows()
+*/
+
+bool FmFindResultModel::insertRows( int row, const QStringList &dataList, const QModelIndex &parent )
 {
-    Q_UNUSED( parent );
-	if (row < 0 || count < 1)
+    if ( row < 0 || dataList.count() < 1 || row > rowCount(parent) )
 		return false;
 
-	beginInsertRows( QModelIndex(), row, row + count - 1 );
+    beginInsertRows( QModelIndex(), row, row + dataList.count() - 1 );
+    mFindResult.append( dataList );
+    endInsertRows();
 
-	endInsertRows();
+    // emit modelCountChanged could let FmFindWidget switch style between EmptyTipWidget and ResultListview
+    // FmFindWidget will show an empty tip widget such as "No found files or folderss" if set 0 as parameter
+    emit modelCountChanged( rowCount() );
 
-	return true;
+    return true;
 }
 
+/*!
+    Removes \a count rows from the model, beginning at the given \a row.
+
+    The \a parent index of the rows is optional and is only used for
+    consistency with QAbstractItemModel. By default, a null index is
+    specified, indicating that the rows are removed in the top level of
+    the model.
+
+    \sa QAbstractItemModel::removeRows()
+*/
 bool FmFindResultModel::removeRows( int row, int count, const QModelIndex &parent )
-{
-    Q_UNUSED( parent );
-    
-	if (row < 0 || count < 1 || row + count > mFindResult.size())
+{   
+	if (row < 0 || count < 1 || (row + count) > rowCount(parent) )
 		return false;
 
 	beginRemoveRows( QModelIndex(), row, row + count - 1 );
@@ -132,7 +176,11 @@ bool FmFindResultModel::removeRows( int row, int count, const QModelIndex &paren
 		mFindResult.removeAt(row);
 
 	endRemoveRows();
-	
+
+    // emit modelCountChanged could let FmFindWidget switch style between EmptyTipWidget and  ResultListview
+    // FmFindWidget will show an empty tip widget such as "No found files or folderss" if set 0 as parameter
+    emit modelCountChanged( rowCount() );
+
 	return true;
 }
 
@@ -166,13 +214,13 @@ void FmFindResultModel::setPattern( const QRegExp &regExp )
 
 void FmFindResultModel::find()
 {
-	if (mFindThread->isRunning())
+	if(mFindThread->isRunning())
 		return;
 
     if( findPath().isEmpty() ){
         mFindThread->setLastResult( mFindResult );
     }
-	removeRows( 0, mFindResult.size() );
+	removeRows( 0, rowCount() );
     mFindThread->start();
 }
 
@@ -187,13 +235,16 @@ bool FmFindResultModel::isFinding() const
     return mFindThread->isRunning();
 }
 
-void FmFindResultModel::on_findThread_found( int count )
+/*
+    Receive \a dataList as some found result
+    Then insert dataList to model
+*/
+void FmFindResultModel::on_findThread_found( const QStringList &dataList )
 {
-    if( count > 0 ) {
-        int size = mFindResult.size();
-        insertRows( mFindResult.size() - count, count );
+    if( dataList.isEmpty() ) {
+		return;
     }
-    emit modelCountChanged( mFindResult.size() );
+    insertRows( rowCount(), dataList );
 }
 
 bool FmFindResultModel::indexValid( const QModelIndex &index ) const
@@ -204,39 +255,43 @@ bool FmFindResultModel::indexValid( const QModelIndex &index ) const
 
 void FmFindResultModel::init()
 {
-    mFindThread = new FmFindThread( &mFindResult, this );
+    mFindThread = new FmFindThread( this );
     mFindThread->setObjectName( "findThread" );
     mIconProvider = new FmFileIconProvider();
 }
 
-bool FmFindResultModel::caseNameLessThan(const QString &s1, const QString &s2)
+bool FmFindResultModel::caseNameLessThan(const QPair<QString,int> &s1,
+                                         const QPair<QString,int> &s2)
 {
-    QFileInfo info1( s1 );
-    QFileInfo info2( s2 );
+    QFileInfo info1( s1.first );
+    QFileInfo info2( s2.first );
     
     return info1.fileName() < info2.fileName();
 }
 
-bool FmFindResultModel::caseTimeLessThan(const QString &s1, const QString &s2)
+bool FmFindResultModel::caseTimeLessThan(const QPair<QString,int> &s1,
+                                         const QPair<QString,int> &s2)
 {
-    QFileInfo info1( s1 );
-    QFileInfo info2( s2 );
+    QFileInfo info1( s1.first );
+    QFileInfo info2( s2.first );
     
     return info1.lastModified() < info2.lastModified();
 }
 
-bool FmFindResultModel::caseSizeLessThan(const QString &s1, const QString &s2)
+bool FmFindResultModel::caseSizeLessThan(const QPair<QString,int> &s1,
+                                         const QPair<QString,int> &s2)
 {
-    QFileInfo info1( s1 );
-    QFileInfo info2( s2 );
+    QFileInfo info1( s1.first );
+    QFileInfo info2( s2.first );
     
     return info1.size() < info2.size();
 }
 
-bool FmFindResultModel::caseTypeLessThan(const QString &s1, const QString &s2)
+bool FmFindResultModel::caseTypeLessThan(const QPair<QString,int> &s1,
+                                         const QPair<QString,int> &s2)
 {
-    QFileInfo info1( s1 );
-    QFileInfo info2( s2 );
+    QFileInfo info1( s1.first );
+    QFileInfo info2( s2.first );
     
     if( info1.isDir() != info2.isDir() ){
         return info1.isDir();
@@ -246,33 +301,54 @@ bool FmFindResultModel::caseTypeLessThan(const QString &s1, const QString &s2)
     }
 }
 
-
+/*!
+  \reimp
+  Sort by \a column, which is aligned to \a SortFlag
+  \sa SortFlag
+*/
 void FmFindResultModel::sort ( int column, Qt::SortOrder order )
 {  
+    // Sort algorithm comes from
+    // void QListModel::sort(int column, Qt::SortOrder order)
+
     Q_UNUSED( order );
-           
-//    emit  layoutAboutToBeChanged();
-    
-    QStringList lst( mFindResult );
-    removeRows( 0, mFindResult.size() );
-    
-    switch( ( SortFlag )column )
+    emit layoutAboutToBeChanged();
+
+    // store value and row pair.
+    QVector < QPair<QString,int> > sorting(mFindResult.count());
+    for (int i = 0; i < mFindResult.count(); ++i) {
+        QString item = mFindResult.at(i);
+        sorting[i].first = item;
+        sorting[i].second = i;
+    }
+
+    // sort in "sorting"
+   switch( ( SortFlag )column )
     {
     case Name:
-        qSort( lst.begin(), lst.end(), caseNameLessThan );
+        qSort( sorting.begin(), sorting.end(), caseNameLessThan );
         break;
     case Time:
-        qSort( lst.begin(), lst.end(), caseTimeLessThan );
+        qSort( sorting.begin(), sorting.end(), caseTimeLessThan );
         break;
     case Size:
-        qSort( lst.begin(), lst.end(), caseSizeLessThan );
+        qSort( sorting.begin(), sorting.end(), caseSizeLessThan );
         break;
     case Type:
-        qSort( lst.begin(), lst.end(), caseTypeLessThan );
+        qSort( sorting.begin(), sorting.end(), caseTypeLessThan );
         break;
-    }    
-    
-    mFindResult = lst;
-    insertRows( 0, mFindResult.size() );
-    emit modelCountChanged( mFindResult.size() );
+    }
+
+    // create from Indexes and toIndexes, then set sorted data back to mFindResult
+    QModelIndexList fromIndexes;
+    QModelIndexList toIndexes;
+    for (int r = 0; r < sorting.count(); ++r) {
+        QString item = sorting.at(r).first;
+        toIndexes.append(createIndex(r, 0));
+        fromIndexes.append(createIndex(sorting.at(r).second, 0));
+        mFindResult[r] = sorting.at(r).first;
+    }
+    changePersistentIndexList(fromIndexes, toIndexes);
+
+    emit layoutChanged();
 }

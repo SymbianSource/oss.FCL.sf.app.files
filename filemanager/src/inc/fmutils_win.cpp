@@ -290,14 +290,14 @@ QString FmUtils::checkFolderToDriveFilter( const QString &path )
 #ifdef _DEBUG_HIDE_VIEWFOLDER_WINDOWS_
     QString logString;
     logString = QString( "checkFolderToDriveFilter: " ) + path;
-    FmLogger::log( logString );
+    FM_LOG( logString );
     QString checkedPath = fillPathWithSplash( path );
 
     logString = QString( "checkFolderToDriveFilter_fillPathWithSplash: " ) + checkedPath;
-    FmLogger::log( logString );
+    FM_LOG( logString );
     
     if( checkedPath.compare( QString( "C:/data/"), Qt::CaseInsensitive ) == 0 ) {
-        FmLogger::log( QString( " change from c:/data/ to C:/" ) );
+        FM_LOG( QString( " change from c:/data/ to C:/" ) );
         return QString( "C:/" );
     }
 #endif

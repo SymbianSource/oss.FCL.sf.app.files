@@ -120,7 +120,7 @@ QList<QFileInfo> FmFileBrowseWidget::checkedItems() const
 void FmFileBrowseWidget::setRootPath( const QString &pathName )
 {
     QString logString = "FmFileBrowseWidget::setRootPath(" + pathName + ')';
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     int err = checkPathAndSetStyle( pathName );
     switch( err )
@@ -250,16 +250,16 @@ void FmFileBrowseWidget::on_list_activated( const QModelIndex &index )
 
 void FmFileBrowseWidget::on_listActivated()
 {
-    FmLogger::log("FmFileBrowseWidget::on_listActivated start");
+    FM_LOG("FmFileBrowseWidget::on_listActivated start");
     if( mListLongPressed ) {
-        FmLogger::log("FmFileBrowseWidget::on_list_activated end because longPressed");
+        FM_LOG("FmFileBrowseWidget::on_list_activated end because longPressed");
         return;
     }
     if (!mSelectable) {
         if (mModel->isDir(mActivatedModelIndex) ) {
-            FmLogger::log("FmFileBrowseWidget::on_list_activated changeRootIndex>>");
+            FM_LOG("FmFileBrowseWidget::on_list_activated changeRootIndex>>");
             changeRootIndex( mActivatedModelIndex );
-            FmLogger::log("FmFileBrowseWidget::on_list_activated changeRootIndex<<");
+            FM_LOG("FmFileBrowseWidget::on_list_activated changeRootIndex<<");
         } else {
             QString filePath( mModel->filePath( mActivatedModelIndex ) );
             QFileInfo fileInfo( filePath );
@@ -268,7 +268,7 @@ void FmFileBrowseWidget::on_listActivated()
             }
         }
     }
-    FmLogger::log("FmFileBrowseWidget::on_listActivated end");
+    FM_LOG("FmFileBrowseWidget::on_listActivated end");
 }
 
 void FmFileBrowseWidget::on_tree_activated( const QModelIndex &index )
@@ -475,34 +475,25 @@ void FmFileBrowseWidget::setModelFilter( QDir::Filters filters )
     mModel->setFilter( filters );
 }
 
-void FmFileBrowseWidget::refreshModel( const QString& path )
+void FmFileBrowseWidget::on_driveChanged()
 {
-    FmLogger::log( "FmFileBrowseWidget::refreshModel start" );
-    // This slot will be triggered when drive inserted/ejected
-	// Because filemanger do not notify dir/files changed yet( QFileSystem will auto refresh.)
+    FM_LOG( "FmFileBrowseWidget::on_driveChanged start" );
     QString currPath( currentPath().absoluteFilePath() );
     
-    if( currPath.isEmpty() ) {
-        // label style and no data shown( dirve is not present or locked, or corrupt )
-    
-        //set path as drive root, cause refresh, so that data can be shown when insert MMC in device.
+    if(style()==ListStyle) {
+        // display normally, setRootPath again to check if drive is available 
+        setRootPath( currPath );
+    } else{
+        // display label style, setRootPath to drive root
         setRootPath( mCurrentDrive );
-        // update title
-    } else {
-        // display drive data normally
-        // ignore path refresh event as QFileSystemModel will auto refresh.
-    
-        // Handle drive refresh event as drive may be ejected.
-        if( path.isEmpty() ) { // path is empty means drive is changed.
-            checkPathAndSetStyle( currPath );
-        }
     }
     emit setTitle( FmUtils::fillDriveVolume( mCurrentDrive, true ) );
-    FmLogger::log( "FmFileBrowseWidget::refreshModel end" );
+    FM_LOG( "FmFileBrowseWidget::on_driveChanged end" );
 }
 
 int FmFileBrowseWidget::checkPathAndSetStyle( const QString& path )
 {
+    FM_LOG( "FmFileBrowseWidget::checkPathAndSetStyle start_" + path );
     int err = FmUtils::isPathAccessabel( path );
     switch( err )
         {
@@ -736,7 +727,10 @@ void FmFileBrowseWidget::on_renameAction_triggered()
             FmDlgUtils::information( hbTrId("Rename failed!") );
         }
         else {
-            if ( oldSuffix != newFileInfo.suffix() ) {
+            // Rename succeed
+            if ( ( oldSuffix.compare( newFileInfo.suffix(), Qt::CaseInsensitive ) != 0 )
+                && newFileInfo.isFile() ) {
+                // popup warning when the suffix of file is changed.
                 FmDlgUtils::information( hbTrId( "File may become unusable when file name extension is changed" ) );        
             }   
         }

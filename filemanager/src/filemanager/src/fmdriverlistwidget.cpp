@@ -58,12 +58,12 @@ FmDriverListWidget::~FmDriverListWidget()
 
 void FmDriverListWidget::on_list_activated( const QModelIndex &index )
 {
-    FmLogger::log("FmDriverListWidget::on_list_activated");
+    FM_LOG("FmDriverListWidget::on_list_activated");
     if( mListLongPressed ) {
-        FmLogger::log("FmDriverListWidget::on_list_activated return because long pressed");
+        FM_LOG("FmDriverListWidget::on_list_activated return because long pressed");
         return;
     }
-    FmLogger::log("FmDriverListWidget::on_list_activated emit activate to open drive");
+    FM_LOG("FmDriverListWidget::on_list_activated emit activate to open drive");
     emit activated( mModel->driveName( index ) );
 }
 
@@ -109,15 +109,14 @@ void FmDriverListWidget::init()
     setLayout( mLayout );
 }
 
-void FmDriverListWidget::refreshModel( const QString &path )
+void FmDriverListWidget::refreshDrive()
 {
-    Q_UNUSED( path );
     mModel->refresh();
 }
 
 void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QPointF &coords )
 {   
-    FmLogger::log("FmDriverListWidget::on_list_longPressed");
+    FM_LOG("FmDriverListWidget::on_list_longPressed");
     mListLongPressed = true;
     mCurrentItem = item;
     QString diskName = mModel->driveName( mCurrentItem->modelIndex() );

@@ -37,8 +37,6 @@ FmRestoreView::FmRestoreView(): FmViewBase( ERestoreView )
 	initToolBar();
 	initMenu();  
 	mOperationService = FmViewManager::viewManager()->operationService();
-
-	QMetaObject::connectSlotsByName( this );
 }
 
 FmRestoreView::~FmRestoreView()
@@ -54,6 +52,7 @@ void FmRestoreView::initMenu()
     action->setObjectName( "rotateAction" );
     action->setText( hbTrId( "Change orientation" ) );
     menu()->addAction( action );
+    connect( action, SIGNAL(triggered()), this, SLOT( on_rotateAction_triggered() ), Qt::QueuedConnection );
 #endif
 
 	mRestoreAction = new HbAction( this );
@@ -61,6 +60,7 @@ void FmRestoreView::initMenu()
     mRestoreAction->setText( hbTrId( "Restore data" ) );
     menu()->addAction( mRestoreAction );
     mRestoreAction->setEnabled(false);
+    connect( mRestoreAction, SIGNAL(triggered()), this, SLOT( on_restoreAction_triggered() ), Qt::QueuedConnection );
 }
 
 void FmRestoreView::initMainWidget()
@@ -78,6 +78,8 @@ void FmRestoreView::initToolBar()
     mLeftAction->setObjectName( "leftAction" );
     mLeftAction->setText( hbTrId( "Restore" ) );
     toolBar()->addAction( mLeftAction );
+    connect( mLeftAction, SIGNAL(triggered()), this, SLOT( on_leftAction_triggered() ), Qt::QueuedConnection );
+
     mLeftAction->setEnabled(false);
     toolBar()->setOrientation( Qt::Horizontal );
 }

@@ -42,7 +42,9 @@ public:
 
 public slots:
     void setRootPath( const QString &pathName );
-    void refreshModel( const QString &path );
+    
+    // triggered when drive is ejected/inserted. connected by FmViewManager
+    void on_driveChanged();
 
 signals:
     // connected by viewmanager to close view
@@ -103,6 +105,9 @@ private:
     
     HbAction *mToolBarRightAction;
     HbMenu *mMenu;
+
+    // store the disable state of find action. true for disabled
+    bool      mIsFindDisabled;
 };
 
 #endif

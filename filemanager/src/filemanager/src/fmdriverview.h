@@ -43,7 +43,7 @@ private slots:
     void on_findAction_triggered();
 
     void activated( const QString &pathName );
-    void refreshModel( const QString &path  );
+    void refreshDrive();
     void startSearch( const QString &targetPath, const QString &criteria );
 
 #ifdef FM_CHANGE_ORIENT_ENABLE

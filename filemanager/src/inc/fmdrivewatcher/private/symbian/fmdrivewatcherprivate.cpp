@@ -47,7 +47,7 @@ void FmDriveWatcherPrivate::cancelWatch()
 
 void FmDriveWatcherPrivate::OnDriveAddedOrChangedL()
 {
-    FmLogger::log( QString( "FmDriveWatcherPrivate::OnDriveAddedOrChangedL start" ) );
+    FM_LOG( QString( "FmDriveWatcherPrivate::OnDriveAddedOrChangedL start" ) );
     emit driveAddedOrChanged();
-    FmLogger::log( QString( "FmDriveWatcherPrivate::OnDriveAddedOrChangedL end" ) );
+    FM_LOG( QString( "FmDriveWatcherPrivate::OnDriveAddedOrChangedL end" ) );
 }

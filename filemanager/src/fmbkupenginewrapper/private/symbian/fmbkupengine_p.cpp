@@ -98,28 +98,28 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
 	    QList<FmBkupBackupCategory*> backupCategoryList,
 	    QString drive, quint32 content)
 {
-    FmLogger::log( "FmBkupEnginePrivate::startBackup_with drive: " + drive +
+    FM_LOG( "FmBkupEnginePrivate::startBackup_with drive: " + drive +
             "_number:" + QString::number(DriverNameToNumber( drive )));
     if( drive.isEmpty() ) {
         iError = KErrPathNotFound;
-        FmLogger::log( "FmBkupEnginePrivate::startBackup_with return with KErrPathNotFound because drive is empty" );
+        FM_LOG( "FmBkupEnginePrivate::startBackup_with return with KErrPathNotFound because drive is empty" );
         return false;
     }
     QStringList backupableDriveList;
     getBackupDriveList( backupableDriveList );
     if( !backupableDriveList.contains( drive, Qt::CaseInsensitive ) ) {
         iError = KErrPathNotFound;
-        FmLogger::log( "FmBkupEnginePrivate::startBackup_with return with KErrPathNotFound because drive is not available" );
+        FM_LOG( "FmBkupEnginePrivate::startBackup_with return with KErrPathNotFound because drive is not available" );
         return false;
     }
     QString logString;
     logString = "startBackup";
-    FmLogger::log( logString );
+    FM_LOG( logString );
     iDrvAndOpList->Reset();
     iBkupCategoryList->ResetAndDestroy();
 	
     logString = "startBackup_driveroperation count:" + QString::number(drivesAndOperationList.count());
-    FmLogger::log( logString );
+    FM_LOG( logString );
     
     for( QList<FmBkupDrivesAndOperation* >::iterator it = drivesAndOperationList.begin();
         it != drivesAndOperationList.end(); ++it ) {
@@ -131,7 +131,7 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
 		}
 
     logString = "startBackup_backupCategoryList count:" + QString::number(backupCategoryList.count());
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
 	
 	for( QList<FmBkupBackupCategory* >::iterator it = backupCategoryList.begin();
@@ -170,7 +170,7 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
 	//TUint32 bkupContent = 63;
 	
     logString = "startBackup_new param";
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
 	CMMCScBkupOpParamsBackupFull* params =
         CMMCScBkupOpParamsBackupFull::NewL(
@@ -183,14 +183,14 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
 
 
     logString = "startBackup_param ok";
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     CCoeEnv* coeEnv = CCoeEnv::Static();
     CEikonEnv* eikonEnv = (STATIC_CAST(CEikonEnv*,coeEnv));
     eikonEnv->SetSystem(ETrue);
 
     logString = "startBackup_StartOperationL";
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     QList< FmRestoreInfo > restoreInfoList;
     GetRestoreInfoArray( drivesAndOperationList, restoreInfoList, drive );
@@ -220,14 +220,14 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
         EMMCScBkupOperationTypeFullBackup, *this, params ) );
 
     logString = "startBackup_end with error:" + QString::number(err) ;
-    FmLogger::log( logString );
+    FM_LOG( logString );
     return (err == KErrNone);
 }
 
 void FmBkupEnginePrivate::cancelBackup()
 {
 	QString logString  = "cancelBackup";
-	FmLogger::log(logString);
+	FM_LOG(logString);
 	switch( mProcess )
     {
     case FmBkupEngine::ProcessBackup: // FALLTHROUGH
@@ -408,13 +408,13 @@ TInt FmBkupEnginePrivate::HandleBkupEngineEventL(
             break;
             }
         }
-    FmLogger::log( logString );
+    FM_LOG( logString );
     return ret;
     }
 
 int FmBkupEnginePrivate::error()
 {
-    FmLogger::log( "FmBkupEnginePrivate::error:" + QString::number( iError ) );
+    FM_LOG( "FmBkupEnginePrivate::error:" + QString::number( iError ) );
     switch (iError) 
     {
     case KErrNone: 

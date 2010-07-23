@@ -30,7 +30,7 @@ class FmFindThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit FmFindThread( QStringList *r, QObject *parent = 0 );
+    explicit FmFindThread( QObject *parent = 0 );
     ~FmFindThread();
 
     QString findPath() const;
@@ -44,7 +44,7 @@ public:
     void stop();
 
 signals:
-    void found( int );
+    void found( const QStringList &dataList );
 
 protected:
     void run();
@@ -58,8 +58,9 @@ private:
     QString mFindPath;
     QTime time;
     QRegExp findPattern;
-    QStringList *mResult;
     QStringList mLastResult;
+    // Used to store temp search result. if emit found, the result will be cleared.
+    QStringList tempResultList;
 };
 
 #endif

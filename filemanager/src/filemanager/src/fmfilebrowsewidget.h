@@ -72,13 +72,15 @@ public:
     void setModelFilter( QDir::Filters filters );
     
     int checkPathAndSetStyle( const QString& path );
-    void refreshModel( const QString& path );
     void sortFiles( TSortType sortType );
     void activeSearchPanel();
 
 public slots:
     bool cdUp();
     void setRootPath( const QString &pathName );
+    
+    // triggered when drive is ejected/inserted
+    void on_driveChanged();
     
     void on_searchPanel_searchOptionsClicked();
     void on_searchPanel_criteriaChanged( const QString &criteria );
@@ -143,7 +145,7 @@ private:
     bool mListLongPressed;
     QModelIndex mActivatedModelIndex;
     
-    // provide iocn from filemanger
+    // provide icon from filemanger
     FmFileIconProvider *mFileIconProvider;
 };
 

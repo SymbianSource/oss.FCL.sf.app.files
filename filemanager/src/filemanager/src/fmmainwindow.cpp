@@ -17,6 +17,7 @@
  */
 
 #include "fmmainwindow.h"
+#include "fmcommon.h"
 
 #include <hbaction.h>
 
@@ -44,13 +45,13 @@ void FmMainWindow::onOrientationChanged( Qt::Orientation orientation )
 
 void FmMainWindow::init()
 {
-    FmLogger::log("FmMainWindow::init start");
+    FM_LOG("FmMainWindow::init start");
     mViewManager = FmViewManager::CreateViewManager( this );
     mViewManager->createDriverView();
     connect( this, SIGNAL( orientationChanged( Qt::Orientation ) ),
              this, SLOT( onOrientationChanged( Qt::Orientation ) ) );
     
-    FmLogger::log("FmMainWindow::init end");
+    FM_LOG("FmMainWindow::init end");
 //    if ( orientation() == Qt::Vertical ) {
 //        createDriverView();
 //    } else {
@@ -60,12 +61,12 @@ void FmMainWindow::init()
 
 void FmMainWindow::delayedLoading()
 {
-    FmLogger::log("FmMainWindow::delayedLoading start");
+    FM_LOG("FmMainWindow::delayedLoading start");
     if( mFirstViewLoaded ) {
         return;
     }
     init();
     mFirstViewLoaded = true;
-    FmLogger::log("FmMainWindow::delayedLoading end");
+    FM_LOG("FmMainWindow::delayedLoading end");
 }
 

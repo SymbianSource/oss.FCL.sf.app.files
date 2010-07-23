@@ -53,7 +53,7 @@ public:
 signals:
     void askForRename( const QString &srcFile, QString *destFile );
     void askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted );
-    void refreshModel( const QString &path );
+    void driveSpaceChanged();
 
     void showNote(const char*);
     void notifyWaiting( bool cancelable );

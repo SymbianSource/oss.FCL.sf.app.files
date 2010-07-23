@@ -38,7 +38,7 @@ QString FmOperationFormat::driverName()
 int FmOperationFormat::start()
 { 
     QString logString = "FmOperationFormat::start";
-    FmLogger::log( logString );
+    FM_LOG( logString );
     
     if( mDriverName.isEmpty() ) {
         return FmErrWrongParam;

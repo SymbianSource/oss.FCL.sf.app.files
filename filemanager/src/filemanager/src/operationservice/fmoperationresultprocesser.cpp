@@ -45,7 +45,7 @@ void FmOperationResultProcesser::onAskForRename(
     QString questionText = QString( "file " ) +
         srcFile + QString( " already exist, please rename:" );
     QString value;   
-    QFileInfo fileInfo(srcFile);
+    QFileInfo srcFileInfo(srcFile);
     QStringList regExpList = (QStringList() << Regex_ValidFileFolderName << Regex_ValidNotEndWithDot );
 
     bool ret = FmDlgUtils::showTextQuery( questionText, value, regExpList,
@@ -54,7 +54,7 @@ void FmOperationResultProcesser::onAskForRename(
         // remove whitespace from the start and the end.
         value = value.trimmed();
         QString newTargetPath = FmUtils::fillPathWithSplash(
-                                fileInfo.absolutePath() ) + value;
+                                srcFileInfo.absolutePath() ) + value;
         QString errString;
         // check if name/path is available for use.
         if( !FmUtils::checkNewFolderOrFile( value, newTargetPath, errString ) ) {
@@ -66,7 +66,14 @@ void FmOperationResultProcesser::onAskForRename(
         }
     }   
 	if( ret ) {
+        // Got file/folder name for rename, save it to destFile
 		*destFile = value;
+        QFileInfo destFileInfo( *destFile );
+        if ( ( srcFileInfo.suffix().compare( destFileInfo.suffix(), Qt::CaseInsensitive ) != 0 )
+            && srcFileInfo.isFile() ) {
+            // popup warning when the suffix of file is changed.
+            FmDlgUtils::information( hbTrId( "File may become unusable when file name extension is changed" ) );        
+        }   
 	}
 }
 
@@ -87,6 +94,7 @@ void FmOperationResultProcesser::onAskForReplace(
 
 void FmOperationResultProcesser::onShowNote( FmOperationBase* operationBase, const char *noteString )
 {
+    Q_UNUSED( operationBase );
     FmDlgUtils::information(hbTrId(noteString));
 }
 
@@ -224,7 +232,7 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
                     int err = FmUtils::renameDrive( driveName, volumeName );
                     if ( err == FmErrNone ) {
                         FmDlgUtils::information( hbTrId( "The name has been changed!" ) );
-                        mOperationService->on_operationThread_refreshModel( driveName );
+                        mOperationService->on_operationThread_driveSpaceChanged();
                         break;
                     } else if( err == FmErrBadName ) {
                         FmDlgUtils::information( hbTrId( "Illegal characters! Use only letters and numbers." ) );

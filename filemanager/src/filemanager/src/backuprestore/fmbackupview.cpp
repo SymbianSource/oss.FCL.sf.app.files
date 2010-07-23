@@ -31,14 +31,13 @@
 
 FmBackupView::FmBackupView() : FmViewBase( EBackupView )
 {
-	setTitle( hbTrId( "Backup" ) );
+    setTitle( hbTrId( "Backup" ) );
 
-	initToolBar();
-	initMainWidget();
-	initMenu();
-	mOperationService = FmViewManager::viewManager()->operationService();
+    initToolBar();
+    initMainWidget();
+    initMenu();
+    mOperationService = FmViewManager::viewManager()->operationService();
 
-	QMetaObject::connectSlotsByName( this );
 }
 
 FmBackupView::~FmBackupView()
@@ -51,27 +50,29 @@ void FmBackupView::initMenu()
     HbAction *action = 0;
     
 #ifdef FM_CHANGE_ORIENT_ENABLE
-	action = new HbAction( this );
+    action = new HbAction( this );
     action->setObjectName( "rotateAction" );
     action->setText( hbTrId( "Change orientation" ) );
     menu()->addAction( action );
+    connect( action, SIGNAL(triggered()), this, SLOT( on_rotateAction_triggered() ), Qt::QueuedConnection );
 #endif
 
-	action = new HbAction( this );
+    action = new HbAction( this );
     action->setObjectName( "backupAction" );
     action->setText( hbTrId( "Start backup" ) );
     menu()->addAction( action );
+    connect( action, SIGNAL(triggered()), this, SLOT( on_backupAction_triggered() ), Qt::QueuedConnection );
 
-	action = new HbAction( this );
+    action = new HbAction( this );
     action->setObjectName( "deleteBackupAction" );
     action->setText( hbTrId( "Delete backup" ) );
     menu()->addAction( action );
-
+    connect( action, SIGNAL(triggered()), this, SLOT( on_deleteBackupAction_triggered() ), Qt::QueuedConnection );
 }
 
 void FmBackupView::initMainWidget()
 {
-	mMainWidget = new FmBackupWidget( this );
+    mMainWidget = new FmBackupWidget( this );
     setWidget( mMainWidget );
 
 }
@@ -82,6 +83,7 @@ void FmBackupView::initToolBar()
     mToolBarAction->setObjectName( "leftAction" );
     mToolBarAction->setText( hbTrId("Start backup") );
     toolBar()->addAction( mToolBarAction );
+    connect( mToolBarAction, SIGNAL(triggered()), this, SLOT( on_leftAction_triggered() ), Qt::QueuedConnection );
     
     toolBar()->setOrientation( Qt::Horizontal );
 }
@@ -89,7 +91,7 @@ void FmBackupView::initToolBar()
 void FmBackupView::on_leftAction_triggered()
 {
     int ret = mOperationService->asyncBackup();
-    FmLogger::log( "FmBackupView_asyncBackup: ret= " + QString::number(ret) );
+    FM_LOG( "FmBackupView_asyncBackup: ret= " + QString::number(ret) );
     switch( ret )
     {
     case FmErrNone:
@@ -143,11 +145,7 @@ void FmBackupView::refreshBackupDate()
     mMainWidget->updateBackupDate();
 }
 
-void FmBackupView::refreshModel( const QString& path )
+void FmBackupView::refreshModel()
 {
-    if( !path.isEmpty() ) {
-        // ignore non-empty refresh signal as it means change of folder/file, not drive.
-        return;
-    }
     mMainWidget->refreshModel();
 }

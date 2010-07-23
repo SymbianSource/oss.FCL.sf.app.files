@@ -32,6 +32,12 @@ class QFileSystemWatcher;
 class FmDriveWatcher;
 class FmDialog;
 
+/*
+ * this class is used to record relationship between dialog and drive name 
+ * FmViewManager will auto-close dialog which releated drive is not available again.
+ * for example. set name to MMC will pop a dialog, if add the dialog to FmViewManager::addDlgCloseUnit 
+ * then after eject MMC, the dialog will be auto-closed by FmViewManager::checkDlgCloseUnit()
+ */
 class FmDlgCloseUnit
 {
 public:
@@ -70,18 +76,17 @@ public:
 	void createRestoreView();
     void createDeleteBackupView();
 
-    void addWatchPath( const QString &path );
-    void removeWatchPath( const QString &path );
-
-	// dialog close utils:
+	// add a close unit. this is used to auto-close dialog which releated drive is not available again.
 	void addDlgCloseUnit( FmDlgCloseUnit* unit )
 	{
-		FmLogger::log( "FmViewManager::addDlgCloseUnit_" + unit->associatedDrives() );
+		FM_LOG( "FmViewManager::addDlgCloseUnit_" + unit->associatedDrives() );
 		mDlgCloseUnitList.append( unit );
 	}
+	
+	// remove a close unit.
 	void removeDlgCloseUnit( FmDlgCloseUnit* unit )
 	{
-		FmLogger::log( "FmViewManager::removeDlgCloseUnit_" + unit->associatedDrives() );
+		FM_LOG( "FmViewManager::removeDlgCloseUnit_" + unit->associatedDrives() );
 		mDlgCloseUnitList.removeOne( unit );
 	}
 
@@ -92,34 +97,49 @@ protected:
 public slots:
    /// popViewAndShow will delete current view and pop view from stack, then show it.
     void popViewAndShow();
-    void on_operationService_refreshModel( FmOperationBase* operationBase, const QString &path );
-    void on_fsWatcher_fileChanged(const QString &path);
-    void on_fsWatcher_directoryChanged(const QString &path);
+    
+    // triggered when drive space is changed
+    // this slots is used to watch filemanager internal events
+    // drive space event from other applictaion will not be observed here
+    void on_operationService_driveSpaceChanged( FmOperationBase* operationBase );
+    
+    // triggered when drive is ejected/inserted, or other drive event. it will impact available property
     void on_driveWatcher_driveAddedOrChanged();
+    
+    // if operation finished, some addition works( such as refresh... ) should be done in some views
+    // so this is the central controller function
     void on_operationService_notifyFinish( FmOperationBase *operationBase );
+    
 signals:
-    void refreshModel( const QString &path  );
+    // emit when drive space is changed by some operation inside filemanager.
+    void driveSpaceChanged();
+    
+    // emit when drive is ejected/inserted, this is watched by FmDriveWatcher
+    void driveChanged();
+    
+    // when backup is created, backup date should be updated.
     void refreshBackupDate();
-    void refreshDeleteBackupView();
-    void refreshRestoreView();
 
 private:
-       /// create view will push current view to stack
-  //  HbView *createView( FmViewType viewType );
-
-  //  void adjustSecondarySoftKey();
-
+    // when drive is ejected, this function will be called and exam dialogs in mDlgCloseUnitList
+    // it will colse dialogs if related drive is not available
 	void checkDlgCloseUnit();
     
 private:
      static FmViewManager *mViewManager;
 
 private:
-    FmMainWindow *mMainWindow;
+    // main window
+    FmMainWindow        *mMainWindow;
+    
+    // operation service, used to start operations such as copy, move, delete, format...
     FmOperationService  *mOperationService;
-    QFileSystemWatcher  *mFsWatcher;
-    FmDriveWatcher  *mDriveWatcher;
+    
+    // used to watch drive event, for example, eject/insert drive
+    FmDriveWatcher      *mDriveWatcher;
 
+    // used to record some dialogs that related to drive
+    // the dialog should be closed in checkDlgCloseUnit if drive is not available 
 	QList<FmDlgCloseUnit*> mDlgCloseUnitList;
 };
 

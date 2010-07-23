@@ -42,7 +42,7 @@ QString FmOperationFormat::driverName()
 int FmOperationFormat::start()
 { 
     QString logString = "FmOperationFormat::start";
-    FmLogger::log( logString );
+    FM_LOG( logString );
     
     emit notifyPreparing( false );
     
@@ -73,19 +73,19 @@ int FmOperationFormat::start()
     
     if( err == KErrNone ){
         logString = "emit notifyStart";
-        FmLogger::log( logString );
+        FM_LOG( logString );
         mTotalSteps = finalValue;
         emit notifyStart( false, finalValue );
     }
     
     logString = "Format open error:" + QString::number( err );
-    FmLogger::log( logString );
+    FM_LOG( logString );
     
     if( err == KErrLocked ){
         err = fs.ErasePassword( drive );
         
         logString = "ErasePassword error:" + QString::number( err );
-        FmLogger::log( logString );
+        FM_LOG( logString );
         
         if( err == KErrNone ){
             err = format.Open(
@@ -93,12 +93,12 @@ int FmOperationFormat::start()
             
             if( err == KErrNone ){
                 logString = "emit notifyStart";
-                FmLogger::log( logString );
+                FM_LOG( logString );
                 mTotalSteps = finalValue;
                 emit notifyStart( false, finalValue );
             }           
             logString = "Second format open error:" + QString::number( err );
-            FmLogger::log( logString );
+            FM_LOG( logString );
         }
     }
     
@@ -110,13 +110,13 @@ int FmOperationFormat::start()
             
             if( err == KErrNone ){
                 logString = "emit notifyStart";
-                FmLogger::log( logString );
+                FM_LOG( logString );
                 mTotalSteps = finalValue;
                 emit notifyStart( false, finalValue );
             } 
             
             logString = "Reallyformat open error:" + QString::number( err );
-            FmLogger::log( logString );
+            FM_LOG( logString );
         }
     }
     
@@ -126,7 +126,7 @@ int FmOperationFormat::start()
         err = fs.FileSystemName( fsName, drive  );
         
         logString = "FileSystemName error:" + QString::number( err );
-        FmLogger::log( logString );
+        FM_LOG( logString );
 
         if ( err == KErrNone && fsName.Length() > 0 )
             {
@@ -137,7 +137,7 @@ int FmOperationFormat::start()
                     ECoreAppUIsEjectCommandUsed );
             
             logString = "Prevent SysAp shutting down applications" ;
-            FmLogger::log( logString );
+            FM_LOG( logString );
             }
         else
             {
@@ -146,7 +146,7 @@ int FmOperationFormat::start()
             err = KErrCancel;
             
             logString = QString( "Format cancel" );
-            FmLogger::log( logString );
+            FM_LOG( logString );
             }
         }
     
@@ -154,17 +154,17 @@ int FmOperationFormat::start()
     
         while ( finalValue ){        
             logString = "Format tracks:" + QString::number( finalValue );
-            FmLogger::log( logString );
+            FM_LOG( logString );
             err = format.Next( finalValue );
             
             if( err != KErrNone ){ 
                 logString = "Format error:" + QString::number( err );
-                FmLogger::log( logString );
+                FM_LOG( logString );
                 break; 
             }
             
             logString = "emit notifyProgress";
-            FmLogger::log( logString );
+            FM_LOG( logString );
             emit notifyProgress( mTotalSteps - finalValue );
         }
     }

@@ -44,7 +44,7 @@ FmFindView::~FmFindView()
 
 void FmFindView::activated( const QString& pathName )
 {
-    FmLogger::log( QString( "activate path from findview:" ) + pathName );
+    FM_LOG( QString( "activate path from findview:" ) + pathName );
     FmViewManager::viewManager()->createFileView( pathName, true, true );
 }
 

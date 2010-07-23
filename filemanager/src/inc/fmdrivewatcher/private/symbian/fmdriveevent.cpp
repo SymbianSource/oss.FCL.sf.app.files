@@ -112,7 +112,7 @@ void CFmDriveEvent::DoCancel()
 //
 void CFmDriveEvent::Setup()
     {
-    FmLogger::log( QString( "CFmDriveEvent::Setup start" ) );
+    FM_LOG( QString( "CFmDriveEvent::Setup start" ) );
     if( IsActive() )
         {
         return;
@@ -120,7 +120,7 @@ void CFmDriveEvent::Setup()
     
     iFs.NotifyChange( ENotifyDisk, iStatus );
     SetActive();
-    FmLogger::log( QString( "CFmDriveEvent::Setup end" ) );
+    FM_LOG( QString( "CFmDriveEvent::Setup end" ) );
     }
 
 // -----------------------------------------------------------------------------

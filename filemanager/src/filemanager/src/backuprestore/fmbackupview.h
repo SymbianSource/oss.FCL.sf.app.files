@@ -47,7 +47,7 @@ private:
 
 public slots:
     void refreshBackupDate();
-    void refreshModel( const QString& path );
+    void refreshModel();
     
 private slots:
     void on_leftAction_triggered();

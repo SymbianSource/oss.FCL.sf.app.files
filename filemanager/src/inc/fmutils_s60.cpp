@@ -195,7 +195,7 @@ FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
             "_driveInfoErr:" + QString::number( driveInfoErr ) +
             "_errorCode:" + QString::number( errorCode ) + 
             "_driveSatus:" + QString::number( state ) );
-    FmLogger::log( logString );
+    FM_LOG( logString );
     return FmDriverInfo( volumeInfo.iSize, volumeInfo.iFree, driverName, volumeName, state );
 }
 
@@ -218,9 +218,9 @@ int FmUtils::removeDrivePwd( const QString &driverName,  const QString &Pwd )
         return FmErrWrongParam;
     }
     QString logString = "Drive name:" + driverName;
-    FmLogger::log( logString );
+    FM_LOG( logString );
     logString = "Password:" + Pwd;
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     CCoeEnv *env = CCoeEnv::Static();
 	RFs& fs = env->FsSession();
@@ -237,10 +237,10 @@ int FmUtils::removeDrivePwd( const QString &driverName,  const QString &Pwd )
     int err( fs.ClearPassword( drive, password ) );
 
     logString = "Drive:" + QString::number( drive );
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     logString = "Clear password error:" + QString::number( err );
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     if( err == KErrNone ){
         return FmErrNone;   
@@ -259,9 +259,9 @@ int FmUtils::unlockDrive( const QString &driverName,  const QString &Pwd )
         return FmErrWrongParam;
     }
     QString logString = "Drive name:" + driverName;
-    FmLogger::log( logString );
+    FM_LOG( logString );
     logString = "Password:" + Pwd;
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     CCoeEnv *env = CCoeEnv::Static();
 	RFs& fs = env->FsSession();
@@ -277,9 +277,9 @@ int FmUtils::unlockDrive( const QString &driverName,  const QString &Pwd )
     int err( fs.UnlockDrive( drive, password, ETrue) );
 
     logString = "Drive:" + QString::number( drive );
-    FmLogger::log( logString );
+    FM_LOG( logString );
     logString = "Unlock drive error:" + QString::number( err );
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     if( err == KErrNone ){
         return FmErrNone;   
@@ -305,7 +305,7 @@ int FmUtils::checkDrivePwd( const QString &driverName, const QString &pwd )
     }
     QString logString = "checkDrivePwd Drive name:" + driverName;
     logString += " password:" + pwd;
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     return setDrivePwd( driverName, pwd, pwd );
 }
@@ -318,7 +318,7 @@ int FmUtils::setDrivePwd( const QString &driverName, const QString &oldPwd, cons
     QString logString = "setDrivePwd Drive name:" + driverName ;
     logString += " Old password:" + oldPwd;
     logString += " New password:" + newPwd;
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     CCoeEnv *env = CCoeEnv::Static();
 	RFs& fs = env->FsSession();
@@ -341,9 +341,9 @@ int FmUtils::setDrivePwd( const QString &driverName, const QString &oldPwd, cons
     int err( fs.LockDrive( drive, oldPassword, newPassword, ETrue ) );
 
     logString = "Drive:" + QString::number( drive );
-    FmLogger::log( logString );
+    FM_LOG( logString );
     logString = "Password set error:" + QString::number( err );
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     if( err == KErrNone ){
         return FmErrNone;   
@@ -391,7 +391,7 @@ int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeNam
     int err( fs.SetVolumeLabel( newName, drive ));
     
     QString logString = "Rename error:" + QString::number( err );
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     if( err == KErrNone ){
         return FmErrNone;   
@@ -410,7 +410,7 @@ int FmUtils::ejectDrive( const QString &driverName )
         return FmErrWrongParam;
     }
     QString logString = "FmUtils::ejectDrive start";
-    FmLogger::log( logString );
+    FM_LOG( logString );
 
     TInt drive = 0;
 	drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
@@ -667,14 +667,14 @@ QString FmUtils::checkFolderToDriveFilter( const QString &path )
 {
     QString logString;
     logString = QString( "checkFolderToDriveFilter: " ) + path;
-    FmLogger::log( logString );
+    FM_LOG( logString );
     QString checkedPath = fillPathWithSplash( path );
 
     logString = QString( "checkFolderToDriveFilter_fillPathWithSplash: " ) + checkedPath;
-    FmLogger::log( logString );
+    FM_LOG( logString );
     
     if( checkedPath.compare( Folder_C_Data, Qt::CaseInsensitive ) == 0 ) {
-        FmLogger::log( QString( " change from c:/data/ to C:/" ) );
+        FM_LOG( QString( " change from c:/data/ to C:/" ) );
         return Drive_C;
     }
     return path;
@@ -685,7 +685,7 @@ int FmUtils::isPathAccessabel( const QString &path )
 {
     // Used to check if path is accessable, very important feature
     // and will return filemanager error.
-    FmLogger::log( QString( "isPathAccessabel:" ) + path );
+    FM_LOG( QString( "isPathAccessabel:" ) + path );
     if( path.isEmpty() ) {
         return FmErrPathNotExist;
     }
@@ -693,49 +693,49 @@ int FmUtils::isPathAccessabel( const QString &path )
     // used to filter locked/ejected/corrupted drive
     // check if drive is available, no matter if it is a drive, a folder, or a file.
     if( !isDriveAvailable( path ) ) {
-        FmLogger::log( QString( "isPathAccessabel false: path is drive and not available" ) );
+        FM_LOG( QString( "isPathAccessabel false: path is drive and not available" ) );
         return FmErrDriveNotAvailable;
     }
 
     QFileInfo fileInfo( path );
     if( fileInfo.absoluteFilePath().contains( Drive_C, Qt::CaseInsensitive ) &&
         !fileInfo.absoluteFilePath().contains( Folder_C_Data, Qt::CaseInsensitive ) ) {
-        FmLogger::log( QString( "isPathAccessabel false: path contain C and not in data folder" ) );
+        FM_LOG( QString( "isPathAccessabel false: path contain C and not in data folder" ) );
         return FmErrPathDenied;
     }
     if( !checkDriveAccessFilter( FmUtils::getDriveNameFromPath( fileInfo.absoluteFilePath() ) ) ){
         return FmErrDriveDenied;
     }
     if( !fileInfo.exists() ) {
-        FmLogger::log( QString( "isPathAccessabel false: path not exist" ) );
+        FM_LOG( QString( "isPathAccessabel false: path not exist" ) );
         return FmErrPathNotExist;
     }
-    FmLogger::log( QString( "isPathAccessabel FmErrNone" ) );
+    FM_LOG( QString( "isPathAccessabel FmErrNone" ) );
     return FmErrNone;
 }
 
 // only used to check drive, when MMC is not inserted, also return false
 bool FmUtils::isDriveAvailable( const QString &path )
 {
-    FmLogger::log( QString( "isDriveAvailable:" ) + path );
+    FM_LOG( QString( "isDriveAvailable:" ) + path );
     if( path.isEmpty() ) {
         return false;
     }
     FmDriverInfo::DriveState driveState = queryDriverInfo( path ).driveState();
     if( ( driveState & FmDriverInfo::EDriveAvailable ) ) {
-        FmLogger::log( QString( "isDriveAvailable true" ) );
+        FM_LOG( QString( "isDriveAvailable true" ) );
         return true;
     }
-    FmLogger::log( QString( "isDriveAvailable false" ) );
+    FM_LOG( QString( "isDriveAvailable false" ) );
     return false;
 }
 
 void FmUtils::getDriveList( QStringList &driveList, bool isHideUnAvailableDrive )
 {
     if( isHideUnAvailableDrive ) {
-        FmLogger::log( QString( "getDriveList HideUnAvailableDrive_true" ) );
+        FM_LOG( QString( "getDriveList HideUnAvailableDrive_true" ) );
     } else {
-        FmLogger::log( QString( "getDriveList HideUnAvailableDrive_false" ) );
+        FM_LOG( QString( "getDriveList HideUnAvailableDrive_false" ) );
     }
     QFileInfoList infoList = QDir::drives();
 

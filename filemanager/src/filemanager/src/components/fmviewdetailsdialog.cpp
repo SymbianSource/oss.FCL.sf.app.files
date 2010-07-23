@@ -287,46 +287,46 @@ void FmViewDetailsDialog::setSizeofContent( QList<FmDriveDetailsSize*> detailsSi
     mSizeofCalendar = 0;
     mSizeofContacts = 0;
     
-    for( QList< FmDriveDetailsSize* >::iterator it = detailsSizeList.begin(); 
+    for( QList< FmDriveDetailsSize* >::const_iterator it = detailsSizeList.begin(); 
             it!= detailsSizeList.end(); ++it ){
     
-        switch( ( *it )->dataGroups() ){
-            case FmDriveDetailsDataGroup::EGroupImages:
+        switch( ( *it )->dataType() ){
+            case FmDriveDetailsSize::ETypeImages:
             {
                 mSizeofImage = ( *it )->size();
                 break;
             }
-            case FmDriveDetailsDataGroup::EGroupSoundFiles:
+            case FmDriveDetailsSize::ETypeSoundFiles:
             {
                 mSizeofSounds = ( *it )->size();
                 break;
             }
-            case FmDriveDetailsDataGroup::EGroupMidpJava:
+            case FmDriveDetailsSize::ETypeMidpJava:
             {
                 mSizeofJava = ( *it )->size();
                 break;
             }
-            case FmDriveDetailsDataGroup::EGroupNativeApps:
+            case FmDriveDetailsSize::ETypeNativeApps:
             {
                 mSizeofNativeFiles = ( *it )->size();
                 break;
             }
-            case FmDriveDetailsDataGroup::EGroupVideos:
+            case FmDriveDetailsSize::ETypeVideos:
             {
                 mSizeofVideo = ( *it )->size();
                 break;
             }
-            case FmDriveDetailsDataGroup::EGroupDocuments:
+            case FmDriveDetailsSize::ETypeDocuments:
             {
                 mSizeofDocument = ( *it )->size();
                 break;
             }
-            case FmDriveDetailsDataGroup::EGroupCalendar:
+            case FmDriveDetailsSize::ETypeCalendar:
             {
                 mSizeofCalendar = ( *it )->size();
                 break;
             }
-            case FmDriveDetailsDataGroup::EGroupContacts:
+            case FmDriveDetailsSize::ETypeContacts:
             {
                 mSizeofContacts = ( *it )->size();
                 break;
@@ -342,7 +342,7 @@ HbAction *FmViewDetailsDialog::executeDialog( FmDialog *dialog, const QString &a
     for( int i = 0; i < associatedDrives.length(); i++ ) {
         QString drive( associatedDrives[i] + QString( ":/" ) );
         if( !FmUtils::isDriveAvailable( drive ) ) {
-            FmLogger::log( "executeDialog return 0_ " + associatedDrives );
+            FM_LOG( "executeDialog return 0_ " + associatedDrives );
             return 0;
         }
     }
@@ -351,9 +351,9 @@ HbAction *FmViewDetailsDialog::executeDialog( FmDialog *dialog, const QString &a
 	dlgCloseUnit.addAssociatedDrives( associatedDrives );
 
 	FmViewManager::viewManager()->addDlgCloseUnit( &dlgCloseUnit );
-	FmLogger::log( " Exec Dialog start " );
+	FM_LOG( " Exec Dialog start " );
     HbAction* action = dialog->exec();
-	FmLogger::log( " Exec Dialog end " );
+	FM_LOG( " Exec Dialog end " );
 	FmViewManager::viewManager()->removeDlgCloseUnit( &dlgCloseUnit );
 	return action;
 }
@@ -361,7 +361,7 @@ HbAction *FmViewDetailsDialog::executeDialog( FmDialog *dialog, const QString &a
 void FmViewDetailsDialog::showDriveViewDetailsDialog( const QString &driverName, 
             QList<FmDriveDetailsSize*> detailsSizeList, const QString& associatedDrives )
 {
-	FmLogger::log( "showDriveViewDetailsDialog_" + associatedDrives );
+	FM_LOG( "showDriveViewDetailsDialog_" + associatedDrives );
     FmViewDetailsDialog viewDetailsDialog;
     
     viewDetailsDialog.setSizeofContent( detailsSizeList );

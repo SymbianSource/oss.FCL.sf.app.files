@@ -23,63 +23,29 @@
 #include <QList>
 #include <QStringList>
 
-class FmDriveDetailsDataGroup
-{
-public:
-    // used to identify recognize method
-    enum TDataRecognizeType{
-        EDataRecognizeExtName = 0,  // recognize data by extension of filename
-        EDataRecognizeAbsolutePath  // recognize data by ablsolute file path
-    };
-    
-    enum TDataGroups{
-        EGroupImages = 0,
-        EGroupSoundFiles,
-        EGroupMidpJava,
-        EGroupNativeApps,
-        EGroupVideos,
-        EGroupDocuments,
-        EGroupCalendar,
-        EGroupContacts,
-        EGroupMessages,
-        EGroupOthers
-    };
-    
-public:
-       FmDriveDetailsDataGroup( TDataGroups dataGroups,
-                    QStringList typeFilters,
-                    TDataRecognizeType recognizeType ) 
-                   : mDataGroups( dataGroups ), mTypeFilters( typeFilters ),
-                     mDataRecognizeType( recognizeType )
-        {
-        }
-        FmDriveDetailsDataGroup( const FmDriveDetailsDataGroup &other )
-        {
-            *this = other;
-        }
-        
-        FmDriveDetailsDataGroup &operator= ( const FmDriveDetailsDataGroup &rhs )
-        {
-            this->mDataGroups = rhs.mDataGroups;
-            this->mTypeFilters = rhs.mTypeFilters;
-            return *this;
-        }
-        
-        TDataGroups dataGroups() const { return mDataGroups; }
-        QStringList typeFilters() const { return mTypeFilters; }
-        TDataRecognizeType dataRecognizeType() const { return mDataRecognizeType; }
-    
-private:
-      TDataGroups mDataGroups;
-      QStringList mTypeFilters;
-      TDataRecognizeType mDataRecognizeType;
-};
-
+/*
+    \class FmDriveDetailsSize
+    \brief The class FmDriveDetailsSize used to store view details result.
+ */
 class FmDriveDetailsSize
 {
 public:
-    FmDriveDetailsSize( FmDriveDetailsDataGroup::TDataGroups dataGroups, quint64 size ) 
-        : mDataGroups( dataGroups ), mSize( size ) {}
+    enum TDataType{
+        ETypeImages = 0,
+        ETypeSoundFiles,
+        ETypeMidpJava,
+        ETypeNativeApps,
+        ETypeVideos,
+        ETypeDocuments,
+        ETypeCalendar,
+        ETypeContacts,
+        ETypeMessages,
+        ETypeOthers
+        };
+    
+public:
+    FmDriveDetailsSize( TDataType dataType, quint64 size ) 
+        : mDataType( dataType ), mSize( size ) {}
     FmDriveDetailsSize( const FmDriveDetailsSize &other )
     {
         *this = other;
@@ -87,45 +53,109 @@ public:
     
     FmDriveDetailsSize &operator= ( const FmDriveDetailsSize &rhs )
     {
-        this->mDataGroups = rhs.mDataGroups;
+        this->mDataType = rhs.mDataType;
         this->mSize = rhs.mSize;
         return *this;
     }
     
-    FmDriveDetailsDataGroup::TDataGroups dataGroups() const { return mDataGroups; }
+    /*!
+     request the stored data type
+     */
+    TDataType dataType() const { return mDataType; }
+    
+    /*!
+     request the stored size that related to data type
+     */
     quint64 size() const { return mSize; }
     
 private:
-    FmDriveDetailsDataGroup::TDataGroups mDataGroups;
+    /*!
+     store the data type
+     */
+    TDataType mDataType;
+    
+    /*!
+     store the size that related to mDataType
+     */
     quint64 mSize;
 };
 
+/*
+    \class FmDriveDetailsDataGroup
+    \brief The class FmDriveDetailsDataGroup used to store command of get size of absolute file path.
+ */
+class FmDriveDetailsDataGroup
+{
+public:
+    FmDriveDetailsDataGroup( FmDriveDetailsSize::TDataType dataType,
+                QStringList filePathList ) 
+               : mDataType( dataType ), mFilePath( filePathList )
+    {
+    }
+    FmDriveDetailsDataGroup( const FmDriveDetailsDataGroup &other )
+    {
+        *this = other;
+    }
+    
+    FmDriveDetailsDataGroup &operator= ( const FmDriveDetailsDataGroup &rhs )
+    {
+        this->mDataType = rhs.mDataType;
+        this->mFilePath = rhs.mFilePath;
+        return *this;
+    }
+    
+    FmDriveDetailsSize::TDataType dataType() const { return mDataType; }
+    QStringList pathList() const { return mFilePath; }
+private:
+    /*!
+     Store which data type does mFilePath belong to.
+     */
+    FmDriveDetailsSize::TDataType mDataType;
+    
+    /*!
+     Store absolute file path that will used to calcuate whole data size related to mDataType
+     */
+    QStringList mFilePath;
+};
+
+/*
+    \class FmDriveDetailsContent
+    \brief The class FmDriveDetailsContent is the interface of view details feature
+ */
 class FmDriveDetailsContent
 {
 public:
-    static QList<FmDriveDetailsDataGroup*> queryDetailsContent(); 
+    /*!
+     Gets data size for drive
+     \a driveName which drive is searching
+     \a detailsSizeList if got result, new FmDriveDetailsSize will be appended to detailsSizeList
+     \a isStopped isStopped will be set as true if user cancel this operation
+     return Filemanage wide error. Please refer to fmdefine.h
+     */
     static int querySizeofContent(
             const QString &driveName, QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped );
-    /**
-     * Gets data size for single FmDriveDetailsDataGroup, the method is scan files for extension.
-     * @param driveName which drive is searching
-     * @param dataGroup which dataGroup is searching, for example, EGroupImages, EGroupSoundFiles...
-     * @param detailsSizeList if got result, new FmDriveDetailsSize will be appended to detailsSizeList
-     * @param isStopped isStopped will be set as true if user cancel this operation
-     * @return Filemanage wide error. Please refer to fmdefine.h
-     */
-    static int getDataSizeByExtName( const QString &driveName, const FmDriveDetailsDataGroup* const dataGroup,
-               QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped );
     
-    /**
-     * Gets data size for single FmDriveDetailsDataGroup, the method is find file of absolute path
-     * @param driveName which drive is searching
-     * @param dataGroup which dataGroup is searching, for example, EGroupContacts...
-     * @param detailsSizeList if got result, new FmDriveDetailsSize will be appended to detailsSizeList
-     * @param isStopped isStopped will be set as true if user cancel this operation
-     * @return Filemanage wide error. Please refer to fmdefine.h
+private:
+    /*!
+     Gets data size(related to file type,e.g. image, sound) by traverse designated drive name.
+     provide size except the path related to absolute path(getDataSizeByAbsolutePath)
+     \sa driveName which drive is searching
+     \a detailsSizeList if got result, new FmDriveDetailsSize will be appended to detailsSizeList
+     \a isStopped isStopped will be set as true if user cancel this operation
+     return Filemanage wide error. Please refer to fmdefine.h
      */
-    static int getDataSizeByAbsolutePath( const QString &driveName, const FmDriveDetailsDataGroup* const dataGroup, 
+    static int getDataSizeByTraversePath( const QString &driveName,
+            QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped );
+    
+    /*!
+     Gets data size for single FmDriveDetailsDataGroup, the method is find file of absolute path
+     \a driveName which drive is searching
+     \a dataGroup which dataGroup is searching, for example, EGroupContacts...
+     \a detailsSizeList if got result, new FmDriveDetailsSize will be appended to detailsSizeList
+     \a isStopped isStopped will be set as true if user cancel this operation
+     return Filemanage wide error. Please refer to fmdefine.h
+     */
+    static int getDataSizeByAbsolutePath( const QString &driveName, const FmDriveDetailsDataGroup &dataGroup, 
                QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped );
 };
 
@@ -133,14 +163,31 @@ class FmFolderDetails
 {
 public:
 
+    /*!
+     Gets details for a list of folders
+     \a folderPathList folder path list
+     \a numofFolders output how many folders and subfolders in the list
+     \a numofFiles output how many files in the list
+     \a totalSize output the total size
+     \a isStopped isStopped will be set as true if user cancel this operation
+     \a isSysHiddenIncluded will add QDir::Hidden | QDir::System into filter if true
+     return Filemanage wide error. Please refer to fmdefine.h
+     */
     static int queryDetailOfContentList( const QStringList folderPathList,int &numofFolders, 
                                     int &numofFiles, quint64 &totalSize, volatile bool *isStopped, bool isSysHiddenIncluded = false );
-
+    /*!
+     Gets details for a folder
+     \a folderPath path of the folder
+     \a numofSubFolders output how many subfolders in the list, not include itself
+     \a numofFiles output how many files in the folder
+     \a sizeofFolder output the size of folder
+     \a isStopped isStopped will be set as true if user cancel this operation
+     \a isSysHiddenIncluded will add QDir::Hidden | QDir::System into filter if true
+     return Filemanage wide error. Please refer to fmdefine.h
+     */
     static int getNumofSubfolders( const QString &folderPath, int &numofSubFolders, 
                                     int &numofFiles, quint64 &sizeofFolder,
                                     volatile bool *isStopped, bool  isSysHiddenIncluded = false );
-
-
 };
 
 #endif /* FMDRIVEDETAILSTYPE_H */

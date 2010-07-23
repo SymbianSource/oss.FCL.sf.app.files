@@ -37,8 +37,6 @@ FmDeleteBackupView::FmDeleteBackupView() : FmViewBase( EDeleteBackupView )
 	initToolBar();
 	initMenu();    
 	mOperationService = FmViewManager::viewManager()->operationService();
-
-	QMetaObject::connectSlotsByName( this );
 }
 
 FmDeleteBackupView::~FmDeleteBackupView()
@@ -54,6 +52,7 @@ void FmDeleteBackupView::initMenu()
     action->setObjectName( "rotateAction" );
     action->setText( hbTrId( "Change orientation" ) );
     menu()->addAction( action );
+    connect( action, SIGNAL(triggered()), this, SLOT( on_rotateAction_triggered() ), Qt::QueuedConnection );
 #endif
 
 	mDeleteAction = new HbAction( this );
@@ -61,6 +60,7 @@ void FmDeleteBackupView::initMenu()
     mDeleteAction->setText( hbTrId( "Delete backups" ) );
     menu()->addAction( mDeleteAction );
     mDeleteAction->setEnabled(false);
+    connect( mDeleteAction, SIGNAL(triggered()), this, SLOT( on_deleteAction_triggered() ), Qt::QueuedConnection );
 }
 
 void FmDeleteBackupView::initMainWidget()
@@ -93,6 +93,8 @@ void FmDeleteBackupView::initToolBar()
     toolBar()->addAction( mLeftAction );
     mLeftAction->setEnabled(false);
     toolBar()->setOrientation( Qt::Horizontal );
+
+    connect( mLeftAction, SIGNAL(triggered()), this, SLOT( on_leftAction_triggered() ), Qt::QueuedConnection );
 }
 
 void FmDeleteBackupView::on_leftAction_triggered()

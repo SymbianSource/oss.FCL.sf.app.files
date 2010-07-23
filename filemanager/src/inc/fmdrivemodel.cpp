@@ -48,10 +48,10 @@ void FmDriveModel::refresh()
         mDriveListProvider->getDriveList( mDriveList );
     } else {
         if( mOptions & HideUnAvailableDrive ) {
-            FmLogger::log( QString( "FmDriveModel::refresh HideUnAvailableDrive_true" ) );
+            FM_LOG( QString( "FmDriveModel::refresh HideUnAvailableDrive_true" ) );
             FmUtils::getDriveList( mDriveList, true );
         } else {
-            FmLogger::log( QString( "FmDriveModel::refresh HideUnAvailableDrive_false" ) );
+            FM_LOG( QString( "FmDriveModel::refresh HideUnAvailableDrive_false" ) );
             FmUtils::getDriveList( mDriveList, false );
         }
     }
