@@ -36,10 +36,10 @@ HEADERS += src/fmdriverlistwidget.h \
            src/operationservice/fmoperationthread.h \
            src/operationservice/fmoperationbase.h \
            src/operationservice/fmoperationresultprocesser.h \
-           src/operationservice/fmoperationcopy.h \
-           src/operationservice/fmoperationmove.h \
+           src/operationservice/fmoperationcopyormove.h \           
            src/operationservice/fmoperationremove.h \
            src/operationservice/fmoperationformat.h \
+           src/operationservice/fmoperationviewdetails.h \
            src/backuprestore/fmbackupview.h \
            src/backuprestore/fmbackupwidget.h \
            src/backuprestore/fmrestoreview.h \
@@ -79,9 +79,9 @@ SOURCES += src/main.cpp \
            src/operationservice/fmoperationthread.cpp \
            src/operationservice/fmoperationbase.cpp \
            src/operationservice/fmoperationresultprocesser.cpp \
-           src/operationservice/fmoperationcopy.cpp \
-           src/operationservice/fmoperationmove.cpp \
+           src/operationservice/fmoperationcopyormove.cpp \           
            src/operationservice/fmoperationremove.cpp \
+           src/operationservice/fmoperationviewdetails.cpp \
            src/backuprestore/fmbackupview.cpp \
            src/backuprestore/fmbackupwidget.cpp \
            src/backuprestore/fmrestoreview.cpp \

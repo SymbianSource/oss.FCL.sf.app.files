@@ -16,6 +16,7 @@
 
 INTERNAL_HEADERS += $$PWD/fmcommon.h \
                     $$PWD/fmlogger.h \
-                    $$PWD/fmdefine.h \
+                    $$PWD/fmdefine.h
                     
 HEADERS += $$INTERNAL_HEADERS
+

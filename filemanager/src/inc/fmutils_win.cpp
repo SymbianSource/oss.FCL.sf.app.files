@@ -222,25 +222,23 @@ void FmUtils::createDefaultFolders( const QString &driverName )
     Q_UNUSED( driverName );
 }
 
+/*!
+    fill splash in the end of \a filePath if the path is not a file
+    All "/" and "\" will be changed to QDir::separator
+    \sa formatPath only changed "/" and "\" to QDir::separator
+*/
 QString FmUtils::fillPathWithSplash( const QString &filePath )
 {
-	QString newFilePath;
+    QString newFilePath;
     if( filePath.isEmpty() ) {
         return newFilePath;
     }
 
-    foreach( QChar ch, filePath ) {
-        if( ch == QChar('\\') || ch == QChar('/') ) {
-			newFilePath.append( QDir::separator() );
-        } else {
-            newFilePath.append( ch );
-        }
-    }
+    newFilePath = formatPath( filePath );
     
     if( newFilePath.right( 1 )!= QDir::separator() ){
         newFilePath.append( QDir::separator() );
     }
-    
     return newFilePath;
 }
 
@@ -437,20 +435,25 @@ bool FmUtils::isDefaultFolder( const QString &folderPath  )
     return false;
 }
 
+/*!
+    All "/" and "\" in \a path will be changed to QDir::separator
+    \sa fillPathWithSplash, fillPathWithSplash will append QDir::separator in the end if path is no a file
+*/
 QString FmUtils::formatPath( const QString &path  )
 {
     QString formatPath;
-	foreach( QChar ch, path ) {
-		if( ch == QChar('\\') || ch == QChar('/') ) {
-			formatPath.append( QDir::separator() );
-		} else {
-			formatPath.append( ch );
-		}
+    if( path.isEmpty() ) {
+        return formatPath;
+    }
+    
+    foreach( QChar ch, path ) {
+        if( ch == QChar('\\') || ch == QChar('/') ) {
+            formatPath.append( QDir::separator() );
+        } else {
+            formatPath.append( ch );
+        }
     }
 
-    if( formatPath.right( 1 ) != QDir::separator() ){
-        formatPath.append( QDir::separator() );
-    }
     return formatPath;
 }
 
@@ -522,3 +525,33 @@ QString FmUtils::getVolumeNameWithDefaultNameIfNull( const QString &diskName, bo
     return driverInfo.volumeName();
 }
 
+/*!
+    Check if \a dest is sub level path of \a src
+    Used to check True/False when copy a folder to itself or its subfolder
+    For example, c:\data\test is sub path of c:\data.
+    But c:\data123\test is not sub path of c:\data.
+    So after got right part of path, the first char must be \ or /
+*/
+bool FmUtils::isSubLevelPath( const QString &src, const QString &dest )
+{
+    FM_LOG("FmUtils::isSubFolder: src=" + src + " dest=" + dest);
+    QString checkedSrc( FmUtils::fillPathWithSplash( src ) );
+    QString checkedDest( FmUtils::fillPathWithSplash( dest ) );
+    
+    if( checkedDest.contains( checkedSrc, Qt::CaseInsensitive) &&
+            checkedDest.length() > checkedSrc.length() ) {
+        // for example c:\data\ vs c:\data\123\ 
+        FM_LOG("FmUtils::isSubFolder: true");
+        return true;
+    }
+    // for example c:\data\ vs c:\data\ 
+    // for example c:\data\ vs c:\data123\ 
+
+    FM_LOG("FmUtils::isSubFolder: false");
+    return false;
+}
+
+int FmUtils::setFileAttributes( const QString &srcFile, const QString &desFile )
+{
+    return FmErrNone;
+}

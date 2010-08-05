@@ -373,8 +373,7 @@ void CMMCScBkupStateArchiveOpPublicDataFiles::AddIndexRecordL()
     // progress info. See CMMCScBkupStateRequestListOfPublicFiles::PerformLastRightsL()
     // for the point when the public data size is zeroed.
 
-    // First, find the associated data owner.
-    CMMCScBkupDataOwnerInfo& owner = dataOwners.OwnerL( fileInfo.SecureId() );
+    
     
     __LOG3("CMMCScBkupStateArchiveOpPublicDataFiles::AddIndexRecordL() - offset: %6d, length: %6d, file: %S", info.Offset(), info.Length(), &fileInfo.FileName());
 

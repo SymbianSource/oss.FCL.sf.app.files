@@ -303,7 +303,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
 
     
     QString filePath( mModel->filePath( item->modelIndex() ) );
-    QString formatFilePath( FmUtils::formatPath( filePath ) );
+    QString formatFilePath( FmUtils::fillPathWithSplash( filePath ) );
     QFileInfo fileInfo( filePath );
     
     if( ( fileInfo.isFile() ) || ( fileInfo.isDir() && !( FmUtils::isDefaultFolder( formatFilePath ) ) ) ){

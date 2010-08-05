@@ -37,9 +37,12 @@ FmSingleTextQuery::~FmSingleTextQuery()
 
 void FmSingleTextQuery::init()
 {
+    setObjectName( "SingleTextQuery " );
     setDismissPolicy( HbPopup::NoDismiss );
     mContentWidget = new HbWidget();
-	setContentWidget( mContentWidget );
+    mContentWidget->setObjectName( "SingleTextContentWidget" );
+    setContentWidget( mContentWidget );
+	
 
     QGraphicsLinearLayout *vLayout = new QGraphicsLinearLayout();
     vLayout->setOrientation( Qt::Vertical );
@@ -47,6 +50,7 @@ void FmSingleTextQuery::init()
     mTextEdit = new HbLineEdit();
     mTextEdit->setEchoMode( mEchoMode );
     mTextEdit->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
+    mTextEdit->setObjectName( "textLineEdit" );
 	vLayout->addItem( mTextEdit );
 
     mContentWidget->setLayout( vLayout );

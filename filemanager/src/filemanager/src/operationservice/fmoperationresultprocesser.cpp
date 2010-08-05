@@ -18,6 +18,7 @@
 #include "fmoperationbase.h"
 #include "fmoperationservice.h"
 #include "fmoperationformat.h"
+#include "fmoperationviewdetails.h"
 #include "fmviewdetailsdialog.h"
 #include "fmdlgutils.h"
 #include "fmutils.h"
@@ -27,15 +28,25 @@
 #include <hbglobal.h>
 #include <QFileInfo>
 
+/*
+ * Constructs one operation result processer with \a operation Service.
+ */
 FmOperationResultProcesser::FmOperationResultProcesser( FmOperationService *operationService )
     : mOperationService( operationService ), mNote( 0 )
 {
 }
 
+/*
+ * Destructs the operation result processer
+ */
 FmOperationResultProcesser::~FmOperationResultProcesser(void)
 {
 }
 
+/*
+ * Called by operation service on_operation_askForRename
+ * \sa FmOperationService::on_operation_askForRename
+ */
 void FmOperationResultProcesser::onAskForRename(
     FmOperationBase* operationBase, const QString &srcFile, QString *destFile )
 {
@@ -77,6 +88,10 @@ void FmOperationResultProcesser::onAskForRename(
 	}
 }
 
+/*
+ * Called by operation service on_operation_askForReplace
+ * \sa FmOperationService::on_operation_askForReplace
+ */
 void FmOperationResultProcesser::onAskForReplace(
     FmOperationBase* operationBase, const QString &srcFile, const QString &destFile, bool *isAccepted )
 {
@@ -92,12 +107,20 @@ void FmOperationResultProcesser::onAskForReplace(
     }
 }
 
+/*
+ * Called by operation service on_operation_showNote
+ * \sa FmOperationService::on_operation_showNote
+ */
 void FmOperationResultProcesser::onShowNote( FmOperationBase* operationBase, const char *noteString )
 {
     Q_UNUSED( operationBase );
     FmDlgUtils::information(hbTrId(noteString));
 }
 
+/*
+ * Called by operation service on_operation_notifyWaiting
+ * \sa FmOperationService::on_operation_notifyWaiting
+ */
 void FmOperationResultProcesser::onNotifyWaiting( FmOperationBase* operationBase, bool cancelable )
 {
     QString title = hbTrId("Operation");
@@ -123,6 +146,10 @@ void FmOperationResultProcesser::onNotifyWaiting( FmOperationBase* operationBase
     showWaiting( title, cancelable );
 }
 
+/*
+ * Called by operation service on_operation_notifyPreparing
+ * \sa FmOperationService::on_operation_notifyPreparing
+ */
 void FmOperationResultProcesser::onNotifyPreparing( FmOperationBase* operationBase, bool cancelable )
 {
     QString title = hbTrId("Operation");
@@ -153,6 +180,10 @@ void FmOperationResultProcesser::onNotifyPreparing( FmOperationBase* operationBa
     showPreparing( title, cancelable );
 }
 
+/*
+ * Called by operation service on_operation_notifyStart
+ * \sa FmOperationService::on_operation_notifyStart
+ */
 void FmOperationResultProcesser::onNotifyStart( FmOperationBase* operationBase, bool cancelable, int maxSteps )
 {
     QString title = hbTrId("Operation");
@@ -183,12 +214,20 @@ void FmOperationResultProcesser::onNotifyStart( FmOperationBase* operationBase, 
     showProgress( title, cancelable, maxSteps );   
 }
 
+/*
+ * Called by operation service on_operation_notifyProgress
+ * \sa FmOperationService::on_operation_notifyProgress
+ */
 void FmOperationResultProcesser::onNotifyProgress( FmOperationBase* operationBase, int currentStep )
 {
     Q_UNUSED( operationBase );
     setProgress( currentStep );
 }
 
+/*
+ * Called by operation service on_operation_notifyFinish
+ * \sa FmOperationService::on_operation_notifyFinish
+ */
 void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase )
 {
     
@@ -221,9 +260,12 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
             QString driveName( paramFormat->driverName() );
             FmDriverInfo driverInfo = FmUtils::queryDriverInfo( driveName );
             FmDriverInfo::DriveState state = driverInfo.driveState();
+            FmDriverInfo::DriveType driveType = driverInfo.driveType();
+            
+            // If drive is available and it is mmc or usb memory
             if( ( state & FmDriverInfo::EDriveAvailable ) &&
-                ( state & FmDriverInfo::EDriveRemovable ) &&
-                !( state & FmDriverInfo::EDriveMassStorage ) ) { 
+                ( driveType == FmDriverInfo::EDriveTypeMemoryCard ||
+                  driveType == FmDriverInfo::EDriveTypeUsbMemory ) ) { 
                 bool needToSetVolume = false;
                 QString volumeName = FmUtils::getVolumeNameWithDefaultNameIfNull( driveName, needToSetVolume );                            
                 //use isReturnFalseWhenNoTextChanged = false in order that FmUtils::renameDrive( driveName, volumeName ) will
@@ -232,7 +274,7 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
                     int err = FmUtils::renameDrive( driveName, volumeName );
                     if ( err == FmErrNone ) {
                         FmDlgUtils::information( hbTrId( "The name has been changed!" ) );
-                        mOperationService->on_operationThread_driveSpaceChanged();
+                        mOperationService->on_operation_driveSpaceChanged();
                         break;
                     } else if( err == FmErrBadName ) {
                         FmDlgUtils::information( hbTrId( "Illegal characters! Use only letters and numbers." ) );
@@ -259,12 +301,21 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
 
     }
 }
-void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, int error, QString errString )
+
+/*
+ * Called by operation service on_operation_notifyError
+ * \sa FmOperationService::on_operation_notifyError
+ */
+void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, int error, const QString &errString )
 {
     Q_UNUSED( errString );
     failAndCloseProgress();
     switch( error )
     {
+        case FmErrCancel:
+            cancelProgress();
+            FmDlgUtils::information( QString( hbTrId("Operation Canceled!") ) );
+            return;
         case FmErrAlreadyStarted:
             FmDlgUtils::information( QString( hbTrId("Operation already started!")) );
             return;
@@ -332,21 +383,20 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
 
 }
 
-void FmOperationResultProcesser::onNotifyCanceled( FmOperationBase* operationBase )
-{
-    Q_UNUSED( operationBase );
-    cancelProgress();
-    FmDlgUtils::information( QString( hbTrId("Operation Canceled!") ) );
-}
-
-
+/*
+ * Responds to waiting note's cancel signal.
+ */
 void FmOperationResultProcesser::onProgressCancelled()
 {
     mOperationService->cancelOperation();
 }
 
 
-//
+/*
+ * Shows the waiting dialog with 
+ * \a title the title of the dialog.
+ * \a cancelable whether it could be cancelled.
+ */
 void FmOperationResultProcesser::showWaiting( QString title, bool cancelable )
 {
     qDebug("show warning");
@@ -377,6 +427,11 @@ void FmOperationResultProcesser::showWaiting( QString title, bool cancelable )
 
 }
 
+/*
+ * Shows the preparing dialog with 
+ * \a title the title of the dialog.
+ * \a cancelable whether it could be cancelled.
+ */
 void FmOperationResultProcesser::showPreparing( QString title, bool cancelable )
 {
     qDebug("show preparing");
@@ -410,6 +465,11 @@ void FmOperationResultProcesser::showPreparing( QString title, bool cancelable )
     mNote->open();
 }
 
+/*
+ * Shows the progress dialog with 
+ * \a title the title of the dialog.
+ * \a cancelable whether it could be cancelled.
+ */
 void FmOperationResultProcesser::showProgress( QString title, bool cancelable, int maxValue )
 {
     qDebug("show progress");
@@ -445,12 +505,19 @@ void FmOperationResultProcesser::showProgress( QString title, bool cancelable, i
     mNote->open();
 }
 
+/*
+ * Sets the current progress value to be \a value 
+ */
 void FmOperationResultProcesser::setProgress( int value )
 {
     qDebug("set progress");
     if( mNote )
         mNote->setProgressValue( value );
 }
+
+/*
+ * Finishes the progress.
+ */
 void FmOperationResultProcesser::finishProgress()
 {
     qDebug("finish progress");
@@ -459,6 +526,9 @@ void FmOperationResultProcesser::finishProgress()
     }
 }
 
+/*
+ * Cancels the progress bar.
+ */
 void FmOperationResultProcesser::cancelProgress()
 {
     qDebug("cancel progress");
@@ -467,6 +537,9 @@ void FmOperationResultProcesser::cancelProgress()
     }
 }
 
+/*
+ * Fails and closes the progress bar.
+ */
 void FmOperationResultProcesser::failAndCloseProgress()
 {
     qDebug("fail progress");

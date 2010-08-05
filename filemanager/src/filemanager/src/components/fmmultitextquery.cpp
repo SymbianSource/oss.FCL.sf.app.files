@@ -37,29 +37,35 @@ FmMultiTextQuery::~FmMultiTextQuery()
 
 void FmMultiTextQuery::init()
 {
+    setObjectName( "MultiTextQuery" );
     setDismissPolicy( HbPopup::NoDismiss );
     mContentWidget = new HbWidget();
+    mContentWidget->setObjectName( "MultiTextContentWidget" );
 	setContentWidget( mContentWidget );
 
     QGraphicsLinearLayout *vLayout = new QGraphicsLinearLayout();
     vLayout->setOrientation( Qt::Vertical );
 
     mFirstLabel = new HbLabel();
+    mFirstLabel->setObjectName( "MutiTextFirstLabel" );
     mFirstLabel->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
     vLayout->addItem( mFirstLabel );
 
     mFirstEdit = new HbLineEdit();
     mFirstEdit->setEchoMode( mEchoMode );
     mFirstEdit->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
+    mFirstEdit->setObjectName("firstLineEdit");
 	vLayout->addItem( mFirstEdit );
 
     mSecondLabel = new HbLabel();
     mSecondLabel->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
+    mSecondLabel->setObjectName( "MutiTextSecondLabel" );
     vLayout->addItem( mSecondLabel );
 
     mSecondEdit = new HbLineEdit();
     mSecondEdit->setEchoMode( mEchoMode );
     mSecondEdit->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
+    mSecondEdit->setObjectName("secondLineEdit");
     vLayout->addItem( mSecondEdit );
 
     mContentWidget->setLayout( vLayout );

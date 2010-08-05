@@ -188,18 +188,18 @@ void CMMCScBkupStateValidateDiskSpace::ValidateFreeSpaceBeforeBackupL()
     // Calculate the total progress required for the entire backup operation
     uncompressedSize = dataOwners.TotalOperationalSizeL();
     __LOG1("CMMCScBkupStateValidateDiskSpace::ValidateFreeSpaceBeforeBackupL() - Total estimated uncompressed size for archive %Ld", uncompressedSize);
-    const TInt ownerCount = dataOwners.Count();
+	//const TInt ownerCount = dataOwners.Count();
     
-    for( TInt i=0; i<ownerCount; i++ )
-        {
-        CMMCScBkupDataOwnerInfo& owner = dataOwners.Owner( i );
+    //for( TInt i=0; i<ownerCount; i++ )
+    //    {
+    //    CMMCScBkupDataOwnerInfo& owner = dataOwners.Owner( i );
         // Reset the size of public data to 0. We update this value
         // with the compressed size during the compression stage. This
         // is needed in order to create accurate restore information (since
         // all of the data owner sizing info is written to disk).
         // owner.ResetOperationalSize( EMMCScBkupOwnerDataTypePublicData );
-        }
-          
+    //    }
+              
     // Let's check do public files fit in target drive
     TInt driveNumber;
     TDriveInfo driveInfo;

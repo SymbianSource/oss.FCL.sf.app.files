@@ -26,15 +26,16 @@
 
 FmTimeQuery::FmTimeQuery( QGraphicsItem *parent ) : FmDialog( parent )
 {
-
+    setObjectName( "timeQueryDialog" );
     mContentWidget = new QGraphicsWidget();
 	setContentWidget(mContentWidget);
-
+	mContentWidget->setObjectName( "timeQueryContentWidget" );
 	QGraphicsLinearLayout *vLayout = new QGraphicsLinearLayout();
     vLayout->setOrientation( Qt::Vertical );
 
     mTimeWidget = new HbDateTimeEdit();
-	vLayout->addItem(mTimeWidget);
+    mTimeWidget->setObjectName( "timeQueryTimeWidget" );
+	vLayout->addItem( mTimeWidget );
 
     mTimeWidget->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
     mTimeWidget->setDisplayFormat( "hh:mm" );

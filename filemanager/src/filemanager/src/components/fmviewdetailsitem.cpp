@@ -81,11 +81,13 @@ void FmViewDetailsItem::init()
 
     mDetailsContentLabel = new HbLabel("");
     mDetailsContentLabel->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
+    mDetailsContentLabel->setObjectName( "detaisContentLabel" );
     mLayout->addItem( mDetailsContentLabel );
     mLayout->setAlignment( mDetailsContentLabel, Qt::AlignLeft );
 
     mDetailsLabel = new HbLabel("");
     mDetailsLabel->setFontSpec( HbFontSpec( HbFontSpec::Secondary ) );
+    mDetailsLabel->setObjectName( "detailsLabel" );
     mLayout->addItem( mDetailsLabel );
     mLayout->setAlignment( mDetailsLabel, Qt::AlignLeft );
 

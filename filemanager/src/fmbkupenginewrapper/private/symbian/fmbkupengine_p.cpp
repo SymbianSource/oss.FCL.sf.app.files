@@ -554,8 +554,6 @@ bool FmBkupEnginePrivate::StartRestoreL( QList<FmBkupDrivesAndOperation* > drive
         iDrvAndOpList->AppendL( drvAndOp );
         }
     ////////
-    
-   FmBackupSettings& bkupSettings( *( q->BackupSettingsL() ) );
 
     // Create restore params - ownership is transferred to
     // secure backup engine
@@ -634,6 +632,7 @@ bool FmBkupEnginePrivate::StartRestoreL( QList<FmBkupDrivesAndOperation* > drive
         CMMCScBkupOpParamsRestoreFull::NewL( driveReader, EBUCatAllInOne );
     CleanupStack::PopAndDestroy(); // driveReader
 
+    FmBackupSettings& bkupSettings( *( q->BackupSettingsL() ) );
     // Get list of all archives
     RPointerArray< CMMCScBkupArchiveInfo > archives;
     TCleanupItem cleanupItem( ResetAndDestroyArchives, &archives );
@@ -670,8 +669,7 @@ void FmBkupEnginePrivate::GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* >
         QList< FmRestoreInfo > &restoreInfoList,
         const QString& aDrive )
     {
-    int targetDrive = DriverNameToNumber( aDrive );
-    FmBackupSettings& settings( *( q->BackupSettingsL() ) );
+    int targetDrive = DriverNameToNumber( aDrive );    
 
     restoreInfoList.clear();
     

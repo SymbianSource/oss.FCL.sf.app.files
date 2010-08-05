@@ -28,7 +28,7 @@ symbian {
     TARGET.UID3 = 0x2002BCC1
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.CAPABILITY = CAP_GENERAL_DLL DiskAdmin AllFiles PowerMgmt
-    TARGET.VENDORID = VID_DEFAULT
+    TARGET.VID = VID_DEFAULT
     LIBS += -lfmbkupengine
     LIBS += -lefsrv
     LIBS += -lavkon

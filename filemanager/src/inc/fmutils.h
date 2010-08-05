@@ -26,6 +26,10 @@
 class FmDriverInfo
 {
 public:
+    /*!
+        Used to get drive status for convenience.
+        /sa DriveType is used to get drive type.
+    */
     enum driveState
     {
         EDriveNotPresent = 0x1, // true when Drive have not inserted, for example, MMC Card
@@ -46,7 +50,23 @@ public:
         EDriveMassStorage = 0x8000,
         EDriveRam = 0x10000,
         EDriveUsbMemory = 0x20000,
+        EDriveRemote = 0x40000,
      };
+    
+    /*!
+        Used to get drive type for convenience.
+    */
+    enum DriveType
+    {
+        EDriveTypeRom,
+        EDriveTypeRam,
+        EDriveTypePhoneMemory,
+        EDriveTypeMassStorage,
+        EDriveTypeMemoryCard,
+        EDriveTypeUsbMemory,
+        EDriveTypeRemote,
+    };
+    
     Q_DECLARE_FLAGS( DriveState, driveState )
     
     FmDriverInfo( quint64 s, quint64 f, const QString &n, const QString &vN, const quint32 driveState ) :
@@ -71,6 +91,7 @@ public:
     QString name() const { return mName; }
     QString volumeName() const { return mVolumeName; }
     DriveState driveState() const { return mDriveState; }
+    FmDriverInfo::DriveType driveType();
     
 private:
     quint64 mSize;
@@ -78,6 +99,7 @@ private:
     QString mName;
     QString mVolumeName;
     DriveState mDriveState;
+    DriveType mDriveType;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS( FmDriverInfo::DriveState )
 
@@ -142,6 +164,9 @@ public:
      */
     static QString getVolumeNameWithDefaultNameIfNull( const QString &diskName, bool &defaultName );
 
+    static bool isSubLevelPath( const QString &src, const QString &dest );
+
+	static int setFileAttributes( const QString &srcFile, const QString &desFile ); 
 };
 
 #endif

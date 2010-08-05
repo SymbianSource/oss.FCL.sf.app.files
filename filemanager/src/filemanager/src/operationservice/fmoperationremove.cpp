@@ -26,33 +26,54 @@
 #include <QStringList>
 #include <QStack>
 
-FmOperationRemove::FmOperationRemove( QObject *parent, QStringList pathList ) :
-        FmOperationBase( parent, FmOperationService::EOperationTypeRemove ),
-        mPathList( pathList ), mStop( 0 ), mTotalCount( 0 ),
-        mErrString( 0 ), mRemovedCount( 0 ), mTotalSteps( 100 ), mCurrentStep( 0 )
+/* \fn  void driveSpaceChanged()
+ * This signal is emitted when copy or move is completed, and used to update the drive size.
+ */
+
+/*
+ * Constructs a remove operation with
+ * \a parent parent
+ * \a pathList the file or path to be removed.
+ */
+FmOperationRemove::FmOperationRemove(QObject *parent, const QStringList &pathList ) :
+        FmOperationBase( parent, FmOperationService::EOperationTypeRemove ),        
+        mPathList( pathList ), 
+        mStop( 0 ),
+        mTotalCount( 0 ), mRemovedCount( 0 ), mTotalSteps( 100 ), mCurrentStep( 0 )
 {
+    connect( this, SIGNAL( driveSpaceChanged() ),
+                parent, SLOT( on_operation_driveSpaceChanged() ) );
 }
 
+/*
+ * Destructs the operation.
+ */
 FmOperationRemove::~FmOperationRemove()
 {
 }
 
+/*
+ * Returns the path list
+ */
 QStringList FmOperationRemove::pathList()
 {
     return mPathList;
 }
 
-int FmOperationRemove::start( volatile bool *isStopped, QString *errString )
+/*
+ * Starts the operation.
+ * \a isStopped flag the outside stop operation
+ */
+void FmOperationRemove::start( volatile bool *isStopped )
 {
     mStop = isStopped;
-    mErrString = errString;
-
     mTotalCount   = 0;
     mRemovedCount  = 0;
     mCurrentStep = 0;
 
     if( mPathList.empty() ) {
-        return FmErrWrongParam;
+        emit notifyError( FmErrWrongParam, mErrString );    
+        return ;
     }
 
     emit notifyPreparing( true );
@@ -64,7 +85,8 @@ int FmOperationRemove::start( volatile bool *isStopped, QString *errString )
     int ret = FmFolderDetails::queryDetailOfContentList( mPathList, numofFolders, 
         numofFiles, totalSize, mStop, true );
     if( ret != FmErrNone ) {
-        return ret;
+        emit notifyError( ret, mErrString );
+        return;
     }
     mTotalCount = numofFolders + numofFiles;
 
@@ -73,12 +95,21 @@ int FmOperationRemove::start( volatile bool *isStopped, QString *errString )
     foreach( const QString& srcPath, mPathList ) {
         int ret = remove( srcPath );
         if( ret != FmErrNone ) {
-            return ret;
+            emit notifyError( ret, mErrString );
+            // refresh drive space no care if cancel, error or finished.
+            // as filemanger cannot notify drive space changed
+            // do not refresh path as QFileSystemModel will do auto-refresh
+            emit driveSpaceChanged();
+            return;
         }
     }
-    return FmErrNone;
+    emit notifyFinish();
+    emit driveSpaceChanged();
 }
 
+/*
+ * Removes the file or dir with name \a fileName
+ */
 int FmOperationRemove::remove( const QString &fileName )
 {
     if( *mStop ) {
@@ -89,7 +120,7 @@ int FmOperationRemove::remove( const QString &fileName )
     QFileInfo fi( fileName );
     if (fi.isFile()) {
         if( !QFile::remove( fileName ) ) {
-            *mErrString = fileName;
+            mErrString = fileName;
             ret = FmErrCannotRemove;
         }
         IncreaseProgressOnce();
@@ -109,6 +140,9 @@ int FmOperationRemove::remove( const QString &fileName )
     return ret;
 }
 
+/*
+ * Remove the dir with name \a pathName
+ */
 int FmOperationRemove::recursiveRemoveDir( const QString &pathName )
 {
     QFileInfo fi( pathName );
@@ -123,7 +157,7 @@ int FmOperationRemove::recursiveRemoveDir( const QString &pathName )
         if (infoList.size() == 0) {
             QDir dirToRemove( dirs.pop() );
             if ( !dirToRemove.rmdir( dirToRemove.absolutePath() ) ) {
-                *mErrString = dirToRemove.absolutePath();
+                mErrString = dirToRemove.absolutePath();
                 return FmErrCannotRemove;
             }
             IncreaseProgressOnce();
@@ -139,7 +173,7 @@ int FmOperationRemove::recursiveRemoveDir( const QString &pathName )
                     dirList.push_front( QDir( it->absoluteFilePath() ) );
                 } else {
                     if ( !QFile::remove( it->absoluteFilePath() ) ) {
-                        *mErrString = it->absoluteFilePath();
+                        mErrString = it->absoluteFilePath();
                         return FmErrCannotRemove;
                     }
                     IncreaseProgressOnce();
@@ -153,6 +187,9 @@ int FmOperationRemove::recursiveRemoveDir( const QString &pathName )
     return FmErrNone;
 }
 
+/*
+ * Increase the progress bar
+ */
 void FmOperationRemove::IncreaseProgressOnce()
 {
     if( mTotalCount <= 0 )

@@ -32,50 +32,21 @@ public:
     virtual ~FmOperationBase();
 
     FmOperationService::TOperationType operationType();
+    virtual int prepare();
+    virtual void start( volatile bool *isStopped );
+    
+signals:    
+    void showNote( const QString &note );
+    void notifyWaiting( bool cancelable );
+    void notifyPreparing( bool cancelable );
+    void notifyStart( bool cancelable, int maxSteps );
+    void notifyProgress( int currentStep );    
+    void notifyFinish(); 
+    void notifyError( int error, const QString &errString );
+     
 private:
     FmOperationService::TOperationType mOperationType;
 
-};
-
-//class FmOperationFormat : public FmOperationBase
-//{
-//public:
-//    explicit FmOperationFormat( QObject *parent, QString mDriverName );
-//    virtual ~FmOperationFormat();
-//    QString driverName();
-//private:
-//    QString mDriverName;
-//};
-
-class FmOperationDriveDetails : public FmOperationBase
-{
-public:
-    explicit FmOperationDriveDetails( QObject *parent, QString driverName );
-    
-    virtual ~FmOperationDriveDetails();
-    QString driverName();
-    QList<FmDriveDetailsSize*> &detailsSizeList();
-private:
-    QString mDriverName;
-    QList<FmDriveDetailsSize*> mDetailsSizeList;
-};
-
-class FmOperationFolderDetails : public FmOperationBase
-{
-public:
-    explicit FmOperationFolderDetails( QObject *parent, const QString folderPath );
-    
-    virtual ~FmOperationFolderDetails();
-    QString folderPath();
-    int &numofSubFolders();
-    int &numofFiles();
-    quint64 &sizeofFolder();
-    
-private:
-    QString mFolderPath;
-    int mNumofSubFolders;
-    int mNumofFiles;
-    quint64 mSizeofFolder;
 };
 
 

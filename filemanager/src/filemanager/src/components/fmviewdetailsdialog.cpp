@@ -61,10 +61,13 @@ FmViewDetailsDialog::~FmViewDetailsDialog()
 
 void FmViewDetailsDialog::init()
 {
+    setObjectName( "viewDetailsDialog" );
     mHeaderLabel = new HbLabel( this );
     setHeadingWidget( mHeaderLabel );
+    mHeaderLabel->setObjectName( "viewDetailsHeaderLabel" );
 
     mListView = new HbListView( this );
+    mListView->setObjectName( "viewDetailsListView" );
     setContentWidget( mListView );
     
     // init QStardardItemModel as 0 row and 1 column

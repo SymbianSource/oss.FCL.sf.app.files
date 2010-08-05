@@ -179,8 +179,13 @@ void FmViewManager::createDriverView()
     connect( this, SIGNAL( driveSpaceChanged() ), 
         driverView, SLOT( refreshDrive() ) );
     
+    // use Qt::QueuedConnection becuase synchronous refresh is not work well while
+    // connected with another OTG device which have more than one external drive in it.
+    // File server only give driveChanged event once, but two drive is inserted.
+    // Synchronous refresh will miss another drive.
+    // So use Qt::QueuedConnection to performance asynchronous refresh.
     connect( this, SIGNAL( driveChanged() ), 
-        driverView, SLOT( refreshDrive() ) );
+        driverView, SLOT( refreshDrive() ), Qt::QueuedConnection );
 }
 
 void FmViewManager::createFileView( const QString &path,

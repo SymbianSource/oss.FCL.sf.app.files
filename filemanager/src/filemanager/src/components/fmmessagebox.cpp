@@ -19,18 +19,25 @@
 #include "fmmessagebox.h"
 #include <hbmessagebox.h>
 
-void FmMessageBox::information( const QString &informationText )
+/*!
+    This is a convenience function for showing an information dialog with \a informationText
+*/
+void FmMessageBox::information( const QString &informationText,
+    HbMessageBox::StandardButtons buttons )
 {
     HbMessageBox::information ( informationText,
-         this, SLOT(dialogClosed(HbAction*)) );
+         this, SLOT(dialogClosed(HbAction*)), buttons );
     mEventLoop.exec();
 }
 
-bool FmMessageBox::question( const QString &questionText, const QString &primaryButtonText,
-        const QString &secondaryButtonText )
+/*!
+    This is a convenience function for showing a question dialog with \a questionText
+*/
+bool FmMessageBox::question( const QString &questionText,
+    HbMessageBox::StandardButtons buttons )
 {
     HbMessageBox::question ( questionText,
-            this, SLOT(dialogClosed(HbAction*)), primaryButtonText, secondaryButtonText );
+            this, SLOT(dialogClosed(HbAction*)), buttons  );
     mEventLoop.exec();
     return mRet;
 }

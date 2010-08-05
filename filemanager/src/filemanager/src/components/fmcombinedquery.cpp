@@ -28,7 +28,9 @@
 FmCombinedQuery::FmCombinedQuery( QGraphicsItem *parent ) : FmDialog( parent ), 
     mSelectMode ( MultiSelectMode ), mDominantIndex ( -1 )
 {
+    setObjectName( "combinedQueryDialog" );
 	mContentWidget = new QGraphicsWidget();
+	mContentWidget->setObjectName( "CombinedQueryContentWidget" );
 	setContentWidget(mContentWidget);
 
 	QGraphicsLinearLayout *vLayout = new QGraphicsLinearLayout();
@@ -38,7 +40,7 @@ FmCombinedQuery::FmCombinedQuery( QGraphicsItem *parent ) : FmDialog( parent ),
 	vLayout->addItem( mListWidget );
 
     mListWidget->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );
-
+    mListWidget->setObjectName( "CombinedQueryListWidget" );
 	this->setTimeout( NoTimeout );
 	mContentWidget->setLayout( vLayout );
 

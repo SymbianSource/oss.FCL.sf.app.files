@@ -26,38 +26,25 @@
 #include <QTime>
 
 #include <hbglobal.h>
+#include <hbmessagebox.h>
 
 class FmDialog;
 class HbAction;
 
+/*!
+    \class FmDlgUtils
+    \brief The class FmDlgUtils is static utility class. Used to popup dialogs
+ */
 class FmDlgUtils : public QObject
 {
     Q_OBJECT
 public:
-
-     /**
-     * Shows single select setting page
-     *
-     * @param title Title text
-     * @param textList Text list for available settings
-     * @param selectedIndex For storing selected index
-     * @return true if selection made, otherwise false
-     */
     static bool showSingleSettingQuery(
         const QString &title,
         const QStringList &textList,
         int &selectedIndex,
 		const QString &associatedDrives = QString() );
 
-    /**
-     * Shows multi select setting page
-     *
-     * @param title Title text
-     * @param textList Text list for available settings
-     * @param selection For storing selected indexes as bitmask
-     * @param dominantIndex Dominant index for select all behaviour
-     * @return true if selection made, otherwise false
-     */
 	static bool showMultiSettingQuery(
         const QString &title,
         const QStringList &textList,
@@ -65,45 +52,33 @@ public:
         int dominantIndex,
 		const QString &associatedDrives = QString() );
 
-    /**
-     * Shows time setting page
-     *
-     * @param title Title text id
-     * @param time Selected time
-     * @return true if selection made, otherwise false
-     */
     static bool showTimeSettingQuery(
         const QString &title, QTime &time,
-		const QString &associatedDrives = QString() );
+        const QString &associatedDrives = QString() );
 
     static bool showTextQuery(     
-       const QString &title, QString &text, QStringList validRegExpStringList = QStringList( Regex_ValidUnEmpty ),
-	   int maxLength = -1, const QString &associatedDrives = QString(), bool isReturnFalseWhenNoTextChanged = true );
+        const QString &title, QString &text, QStringList validRegExpStringList = QStringList( Regex_ValidUnEmpty ),
+	    int maxLength = -1, const QString &associatedDrives = QString(), bool isReturnFalseWhenNoTextChanged = true );
 
     static bool showSinglePasswordQuery(     
-       const QString &title, QString &pwd, int maxLength = -1,
-	   const QString &associatedDrives = QString() );
+        const QString &title, QString &pwd, int maxLength = -1,
+	    const QString &associatedDrives = QString() );
 
     static bool showMultiPasswordQuery(     
-       const QString &firstLabel, const QString &secondLabel, QString &pwd, int maxLength = -1,
-	   const QString &associatedDrives = QString() );
+        const QString &firstLabel, const QString &secondLabel, QString &pwd, int maxLength = -1,
+	    const QString &associatedDrives = QString() );
     
-    static bool question( const QString &questionText, const QString &primaryButtonText = QString( hbTrId("Yes") ),
-            const QString &secondaryButtonText = QString( hbTrId("No") )  );
+    static bool question( const QString &questionText,
+        HbMessageBox::StandardButtons buttons = HbMessageBox::Yes | HbMessageBox::No );
 
-    static void information( const QString &informationText );
-    
-    /**
-     * Query drive for backup
-     *
-     * @param title Title for query dialog
-     * @return selected drive name. empty for cancel.
-     */
+    static void information( const QString &informationText,
+        HbMessageBox::StandardButtons buttons = HbMessageBox::Ok );
+
     static QString showBackupDriveQuery( const QString& title );
 
-    ~FmDlgUtils(void);
+    ~FmDlgUtils();
 private:
-    FmDlgUtils(void);
+    FmDlgUtils();
 	static HbAction *executeDialog( FmDialog *dialog, const QString &associatedDrives );
 };
 

@@ -25,13 +25,16 @@
 
 FmDriveQuery::FmDriveQuery( QGraphicsItem *parent ) : FmDialog( parent )
 {
+    setObjectName( "driveQueryDialog" );
 	mContentWidget = new QGraphicsWidget();
+	mContentWidget->setObjectName( "driveQueryContentWidget" );
 	setContentWidget(mContentWidget);
 
 	QGraphicsLinearLayout *vLayout = new QGraphicsLinearLayout();
     vLayout->setOrientation( Qt::Vertical );
 
     mListView = new HbListView();
+    mListView->setObjectName( "driveQueryListView" );
 	vLayout->addItem( mListView );
 
 	mListView->setFontSpec( HbFontSpec( HbFontSpec::Primary ) );

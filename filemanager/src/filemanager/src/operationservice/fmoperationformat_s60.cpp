@@ -26,20 +26,41 @@
 #include <e32property.h>
 #include <coreapplicationuisdomainpskeys.h>
 
-FmOperationFormat::FmOperationFormat( QObject *parent, QString mDriverName ) : FmOperationBase( parent, FmOperationService::EOperationTypeFormat ),
+/* \fn  void driveSpaceChanged()
+ * This signal is emitted when copy or move is completed, and used to update the drive size.
+ */
+
+/*
+ * Constructs a format operation with \a parent
+ * \a mDriverName the drive to be formatted.
+ */
+FmOperationFormat::FmOperationFormat( QObject *parent, const QString &mDriverName ) : FmOperationBase( parent, FmOperationService::EOperationTypeFormat ),
     mDriverName( mDriverName )
 {
+    connect( this, SIGNAL( driveSpaceChanged() ),
+            parent, SLOT( on_operation_driveSpaceChanged() ) );
 }
+
+/*
+ * Destructs the operation.
+ */
 FmOperationFormat::~FmOperationFormat()
 {
 }
 
+/*
+ * Returns the to be formatted drive name
+ */
 QString FmOperationFormat::driverName()
 {
     return mDriverName;
 }
 
-int FmOperationFormat::start()
+/*
+ * Starts to format.
+ * \a isStopped not used
+ */
+void FmOperationFormat::start( volatile bool */*isStopped*/ )
 { 
     QString logString = "FmOperationFormat::start";
     FM_LOG( logString );
@@ -47,7 +68,8 @@ int FmOperationFormat::start()
     emit notifyPreparing( false );
     
     if( mDriverName.isEmpty() ) {
-        return FmErrWrongParam;
+        emit notifyError( FmErrWrongParam, QString() );
+        return;
     }
     
     RFormat format;
@@ -56,7 +78,8 @@ int FmOperationFormat::start()
     int err = fs.Connect();
     
     if( err != KErrNone ){
-        return FmErrTypeFormatFailed;
+        emit notifyError( FmErrTypeFormatFailed, QString() );
+        return;
     }
 
     TInt drive = 0;
@@ -177,9 +200,14 @@ int FmOperationFormat::start()
     }
 
     if( err == KErrNone ){
-        return FmErrNone;
+        emit notifyFinish();        
     }
     else{
-        return FmErrTypeFormatFailed;
+        emit notifyError( FmErrTypeFormatFailed, QString() );
     }
+    // refresh drive space no care if cancel, error or finished.
+    // as filemanger cannot notify drive space changed
+    // do not refresh path as QFileSystemModel will do auto-refresh
+    emit driveSpaceChanged();    
+    
 }

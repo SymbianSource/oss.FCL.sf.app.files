@@ -23,21 +23,18 @@
 
 class FmOperationRemove : public FmOperationBase
 {
-Q_OBJECT
+    Q_OBJECT
+    
 public:
-    explicit FmOperationRemove( QObject *parent, QStringList pathList );
+    explicit FmOperationRemove( QObject *parent, const QStringList &pathList );
     virtual ~FmOperationRemove();
     
     QStringList pathList();
-    int start( volatile bool *isStopped, QString *errString );
-
+    void start( volatile bool *isStopped );
+    
 signals:
-    void askForRename( const QString &srcFile, QString &destFile );
-
-    void notifyPreparing( bool cancelable );
-    void notifyStart( bool cancelable, int maxSteps );
-    void notifyProgress( int currentStep );
-
+    void driveSpaceChanged();
+    
 private:
     int remove( const QString &fileName );
 	int recursiveRemoveDir( const QString &path );
@@ -46,15 +43,13 @@ private:
 private:
     QStringList mPathList;
     
-private:
-    volatile bool           *mStop;
-    quint64 mTotalCount;
+    volatile bool   *mStop;    
+    QString         mErrString;
     
-    QString *mErrString;
-
-    quint64 mRemovedCount;
-    int     mTotalSteps;
-    int     mCurrentStep;
+    quint64         mTotalCount;
+    quint64         mRemovedCount;
+    int             mTotalSteps;
+    int             mCurrentStep;
 };
 
 #endif

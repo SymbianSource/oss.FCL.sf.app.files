@@ -22,26 +22,46 @@
 
 #include <QString>
 
-FmOperationFormat::FmOperationFormat( QObject *parent, QString mDriverName ) : FmOperationBase( parent, FmOperationService::EOperationTypeFormat ),
+/* \fn  void driveSpaceChanged()
+ * This signal is emitted when copy or move is completed, and used to update the drive size.
+ */
+
+/*
+ * Constructs a format operation with \a parent
+ * \a mDriverName the drive to be formatted.
+ */
+FmOperationFormat::FmOperationFormat( QObject *parent, const QString &mDriverName ) : FmOperationBase( parent, FmOperationService::EOperationTypeFormat ),
     mDriverName( mDriverName )
 {
 }
+
+/*
+ * Destructs the operation.
+ */
 FmOperationFormat::~FmOperationFormat()
 {
 }
 
+/*
+ * Returns the to be formatted drive name
+ */
 QString FmOperationFormat::driverName()
 {
     return mDriverName;
 }
 
-int FmOperationFormat::start()
+/*
+ * Starts to format.
+ * \a isStopped not used
+ */
+void FmOperationFormat::start( volatile bool */*isStopped*/ );
 { 
     QString logString = "FmOperationFormat::start";
     FM_LOG( logString );
     
     if( mDriverName.isEmpty() ) {
-        return FmErrWrongParam;
+        emit notifyError( FmErrWrongParam );
+        return;
     }
     int totalCount( 100 );
     emit notifyStart( totalCount, false );
@@ -49,6 +69,7 @@ int FmOperationFormat::start()
         emit notifyProgress( i );
     }
 
-    return FmErrNone;
+    emit notifyFinish();
+    emit driveSpaceChanged();
 
 }

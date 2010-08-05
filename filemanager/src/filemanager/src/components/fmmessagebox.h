@@ -33,10 +33,12 @@ public:
     ~FmMessageBox()
     {
     }
-    void information( const QString &informationText );
+    void information( const QString &informationText,
+        HbMessageBox::StandardButtons buttons );
 
-    bool question( const QString &questionText, const QString &primaryButtonText,
-            const QString &secondaryButtonText );
+    bool question( const QString &questionText,
+        HbMessageBox::StandardButtons buttons );
+    
 public slots:
     void dialogClosed(HbAction *action);
 private:

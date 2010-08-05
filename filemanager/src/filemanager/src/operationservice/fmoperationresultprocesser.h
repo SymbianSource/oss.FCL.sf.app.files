@@ -41,8 +41,8 @@ public:
 
 
     void onNotifyFinish( FmOperationBase* operationBase ); 
-    void onNotifyError( FmOperationBase* operationBase, int error, QString errString ); 
-    void onNotifyCanceled( FmOperationBase* operationBase ); 
+    void onNotifyError( FmOperationBase* operationBase, int error, const QString &errString );
+    
 private slots:
     void onProgressCancelled();
 private:

@@ -50,6 +50,7 @@ HbAction *FmDialog::primaryAction() const
 
 void FmDialog::setPrimaryAction( HbAction *action )
 {
+    action->setObjectName( "primaryAction" );
     QList<QAction *> actionList = QGraphicsWidget::actions();
     if (actionList.size() == 0) {
         QGraphicsWidget::addAction(action);
@@ -74,9 +75,12 @@ HbAction *FmDialog::secondaryAction() const
 
 void FmDialog::setSecondaryAction( HbAction *action )
 {
+    action->setObjectName( "secondaryAction" );
     QList<QAction *> actionList = QGraphicsWidget::actions();
     if (actionList.size() == 0) {
-        QGraphicsWidget::addAction(new HbAction(hbTrId("Ok")));
+        HbAction *primaryAction = new HbAction(hbTrId("txt_common_button_ok"));
+        primaryAction->setObjectName( "primaryAction" );
+        QGraphicsWidget::addAction(primaryAction);
         QGraphicsWidget::addAction(action);          
     } else if (actionList.size() == 1) {
         QGraphicsWidget::addAction(action);

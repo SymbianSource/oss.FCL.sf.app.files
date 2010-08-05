@@ -39,7 +39,7 @@ class CMMCScBkupArchiveInfo;
 
 _LIT( KBackUpFolder, "\\Backup\\" );
 _LIT( KBackUpFiles, "*.arc" );
-
+const TInt KCArrayGranularity = 10;
 
 class TBkupDrivesAndOperation
 {
@@ -86,9 +86,9 @@ public:
 	}
 	void ConstructL()
 	    {
-	    mUids = new ( ELeave ) CArrayFixFlat<unsigned int>( 10 );
-	    mExclude_uids = new ( ELeave ) CArrayFixFlat<unsigned int>( 10 );
-	    mArchive_name = HBufC::NewL(1);
+	    mUids = new ( ELeave ) CArrayFixFlat<unsigned int>( KCArrayGranularity );
+	    mExclude_uids = new ( ELeave ) CArrayFixFlat<unsigned int>( KCArrayGranularity );
+	    mArchive_name = 0;
 	    }
 	
     ~CBkupCategory()
@@ -105,8 +105,11 @@ public:
 
     void setArchive_name( TDesC16& archive_name )
     {
-		delete mArchive_name;
-        mArchive_name = HBufC::NewL( archive_name.Length() );
+        if ( mArchive_name != 0 )
+            {
+            delete mArchive_name;            
+            }		
+        TRAP_IGNORE( mArchive_name = HBufC::NewL( archive_name.Length() ) );
         *mArchive_name = archive_name;
     }
 
@@ -122,12 +125,12 @@ public:
 
     void addUids( unsigned int uid )
     {
-        mUids->AppendL( uid, sizeof(unsigned int));
+        TRAP_IGNORE( mUids->AppendL( uid, sizeof(unsigned int) ) );
     }
 
     void addExclude_uids( unsigned int exclude_uid )
     {
-        mExclude_uids->AppendL( exclude_uid, sizeof(unsigned int) ); 
+        TRAP_IGNORE( mExclude_uids->AppendL( exclude_uid, sizeof(unsigned int) ) ); 
     }
 
     unsigned int        category()              { return mCategory; }

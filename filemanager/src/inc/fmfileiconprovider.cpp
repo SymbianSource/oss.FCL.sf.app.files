@@ -76,40 +76,30 @@ QIcon FmFileIconProvider::icon(const QFileInfo &info) const
         {
         case FmFileTypeRecognizer::FileTypeDrive:
             {
-            FmDriverInfo::DriveState driveState = FmUtils::queryDriverInfo( filePath ).driveState();
-            if( driveState & FmDriverInfo::EDriveAvailable ){
-                if( driveState & FmDriverInfo::EDriveRemovable ) {
-                    if( driveState & FmDriverInfo::EDriveMassStorage ) {
-                        // Mass Storage
-                        retIcon = HbIcon( massMemoryIcon ).qicon();
-                        break;
-                    } else if( driveState & FmDriverInfo::EDriveUsbMemory ) {
-                        // Usb Memory
-                        retIcon = HbIcon( usbMemoryIcon ).qicon();
-                        break;
-                    } else{
-                        //Memory Card
+            FmDriverInfo driveInfo = FmUtils::queryDriverInfo( filePath );
+            switch ( driveInfo.driveType() )
+                {
+                case FmDriverInfo::EDriveTypeMassStorage:
+                    retIcon = HbIcon( massMemoryIcon ).qicon();
+                    break;
+                case FmDriverInfo::EDriveTypeUsbMemory:
+                    retIcon = HbIcon( usbMemoryIcon ).qicon();
+                    break;
+                case FmDriverInfo::EDriveTypeMemoryCard:
+                    if( !( driveInfo.driveState() & FmDriverInfo::EDriveNotPresent ) ) {
                         retIcon = HbIcon( mmcIcon ).qicon();
-                        break;
+                    } else {
+                        retIcon = HbIcon( mmcNoneIcon ).qicon();    
                     }
-                } else{
-                    //Phone Memory
+                    break;
+                case FmDriverInfo::EDriveTypePhoneMemory:
                     retIcon = HbIcon( phoneMemoryIcon ).qicon();
                     break;
+                default:
+                    Q_ASSERT_X( false, "FmFileIconProvider::icon", "please handle drive type");
+                    break;
                 }
-            } else if( driveState & FmDriverInfo::EDriveLocked ) {
-                retIcon = HbIcon( mmcLockedIcon ).qicon();
-                break;
-            } else if( driveState & FmDriverInfo::EDriveCorrupted ) {
-                retIcon = HbIcon( mmcNoneIcon ).qicon();
-                break;
-            } else if( driveState & FmDriverInfo::EDriveNotPresent ){
-                retIcon = HbIcon( mmcNoneIcon ).qicon();
-                break;
-            } else {
-                retIcon = HbIcon( mmcNoneIcon ).qicon();
-                break;
-            }
+            break;
             }
         case FmFileTypeRecognizer::FileTypeFolder:
             {

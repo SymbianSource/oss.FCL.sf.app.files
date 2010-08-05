@@ -32,33 +32,29 @@
 
 #include <hblabel.h>
 #include <hbaction.h>
-    
-FmDlgUtils::FmDlgUtils( void )
+
+/*
+    Private Constructor
+*/
+FmDlgUtils::FmDlgUtils()
 {
 }
 
-FmDlgUtils::~FmDlgUtils( void )
+/*!
+    Destructor
+*/
+FmDlgUtils::~FmDlgUtils()
 {
 }
-HbAction *FmDlgUtils::executeDialog( FmDialog *dialog, const QString &associatedDrives )
-{
-    for( int i = 0; i < associatedDrives.length(); i++ ) {
-        QString drive( associatedDrives[i] + QString( ":/" ) );
-        if( !FmUtils::isDriveAvailable( drive ) ) {
-            FM_LOG( "executeDialog return 0_ " + associatedDrives );
-            return 0;
-        }
-    }
-    
-	FmDlgCloseUnit dlgCloseUnit( dialog );
-	dlgCloseUnit.addAssociatedDrives( associatedDrives );
 
-	FmViewManager::viewManager()->addDlgCloseUnit( &dlgCloseUnit );
-    HbAction* action = dialog->exec();
-	FmViewManager::viewManager()->removeDlgCloseUnit( &dlgCloseUnit );
-	return action;
-}
-
+/*!
+    Shows single select setting query dialog
+    \a title used for title text
+    \a textList used for text list for available settings
+    \a selectedIndex used for storing selected index
+    Dialog will be closed as canceled while drive in \a associatedDrives is removed
+    return true if selection made, otherwise false
+*/
 bool FmDlgUtils::showSingleSettingQuery(
         const QString &title,
         const QStringList &textList,
@@ -128,6 +124,15 @@ bool FmDlgUtils::showSingleSettingQuery(
     return ret;
 }
 
+/*!
+    Shows multi select setting query dialog
+    \a title used for title text
+    \a textList used for text list for available settings
+    \a selection used for storing selected indexes as bitmask
+    \a dominantIndex used for dominant index for select all behaviour
+    Dialog will be closed as canceled while drive in \a associatedDrives is removed
+    return true if selection made, otherwise false
+*/
 bool FmDlgUtils::showMultiSettingQuery(
         const QString &title,
         const QStringList &textList,
@@ -203,6 +208,13 @@ bool FmDlgUtils::showMultiSettingQuery(
     return ret;
 }
 
+/*!
+    Shows time setting query dialog
+    \a title used for title text
+    \a time used for selected time
+    Dialog will be closed as canceled while drive in \a associatedDrives is removed
+    return true if selection made, otherwise false
+*/
 bool FmDlgUtils::showTimeSettingQuery(
         const QString &title, QTime &time, const QString &associatedDrives )
 {
@@ -245,6 +257,16 @@ bool FmDlgUtils::showTimeSettingQuery(
     return ret;
 }
 
+/*!
+    Shows text query dialog
+    \a title used for title text
+    \a text used for receiving user input text
+    \a validRegExpStringList used for set valid regExp string list
+    \a maxLength used for setting max length of input text
+    Dialog will be closed as canceled while drive in \a associatedDrives is removed
+    Set \a isReturnFalseWhenNoTextChanged true if need make return value as true while no text changed
+    return true if text change is made, otherwise false
+*/
 bool FmDlgUtils::showTextQuery(
         const QString& title, QString& text, QStringList validRegExpStringList,
 		int maxLength, const QString &associatedDrives, bool isReturnFalseWhenNoTextChanged )
@@ -301,6 +323,14 @@ bool FmDlgUtils::showTextQuery(
     return ret;
 }
 
+/*!
+    Shows single-line password query dialog
+    \a title used for title text
+    \a pwd used for receiving user input password
+    \a maxLength used for setting max length of input password
+    Dialog will be closed as canceled while drive in \a associatedDrives is removed
+    return true if password text is inputted, otherwise false
+*/
 bool FmDlgUtils::showSinglePasswordQuery( const QString &title, QString &pwd, int maxLength, const QString &associatedDrives )
 {
     bool ret( false );
@@ -310,7 +340,9 @@ bool FmDlgUtils::showSinglePasswordQuery( const QString &title, QString &pwd, in
         cQuery->setLineEditMaxLength( maxLength );
     }
     cQuery->setHeadingWidget( new HbLabel( title ) );
-    cQuery->setRegExpStringList( QStringList( Regex_ValidUnEmpty ) );
+    
+    // validate that length is not zero. space is acceptable character.
+    cQuery->setRegExpStringList( QStringList( Regex_ValidUnZeroLength ) );
     QString sk1 ( hbTrId("txt_common_button_ok" ) );
     QString sk2 ( hbTrId("txt_common_button_cancel" ) );
 
@@ -338,6 +370,15 @@ bool FmDlgUtils::showSinglePasswordQuery( const QString &title, QString &pwd, in
     return ret;
 }
 
+/*!
+    Shows mulit-line password query dialog. If two password is not equal, primary action is dimmed
+    \a firstLabel used for first line title text
+    \a secondLabel used for second line title text
+    \a pwd used for receiving user input password
+    \a maxLength used for setting max length of input password
+    Dialog will be closed as canceled while drive in \a associatedDrives is removed
+    return true if password text is inputted, otherwise false
+*/
 bool FmDlgUtils::showMultiPasswordQuery(     
    const QString &firstLabel, const QString &secondLabel, QString &pwd, int maxLength, const QString &associatedDrives )
 {
@@ -381,19 +422,34 @@ bool FmDlgUtils::showMultiPasswordQuery(
     return ret;
 }
 
-bool FmDlgUtils::question( const QString &questionText, const QString &primaryButtonText,
-        const QString &secondaryButtonText )
+/*!
+    This is a convenience function for showing a question dialog with \a questionText
+    Default buttons are Yes and No. 
+*/
+bool FmDlgUtils::question( const QString &questionText,
+    HbMessageBox::StandardButtons buttons )
 {
     FmMessageBox msgBox;
-    return msgBox.question( questionText, primaryButtonText, secondaryButtonText );
+    return msgBox.question( questionText, buttons );
 }
 
-void FmDlgUtils::information( const QString &informationText )
+/*!
+    This is a convenience function for showing an information dialog with \a informationText
+    Default button is OK.
+*/
+void FmDlgUtils::information( const QString &informationText,
+    HbMessageBox::StandardButtons buttons )
 {
     FmMessageBox msgBox;
-    return msgBox.information( informationText );
+    return msgBox.information( informationText, buttons );
 }
 
+/*!
+    Shows query dialog for select backup drive
+    \a title used for title text
+    only backup target drives will be shown.
+    return selected drive, and empty string for cancel.
+*/
 QString FmDlgUtils::showBackupDriveQuery( const QString& title )
 {
     QString ret;
@@ -411,4 +467,29 @@ QString FmDlgUtils::showBackupDriveQuery( const QString& title )
     
     delete cQuery;
     return ret;
+}
+
+/*
+    Private function used to popup \a dialog 
+    If want popup dialog in class FmDlgUtils, please call this function.
+    Dialog will be closed as canceled while drive in \a associatedDrives is removed
+    return selected action.
+*/
+HbAction *FmDlgUtils::executeDialog( FmDialog *dialog, const QString &associatedDrives )
+{
+    for( int i = 0; i < associatedDrives.length(); i++ ) {
+        QString drive( associatedDrives[i] + QString( ":/" ) );
+        if( !FmUtils::isDriveAvailable( drive ) ) {
+            FM_LOG( "executeDialog return 0_ " + associatedDrives );
+            return 0;
+        }
+    }
+    
+    FmDlgCloseUnit dlgCloseUnit( dialog );
+    dlgCloseUnit.addAssociatedDrives( associatedDrives );
+
+    FmViewManager::viewManager()->addDlgCloseUnit( &dlgCloseUnit );
+    HbAction* action = dialog->exec();
+    FmViewManager::viewManager()->removeDlgCloseUnit( &dlgCloseUnit );
+    return action;
 }

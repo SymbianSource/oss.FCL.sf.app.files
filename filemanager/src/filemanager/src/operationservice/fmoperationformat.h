@@ -28,16 +28,13 @@ class FmOperationFormat : public FmOperationBase
 {
     Q_OBJECT
 public:
-    explicit FmOperationFormat( QObject *parent, QString mDriverName );
+    explicit FmOperationFormat( QObject *parent, const QString &mDriverName );
     virtual ~FmOperationFormat();
-    QString driverName();
+    QString driverName();    
+    virtual void start( volatile bool *isStopped );
     
-    int start();
-
 signals:
-    void notifyStart( bool cancelable, int maxSteps );
-    void notifyProgress( int currentStep );
-    void notifyPreparing( bool cancelable );
+    void driveSpaceChanged();
     
 private:
     QString mDriverName;

@@ -57,17 +57,17 @@ public:
 
     //return error if any path exist.
     //renturn error if list count is not as the same the other.
-    int asyncCopy( QStringList sourceList, QString targetPath );
+    int asyncCopy( const QStringList &sourceList, const QString &targetPath );
 
-    int asyncMove( QStringList sourceList, QString targetPath );
+    int asyncMove( const QStringList &sourceList, const QString &targetPath );
 
-    int asyncRemove( QStringList pathList );
+    int asyncRemove( const QStringList &pathList );
 
     //return error if can not be format.
     //notify error while format error.
-    int asyncFormat( QString driverName );
-    int asyncViewDriveDetails( const QString driverName );
-    int asyncViewFolderDetails( const QString folderPath );
+    int asyncFormat( const QString &driverName );
+    int asyncViewDriveDetails( const QString &driverName );
+    int asyncViewFolderDetails( const QString &folderPath );
     int asyncBackup();
     int asyncRestore( quint64 selection );
     
@@ -89,23 +89,21 @@ public slots:
     void on_backupRestore_notifyStart( bool cancelable, int maxSteps );
     void on_backupRestore_notifyProgress( int currentStep );
     void on_backupRestore_notifyFinish();
-    void on_backupRestore_notifyError(int error, QString errString );
+    void on_backupRestore_notifyError(int error, const QString &errString );
     void on_backupRestore_notifyCanceled();
-    
-    void on_operationThread_askForRename( const QString &srcFile, QString *destFile );
-    void on_operationThread_askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted );
-    void on_operationThread_driveSpaceChanged();
-    void on_operationThread_showNote( const char *noteString );
-    void on_operationThread_notifyWaiting( bool cancelable );
-    void on_operationThread_notifyPreparing( bool cancelable );
-    void on_operationThread_notifyStart( bool cancelable, int maxSteps );
-    void on_operationThread_notifyProgress( int currentStep );
-    void on_operationThread_notifyFinish(); 
-    void on_operationThread_notifyError(int error, QString errString ); 
-    void on_operationThread_notifyCanceled(); 
+    void on_operation_askForRename( const QString &srcFile, QString *destFile );
+    void on_operation_askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted );
+    void on_operation_showNote( const char *noteString );
+    void on_operation_notifyWaiting( bool cancelable );
+    void on_operation_notifyPreparing( bool cancelable );
+    void on_operation_notifyStart( bool cancelable, int maxSteps );
+    void on_operation_notifyProgress( int currentStep );
+    void on_operation_notifyFinish(); 
+    void on_operation_notifyError(int error, QString errString );    
+    void on_operation_driveSpaceChanged();
 
 signals:
-//    void askForRename( FmOperationBase* operationBase, const QString &srcFile, QString &destFile );
+
     void driveSpaceChanged( FmOperationBase* operationBase );
 
     void notifyWaiting( FmOperationBase* operationBase, bool cancelable );
@@ -119,6 +117,7 @@ signals:
 
 private:
     void resetOperation();
+    void connectSignalsAndSlots( FmOperationBase *operation );
 
 private:
     FmOperationThread           *mThread;

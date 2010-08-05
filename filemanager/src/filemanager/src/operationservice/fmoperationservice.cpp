@@ -19,17 +19,51 @@
 #include "fmoperationservice.h"
 #include "fmoperationthread.h"
 #include "fmbackupconfigloader.h"
-#include "fmbackuprestorehandler.h"
 #include "fmbkupengine.h"
 #include "fmviewdetailsdialog.h"
 #include "fmoperationresultprocesser.h"
-#include "fmoperationcopy.h"
-#include "fmoperationmove.h"
+#include "fmoperationcopyormove.h"
 #include "fmoperationremove.h"
 #include "fmoperationformat.h"
-
+#include "fmoperationviewdetails.h"
+#include "fmbackuprestorehandler.h"
 #include <hbaction.h>
 
+/* \fn void driveSpaceChanged( FmOperationBase* operationBase )
+ * This signal is emitted when disk size changed.
+ */
+
+/* \fn void notifyWaiting( FmOperationBase* operationBase, bool cancelable )
+ * This signal is emitted when the operation emits notifyWaiting.
+ */
+
+/* \fn void notifyPreparing( FmOperationBase* operationBase, bool cancelable )
+ * This signal is emitted when the operation emits notifyPreparing.
+ */
+
+/* \fn void notifyStart( FmOperationBase* operationBase, bool cancelable, int maxSteps )
+ * This signal is emitted when the operation emits notifyStart.
+ */
+
+/* \fn void notifyProgress( FmOperationBase* operationBase, int currentStep )
+ * This signal is emitted when the operation emits notifyProgress.
+ */
+    
+/* \fn void notifyFinish( FmOperationBase* operationBase )
+ * This signal is emitted when the operation emits notifyFinish.
+ */ 
+    
+/* \fn void notifyError( FmOperationBase* operationBase, int error, QString errString )
+ * This signal is emitted when the operation emits notifyError.
+ */ 
+ 
+/* \fn void notifyCanceled( FmOperationBase* operationBase )
+ * This signal is emitted when the operation emits notifyCanceled.
+ */ 
+
+/*
+ * Constructs one operation Service with \a parent.
+ */
 FmOperationService::FmOperationService( QObject *parent ) : QObject( parent ),
         mCurrentOperation( 0 )
 {
@@ -43,119 +77,127 @@ FmOperationService::FmOperationService( QObject *parent ) : QObject( parent ),
     QMetaObject::connectSlotsByName( this );
 }
 
+/*
+ * Destructs the operation service.
+ */
 FmOperationService::~FmOperationService()
 {
-    delete mThread;
-    
+    delete mThread;    
     delete mBackupRestoreHandler;
-    
 }
 
+/*
+ * Returns true if the thread is running, false if not.
+ */
 bool FmOperationService::isRunning()
 {
-    if( mCurrentOperation ) {
-        return true;
-    } else {
-        return false;
-    }
-    
+    return mThread->isRunning();    
 }
 
-int FmOperationService::asyncCopy( QStringList sourceList, QString targetPath )
-{
-    if ( isRunning() )
-        return FmErrAlreadyStarted;
-    Q_ASSERT( !mCurrentOperation );
-     
-    if( sourceList.empty() ) {
-        return FmErrWrongParam;
-    }
-    mCurrentOperation = new FmOperationCopy( mThread, sourceList, targetPath );
-
-    int ret = mThread->asyncCopy( mCurrentOperation );
-    if( ret != FmErrNone ) {
+/*
+ * Copys the file or foler \a targetPath asynchronously. 
+ */
+int FmOperationService::asyncCopy( const QStringList &sourceList, const QString &targetPath )
+{    
+    Q_ASSERT( !mCurrentOperation ); 
+    mCurrentOperation  = new FmOperationCopyOrMove( this, FmOperationService::EOperationTypeCopy, sourceList, targetPath );
+    connectSignalsAndSlots( mCurrentOperation );
+    int ret = mThread->prepareOperationAndStart( mCurrentOperation );    
+    if ( ret!= FmErrNone ) {
         resetOperation();
-    }
-    return ret;
+        return ret; 
+    }        
+    return FmErrNone;
 }
 
-int FmOperationService::asyncMove( QStringList sourceList, QString targetPath )
+/*
+ * Moves the file or foler \a sourceList to \a targetPath asynchronously. 
+ */
+int FmOperationService::asyncMove( const QStringList &sourceList, const QString &targetPath )
 {
-    if ( isRunning() )
-        return FmErrAlreadyStarted;
     Q_ASSERT( !mCurrentOperation );
 
-    if( sourceList.empty() ) {
-        return FmErrWrongParam;
-    }
-    mCurrentOperation = new FmOperationMove( mThread, sourceList, targetPath );
-
-    int ret = mThread->asyncMove( mCurrentOperation );
-    if( ret != FmErrNone ) {
+    mCurrentOperation  = new FmOperationCopyOrMove( this, FmOperationService::EOperationTypeMove, sourceList, targetPath );
+    connectSignalsAndSlots( mCurrentOperation );
+    int ret = mThread->prepareOperationAndStart( mCurrentOperation );    
+    if ( ret!= FmErrNone ) {
         resetOperation();
-    }
-    return ret;
+        return ret; 
+    }        
+    return FmErrNone;
 }
 
-int FmOperationService::asyncRemove( QStringList pathList )
+/*
+ * Removes the file or dir \a pathList asynchronously. 
+ */
+int FmOperationService::asyncRemove( const QStringList &pathList )
 {
-    if ( isRunning() )
-        return FmErrAlreadyStarted;
     Q_ASSERT( !mCurrentOperation ); 
 
-    mCurrentOperation = new FmOperationRemove( mThread, pathList );
-
-    int ret = mThread->asyncRemove( mCurrentOperation );
-    if( ret != FmErrNone ) {
+    mCurrentOperation = new FmOperationRemove( this, pathList );
+    connectSignalsAndSlots( mCurrentOperation );
+    int ret = mThread->prepareOperationAndStart( mCurrentOperation );    
+    if ( ret!= FmErrNone ) {
         resetOperation();
-    }
-    return ret;
+        return ret; 
+    }        
+    return FmErrNone;
 }
 
-int FmOperationService::asyncFormat( QString driverName )
+/*
+ * Formats the drive \a driverName asynchronously. 
+ */
+int FmOperationService::asyncFormat( const QString &driverName )
 {
-    if ( isRunning() )
-        return FmErrAlreadyStarted;
     Q_ASSERT( !mCurrentOperation );
 
-    mCurrentOperation = new FmOperationFormat( mThread, driverName );
-
-    int ret = mThread->asyncFormat( mCurrentOperation );
-    if( ret != FmErrNone ) {
+    mCurrentOperation = new FmOperationFormat( this, driverName );
+    connectSignalsAndSlots( mCurrentOperation );
+    int ret = mThread->prepareOperationAndStart( mCurrentOperation );    
+    if ( ret!= FmErrNone ) {
         resetOperation();
-    }
-    return ret;
+        return ret; 
+    }        
+    return FmErrNone;
 }
-int FmOperationService::asyncViewDriveDetails( const QString driverName )
+
+/*
+ * Views drive \a driverName details asynchronously.
+ */
+int FmOperationService::asyncViewDriveDetails( const QString &driverName )
 {
-    if ( isRunning() )
-        return FmErrAlreadyStarted;
     Q_ASSERT( !mCurrentOperation );
-
-    mCurrentOperation = new FmOperationDriveDetails( mThread, driverName );
-
-    int ret = mThread->asyncViewDriveDetails( mCurrentOperation );
-    if( ret != FmErrNone ) {
+    
+    mCurrentOperation = new FmOperationDriveDetails( this, driverName );
+    connectSignalsAndSlots( mCurrentOperation );
+    int ret = mThread->prepareOperationAndStart( mCurrentOperation );    
+    if ( ret!= FmErrNone ) {
         resetOperation();
-    }
-    return ret;
+        return ret; 
+    }        
+    return FmErrNone;
 }
 
-int FmOperationService::asyncViewFolderDetails( const QString folderPath )
+/*
+ * Views folder \a folderPath details asynchronously. 
+ */
+int FmOperationService::asyncViewFolderDetails( const QString &folderPath )
 {
-    if ( isRunning() )
-        return FmErrAlreadyStarted;
     Q_ASSERT( !mCurrentOperation );
-
-    mCurrentOperation = new FmOperationFolderDetails( mThread, folderPath );
-
-    int ret = mThread->asyncViewFolderDetails( mCurrentOperation );
-    if( ret != FmErrNone ) {
+    
+    mCurrentOperation = new FmOperationFolderDetails( this, folderPath );
+    connectSignalsAndSlots( mCurrentOperation );
+    int ret = mThread->prepareOperationAndStart( mCurrentOperation );    
+    if ( ret!= FmErrNone ) {
         resetOperation();
-    }
-    return ret;
+        return ret; 
+    }        
+    return FmErrNone;
 }
 
+/*
+ * Backups asynchronously. 
+ */
 int FmOperationService::asyncBackup()
 {   
     if ( isRunning() )
@@ -173,6 +215,10 @@ int FmOperationService::asyncBackup()
     }
 }
 
+/*
+ * Restores asynchronously. 
+ * \a selection selected restore items
+ */
 int FmOperationService::asyncRestore( quint64 selection )
 {
     if ( isRunning() )
@@ -190,11 +236,18 @@ int FmOperationService::asyncRestore( quint64 selection )
     }
 }
 
+/*
+ * Delete backup synchronously. 
+ * \a selection selected backup items
+ */
 int FmOperationService::syncDeleteBackup( quint64 selection )
 {
     return mBackupRestoreHandler->deleteBackup( selection );
 }
 
+/*
+ * Cancels current operation.
+ */
 void FmOperationService::cancelOperation()
 {
     switch( mCurrentOperation->operationType() )
@@ -225,7 +278,9 @@ void FmOperationService::cancelOperation()
     }    
 }
 
-
+/*
+ * Set valume synchronously. not used.
+ */
 int FmOperationService::syncSetVolume( const QString &driverName, const QString &volume )
 {
     Q_UNUSED( driverName );
@@ -233,6 +288,9 @@ int FmOperationService::syncSetVolume( const QString &driverName, const QString 
     return FmErrNone;
 }
 
+/*
+ * Set drive password synchronously. not used.
+ */
 int FmOperationService::syncSetdDriverPassword( const QString &driverName,
                                                const QString &oldPassword, 
                                                const QString &newPassword )
@@ -243,6 +301,9 @@ int FmOperationService::syncSetdDriverPassword( const QString &driverName,
     return FmErrNone;
 }
 
+/*
+ * Rename synchronously. not used.
+ */
 int FmOperationService::syncRename( const QString &oldPath, const QString &newName )
 {
     Q_UNUSED( oldPath );
@@ -250,13 +311,17 @@ int FmOperationService::syncRename( const QString &oldPath, const QString &newNa
     return FmErrNone;
 }
 
+/*
+ * Launches the file in synchronous way.
+ */
 int FmOperationService::syncLaunchFileOpen( const QString &filePath )
 {
     return FmUtils::launchFile( filePath );
 }
 
-
-
+/*
+ * Returns the backup handler.
+ */
 FmBackupRestoreHandler *FmOperationService::backupRestoreHandler()
 {
     if( !mBackupRestoreHandler ) {
@@ -266,6 +331,9 @@ FmBackupRestoreHandler *FmOperationService::backupRestoreHandler()
     return mBackupRestoreHandler;
 }
 
+/*
+ * Deletes the operation and set it to be 0.
+ */
 void FmOperationService::resetOperation()
 {
    if( mCurrentOperation ) {
@@ -274,113 +342,201 @@ void FmOperationService::resetOperation()
     }
 }
 
-/////////////////////////////////////////////////////
-///Thread
-void FmOperationService::on_operationThread_askForRename( const QString &srcFile, QString *destFile )
+/*
+ * Connects \a operation's sinals to slots
+ */
+void FmOperationService::connectSignalsAndSlots( FmOperationBase *operation )
+{
+    
+    connect( operation, SIGNAL( showNote( QString ) ),
+            this, SLOT( on_operation_showNote( QString )), Qt::BlockingQueuedConnection );
+    connect( operation, SIGNAL( notifyError( int, QString ) ),
+            this, SLOT( on_operation_notifyError( int, QString ) ) );
+    connect( operation, SIGNAL( notifyStart( bool, int ) ),
+            this, SLOT( on_operation_notifyStart( bool, int ) ) );
+    connect( operation, SIGNAL( notifyProgress( int ) ),
+            this, SLOT( on_operation_notifyProgress( int ) ) );
+    connect( operation, SIGNAL( notifyFinish() ),
+            this, SLOT( on_operation_notifyFinish()) );
+    connect( operation, SIGNAL( notifyWaiting( bool ) ),
+            this, SLOT( on_operation_notifyWaiting( bool )) );   
+    
+}
+
+/*
+ * Responds to mCurrentOperation's askForRename signal.
+ * \a srcFile the source file.
+ * \a destFile the new file name.
+ */
+void FmOperationService::on_operation_askForRename( const QString &srcFile, QString *destFile )
 {
     mOperationResultProcesser->onAskForRename(
         mCurrentOperation, srcFile, destFile );
 }
 
-void FmOperationService::on_operationThread_askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted )
+/*
+ * Responds to mCurrentOperation's askForReplace signal.
+ * \a srcFile the source file.
+ * \a destFile the target file.
+ * \a isAccepted whether to replace the target file.
+ */
+void FmOperationService::on_operation_askForReplace( const QString &srcFile, const QString &destFile, bool *isAccepted )
 {
     mOperationResultProcesser->onAskForReplace(
         mCurrentOperation, srcFile, destFile, isAccepted );
 }
 
-void FmOperationService::on_operationThread_driveSpaceChanged()
-{
-    emit driveSpaceChanged( mCurrentOperation );
-}
-void FmOperationService::on_operationThread_showNote( const char *noteString )
+/*
+ * Responds to mCurrentOperation's showNote signal.
+ * \a noteString the note content.
+ */
+void FmOperationService::on_operation_showNote( const char *noteString )
 {
     mOperationResultProcesser->onShowNote( mCurrentOperation, noteString );
 }
-void FmOperationService::on_operationThread_notifyWaiting( bool cancelable )
+
+/*
+ * Responds to mCurrentOperation's showNote signal.
+ * \a noteString the note content.
+ */
+void FmOperationService::on_operation_notifyWaiting( bool cancelable )
 {
     mOperationResultProcesser->onNotifyWaiting(
         mCurrentOperation, cancelable );
     emit notifyWaiting( mCurrentOperation, cancelable );
 }
-void FmOperationService::on_operationThread_notifyPreparing( bool cancelable )
+
+/*
+ * Responds to mCurrentOperation's notifyPreparing signal.
+ * \a cancelable indicates whether the progress bar could be cancelled.
+ */
+void FmOperationService::on_operation_notifyPreparing( bool cancelable )
 {
     mOperationResultProcesser->onNotifyPreparing(
         mCurrentOperation, cancelable );
     emit notifyPreparing( mCurrentOperation, cancelable );
 }
-void FmOperationService::on_operationThread_notifyStart( bool cancelable, int maxSteps )
+
+/*
+ * Responds to mCurrentOperation's notifyPreparing signal.
+ * \a cancelable indicates whether the progress bar could be cancelled.
+ * \maxSteps the length of progress bar.
+ */
+void FmOperationService::on_operation_notifyStart( bool cancelable, int maxSteps )
 {
     mOperationResultProcesser->onNotifyStart(
         mCurrentOperation, cancelable, maxSteps );
     emit notifyStart( mCurrentOperation, cancelable, maxSteps );
 }
-void FmOperationService::on_operationThread_notifyProgress( int currentStep )
+
+/*
+ * Responds to mCurrentOperation's notifyPreparing signal.
+ * \a currentStep indicates the current length of progress bar.
+ */
+void FmOperationService::on_operation_notifyProgress( int currentStep )
 {
     mOperationResultProcesser->onNotifyProgress(
         mCurrentOperation, currentStep );
     emit notifyProgress( mCurrentOperation, currentStep );
 }
-void FmOperationService::on_operationThread_notifyFinish()
+
+/*
+ * Responds to mCurrentOperation's notifyFinish signal, indicate the
+ * progress is over.
+ */
+void FmOperationService::on_operation_notifyFinish()
 {
     mOperationResultProcesser->onNotifyFinish( mCurrentOperation );
     emit notifyFinish( mCurrentOperation );
     resetOperation();
 }
-void FmOperationService::on_operationThread_notifyError(int error, QString errString )
+
+/*
+ * Responds to mCurrentOperation's notifyError signal.
+ * \a error error id.
+ * \a errString the error string.
+ */
+void FmOperationService::on_operation_notifyError(int error, QString errString )
 {
     mOperationResultProcesser->onNotifyError(
         mCurrentOperation, error, errString );
     emit notifyError( mCurrentOperation, error, errString );
     resetOperation();
 }
-void FmOperationService::on_operationThread_notifyCanceled()
-{
-    mOperationResultProcesser->onNotifyCanceled(
-        mCurrentOperation );
-    emit notifyCanceled( mCurrentOperation );
-    resetOperation();
-}
-///
-/////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////
-///BackupRestore
+/*
+ * Responds to mCurrentOperation's driveSpaceChanged 
+ */
+void FmOperationService::on_operation_driveSpaceChanged()
+{
+    emit driveSpaceChanged( mCurrentOperation );
+}
+
+/*
+ * Responds to mBackupRestoreHandler's notifyPreparing 
+ * \a cancelable indicates whether it could be cancelled.
+ */
 void FmOperationService::on_backupRestore_notifyPreparing( bool cancelable )
 {
     mOperationResultProcesser->onNotifyPreparing(
         mCurrentOperation, cancelable );
      emit notifyPreparing( mCurrentOperation, cancelable );
 }
+
+/*
+ * Responds to mBackupRestoreHandler's notifyStart 
+ * \a cancelable indicates whether it could be cancelled.
+ * \a maxSteps the lenth of progress bar.
+ */
 void FmOperationService::on_backupRestore_notifyStart( bool cancelable, int maxSteps )
 {
     mOperationResultProcesser->onNotifyStart(
         mCurrentOperation, cancelable, maxSteps );
     emit notifyStart( mCurrentOperation, cancelable, maxSteps );
 }
+
+/*
+ * Responds to mBackupRestoreHandler's notifyProgress 
+ * \a currentStep the current progress bar's step.
+ */
 void FmOperationService::on_backupRestore_notifyProgress( int currentStep )
 {
     mOperationResultProcesser->onNotifyProgress(
         mCurrentOperation, currentStep );
     emit notifyProgress( mCurrentOperation, currentStep );
 }
+
+/*
+ * Responds to mBackupRestoreHandler's notifyFinish 
+ */
 void FmOperationService::on_backupRestore_notifyFinish()
 {
     mOperationResultProcesser->onNotifyFinish( mCurrentOperation );
     emit notifyFinish( mCurrentOperation );
     resetOperation();
 }
-void FmOperationService::on_backupRestore_notifyError(int error, QString errString )
+
+/*
+ * Responds to mBackupRestoreHandler's notifyError
+ * \a error the error id.
+ * \a errString the error string.
+ */
+void FmOperationService::on_backupRestore_notifyError(int error, const QString &errString )
 {
     mOperationResultProcesser->onNotifyError(
         mCurrentOperation, error, errString );
     emit notifyError( mCurrentOperation, error, errString );
     resetOperation();
 }
+
+/*
+ * Responds to mBackupRestoreHandler's notifyCanceled 
+ */
 void FmOperationService::on_backupRestore_notifyCanceled()
 {
-    mOperationResultProcesser->onNotifyCanceled(
-        mCurrentOperation );
-    emit notifyCanceled( mCurrentOperation );
+    mOperationResultProcesser->onNotifyError(
+        mCurrentOperation, FmErrCancel, QString() );
+    emit notifyError( mCurrentOperation, FmErrCancel, QString() );
     resetOperation();
 }
 

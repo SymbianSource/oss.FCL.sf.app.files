@@ -71,6 +71,8 @@
 #define FmMaxLengthofDriveName           11
 #define FmMaxLengthofDrivePassword       8
 
+// used to match un-zeroLength string, empty character such as space is acceptable
+#define Regex_ValidUnZeroLength QString( "^.+$" )
 
 // used to match un-empty string, and is not totally empty characters.
 #define Regex_ValidUnEmpty QString( "^.*[^\\s].*$" )
