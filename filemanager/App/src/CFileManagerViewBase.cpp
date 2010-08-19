@@ -569,7 +569,15 @@ void CFileManagerViewBase::SendUiQueryL()
             CleanupStack::PopAndDestroy( fullPath );
             }
         // Let SendUi handle protected files, queries and filtering
-        sendUi.ShowQueryAndSendL( msgData, caps, servicesToDim );
+        TRAPD( err, sendUi.ShowQueryAndSendL( msgData, caps, servicesToDim ) );
+        if ( err == KErrTooBig )
+            {
+            FileManagerDlgUtils::ShowErrorNoteL( R_QTN_FMGR_FILE_SIZE_TOO_LARGE );
+            }
+        else
+            {
+            User::LeaveIfError( err );
+            }
         CleanupStack::PopAndDestroy( servicesToDim );
         }
     CleanupStack::PopAndDestroy( files );

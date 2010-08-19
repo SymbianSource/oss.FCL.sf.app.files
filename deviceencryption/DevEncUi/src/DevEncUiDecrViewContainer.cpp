@@ -139,7 +139,7 @@ void CDevEncUiDecrViewContainer::HandleListBoxEventL( CEikListBox* /*aListBox*/,
     {
     switch ( aEventType )
         {
-        case EEventItemDoubleClicked: // FALLTHROUGH
+        case EEventItemSingleClicked: // FALLTHROUGH
         case EEventEnterKeyPressed:
             {
             if ( iListBox->CurrentItemIndex() == 0 )

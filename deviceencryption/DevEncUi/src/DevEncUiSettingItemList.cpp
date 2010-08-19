@@ -110,7 +110,7 @@ CAknSettingItem* CDevEncUiSettingItemList::CreateSettingItemL( TInt aIdentifier 
 //
 void CDevEncUiSettingItemList::HandleListBoxEventL(CEikListBox* aListBox, TListBoxEvent aEventType)
 	{
-    if ( aEventType == EEventItemDoubleClicked )
+    if ( aEventType == EEventItemSingleClicked )
         {
         TKeyEvent event;
         event.iCode = EKeyEnter;
