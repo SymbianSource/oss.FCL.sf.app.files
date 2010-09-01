@@ -1,0 +1,54 @@
+EXPORTS
+	?BackstepL@CGflmNavigatorModel@@QAEXXZ @ 1 NONAME ; void CGflmNavigatorModel::BackstepL(void)
+	?CancelRefresh@CGflmFileListModel@@QAEXXZ @ 2 NONAME ; void CGflmFileListModel::CancelRefresh(void)
+	?ClearCache@CGflmFileListModel@@QAEXXZ @ 3 NONAME ; void CGflmFileListModel::ClearCache(void)
+	?ClearDriveInfo@CGflmFileListModel@@QAEXXZ @ 4 NONAME ; void CGflmFileListModel::ClearDriveInfo(void)
+	?CreateGroupL@CGflmFileListModel@@QAEPAVMGflmItemGroup@@H@Z @ 5 NONAME ; class MGflmItemGroup * CGflmFileListModel::CreateGroupL(int)
+	?CreateGroupL@CGflmFileListModel@@QAEPAVMGflmItemGroup@@HI@Z @ 6 NONAME ; class MGflmItemGroup * CGflmFileListModel::CreateGroupL(int, unsigned int)
+	?CurrentDirectory@CGflmNavigatorModel@@QBE?AVTPtrC16@@XZ @ 7 NONAME ; class TPtrC16 CGflmNavigatorModel::CurrentDirectory(void) const
+	?CurrentDrive@CGflmNavigatorModel@@QBEPAVCGflmDriveItem@@XZ @ 8 NONAME ; class CGflmDriveItem * CGflmNavigatorModel::CurrentDrive(void) const
+	?Drive@CGflmDriveItem@@QBEHXZ @ 9 NONAME ; int CGflmDriveItem::Drive(void) const
+	?DriveFromId@CGflmFileListModel@@QBEPAVCGflmDriveItem@@H@Z @ 10 NONAME ; class CGflmDriveItem * CGflmFileListModel::DriveFromId(int) const
+	?DriveFromPath@CGflmFileListModel@@QBEPAVCGflmDriveItem@@ABVTDesC16@@@Z @ 11 NONAME ; class CGflmDriveItem * CGflmFileListModel::DriveFromPath(class TDesC16 const &) const
+	?DriveStatus@CGflmDriveItem@@QBEIXZ @ 12 NONAME ; unsigned int CGflmDriveItem::DriveStatus(void) const
+	?EnableSearchMode@CGflmFileListModel@@QAEXH@Z @ 13 NONAME ; void CGflmFileListModel::EnableSearchMode(int)
+	?EnsureFinalBackslash@GflmUtils@@SAXAAVTDes16@@@Z @ 14 NONAME ; void GflmUtils::EnsureFinalBackslash(class TDes16 &)
+	?Entry@CGflmFileSystemItem@@QBEABVTEntry@@XZ @ 15 NONAME ; class TEntry const & CGflmFileSystemItem::Entry(void) const
+	?FindGroupById@CGflmFileListModel@@QAEPAVMGflmItemGroup@@H@Z @ 16 NONAME ; class MGflmItemGroup * CGflmFileListModel::FindGroupById(int)
+	?FullPathL@CGflmFileSystemItem@@QBEPAVHBufC16@@XZ @ 17 NONAME ; class HBufC16 * CGflmFileSystemItem::FullPathL(void) const
+	?FullPathL@GflmUtils@@SAPAVHBufC16@@ABVTDesC16@@ABVTEntry@@@Z @ 18 NONAME ; class HBufC16 * GflmUtils::FullPathL(class TDesC16 const &, class TEntry const &)
+	?FullPathLC@CGflmFileSystemItem@@QBEPAVHBufC16@@XZ @ 19 NONAME ; class HBufC16 * CGflmFileSystemItem::FullPathLC(void) const
+	?FullPathLC@GflmUtils@@SAPAVHBufC16@@ABVTDesC16@@ABVTEntry@@@Z @ 20 NONAME ; class HBufC16 * GflmUtils::FullPathLC(class TDesC16 const &, class TEntry const &)
+	?GetFullPath@CGflmFileSystemItem@@QBEXAAVTDes16@@@Z @ 21 NONAME ; void CGflmFileSystemItem::GetFullPath(class TDes16 &) const
+	?GetFullPath@GflmUtils@@SAXABVTDesC16@@ABVTEntry@@AAVTDes16@@@Z @ 22 NONAME ; void GflmUtils::GetFullPath(class TDesC16 const &, class TEntry const &, class TDes16 &)
+	?GetIconId@CGflmGroupItem@@QAEHAAH@Z @ 23 NONAME ; int CGflmGroupItem::GetIconId(int &)
+	?GoToDirectoryL@CGflmNavigatorModel@@QAEXABVTDesC16@@0@Z @ 24 NONAME ; void CGflmNavigatorModel::GoToDirectoryL(class TDesC16 const &, class TDesC16 const &)
+	?GoToDirectoryL@CGflmNavigatorModel@@QAEXABVTDesC16@@H@Z @ 25 NONAME ; void CGflmNavigatorModel::GoToDirectoryL(class TDesC16 const &, int)
+	?HasFinalBackslash@GflmUtils@@SAHABVTDesC16@@@Z @ 26 NONAME ; int GflmUtils::HasFinalBackslash(class TDesC16 const &)
+	?Id@CGflmGlobalActionItem@@QBEHXZ @ 27 NONAME ; int CGflmGlobalActionItem::Id(void) const
+	?IsCorrupt@CGflmFileListModel@@QBEHXZ @ 28 NONAME ; int CGflmFileListModel::IsCorrupt(void) const
+	?Item@CGflmFileListModel@@QBEPAVCGflmGroupItem@@H@Z @ 29 NONAME ; class CGflmGroupItem * CGflmFileListModel::Item(int) const
+	?LocalizedName@CGflmFileListModel@@QBE?AVTPtrC16@@ABVTDesC16@@@Z @ 30 NONAME ; class TPtrC16 CGflmFileListModel::LocalizedName(class TDesC16 const &) const
+	?LocalizedNameOfCurrentDirectory@CGflmNavigatorModel@@QBE?AVTPtrC16@@XZ @ 31 NONAME ; class TPtrC16 CGflmNavigatorModel::LocalizedNameOfCurrentDirectory(void) const
+	?NavigationLevel@CGflmNavigatorModel@@QBEHXZ @ 32 NONAME ; int CGflmNavigatorModel::NavigationLevel(void) const
+	?NewL@CGflmFileListModel@@SAPAV1@AAVRFs@@@Z @ 33 NONAME ; class CGflmFileListModel * CGflmFileListModel::NewL(class RFs &)
+	?NewL@CGflmNavigatorModel@@SAPAV1@AAVRFs@@@Z @ 34 NONAME ; class CGflmNavigatorModel * CGflmNavigatorModel::NewL(class RFs &)
+	?RefreshListL@CGflmFileListModel@@QAEXAAVTRequestStatus@@W4TGflmRefreshMode@@@Z @ 35 NONAME ; void CGflmFileListModel::RefreshListL(class TRequestStatus &, enum TGflmRefreshMode)
+	?ResetModel@CGflmFileListModel@@QAEXXZ @ 36 NONAME ; void CGflmFileListModel::ResetModel(void)
+	?ResolveMimeTypeL@CGflmFileListModel@@QAE?AVTPtrC16@@ABVTDesC16@@@Z @ 37 NONAME ; class TPtrC16 CGflmFileListModel::ResolveMimeTypeL(class TDesC16 const &)
+	?RootDirectory@CGflmDriveItem@@QBE?AVTPtrC16@@XZ @ 38 NONAME ; class TPtrC16 CGflmDriveItem::RootDirectory(void) const
+	?SetCustomFilter@CGflmFileListModel@@QAEXPAVMGflmItemFilter@@@Z @ 39 NONAME ; void CGflmFileListModel::SetCustomFilter(class MGflmItemFilter *)
+	?SetIconId@CGflmGroupItem@@QAEXH@Z @ 40 NONAME ; void CGflmGroupItem::SetIconId(int)
+	?SetLocalizedNameL@CGflmDriveItem@@QAEXABVTDesC16@@@Z @ 41 NONAME ; void CGflmDriveItem::SetLocalizedNameL(class TDesC16 const &)
+	?SetLocalizedNameL@CGflmFileSystemItem@@QAEXABVTDesC16@@@Z @ 42 NONAME ; void CGflmFileSystemItem::SetLocalizedNameL(class TDesC16 const &)
+	?SetRootDirectoryL@CGflmDriveItem@@QAEXABVTDesC16@@@Z @ 43 NONAME ; void CGflmDriveItem::SetRootDirectoryL(class TDesC16 const &)
+	?SetSearchFolderL@CGflmFileListModel@@QAEXABVTDesC16@@@Z @ 44 NONAME ; void CGflmFileListModel::SetSearchFolderL(class TDesC16 const &)
+	?SetSearchStringL@CGflmFileListModel@@QAEXABVTDesC16@@@Z @ 45 NONAME ; void CGflmFileListModel::SetSearchStringL(class TDesC16 const &)
+	?SetSortMethod@CGflmFileListModel@@QAEXW4TGflmSortMethod@@@Z @ 46 NONAME ; void CGflmFileListModel::SetSortMethod(enum TGflmSortMethod)
+	?SortMethod@CGflmFileListModel@@QBE?AW4TGflmSortMethod@@XZ @ 47 NONAME ; enum TGflmSortMethod CGflmFileListModel::SortMethod(void) const
+	?StripFinalBackslash@GflmUtils@@SA?AVTPtrC16@@ABVTDesC16@@@Z @ 48 NONAME ; class TPtrC16 GflmUtils::StripFinalBackslash(class TDesC16 const &)
+	?VolumeInfo@CGflmDriveItem@@QBEABVTVolumeInfo@@XZ @ 49 NONAME ; class TVolumeInfo const & CGflmDriveItem::VolumeInfo(void) const
+	?VolumeStatus@CGflmDriveItem@@QBEHXZ @ 50 NONAME ; int CGflmDriveItem::VolumeStatus(void) const
+	?FlushCache@CGflmFileListModel@@QAEXXZ @ 51 NONAME ; void CGflmFileListModel::FlushCache(void)
+	?SearchMode@CGflmFileListModel@@QAEHXZ @ 52 NONAME ; int CGflmFileListModel::SearchMode(void)
+

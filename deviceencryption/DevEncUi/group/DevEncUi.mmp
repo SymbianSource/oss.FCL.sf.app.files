@@ -1,0 +1,102 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project specification file for DevEncUi.
+*
+*/
+
+#include  <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+#include "../../common/DevEncUids.hrh"
+
+TARGET            devencui.exe
+TARGETTYPE        exe
+UID               0x0 KDevEncUiUid
+//EPOCSTACKSIZE	  0x5000
+
+VENDORID          KDevEncNokiaVID
+CAPABILITY        CAP_GENERAL_DLL CAP_APPLICATION WriteDeviceData DiskAdmin -DRM
+
+SOURCEPATH        ../src
+SOURCE            DevEncUi.cpp
+SOURCE            DevEncUiApplication.cpp
+SOURCE            DevEncUiAppui.cpp
+SOURCE            DevEncUiCreateKeyProcess.cpp
+SOURCE            DevEncUiDecrView.cpp
+SOURCE            DevEncUiDecrViewContainer.cpp
+SOURCE            DevEncUiDocument.cpp
+SOURCE            DevEncUiEncrView.cpp
+SOURCE            DevEncUiEncrViewContainer.cpp
+SOURCE            DevEncUiEncryptionOperator.cpp
+SOURCE            DevEncUiFileManager.cpp
+SOURCE            DevEncUiMainView.cpp
+SOURCE            DevEncUiMainViewContainer.cpp
+SOURCE            DevEncUiMemoryEntity.cpp
+SOURCE            DevEncUiSecretMinMaxCodeQuery.cpp
+SOURCE            DevEncUiSettingItemList.cpp
+SOURCE            DevEncUiTimer.cpp
+
+SOURCEPATH        ../../common
+SOURCE            DevEncLog.cpp
+
+SOURCEPATH        ../data
+
+START RESOURCE    DevEncUi.rss
+HEADER
+TARGETPATH        APP_RESOURCE_DIR
+LANGUAGE_IDS
+END //RESOURCE
+
+START RESOURCE    DevEncUi_reg.rss
+DEPENDS           devencui.rsg
+HEADER
+TARGETPATH 	      /private/10003a3f/apps
+END //RESOURCE
+
+USERINCLUDE       ../inc
+USERINCLUDE       ../../common
+
+APP_LAYER_SYSTEMINCLUDE
+
+SYSTEMINCLUDE 	/epoc32/include/platform/mw/uikon
+
+LIBRARY           aknicon.lib
+LIBRARY           aknnotify.lib 
+LIBRARY           aknskins.lib
+LIBRARY           aknskinsrv.lib
+LIBRARY           aknswallpaperutils.lib 
+LIBRARY           apparc.lib
+LIBRARY           avkon.lib
+LIBRARY           bafl.lib
+LIBRARY           centralrepository.lib 
+LIBRARY           charconv.lib
+LIBRARY           commonengine.lib
+LIBRARY           cone.lib
+LIBRARY           devenccommonutils.lib
+LIBRARY		  	  efsrv.lib
+LIBRARY           egul.lib
+LIBRARY           eikcoctl.lib
+LIBRARY           eikcore.lib
+LIBRARY           eikctl.lib
+LIBRARY           eikdlg.lib 
+LIBRARY           eiksrv.lib
+LIBRARY           estor.lib
+LIBRARY           euser.lib
+LIBRARY           hlplch.lib // Help launcher
+LIBRARY           platformenv.lib // for system path literals
+LIBRARY           secui.lib
+LIBRARY           ws32.lib
+LIBRARY           terminalcontrol.lib
+DEBUGLIBRARY      flogger.lib
+
+// End of File

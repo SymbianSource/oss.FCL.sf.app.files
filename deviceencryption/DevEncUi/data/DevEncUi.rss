@@ -1,0 +1,857 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Application resource file.
+*
+*/
+
+//  RESOURCE IDENTIFIER
+NAME DENC    // 4 letter ID
+
+//  INCLUDES
+#include <appinfo.rh>
+#include <avkon.loc>
+#include <avkon.mbg> // For wait note
+#include <avkon.rh>
+#include <avkon.rsg>
+#include <eikon.rh>
+#include <devenc.loc>
+#include "DevEnc.hrh"
+#include "DevEncUiDef.h"
+
+
+//  RESOURCE DEFINITIONS
+
+// -----------------------------------------------------------------------------
+//
+//    Define the resource file signature
+//    This resource should be empty.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE
+    {
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    Default Document Name
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_default_document_name
+    {
+    buf = "DevEncUi";
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    Define default menu and CBA key.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE EIK_APP_INFO
+    {
+    cba = R_AVKON_SOFTKEYS_OPTIONS_EXIT;
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    Localizable application information
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE LOCALISABLE_APP_INFO r_devencui_localisable_app_info
+    {
+    short_caption = qtn_apps_encryption_grid;
+    caption_and_icon = CAPTION_AND_ICON_INFO
+        {
+        caption = qtn_encryption_title;
+
+        // TBD: Is this valid?
+        number_of_icons = 1;
+        icon_file = "\\resource\\apps\\DevEncUi_aif.mif";
+        };
+    }
+
+// ---------------------------------------------------------
+//
+//    r_devencui_mainview
+//    Define main view
+//
+// ---------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_devencui_mainview
+    {
+    menubar = r_devencui_menubar_main;
+    cba = R_AVKON_SOFTKEYS_OPTIONS_EXIT;
+    }
+
+// ---------------------------------------------------------
+//
+//    r_devencui_encrview
+//    Define encryption view
+//
+// ---------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_devencui_encrview
+    {
+    menubar = r_devencui_menubar_encr;
+    cba = R_AVKON_SOFTKEYS_OPTIONS_BACK;
+    }
+
+// ---------------------------------------------------------
+//
+//    r_devencui_decrview
+//    Define decryption view
+//
+// ---------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_devencui_decrview
+    {
+    menubar = r_devencui_menubar_decr;
+    cba = R_AVKON_SOFTKEYS_OPTIONS_BACK;
+    }
+
+// -----------------------------------------------------------------------------
+//
+//   r_devencui_menubar_encr
+//   Menubar for NFEUI example
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_devencui_menubar_encr
+    {
+    titles =
+        {
+        MENU_TITLE { menu_pane = r_devencui_menu_encr; }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+//   r_devencui_menubar_decr
+//   Menubar for NFEUI example
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_devencui_menubar_decr
+    {
+    titles =
+        {
+        MENU_TITLE { menu_pane = r_devencui_menu_decr; }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+//   r_devencui_menubar
+//   Menubar for NFEUI example
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_devencui_menubar_main
+    {
+    titles =
+        {
+        MENU_TITLE { menu_pane = r_devencui_menu_main; }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+//   r_devencui_menu_main
+//   Main menu options
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_devencui_menu_main
+    {
+    items =
+        {
+        MENU_ITEM
+                {
+                command = EDevEncUiCommandChange;
+                txt = qtn_options_change;
+                flags = EEikMenuItemAction;
+                },
+        MENU_ITEM
+                {
+                command = EDevEncUiCommandHelp;
+                txt = qtn_options_help;
+                },
+        MENU_ITEM
+                {
+                command = EAknSoftkeyExit;
+                txt = qtn_options_exit;
+                }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+//   r_devencui_menu_encr
+//   Encryption menu options
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_devencui_menu_encr
+    {
+    items =
+        {
+        MENU_ITEM
+                {
+                command = EDevEncUiCommandHelp;
+                txt = qtn_options_help;
+                },
+        MENU_ITEM
+                {
+                command = EAknSoftkeyExit;
+                txt = qtn_options_exit;
+                }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+//   r_devencui_menu_decr
+//   Decryption menu options
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_devencui_menu_decr
+    {
+    items =
+        {
+        MENU_ITEM
+                {
+                command = EDevEncUiCommandHelp;
+                txt = qtn_options_help;
+                },
+        MENU_ITEM
+                {
+                command = EAknSoftkeyExit;
+                txt = qtn_options_exit;
+                }
+        };
+    }
+
+//----------------------------------------------------
+//
+//    r_settingslist_setting_item_list
+//    settings item list for the application
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_ITEM_LIST r_devencui_setting_item_list
+    {
+    items =
+        {
+        AVKON_SETTING_ITEM
+            {
+            identifier = EPhoneEncryptionSettingItem;
+            setting_page_resource = r_settingslist_phonememory_setting_page;
+            associated_resource = r_settingslist_phonememory_popup_setting_texts;
+            name = qtn_encryption_phonememory;
+            },
+        AVKON_SETTING_ITEM
+            {
+            identifier = EMemoryCardEncryptionSettingItem;
+            setting_page_resource = r_settingslist_memorycard_setting_page;
+            associated_resource = r_settingslist_memorycard_popup_setting_texts;
+            name = qtn_encryption_memorycard;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//
+//    r_settingslist_phonememory_setting_page
+//    hints setting page for the setting list
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_settingslist_phonememory_setting_page
+    {
+    label = qtn_encryption_phonememory_setting_title;
+    type = EAknCtPopupSettingList;
+    editor_resource_id = r_settingslist_phonememory_popup_setting_list;
+    }
+
+//----------------------------------------------------
+//
+//    r_settingslist_phonememory_encryption_setting_page
+//    hints setting page for the setting list
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_settingslist_memorycard_setting_page
+    {
+    label = qtn_encryption_memorycard_setting_title;
+    type = EAknCtPopupSettingList;
+    editor_resource_id = r_settingslist_memorycard_popup_setting_list;
+    }
+
+//----------------------------------------------------
+//
+//    r_settingslist_phonememory_popup_setting_texts
+//    popup setting list for the hint item of the
+//    setting list
+//
+//----------------------------------------------------
+//
+RESOURCE POPUP_SETTING_LIST r_settingslist_phonememory_popup_setting_list
+    {
+    }
+
+//----------------------------------------------------
+//
+//    r_settingslist_phonememory_popup_setting_texts
+//    popup setting list for the hint item of the
+//    setting list
+//
+//----------------------------------------------------
+//
+RESOURCE POPUP_SETTING_LIST r_settingslist_memorycard_popup_setting_list
+    {
+    }
+
+//----------------------------------------------------
+//
+//    r_settingslist_hints_popup_setting_texts
+//    popped up and non-popped up texts for the hint
+//    item of the setting list
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_POPUP_SETTING_TEXTS r_settingslist_phonememory_popup_setting_texts
+    {
+    setting_texts_resource = r_settingslist_encryption_state_texts;
+    popped_up_texts_resource = r_settingslist_hints_popup_texts;
+    }
+
+//----------------------------------------------------
+//
+//    r_settingslist_hints_popup_setting_texts
+//    popped up and non-popped up texts for the hint
+//    item of the setting list
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_POPUP_SETTING_TEXTS r_settingslist_memorycard_popup_setting_texts
+    {
+    setting_texts_resource = r_settingslist_encryption_state_texts;
+    popped_up_texts_resource = r_settingslist_hints_popup_texts;
+    }
+
+//----------------------------------------------------
+//
+//    r_settingslist_hints_texts
+//    non-popped up texts for the hint
+//    item of the setting list
+//
+//----------------------------------------------------
+//
+RESOURCE ARRAY r_settingslist_encryption_state_texts
+    {
+    items =
+        {
+        AVKON_ENUMERATED_TEXT
+            {
+            value = 1;
+            text = qtn_encryption_phonememory_setting_on;
+            },
+        AVKON_ENUMERATED_TEXT
+            {
+            value = 0;
+            text = qtn_encryption_phonememory_setting_off;
+            }
+
+        };
+    }
+
+//----------------------------------------------------
+//
+//    r_settingslist_hints_popup_texts
+//    popped up texts for the hint
+//    item of the setting list
+//
+//----------------------------------------------------
+//
+RESOURCE ARRAY r_settingslist_hints_popup_texts
+    {
+    items =
+        {
+        LBUF
+            {
+            txt = qtn_encryption_phonememory_setting_on;
+            },
+        LBUF
+            {
+            txt = qtn_encryption_phonememory_setting_off;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//
+//    r_devencui_confirmation_query
+//    confirmation query for the application
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_devencui_confirmation_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EDevEncUiDlgCIdConfirmationQuery;
+            control = AVKON_CONFIRMATION_QUERY
+                {
+                layout = EConfirmationQueryLayout;
+                label = qtn_encryption_note_lock;
+                };
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+//
+//   r_devencui_encrypt_confirmation_query_dialog
+//   About dialog - show version and copyright info etc.
+//
+// ---------------------------------------------------------
+//
+
+RESOURCE DIALOG r_devencui_encrypt_confirmation_query_dialog
+    {
+    flags = EGeneralQueryFlags | EEikDialogFlagNoBorder | EEikDialogFlagNoShadow;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtPopupHeadingPane;
+            id = EAknMessageQueryHeaderId;
+            control = AVKON_HEADING
+                {
+                label = qtn_encryption_note_header;
+                headinglayout = R_AVKON_WML_SIGN_QUERY_HEADING_PANE;
+                };
+            },
+        DLG_LINE
+            {
+            type = EAknCtMessageQuery;
+            id = EAknMessageQueryContentId;
+            control = AVKON_MESSAGE_QUERY
+                {
+                message = qtn_encryption_note_lock;
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+//
+//    r_devencui_data_query
+//    data query for the application
+//
+//----------------------------------------------------
+RESOURCE DIALOG r_devencui_data_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EDevEncUiDlgCIdDataQuery;
+            control = AVKON_DATA_QUERY
+                {
+                layout = EDataLayout;
+                control =
+                    EDWIN
+                        {
+                        width = KMaxFileNameLength;
+                        lines = 1;
+                        maxlength = KMaxFileNameLength;
+                        };
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+//
+//    r_devencui_code_query
+//    secret data query for the application
+//
+//----------------------------------------------------
+RESOURCE DIALOG r_devencui_code_query
+    {
+    flags   = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items   =
+        {
+        DLG_LINE
+            {
+            type    = EAknCtQuery;
+            id      = EDevEncUiSecretCodeQueryId;
+            control = AVKON_DATA_QUERY
+                {
+                layout  = ECodeLayout;
+                label   = qtn_encryption_passphrase_ask;
+                control = SECRETED
+                    {
+                    num_letters = KMaxPasswordLength;
+                    };
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_devencui_list_query
+//    list query for the application
+//
+//----------------------------------------------------
+//
+//RESOURCE AVKON_LIST_QUERY r_devencui_list_query
+//    {
+//    items =
+//        {
+//        AVKON_LIST_QUERY_DLG_LINE
+//            {
+//            control = AVKON_LIST_QUERY_CONTROL
+//                {
+//                listtype = EAknCtSinglePopupMenuListBox;
+//                heading = qtn_encryption_selectkey;
+//                listbox = AVKON_LIST_QUERY_LIST
+//                    {
+//                    // array of items will be defined dynamically
+//                    };
+//                };
+//            }
+//        };
+//    }
+RESOURCE DIALOG r_devencui_list_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtListQueryControl;
+            id = EListQueryControl;
+            control = AVKON_LIST_QUERY_CONTROL
+                {
+                listtype = EAknCtSinglePopupMenuListBox;
+                heading = qtn_encryption_selectkey;
+                listbox = AVKON_LIST_QUERY_LIST
+                    {
+                    };
+                };
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+//  r_devencui_encryption_listbox
+//
+//
+// ---------------------------------------------------------
+//
+RESOURCE LISTBOX r_devencui_encryption_listbox
+    {
+    array_id = r_devencui_encryption_listbox_items;
+    flags = EAknListBoxSelectionList;
+    }
+
+// ---------------------------------------------------------
+//  r_devencui_encryption_listbox_items
+//
+//
+// ---------------------------------------------------------
+//
+RESOURCE ARRAY r_devencui_encryption_listbox_items
+    {
+    items =
+        {
+        LBUF
+            {
+            txt = "\t"qtn_encryption_encrypt"\t\t";
+            },
+        LBUF
+            {
+            txt = "\t"qtn_encryption_encryptsave"\t\t";
+            },
+        LBUF
+            {
+            txt = "\t"qtn_encryption_encryptload"\t\t";
+            }
+        };
+    }
+
+// ---------------------------------------------------------
+//  r_devencui_decryption_listbox
+//
+//
+// ---------------------------------------------------------
+//
+RESOURCE LISTBOX r_devencui_decryption_listbox
+    {
+    array_id = r_devencui_decryption_listbox_items;
+    flags = EAknListBoxSelectionList;
+    }
+
+// ---------------------------------------------------------
+//  r_devencui_decryption_listbox_items
+//
+//
+// ---------------------------------------------------------
+//
+RESOURCE ARRAY r_devencui_decryption_listbox_items
+    {
+    items =
+        {
+        LBUF
+            {
+            txt = "\t"qtn_encryption_decrypt"\t\t";
+            },
+        LBUF
+            {
+            txt = "\t"qtn_encryption_decryptturnoff"\t\t";
+            }
+        };
+    }
+
+RESOURCE DIALOG r_devencui_creating_key_waitnote
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EDevEncUiWaitNoteId;
+            control = AVKON_NOTE
+                {
+                layout = EWaitLayout;
+                singular_label = qtn_encryption_note_wait;
+                //imagefile = "z:\\system\data\avkon.mbm";
+                imagefile = "z:\\resource\apps\avkon2.mbm";
+                imageid = EMbmAvkonQgn_note_progress;
+                imagemask = EMbmAvkonQgn_note_progress_mask;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+// Resources for messages.
+//
+// -----------------------------------------------------------------------------
+
+RESOURCE TBUF r_devencui_text_encryption_on { buf =
+                    qtn_encryption_phonememory_setting_on; }
+
+RESOURCE TBUF r_devencui_text_encryption_off { buf =
+                    qtn_encryption_phonememory_setting_off; }
+
+RESOURCE TBUF r_devencui_text_apps_grid { buf =
+                    qtn_apps_encryption_grid; }
+
+RESOURCE TBUF r_devencui_text_title { buf =
+                    qtn_encryption_title; }
+
+RESOURCE TBUF r_devencui_text_phonememory { buf =
+                    qtn_encryption_phonememory; }
+
+RESOURCE TBUF r_devencui_text_memorycard { buf =
+                    qtn_encryption_memorycard; }
+
+RESOURCE TBUF r_devencui_text_note_lock { buf =
+                    qtn_encryption_note_lock; }
+
+RESOURCE TBUF r_devencui_text_note_encrypting { buf =
+                    qtn_encryption_note_encrypting; }
+
+RESOURCE TBUF r_devencui_text_note_phone_decrypting { buf =
+                    qtn_encryption_note_phone_decrypting; }
+
+RESOURCE TBUF r_devencui_text_encrypt { buf =
+                    qtn_encryption_encrypt; }
+
+RESOURCE TBUF r_devencui_text_encryptsave { buf =
+                    qtn_encryption_encryptsave; }
+
+RESOURCE TBUF r_devencui_text_encryptload { buf =
+                    qtn_encryption_encryptload; }
+
+RESOURCE TBUF r_devencui_text_note_wait { buf =
+                    qtn_encryption_note_wait; }
+
+RESOURCE TBUF r_devencui_text_passphrase_protect { buf =
+                    qtn_encryption_passphrase_protect; }
+
+RESOURCE TBUF r_devencui_text_filename { buf =
+                    qtn_encryption_filename; }
+
+RESOURCE TBUF r_devencui_text_note_saveinfo { buf =
+                    qtn_encryption_note_saveinfo; }
+
+RESOURCE TBUF r_devencui_text_selectkey { buf =
+                    qtn_encryption_selectkey; }
+
+RESOURCE TBUF r_devencui_text_passphrase_ask { buf =
+                    qtn_encryption_passphrase_ask; }
+
+RESOURCE TBUF r_devencui_text_note_memorycard_encrypted { buf =
+                    qtn_encryption_note_memorycard_encrypted; }
+
+RESOURCE TBUF r_devencui_text_decrypt { buf =
+                    qtn_encryption_decrypt; }
+
+RESOURCE TBUF r_devencui_text_decryptturnoff { buf =
+                    qtn_encryption_decryptturnoff; }
+
+RESOURCE TBUF r_devencui_text_note_decrypting { buf =
+                    qtn_encryption_note_decrypting; }
+
+RESOURCE TBUF r_devencui_text_note_decryptingdestroy { buf =
+                    qtn_encryption_note_decryptingdestroy; }
+
+RESOURCE TBUF r_devencui_text_note_decrypt_loadkey { buf =
+                    qtn_encryption_note_decrypt_loadkey; }
+
+RESOURCE TBUF r_devencui_text_note_insertunencrypted { buf =
+                    qtn_encryption_note_insertunencrypted; }
+
+RESOURCE TBUF r_devencui_text_note_decrypt_nomemrycard { buf =
+                    qtn_encryption_note_decrypt_nomemrycard; }
+
+RESOURCE TBUF r_devencui_text_note_memorycard_unencrypted { buf =
+                    qtn_encryption_note_memorycard_unencrypted; }
+
+RESOURCE TBUF r_devencui_text_note_insertencrypted { buf =
+                    qtn_encryption_note_insertencrypted; }
+
+RESOURCE TBUF r_devencui_text_note_encryptioninterrupt { buf =
+                    qtn_encryption_note_encryptioninterrupt; }
+
+RESOURCE TBUF r_devencui_text_phonememory_setting_title { buf =
+                    qtn_encryption_phonememory_setting_title; }
+
+RESOURCE TBUF r_devencui_text_memorycard_setting_title { buf =
+                    qtn_encryption_memorycard_setting_title; }
+
+RESOURCE TBUF r_devencui_text_note_wrongkeyfile { buf =
+                    qtn_encryption_note_wrongkeyfile; }
+
+RESOURCE TBUF r_devencui_text_note_unusedmemorycard { buf =
+                    qtn_encryption_note_unusedmemorycard; }
+
+RESOURCE TBUF r_devencui_text_encrypt_process { buf =
+                    qtn_encryption_encrypt_process; }
+
+RESOURCE TBUF r_devencui_text_decrypt_process { buf =
+                    qtn_encryption_decrypt_process; }
+
+RESOURCE TBUF r_devencui_text_note_insertoff_unusedmemorycard { buf =
+                    qtn_encryption_note_insertoff_unusedmemorycard; }
+
+RESOURCE TBUF r_devencui_text_note_inserton_unusedmemorycard { buf =
+                    qtn_encryption_note_inserton_unusedmemorycard; }
+
+RESOURCE TBUF r_devencui_text_phonememory_setting_on { buf =
+                    qtn_encryption_phonememory_setting_on; }
+
+RESOURCE TBUF r_devencui_text_phonememory_setting_off { buf =
+                    qtn_encryption_phonememory_setting_off; }
+
+RESOURCE TBUF r_devencui_text_memorycard_setting_on { buf =
+                    qtn_encryption_memorycard_setting_on; }
+
+RESOURCE TBUF r_devencui_text_memorycard_setting_off { buf =
+                    qtn_encryption_memorycard_setting_off; }
+
+RESOURCE TBUF r_devencui_text_apps_list { buf =
+                    qtn_apps_encryption_list; }
+
+RESOURCE TBUF r_devencui_note_header { buf =
+                    qtn_encryption_note_header; }
+
+RESOURCE TBUF r_devencui_note_admin_control { buf =
+                    qtn_encryption_note_admin_control; }
+
+// Own text buffers
+
+RESOURCE TBUF r_devencui_text_corrupted { buf =
+                    qtn_encryption_corrupted; }
+
+RESOURCE TBUF r_devencui_text_battery_low { buf =
+                    qtn_encryption_battery_low; }
+
+RESOURCE TBUF r_devencui_text_no_keys_found { buf =
+                    qtn_encryption_note_no_keys_found; }
+
+RESOURCE TBUF r_devencui_text_invalid_password { buf =
+                    qtn_encryption_note_invalid_password; }
+
+RESOURCE TBUF r_devencui_text_key_error { buf =
+                    qtn_encryption_note_key_error; }
+
+RESOURCE TBUF r_devencui_text_bad_name { buf =
+                    qtn_encryption_note_bad_name; }
+
+RESOURCE TBUF r_devencui_text_file_exists { buf =
+                    qtn_encryption_note_file_exists; }
+
+RESOURCE TBUF r_devencui_fota_not_poss { buf = 
+                    qtn_conf_encr_not_poss; }
+
+//----------------------------------------------------
+//   
+//    r_devencui_confirmation_query_ok_empty
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_devencui_confirmation_query_ok_empty
+  { 
+  flags = EGeneralQueryFlags;
+  buttons = R_AVKON_SOFTKEYS_OK_EMPTY;
+  items=
+    {
+    DLG_LINE
+      {
+      type = EAknCtQuery;
+      id = EGeneralQuery;
+      control = AVKON_CONFIRMATION_QUERY
+        {
+        layout = EConfirmationLayout;
+        };
+      }
+    };
+  } 
+
+// END OF FILE

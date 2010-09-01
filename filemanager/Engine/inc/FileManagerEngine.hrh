@@ -1,0 +1,98 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource headers for project FileManagerEngine
+*
+*/
+
+
+#ifndef FILEMANAGERENGINE_HRH
+#define FILEMANAGERENGINE_HRH
+
+#include <AvkonIcons.hrh>
+
+#define commondialogs_mbm_file_location "z:\\resource\\apps\\CommonDialogs.mbm"
+#define filemanager_mbm_file_location "z:\\resource\\apps\\FileManager.mbm"
+#define avkon_mbm_file_location AVKON_ICON_FILE
+
+// Icons for the listview display
+enum TFileManagerIconId
+    {
+    // Mark icon
+    EFileManagerMarkIcon,
+    // Folder icons
+    EFileManagerFolderIcon,
+    EFileManagerFolderSubIcon,
+    EFileManagerFolderEmptyIcon,
+    // Memory icons
+    EFileManagerMemoryCardIcon,
+    EFileManagerPhoneMemoryIcon,
+    // File icons
+    EFileManagerImageFileIcon,
+    EFileManagerPictureMsgFileIcon,
+    EFileManagerDycLogoFileIcon,
+    EFileManagerLinkFileIcon,
+    EFileManagerVoicerecFileIcon,
+    EFileManagerSoundFileIcon,
+    EFileManagerPlaylistFileIcon,
+    EFileManagerCompoFileIcon,
+    EFileManagerNoteFileIcon,
+    EFileManagerAppFileIcon,
+    EFileManagerVideoFileIcon,
+    EFileManagerGameFileIcon,
+    EFileManagerOtherFileIcon,
+    EFileManagerFlashFileIcon,
+    // Main view icons
+    EFileManagerPhoneMemoryMainIcon,
+    EFileManagerMemoryCardPresentMainIcon,
+    EFileManagerMemoryCardNotPresentMainIcon,
+    EFileManagerBackupMainIcon,
+    EFileManagerRemoteDriveConnectedIcon,
+    EFileManagerRemoteDriveMainIcon,
+    EFileManagerMassStorageMainIcon,
+    EFileManagerUsbMemoryMainIcon
+    };
+
+// Type of the item
+// Needed for App to create correct softmenu for the item
+enum TFileManagerTypeOfItem 
+    {
+    EFileManagerFolder = 1,
+    EFileManagerDefaultFolder,
+    EFileManagerForwardLockedFile,
+    EFileManagerFile,
+    EFileManagerNoType
+    };
+
+enum TFileManagerMemory
+    {
+    EFmPhoneMemory = 0,
+    EFmMemoryCard,
+    EFmRemoteDrive,
+    EFmMassStorage,
+    EFmUsbMemory,
+    EFmMemoryCount // must remain last one
+    };
+
+enum TFileManagerActionId
+    {
+    EFileManagerBackupAction = 0
+    };
+
+enum TFileManagerGroupId
+    {
+    EFileManagerDrivesGroup = 0,
+    EFileManagerFilesGroup
+    };
+
+#endif // FILEMANAGERENGINE_HRH

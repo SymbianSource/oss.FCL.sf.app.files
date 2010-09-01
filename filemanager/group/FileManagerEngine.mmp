@@ -1,0 +1,114 @@
+/*
+* Copyright (c) 2002-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project specification of FileManagerEngine
+*
+*/
+
+
+
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+#include "FileManagerUID.h"
+MACRO _F32_STRICT_64_BIT_MIGRATION
+
+TARGET          filemanagerengine.dll
+TARGETTYPE      dll
+UID             KEPOCStaticDllUID2 KFileManagerUID3 
+VENDORID        VID_DEFAULT
+CAPABILITY      CAP_GENERAL_DLL
+
+
+START RESOURCE  ../Engine/data/FileManagerEngine.rss
+TARGETPATH      RESOURCE_FILES_DIR
+HEADER
+LANGUAGE_IDS
+END
+
+SOURCEPATH      ../Engine/src
+SOURCE          CFileManagerEngine.cpp
+#ifndef RD_MULTIPLE_DRIVE
+SOURCE          CFileManagerFolderEntry.cpp
+#endif // RD_MULTIPLE_DRIVE
+SOURCE          Cfilemanagerfolderarray.cpp
+SOURCE          CFileManagerItemProperties.cpp
+SOURCE          CFilemanagerMimeIconArray.cpp
+SOURCE          CFileManagerActiveExecute.cpp
+SOURCE          CFileManagerIRReceiver.cpp
+SOURCE          CFileManagerFileSystemIterator.cpp
+SOURCE          Cfilemanagerindexiterator.cpp
+SOURCE          CfilemanageractiveDelete.cpp
+SOURCE          CFileManagerRefresher.cpp
+SOURCE          Cfilemanagerfilesystemevent.cpp
+SOURCE          Cfilemanageractivesize.cpp
+SOURCE          CFileManagerUtils.cpp
+SOURCE          CfilemanagerActiveCount.cpp
+SOURCE          CFileManagerItemFilter.cpp
+SOURCE          TFileManagerDriveInfo.cpp
+SOURCE          CFileManagerDocHandler.cpp
+SOURCE          CFileManagerThreadWrapper.cpp
+SOURCE          CFileManagerRemovableDriveHandler.cpp
+SOURCE          CFileManagerRemoteDriveHandler.cpp
+SOURCE          CFileManagerPropertySubscriber.cpp
+#ifdef RD_FILE_MANAGER_BACKUP
+SOURCE          CFileManagerBackupSettingsFull.cpp
+SOURCE          CFileManagerRestoreSettingsFull.cpp
+#else // RD_FILE_MANAGER_BACKUP
+SOURCE          CFileManagerBackupSettings.cpp
+SOURCE          CFileManagerRestoreSettings.cpp
+#endif // RD_FILE_MANAGER_BACKUP
+SOURCE          CFileManagerActiveBase.cpp
+SOURCE          CFileManagerActiveRename.cpp
+SOURCE          CFileManagerFeatureManager.cpp
+
+USERINCLUDE     . ../Engine/inc ../GFLM/inc ../bkupengine/inc
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE   /epoc32/include/connect
+
+LIBRARY         euser.lib
+LIBRARY         gflm.lib
+LIBRARY         efsrv.lib 
+LIBRARY         bafl.lib 
+LIBRARY         cone.lib 
+LIBRARY         irobex.lib
+LIBRARY         esock.lib 
+LIBRARY         irda.lib
+LIBRARY         sysutil.lib
+LIBRARY         featmgr.lib
+LIBRARY         commonengine.lib
+//LIBRARY         MGXMediaFileApi.lib
+LIBRARY         tzclient.lib
+LIBRARY         caf.lib
+LIBRARY         drmdcf.lib
+LIBRARY         commonui.lib
+LIBRARY         apparc.lib
+LIBRARY         apmime.lib
+LIBRARY         avkon.lib
+LIBRARY         platformenv.lib
+LIBRARY         filemanagerbkupengine.lib
+LIBRARY         apgrfx.lib
+LIBRARY         ws32.lib
+LIBRARY         rsfwmountman.lib
+LIBRARY         centralrepository.lib
+#ifdef __KEEP_DRM_CONTENT_ON_PHONE
+#ifdef FILE_MANAGER_USE_DISTRIBUTABLECHECKER
+LIBRARY         distributablechecker.lib
+#endif // FILE_MANAGER_USE_DISTRIBUTABLECHECKER
+#endif // __KEEP_DRM_CONTENT_ON_PHONE
+LIBRARY         directorylocalizer.lib
+//LIBRARY         mgexternalservices.lib
+LIBRARY         eikcore.lib
+LIBRARY         drmutility.lib
+
+// End of File

@@ -1,0 +1,66 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  OMA DM adapter for controlling camera.
+*
+*/
+
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>  //this is needed for RESOURCE_FILES_DIR
+#include "../../common/DevEncUids.hrh"
+
+TARGET          devencnotifplugin.dll
+TARGETTYPE      plugin
+UID             0x10009D8D KDevEncNotifPluginUid
+TARGETPATH      SHARED_LIB_DIR
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../../common
+SOURCE          DevEncLog.cpp
+SOURCEPATH      ../src
+SOURCE          DevEncPasswdDlg.cpp
+SOURCE          DevEncNotifPluginImp.cpp 
+
+USERINCLUDE     ../inc
+USERINCLUDE     ../../common 
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE 	/epoc32/include/platform/mw/uikon
+SYSTEMINCLUDE 	/epoc32/include/ecom
+
+// Notifier resource file
+START RESOURCE  ../data/DevEncNotifPlugin.rss
+HEADER
+TARGETPATH    RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+// ECom resource file
+START RESOURCE ../data/20002672.rss
+//#ifdef SYMBIAN_SECURE_ECOM
+TARGET  devencnotifplugin.rsc
+//#endif
+END	
+
+LIBRARY         euser.lib cone.lib
+LIBRARY         ecom.lib eiksrv.lib
+LIBRARY         commonengine.lib
+LIBRARY         avkon.lib bafl.lib
+LIBRARY         charconv.lib
+LIBRARY         eiksrvui.lib
+DEBUGLIBRARY    flogger.lib
+
+// End Of File
+
+

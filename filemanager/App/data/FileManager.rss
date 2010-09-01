@@ -1,0 +1,1519 @@
+/*
+* Copyright (c) 2002-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource definitions for project FileManager
+*
+*/
+
+
+//  RESOURCE IDENTIFIER
+NAME    FMGR // 4 letter ID
+
+//  INCLUDES
+#include <bldvariant.hrh>
+#include <eikon.rh>
+#include <eikon.rsg>
+#include <avkon.rsg>
+#include <avkon.rh>
+#include <avkon.mbg>
+#include <avkon.loc>
+#include <pathconfiguration.hrh>
+#include <aknsconstants.hrh>
+#include <data_caging_paths_strings.hrh>
+#include <CommonDialogs.rh>
+#include <filemanager.mbg>
+#include <drmcommon.loc>
+#include <activeidle3.loc>
+#include <errorres.loc>
+#include <filemanager.loc>
+#include "FileManagerEngine.hrh" // filemanager_mbm_file_location
+#include "FileManager.hrh"
+
+
+//  RESOURCE DEFINITIONS 
+
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE TBUF { buf = qtn_fmgr_main_title; }
+
+RESOURCE EIK_APP_INFO
+{
+    status_pane = r_filemanager_status_pane;
+}
+
+/**
+ * STATUS_PANE_APP_MODEL
+ * FileManager default status pane
+ */
+RESOURCE STATUS_PANE_APP_MODEL r_filemanager_status_pane
+    {
+    layout = R_AVKON_STATUS_PANE_LAYOUT_USUAL;
+    panes =
+        {
+        SPANE_PANE
+            {
+            id = EEikStatusPaneUidTitle;
+            type = EAknCtTitlePane;
+            resource = r_filemanager_title_pane;
+            }
+        };
+    }
+
+/**
+ * TITLE_PANE
+ * FileManager default title pane text
+ */
+RESOURCE TITLE_PANE r_filemanager_title_pane
+    {
+    txt = qtn_fmgr_main_title;
+    }
+
+#include <appinfo.rh>
+
+RESOURCE LOCALISABLE_APP_INFO r_filemanager_localisable_app_info
+    {
+    short_caption = qtn_apps_fmgr_grid;
+    caption_and_icon = 
+    CAPTION_AND_ICON_INFO
+        {
+        caption = qtn_apps_fmgr_list;
+#ifdef __SCALABLE_ICONS
+        number_of_icons = 1;
+        icon_file = APP_BITMAP_DIR"\\FileManager_aif.mif";
+#else
+        number_of_icons = 2;
+        icon_file = APP_BITMAP_DIR"\\FileManager_aif.mbm";
+#endif
+        };
+    }
+
+/**
+* AVKON_VIEW
+* General view
+*/
+RESOURCE AVKON_VIEW r_filemanager_main_view
+    {
+    cba = r_filemanager_softkeys_options_exit__open;
+    menubar = r_filemanager_main_menubar;
+    }
+/**
+* AVKON_VIEW
+* General view (embedded)
+*/
+RESOURCE AVKON_VIEW r_filemanager_main_view_embedded
+    {
+    cba = r_filemanager_softkeys_options_exit__open_embedded;
+    menubar = r_filemanager_main_menubar;
+    }
+
+/**
+* AVKON_VIEW
+* Folders view
+*/
+RESOURCE AVKON_VIEW r_filemanager_folders_view
+    {
+    cba = r_filemanager_softkeys_options_back__open;
+    menubar = r_filemanager_memory_store_menubar;
+    }
+
+/**
+* AVKON_VIEW
+* Search results view
+*/
+/*
+RESOURCE AVKON_VIEW r_filemanager_search_results_view
+    {
+    cba = r_filemanager_softkeys_options_back__open;
+    menubar = r_filemanager_search_results_menubar;
+    }
+*/
+/**
+* MENU_BAR
+* Phone memory menu bar
+*/
+RESOURCE MENU_BAR r_filemanager_main_menubar
+    {
+    titles = 
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_filemanager_main_view_menu;
+            }
+        };
+    }
+
+/**
+* MENU_BAR
+* Memory store menu bar
+*/
+RESOURCE MENU_BAR r_filemanager_memory_store_menubar
+    {
+    titles = 
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_filemanager_memory_store_view_menu;
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_filemanager_main_view_menu
+    {
+    items =
+        {
+        MENU_ITEM 
+            {
+            command = EFileManagerOpen;
+            txt = qtn_fldr_open;
+            flags = EEikMenuItemAction;
+            },
+        MENU_ITEM 
+            {
+            command = EFileManagerConnectRemoveDrive;
+            txt = qtn_rd_opt_connect;
+            flags = EEikMenuItemDimmed;
+            },
+        MENU_ITEM 
+            {
+            command = EFileManagerDisconnectRemoveDrive;
+            txt = qtn_rd_opt_disconnect;
+            flags = EEikMenuItemDimmed;
+            },
+        MENU_ITEM 
+            {
+            command = EFileManagerEject;
+            txt = qtn_fmgr_options_eject;
+            flags = EEikMenuItemSpecific;
+            },
+#ifndef RD_FILE_MANAGER_BACKUP
+        MENU_ITEM 
+            {
+            command = EFileManagerBackup;
+            txt = qtn_memc_options_backup;
+            },
+        MENU_ITEM 
+            {
+            command = EFileManagerRestore;
+            txt = qtn_memc_options_restore;
+            },
+#endif // !RD_FILE_MANAGER_BACKUP
+        MENU_ITEM
+            {
+            command = EFileManagerFindFile;
+            txt = qtn_fmgr_options_find_file;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorage;
+            cascade = r_filemanager_memory_storage_menu;
+            txt = qtn_fmgr_options_memory_sub;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerRemoveDrives;
+            cascade = r_filemanager_remote_drives_menu;
+            txt = qtn_fmgr_opt_remote_drives;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerRemoveDrivesMapDrive;
+            txt = qtn_fmgr_opt_rd_new_drive;
+            },
+        MENU_ITEM
+            {
+            command = EAknCmdHelp;
+            txt = qtn_options_help;
+            },
+        MENU_ITEM 
+            {
+            command = EAknSoftkeyExit;
+            txt = qtn_options_exit;
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_filemanager_memory_store_view_menu
+    {
+    items =
+        {
+        MENU_ITEM 
+            {
+            command = EFileManagerOpen; 
+            txt = qtn_fldr_open;
+            flags = EEikMenuItemAction; 
+            },
+        MENU_ITEM 
+            {
+            command = EFileManagerConnectRemoveDrive;
+            txt = qtn_rd_opt_connect;
+            },
+        MENU_ITEM 
+            {
+            command = EFileManagerDisconnectRemoveDrive;
+            txt = qtn_rd_opt_disconnect;
+            },
+        MENU_ITEM 
+            {
+            command = EFileManagerRefreshRemoteDrive;
+            txt = qtn_fmgr_rd_opt_refresh;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerDelete;
+            txt = qtn_fldr_delete;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerOrganise;
+            cascade = r_filemanager_organise_menu;
+            txt = qtn_fmgr_options_organise;         
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMoveToFolder;
+            txt = qtn_options_org_move_to_folder;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerCopyToFolder;
+            txt = qtn_options_org_copy_to;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMark;
+            cascade = r_filemanager_mark_unmark_menu;
+            txt = qtn_options_list;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerRename;
+            txt = qtn_fldr_rename;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerFindFile;
+            txt = qtn_fmgr_options_find_file;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerSort;
+            cascade = r_filemanager_sort_menu;
+            txt = qtn_fmgr_options_sort_submenu;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerSearchSort;
+            cascade = r_filemanager_search_sort_menu;
+            txt = qtn_fmgr_options_sort_submenu;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerReceiveViaIR;
+            txt = qtn_album_cmd_receive_via_ir;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerDetails;
+            cascade = r_filemanager_details_menu;
+            txt = qtn_fmgr_options_memory_storage_details;
+			flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerUnlockMemoryCard;
+            txt = qtn_memc_options_unlock;
+            flags = EEikMenuItemSpecific;
+            },
+#ifdef RD_MULTIPLE_DRIVE
+        MENU_ITEM
+            {
+            command = EFileManagerFormatMassStorage;
+            txt = qtn_fmgr_options_format_mass;
+            },
+#endif // RD_MULTIPLE_DRIVE
+//        MENU_ITEM
+//            {
+//            command = EFileManagerMemoryCardPassword;
+//            cascade = r_filemanager_memory_card_password_menu;
+//            txt = qtn_fmgr_options_card_password;
+//            },
+//        MENU_ITEM
+//            {
+//            command = EFileManagerUnlockMemoryCard;
+//            txt = qtn_memc_options_unlock;
+//            },
+        MENU_ITEM
+            {
+            command = EAknCmdHelp;
+            txt = qtn_options_help;
+            },
+        MENU_ITEM 
+            {
+            command = EAknSoftkeyExit;
+            txt = qtn_options_exit;
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_filemanager_memory_storage_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorageUnlock;
+            txt = qtn_fmgr_unlock_memory;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorageDetails;
+            txt = qtn_fmgr_options_memory_storage_details;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorageName;
+            txt = qtn_fmgr_options_card_name;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorageRename;
+            txt = qtn_fmgr_options_card_rename;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorageSetPassword;
+            txt = qtn_fmgr_options_set_memc_passwd;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorageChangePassword;
+            txt = qtn_fmgr_options_change_memc_passwd;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorageRemovePassword;
+            txt = qtn_fmgr_options_remove_memc_passwd;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorageFormat;
+            txt = qtn_fmgr_options_card_format;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_filemanager_organise_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EFileManagerNewFolder;
+            txt = qtn_options_org_new_folder;
+            }
+        };
+    }
+        
+RESOURCE MENU_PANE r_filemanager_sort_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EFileManagerSortByName;
+            txt = qtn_fmgr_options_sort_by_name;
+            flags = EEikMenuItemRadioStart;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerSortByType;
+            txt = qtn_fmgr_options_sort_by_type;
+            flags = EEikMenuItemRadioMiddle;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerSortMostRecentFirst;
+            txt = qtn_fmgr_options_sort_recent_first;
+            flags = EEikMenuItemRadioMiddle;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerSortLargestFirst;
+            txt = qtn_fmgr_options_sort_largest_first;
+            flags = EEikMenuItemRadioEnd;
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_filemanager_search_sort_menu
+    {
+    items =
+        {
+       MENU_ITEM
+            {
+            command = EFileManagerSortByMatch;
+            txt = qtn_fmgr_options_sort_by_match;
+            flags = EEikMenuItemRadioStart;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerSortByName;
+            txt = qtn_fmgr_options_sort_by_name;
+            flags = EEikMenuItemRadioMiddle;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerSortByType;
+            txt = qtn_fmgr_options_sort_by_type;
+            flags = EEikMenuItemRadioMiddle;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerSortMostRecentFirst;
+            txt = qtn_fmgr_options_sort_recent_first;
+            flags = EEikMenuItemRadioMiddle;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerSortLargestFirst;
+            txt = qtn_fmgr_options_sort_largest_first;
+            flags = EEikMenuItemRadioEnd;
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_filemanager_remote_drives_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EFileManagerRemoveDrivesSettings;
+            txt = qtn_fmgr_opt_rd_settings;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerRemoveDrivesDelete;
+            txt = qtn_fmgr_opt_rd_delete_drive;
+            flags = EEikMenuItemSpecific;
+            },
+         MENU_ITEM 
+            {
+            command = EFileManagerConnectRemoveDrive;
+            txt = qtn_rd_opt_connect;
+            flags = EEikMenuItemSpecific;
+            },
+         MENU_ITEM 
+            {
+            command = EFileManagerDisconnectRemoveDrive;
+            txt = qtn_rd_opt_disconnect;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_filemanager_details_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EFileManagerFileDetails;
+            txt = qtn_fmgr_options_details;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerFolderDetails;
+            txt = qtn_fmgr_options_details;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMoreInfoOnline;
+            txt = qtn_drm_options_more_info;
+            flags = EEikMenuItemSpecific;
+            }
+//        MENU_ITEM
+//            {
+//            command = EFileManagerMemoryCardDetails;
+//            txt = qtn_fmgr_options_card_details;
+//            },
+//        MENU_ITEM
+//            {
+//            command = EFileManagerMemoryState;
+//            txt = qtn_fmgr_options_memory_details;
+//            }
+        };
+    }
+
+//RESOURCE MENU_PANE r_filemanager_memory_card_menu
+//    {
+//    items =
+//        {
+//        MENU_ITEM
+//            {
+//            command = EFileManagerMemoryCardName;
+//            txt = qtn_fmgr_options_card_name;
+//            },
+//        MENU_ITEM
+//            {
+//            command = EFileManagerMemoryCardRename;
+//            txt = qtn_fmgr_options_card_rename;
+//            },
+//        MENU_ITEM
+//            {
+//            command = EFileManagerMemoryCardFormat;
+//            txt = qtn_fmgr_options_card_format;
+//            }
+//        };
+//    }
+//
+//RESOURCE MENU_PANE r_filemanager_memory_card_password_menu
+//    {
+//    items =
+//        {
+//        MENU_ITEM
+//            {
+//            command = EFileManagerMemoryCardPasswordSet;
+//            txt = qtn_fmgr_options_set_password;
+//            },
+//        MENU_ITEM
+//            {
+//            command = EFileManagerMemoryCardPasswordChange;
+//            txt = qtn_fmgr_options_change_passwd;
+//            },
+//        MENU_ITEM
+//            {
+//            command = EFileManagerMemoryCardPasswordRemove;
+//            txt = qtn_fmgr_options_remove_passwd;
+//            }
+//        };
+//    }
+
+RESOURCE MENU_BAR r_filemanager_context_sensitive_menubar
+    {
+    titles = 
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_filemanager_context_sensitive_menu;
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_filemanager_context_sensitive_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EFileManagerOrganise;
+            cascade = r_filemanager_organise_context_sensitive_menu;
+            txt = qtn_fmgr_options_organise;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerDelete;
+            txt = qtn_fldr_delete;           
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMark;
+            cascade = r_filemanager_context_sensitive_mark_unmark_menu;
+            txt = qtn_options_list;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerUnlockMemoryCard;
+            txt = qtn_memc_options_unlock;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMemoryStorageFormat;
+            txt = qtn_fmgr_options_card_format;
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_filemanager_organise_context_sensitive_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EFileManagerMoveToFolder;
+            txt = qtn_options_org_move_to_folder;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerCopyToFolder;
+            txt = qtn_options_org_copy_to;
+            }
+        };
+    }
+
+#ifdef RD_FILE_MANAGER_BACKUP
+/**
+* AVKON_VIEW
+* Backup view
+*/
+RESOURCE AVKON_VIEW r_filemanager_backup_view
+    {
+    cba = r_filemanager_softkeys_options_back__change;
+    menubar = r_filemanager_backup_menubar;
+    }
+
+/**
+* MENU_BAR
+* Backup menu bar
+*/
+RESOURCE MENU_BAR r_filemanager_backup_menubar
+    {
+    titles = 
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_filemanager_backup_view_menu;
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_filemanager_backup_view_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            { command = EFileManagerOpen; txt = qtn_options_change; },
+        MENU_ITEM
+            { command = EFileManagerBackup; txt = qtn_fmgr_options_backup_now; },
+        MENU_ITEM
+            { command = EFileManagerRestore; txt = qtn_fmgr_options_restore; },
+        MENU_ITEM
+            { command = EFileManagerDeleteBackup; txt = qtn_fmgr_options_delete_backup; },
+        MENU_ITEM
+            { command = EAknCmdHelp; txt = qtn_options_help; },
+        MENU_ITEM 
+            { command = EAknSoftkeyExit; txt = qtn_options_exit; }
+        };
+    }
+
+RESOURCE AVKON_VIEW r_filemanager_restore_view
+    {
+    cba = R_AVKON_SOFTKEYS_OK_CANCEL__MARK;
+    menubar = R_AVKON_MENUPANE_EMPTY;
+    }
+
+RESOURCE AVKON_VIEW r_filemanager_scheduled_backup_view
+    {
+    cba = R_AVKON_SOFTKEYS_EMPTY;
+    menubar = R_AVKON_MENUPANE_EMPTY;
+    }
+
+RESOURCE ARRAY r_filemanager_backup_contents_texts
+    {
+    items =
+        {
+        LBUF { txt = qtn_fmgr_backup_content_all; },
+        LBUF { txt = qtn_fmgr_backup_content_settings; },
+        LBUF { txt = qtn_fmgr_backup_content_messages; },
+        LBUF { txt = qtn_fmgr_backup_content_contacts; },
+        LBUF { txt = qtn_fmgr_backup_content_calendar; },
+        LBUF { txt = qtn_fmgr_backup_content_bookmarks; },
+        LBUF { txt = qtn_fmgr_backup_content_userfiles; }
+        };
+    }
+
+RESOURCE ARRAY r_filemanager_backup_weekday_texts
+    {
+    items =
+        {
+        LBUF { txt = qtn_week_long_monday; },
+        LBUF { txt = qtn_week_long_tuesday; },
+        LBUF { txt = qtn_week_long_wednesday; },
+        LBUF { txt = qtn_week_long_thursday; },
+        LBUF { txt = qtn_week_long_friday; },
+        LBUF { txt = qtn_week_long_saturday; },
+        LBUF { txt = qtn_week_long_sunday; }
+        };
+    }
+
+RESOURCE ARRAY r_filemanager_backup_scheduling_texts
+    {
+    items =
+        {
+        LBUF { txt = qtn_fmgr_backup_no_scheduling; },
+        LBUF { txt = qtn_fmgr_backup_daily; },
+        LBUF { txt = qtn_fmgr_backup_weekly; }
+        };
+    }
+
+#endif // RD_FILE_MANAGER_BACKUP
+
+RESOURCE MENU_PANE r_filemanager_mark_unmark_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EFileManagerMarkOne;
+            txt = qtn_options_list_mark_one;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerUnmarkOne;
+            txt = qtn_options_list_unmark_one;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMarkAll;
+            txt = qtn_options_list_mark_all;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerUnmarkAll;
+            txt = qtn_options_list_unmark_all;
+            }
+        };
+    }
+RESOURCE MENU_PANE r_filemanager_context_sensitive_mark_unmark_menu
+    {
+    items =
+        {
+        MENU_ITEM
+            {
+            command = EFileManagerMarkOne;
+            txt = qtn_options_list_mark_one;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerUnmarkOne;
+            txt = qtn_options_list_unmark_one;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerMarkAll;
+            txt = qtn_options_list_mark_all;
+            },
+        MENU_ITEM
+            {
+            command = EFileManagerUnmarkAll;
+            txt = qtn_options_list_unmark_all;
+            }
+        };
+    }
+
+RESOURCE MEMORYSELECTIONDIALOG r_filemanager_copy_memory_selectiondialog
+    {
+    softkey_1 = text_softkey_ok;
+    locations =
+        {
+        LOCATION { root_path = text_phone_memory_root_path; },
+        LOCATION { root_path = text_memory_card_root_path; }
+        };  
+    }
+
+RESOURCE MEMORYSELECTIONDIALOG r_filemanager_move_memory_selectiondialog
+    {
+    softkey_1 = text_softkey_ok;
+    locations =
+        {
+        LOCATION { root_path = text_phone_memory_root_path; },
+        LOCATION { root_path = text_memory_card_root_path; }
+        };  
+    }
+
+RESOURCE MEMORYSELECTIONDIALOG r_filemanager_find_memory_selectiondialog
+    {
+    title = qtn_fmgr_find_prtx;
+    softkey_1 = text_softkey_ok;
+    locations =
+        {
+        LOCATION { root_path = text_phone_memory_root_path; },
+        LOCATION { root_path = text_memory_card_root_path; }
+        };  
+    }
+
+RESOURCE FILESELECTIONDIALOG r_filemanager_find_folder_selectiondialog
+    {
+    title = qtn_fmgr_find_prtx;
+    softkey_1_file = text_softkey_select;
+    softkey_1_folder = text_softkey_open;
+    softkey_2_root_level = text_softkey_cancel;
+    softkey_2_subfolder = text_softkey_back;
+    }
+
+RESOURCE CBA r_filemanager_softkeys_search_cancel__search
+    {
+    buttons = 
+        {
+        CBA_BUTTON { id = EAknSoftkeyOk; txt = text_softkey_search; },
+        CBA_BUTTON { id = EAknSoftkeyCancel; txt = text_softkey_cancel; },
+        CBA_BUTTON { id = EAknSoftkeyOk; txt = text_softkey_search; }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_search_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = r_filemanager_softkeys_search_cancel__search;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control = AVKON_DATA_QUERY
+                {
+                layout = EDataLayout;
+                label = qtn_fldr_name_prmpt;
+                control = EDWIN
+                    {
+                    flags = EEikEdwinNoHorizScrolling | EEikEdwinResizable;
+                    //width = 35;
+                    lines = 1;
+                    maxlength = 35;
+                    };
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_find_wait_dialog
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EGeneralQuery;
+            control= AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_fmgr_wnote_search;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_delete_wait_dialog
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EGeneralQuery;
+            control= AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_fldr_deleting_wait_note;
+                imagefile = AVKON_BITMAP_FILE; // bitmap file
+                imageid = EMbmAvkonQgn_note_erased;
+                imagemask = EMbmAvkonQgn_note_erased_mask;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+//-----------------------------------------------------------------------------
+//
+//    r_aknexnote_progress_note
+//    For progress note.
+//
+//-----------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_filemanager_progress_note_copy
+    {
+    flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control = AVKON_NOTE
+                {
+                layout = EProgressLayout;
+                singular_label = qtn_gen_note_copying;
+                plural_label = qtn_gen_note_copying;
+                imagefile = avkon_mbm_file_location;
+                imageid = EMbmAvkonQgn_note_progress;
+                imagemask = EMbmAvkonQgn_note_progress_mask;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_wait_note_copy
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control= AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_gen_note_copying;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_progress_note_move
+    {
+    flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control = AVKON_NOTE
+                {
+                layout = EProgressLayout;
+                singular_label = qtn_fldr_moving_wait_note;
+                plural_label = qtn_fldr_moving_wait_note;
+                imagefile = avkon_mbm_file_location;
+                imageid = EMbmAvkonQgn_note_progress;
+                imagemask = EMbmAvkonQgn_note_progress_mask;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_wait_note_move
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control= AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_fldr_moving_wait_note;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_wait_note_open
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control= AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_gen_note_opening;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_wait_note_open_with_cancel
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control= AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_gen_note_opening;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_eject_confirm_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_EMPTY;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control = AVKON_CONFIRMATION_QUERY
+                {
+                layout = EConfirmationQueryLayout;
+                bmpfile = AVKON_ICON_FILE;
+                bmpid = EMbmAvkonQgn_note_info;
+                bmpmask = EMbmAvkonQgn_note_info_mask;
+                animation = R_QGN_NOTE_INFO_ANIM;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_wait_note_process
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control= AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_gen_note_processing;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_file_receive_dialog
+    {
+    flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control= AVKON_NOTE 
+                { 
+                    layout = EProgressLayout;
+                    singular_label = qtn_ir_connecting;
+                    plural_label = "";
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_progress_note_with_cancel
+    {
+    flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control= AVKON_NOTE 
+                { 
+                layout = EProgressLayout;
+                imagefile = AVKON_ICON_FILE;
+                imageid = EMbmAvkonQgn_note_progress;
+                imagemask = EMbmAvkonQgn_note_progress_mask;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_progress_note
+    {
+    flags = EAknProgressNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control= AVKON_NOTE 
+                { 
+                layout = EProgressLayout;
+                imagefile = AVKON_ICON_FILE;
+                imageid = EMbmAvkonQgn_note_progress;
+                imagemask = EMbmAvkonQgn_note_progress_mask;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_wait_note
+    {
+    flags = EAknWaitNoteFlags;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EAknNoteProgressBar;
+            control= AVKON_NOTE
+                {
+                layout = EWaitLayout;
+                imagefile = AVKON_ICON_FILE;
+                imageid = EMbmAvkonQgn_note_progress;
+                imagemask = EMbmAvkonQgn_note_progress_mask;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_drive_name_query
+    {
+    flags = EGeneralQueryFlags; 
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control= AVKON_DATA_QUERY 
+                { 
+                layout = EDataLayoutAllowEmptyInput;
+                //label = qtn_memc_name_prompt;
+                label = qtn_fmgr_memory_name_prompt;
+                control = EDWIN 
+                    {
+                    flags = EEikEdwinNoHorizScrolling|EEikEdwinOnlyASCIIChars;
+                    avkon_flags = EAknEditorFlagLatinInputModesOnly;
+                    maxlength = 11; // FAT limitation for volume name
+                    };
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_filemanager_drive_name_query_non_western
+    {
+    flags = EGeneralQueryFlags; 
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control= AVKON_DATA_QUERY 
+                { 
+                layout = EDataLayoutAllowEmptyInput;
+                //label = qtn_memc_name_prompt;
+                label = qtn_fmgr_memory_name_prompt;
+                control = EDWIN 
+                    {
+                    flags = EEikEdwinNoHorizScrolling; 
+                    // Unicode chars take 2 bytes, only 5 chars fit to the name
+                    maxlength = 5;
+                    };
+                };
+            }
+        };
+    }
+
+RESOURCE CBA r_filemanager_softkeys_options_exit__open
+    {
+    buttons = 
+        {
+        CBA_BUTTON { id = EAknSoftkeyOptions; txt = text_softkey_option; },
+        CBA_BUTTON { id = EAknSoftkeyExit; txt = text_softkey_exit; },
+        CBA_BUTTON { id = EFileManagerSelectionKey; txt = qtn_msk_open; }
+        };
+    }
+
+RESOURCE CBA r_filemanager_softkeys_options_exit__open_embedded
+    {
+    buttons = 
+        {
+        CBA_BUTTON { id = EAknSoftkeyOptions; txt = text_softkey_option; },
+        CBA_BUTTON { id = EAknSoftkeyExit; txt = text_softkey_back; },
+        CBA_BUTTON { id = EFileManagerSelectionKey; txt = qtn_msk_open; }
+        };
+    }
+
+RESOURCE CBA r_filemanager_softkeys_options_back__open
+    {
+    buttons = 
+        {
+        CBA_BUTTON { id = EAknSoftkeyOptions; txt = text_softkey_option; },
+        CBA_BUTTON { id = EAknSoftkeyBack; txt = text_softkey_back; },
+        CBA_BUTTON { id = EFileManagerSelectionKey; txt = qtn_msk_open; }
+        };
+    }
+
+RESOURCE CBA r_filemanager_softkeys_options_back__empty
+    {
+    buttons = 
+        {
+        CBA_BUTTON { id = EAknSoftkeyOptions; txt = text_softkey_option; },
+        CBA_BUTTON { id = EAknSoftkeyBack; txt = text_softkey_back; },
+        CBA_BUTTON { id = EAknSoftkeyEmpty; txt = text_softkey_empty; }
+        };
+    }
+
+RESOURCE CBA r_filemanager_softkeys_context_options_back__options
+    {
+    buttons = 
+        {
+        CBA_BUTTON { id = EAknSoftkeyOptions; txt = text_softkey_option;},
+        CBA_BUTTON { id = EAknSoftkeyBack; txt = text_softkey_back; },
+        CBA_BUTTON { id = EAknSoftkeyContextOptions; txt = text_softkey_option; }
+        };
+    }
+
+RESOURCE CBA r_filemanager_softkeys_options_back__change
+    {
+    buttons = 
+        {
+        CBA_BUTTON { id = EAknSoftkeyOptions; txt = text_softkey_option; },
+        CBA_BUTTON { id = EAknSoftkeyBack; txt = text_softkey_back; },
+        CBA_BUTTON { id = EFileManagerSelectionKey; txt = qtn_msk_change; }
+        };
+    }
+
+
+RESOURCE TBUF r_qtn_fmgr_search_not_found       { buf = qtn_fmgr_search_not_found; }
+RESOURCE TBUF r_qtn_selec_empty_list            { buf = qtn_selec_empty_list; }
+RESOURCE TBUF r_qtn_query_common_conf_delete    { buf = qtn_query_common_conf_delete; }
+RESOURCE TBUF r_qtn_fldr_del_items_query        { buf = qtn_fldr_del_items_query; }
+RESOURCE TBUF r_qtn_fldr_del_full_fldrs_query   { buf = qtn_fldr_del_full_fldrs_query; }
+RESOURCE TBUF r_qtn_fmgr_error_unsupport        { buf = qtn_fmgr_error_unsupport; }
+RESOURCE TBUF r_qtn_fmgr_error_cant_open        { buf = qtn_fmgr_error_cant_open; }
+RESOURCE TBUF r_qtn_fmgr_error_del_def_fldr     { buf = qtn_fmgr_error_del_def_fldr; }
+RESOURCE TBUF r_qtn_fmgr_error_delete_file_open { buf = qtn_fmgr_error_delete_file_open; }
+RESOURCE TBUF r_qtn_fmgr_find_dataq_prtx        { buf = qtn_fmgr_find_dataq_prtx; }
+RESOURCE TBUF r_qtn_memc_mainpage_error1        { buf = qtn_memc_mainpage_error1; }
+RESOURCE TBUF r_qtn_memc_mainpage_error2        { buf = qtn_memc_mainpage_error2; }
+RESOURCE TBUF r_qtn_memc_mainpage_error3        { buf = qtn_memc_mainpage_error3; }
+RESOURCE TBUF r_qtn_memc_mainpage_error4        { buf = qtn_memc_mainpage_error4; }
+RESOURCE TBUF r_qtn_fldr_overwrite_query        { buf = qtn_fldr_overwrite_query; }
+RESOURCE TBUF r_qtn_fldr_rename_query           { buf = qtn_fldr_rename_query; }
+
+RESOURCE TBUF r_qtn_ir_connecting               { buf = qtn_ir_connecting; }
+RESOURCE TBUF r_qtn_fmgr_note_receive_ir        { buf = qtn_fmgr_note_receive_ir; }
+RESOURCE TBUF r_qtn_fmgr_mstate_heading         { buf = qtn_fmgr_mstate_heading; }
+RESOURCE TBUF r_qtn_fmgr_error_del_fldr_open_1  { buf = qtn_fmgr_error_del_fldr_open_1; }
+RESOURCE TBUF r_qtn_fmgr_error_del_fldr_open_se { buf = qtn_fmgr_error_del_fldr_open_se; }
+RESOURCE TBUF r_qtn_fldr_cant_delete_fldr_open  { buf = qtn_fldr_cant_delete_fldr_open; }
+RESOURCE TBUF r_qtn_options_send_via            { buf = qtn_options_send_via; }
+RESOURCE TBUF r_qtn_fldr_item_cannot_be_moved   { buf = qtn_fldr_item_cannot_be_moved; }
+RESOURCE TBUF r_qtn_fmgr_find_prtx              { buf = qtn_fmgr_find_prtx; }
+RESOURCE TBUF r_text_softkey_back               { buf = text_softkey_back; }
+RESOURCE TBUF r_qtn_fldr_cant_rename_item       { buf = qtn_fldr_cant_rename_item; }
+RESOURCE TBUF r_qtn_fldr_item_cannot_be_copied  { buf = qtn_fldr_item_cannot_be_copied; }
+RESOURCE TBUF r_qtn_fldr_cant_delete_item       { buf = qtn_fldr_cant_delete_item; }
+RESOURCE TBUF r_qtn_drm_mos_deleted             { buf = qtn_drm_mos_deleted; }
+RESOURCE TBUF r_qtn_drm_mo_deleted              { buf = qtn_drm_mo_deleted; }
+RESOURCE TBUF r_qtn_memc_memorycard_read_only   { buf = qtn_memc_memorycard_read_only; }
+
+#ifdef __KEEP_DRM_CONTENT_ON_PHONE
+RESOURCE TBUF r_qtn_drm_info_move_one_forbid    { buf = qtn_drm_info_move_one_forbid; }
+RESOURCE TBUF r_qtn_drm_info_move_many_forbid   { buf = qtn_drm_info_move_many_forbid; }
+RESOURCE TBUF r_qtn_drm_info_copy_one_forbid    { buf = qtn_drm_info_copy_one_forbid; }
+RESOURCE TBUF r_qtn_drm_info_copy_many_forbid   { buf = qtn_drm_info_copy_many_forbid; }
+RESOURCE TBUF r_qtn_drm_info_move_folder_forbid { buf = qtn_drm_info_move_folder_forbid; }
+RESOURCE TBUF r_qtn_drm_info_copy_folder_forbid { buf = qtn_drm_info_copy_folder_forbid; }
+RESOURCE TBUF r_qtn_drm_query_copy_forbidden    { buf = qtn_drm_query_copy_forbidden; }
+RESOURCE TBUF r_qtn_drm_query_move_forbidden    { buf = qtn_drm_query_move_forbidden; }
+#endif
+
+// Eject texts
+RESOURCE TBUF r_qtn_conf_eject             { buf = qtn_memc_conf_eject; }
+RESOURCE TBUF r_qtn_wait_eject             { buf = qtn_memc_wait_eject; }
+RESOURCE TBUF r_qtn_info_eject             { buf = qtn_memc_info_eject; }
+// Rename texts
+RESOURCE TBUF r_qtn_mmc_default_name       { buf = qtn_memc_mmc_default_label; }
+RESOURCE TBUF r_qtn_invalid_drive_name     { buf = qtn_memc_name_note1; }
+RESOURCE TBUF r_qtn_drive_name_changed     { buf = qtn_memc_name_note2; }
+// Completed texts
+RESOURCE TBUF r_qtn_backup_completed       { buf = qtn_memc_backup_completed; }
+RESOURCE TBUF r_qtn_restore_completed      { buf = qtn_memc_restore_completed; }
+RESOURCE TBUF r_qtn_format_completed       { buf = qtn_memc_format_completed; }
+// Confirm texts
+RESOURCE TBUF r_qtn_confirm_backup_text    { buf = qtn_memc_backup_query1; }
+RESOURCE TBUF r_qtn_confirm_backup_text2   { buf = qtn_memc_backup_query2; }
+RESOURCE TBUF r_qtn_confirm_restore_text   { buf = qtn_memc_restore_query1; }
+RESOURCE TBUF r_qtn_confirm_format_text    { buf = qtn_memc_format_query1; }
+RESOURCE TBUF r_qtn_confirm_backup_level1  { buf = qtn_memc_backup_query3; }
+RESOURCE TBUF r_qtn_confirm_format_text2   { buf = qtn_memc_format_query2; }
+// Error texts
+RESOURCE TBUF r_qtn_files_not_backupped    { buf = qtn_memc_backup_info1; }
+RESOURCE TBUF r_qtn_one_file_not_backupped { buf = qtn_memc_backup_info2; }
+RESOURCE TBUF r_qtn_files_not_restored     { buf = qtn_memc_restore_info1; }
+RESOURCE TBUF r_qtn_one_file_not_restored  { buf = qtn_memc_restore_info2; }
+RESOURCE TBUF r_qtn_backup_no_space        { buf = qtn_memc_backup_enoughspace; }
+RESOURCE TBUF r_qtn_restore_no_space       { buf = qtn_memc_restore_enoughspace; }
+RESOURCE TBUF r_qtn_corrupt                { buf = qtn_memc_memorycard_error; }
+RESOURCE TBUF r_qtn_memorycard_readonly    { buf = qtn_memc_memorycard_read_only; }
+RESOURCE TBUF r_qtn_critical_error         { buf = qtn_memc_gen_error; }
+RESOURCE TBUF r_qtn_format_files_in_use    { buf = qtn_memc_format_card_used; }
+// Password texts
+RESOURCE TBUF r_qtn_passwords_wrong_text        { buf = qtn_memc_change_pwd_error1; }
+RESOURCE TBUF r_qtn_unlock_pwd_wrong_text       { buf = qtn_memc_unlock_pwd_error; }
+RESOURCE TBUF r_qtn_password_set_text           { buf = qtn_memc_set_password_info; }
+RESOURCE TBUF r_qtn_password_changed_text       { buf = qtn_memc_change_pwd_info; }
+RESOURCE TBUF r_qtn_password_text               { buf = qtn_memc_remove_pwd_prompt; }
+RESOURCE TBUF r_qtn_unlock_password_text        { buf = qtn_memc_unlock_pwd_prompt; }
+RESOURCE TBUF r_qtn_password_old_text           { buf = qtn_memc_change_pwd_prompt1; }
+RESOURCE TBUF r_qtn_password_remove_text        { buf = qtn_memc_remove_pwd_query; }
+RESOURCE TBUF r_qtn_password_removed_text       { buf = qtn_memc_remove_pwd_info; }
+// Progress texts
+RESOURCE TBUF r_qtn_format_inprogress   { buf = qtn_memc_format_inprogress; }
+RESOURCE TBUF r_qtn_backup_inprogress   { buf = qtn_memc_backup_inprogress; }
+RESOURCE TBUF r_qtn_restore_inprogress  { buf = qtn_memc_restore_inprogress; }
+// Remote storage error texts
+RESOURCE TBUF r_qtn_rd_query_delete_drive      { buf = qtn_rd_query_delete_drive; }
+RESOURCE TBUF r_qtn_fmgr_empty_remote_drive    { buf = qtn_fmgr_empty_remote_drive; }
+RESOURCE TBUF r_qtn_fmgr_infonote_unable_open_remotely
+    { buf = qtn_fmgr_infonote_unable_open_remotely; }
+RESOURCE TBUF r_qtn_rd_error_max_drives { buf = qtn_rd_error_max_drives; }
+
+#ifdef RD_FILE_MANAGER_BACKUP
+RESOURCE TBUF r_qtn_fmgr_backup_title      { buf = qtn_fmgr_backup_title; }
+RESOURCE TBUF r_qtn_fmgr_backup_contents   { buf = qtn_fmgr_backup_contents; }
+RESOURCE TBUF r_qtn_fmgr_backup_scheduling { buf = qtn_fmgr_backup_scheduling; }
+RESOURCE TBUF r_qtn_fmgr_backup_weekday    { buf = qtn_fmgr_backup_weekday; }
+RESOURCE TBUF r_qtn_fmgr_backup_time       { buf = qtn_fmgr_backup_time; }
+
+RESOURCE TBUF r_qtn_fmgr_backup_content_all       { buf = qtn_fmgr_backup_content_all; }
+RESOURCE TBUF r_qtn_fmgr_backup_content_selected  { buf = qtn_fmgr_backup_content_selected; }
+RESOURCE TBUF r_qtn_fmgr_backup_content_settings  { buf = qtn_fmgr_backup_content_settings; }
+RESOURCE TBUF r_qtn_fmgr_backup_content_messages  { buf = qtn_fmgr_backup_content_messages; }
+RESOURCE TBUF r_qtn_fmgr_backup_content_contacts  { buf = qtn_fmgr_backup_content_contacts; }
+RESOURCE TBUF r_qtn_fmgr_backup_content_calendar  { buf = qtn_fmgr_backup_content_calendar; }
+RESOURCE TBUF r_qtn_fmgr_backup_content_bookmarks { buf = qtn_fmgr_backup_content_bookmarks; }
+RESOURCE TBUF r_qtn_fmgr_backup_content_userfiles { buf = qtn_fmgr_backup_content_userfiles; }
+
+RESOURCE TBUF r_qtn_fmgr_restore_title     { buf = qtn_fmgr_restore_title; }
+RESOURCE TBUF r_qtn_fmgr_restore_settings  { buf = qtn_fmgr_restore_settings; }
+RESOURCE TBUF r_qtn_fmgr_restore_messages  { buf = qtn_fmgr_restore_messages; }
+RESOURCE TBUF r_qtn_fmgr_restore_contacts  { buf = qtn_fmgr_restore_contacts; }
+RESOURCE TBUF r_qtn_fmgr_restore_calendar  { buf = qtn_fmgr_restore_calendar; }
+RESOURCE TBUF r_qtn_fmgr_restore_bookmarks { buf = qtn_fmgr_restore_bookmarks; }
+RESOURCE TBUF r_qtn_fmgr_restore_userfiles { buf = qtn_fmgr_restore_userfiles; }
+
+RESOURCE TBUF r_qtn_fmgr_backup_no_scheduling { buf = qtn_fmgr_backup_no_scheduling; }
+RESOURCE TBUF r_qtn_fmgr_backup_daily         { buf = qtn_fmgr_backup_daily; }
+RESOURCE TBUF r_qtn_fmgr_backup_weekly        { buf = qtn_fmgr_backup_weekly; }
+
+RESOURCE TBUF r_qtn_fmgr_restore_no_backups { buf = qtn_fmgr_restore_no_backups; }
+RESOURCE TBUF r_qtn_fmgr_restore_space_error { buf = qtn_fmgr_restore_space_error; }
+
+RESOURCE TBUF r_qtn_fmgr_scheduled_backup_query    { buf = qtn_fmgr_scheduled_backup_query; }
+RESOURCE TBUF r_qtn_fmgr_scheduled_backup_progress { buf = qtn_fmgr_scheduled_backup_progress; }
+RESOURCE TBUF r_qtn_fmgr_backup_tight_memory       { buf = qtn_fmgr_backup_tight_memory; }
+RESOURCE TBUF r_qtn_fmgr_backup_destination_full   { buf = qtn_fmgr_backup_destination_full; }
+RESOURCE TBUF r_qtn_fmgr_select_backup_destination { buf = qtn_fmgr_select_backup_destination; }
+RESOURCE TBUF r_qtn_fmgr_scheduled_backup_error    { buf = qtn_fmgr_scheduled_backup_error; }
+RESOURCE TBUF r_qtn_fmgr_backup_query_exists       { buf = qtn_fmgr_backup_query_exists; }
+RESOURCE TBUF r_qtn_fmgr_progress_preparing_backup { buf = qtn_fmgr_progress_preparing_backup; }
+RESOURCE TBUF r_qtn_fmgr_backup_query              { buf = qtn_fmgr_backup_query; }
+RESOURCE TBUF r_qtn_fmgr_restore_query             { buf = qtn_fmgr_restore_query; }
+
+RESOURCE TBUF r_qtn_fmgr_progress_preparing_restore { buf = qtn_fmgr_progress_preparing_restore; }
+RESOURCE TBUF r_qtn_fmgr_error_corrupted_backup_file
+    { buf = qtn_fmgr_error_corrupted_backup_file; }
+RESOURCE TBUF r_qtn_fmgr_error_backup_memorycard_not_available
+    { buf = qtn_fmgr_error_backup_memorycard_not_available; }
+
+#endif // RD_FILE_MANAGER_BACKUP
+
+RESOURCE TBUF r_qtn_fldr_name_prmpt { buf = qtn_fldr_name_prmpt; }
+RESOURCE TBUF r_qtn_fldr_item_name_prmpt { buf = qtn_fldr_item_name_prmpt; }
+
+#ifdef RD_MULTIPLE_DRIVE
+RESOURCE TBUF r_qtn_memc_mass_storage_corrupted { buf = qtn_memc_mass_storage_corrupted; }
+RESOURCE TBUF r_qtn_memc_mass_storage_in_use    { buf = qtn_memc_mass_storage_in_use; }
+RESOURCE TBUF r_qtn_memc_not_available          { buf = qtn_memc_not_available; }
+
+RESOURCE TBUF r_qtn_memc_conf_eject_multiple             { buf = qtn_memc_conf_eject_multiple; }
+RESOURCE TBUF r_qtn_memc_conf_eject_multiple_defaultname { buf = qtn_memc_conf_eject_multiple_defaultname; }
+
+RESOURCE TBUF r_qtn_memc_info_eject_multiple             { buf = qtn_memc_info_eject_multiple; }
+RESOURCE TBUF r_qtn_memc_info_eject_multiple_defaultname { buf = qtn_memc_info_eject_multiple_defaultname; }
+
+RESOURCE TBUF r_qtn_memc_unlock_password_multiple             { buf = qtn_memc_unlock_password_multiple; }
+RESOURCE TBUF r_qtn_memc_unlock_password_multiple_defaultname { buf = qtn_memc_unlock_password_multiple_defaultname; }
+
+RESOURCE TBUF r_qtn_memc_multiple_memc_read_only        { buf = qtn_memc_multiple_memc_read_only; }
+RESOURCE TBUF r_qtn_memc_memory_card_corrupted_multiple { buf = qtn_memc_memory_card_corrupted_multiple; }
+
+RESOURCE TBUF r_qtn_fmgr_format_mass_query1     { buf = qtn_fmgr_format_mass_query1; }
+RESOURCE TBUF r_qtn_fmgr_mass_format_inprogress { buf = qtn_fmgr_mass_format_inprogress; }
+RESOURCE TBUF r_qtn_fmgr_mass_format_completed  { buf = qtn_fmgr_mass_format_completed; }
+RESOURCE TBUF r_qtn_fmgr_format_mass_query2     { buf = qtn_fmgr_format_mass_query2; }
+#endif // RD_MULTIPLE_DRIVE
+
+RESOURCE TBUF r_qtn_fmgr_scheduled_backup_cancelled_ps { buf = qtn_fmgr_scheduled_backup_cancelled_ps; }
+
+RESOURCE TBUF r_qtn_fmgr_free_memory_var_units { buf = qtn_fmgr_free_memory_var_units; }
+RESOURCE TBUF r_qtn_fmgr_units_byte            { buf = qtn_fmgr_units_byte; }
+RESOURCE TBUF r_qtn_fmgr_units_kilobyte        { buf = qtn_fmgr_units_kilobyte; }
+RESOURCE TBUF r_qtn_fmgr_units_megabyte        { buf = qtn_fmgr_units_megabyte; }
+RESOURCE TBUF r_qtn_fmgr_units_gigabyte        { buf = qtn_fmgr_units_gigabyte; }
+
+RESOURCE TBUF r_qtn_memlo_not_enough_memory_card_name        { buf = qtn_memlo_not_enough_memory_card_name; }
+RESOURCE TBUF r_qtn_memlo_not_enough_memory_card_defaultname { buf = qtn_memlo_not_enough_memory_card_defaultname; }
+RESOURCE TBUF r_qtn_memlo_not_enough_mass_memory             { buf = qtn_memlo_not_enough_mass_memory; }
+RESOURCE TBUF r_qtn_memlo_not_enough_device_memory           { buf = qtn_memlo_not_enough_device_memory; }
+
+RESOURCE TBUF r_qtn_fmgr_confirm_memory_name_changed { buf = qtn_fmgr_confirm_memory_name_changed; }
+RESOURCE TBUF r_qtn_fmgr_usb_memory_format_query     { buf = qtn_fmgr_usb_memory_format_query; }
+RESOURCE TBUF r_qtn_fmgr_formatting_memory_progress  { buf = qtn_fmgr_formatting_memory_progress; }
+RESOURCE TBUF r_qtn_fmgr_memory_in_use_format        { buf = qtn_fmgr_memory_in_use_format; }
+RESOURCE TBUF r_qtn_fmgr_delete_backup_title         { buf = qtn_fmgr_delete_backup_title; }
+RESOURCE TBUF r_qtn_fmgr_delete_backup_query         { buf = qtn_fmgr_delete_backup_query; }
+RESOURCE TBUF r_qtn_fmgr_usb_memory_default_name     { buf = qtn_fmgr_usb_memory_default_name; }
+
+RESOURCE TBUF r_qtn_fmgr_system_not_ready            { buf = qtn_hs_operation_failed_no_disk ; }
+RESOURCE TBUF r_qtn_fmgr_file_size_too_large         { buf = qtn_http_err_413; }
+
+// End of File

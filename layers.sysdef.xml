@@ -1,24 +1,13 @@
 <?xml version="1.0"?>
-<!DOCTYPE SystemDefinition SYSTEM "sysdef_1_5_1.dtd" [
+<!DOCTYPE SystemDefinition SYSTEM "sysdef_1_4_0.dtd" [
   <!ENTITY layer_real_source_path "sf/app/files" >
 ]>
 
-<SystemDefinition name="files" schema="1.5.1">
+<SystemDefinition name="files" schema="1.4.0">
   <systemModel>
-    <layer name="bldfirst_app_layer">
-      <module name="filemanager_components">
-        <unit name="fmbkupengine" unitID="presdo.fmbkupengine" bldFile="&layer_real_source_path;/filemanager/src/fmbkupengine/group" mrp="" />
-        <unit name="fmfiledialog" unitID="presdo.fmfiledialog" mrp="" bldFile="&layer_real_source_path;/filemanager/src/fmfiledialog" proFile="fmfiledialog.pro" qmakeArgs="-r -config rom"/>
-      </module>
-    </layer>
     <layer name="app_layer">
-      <module name="filemanager">
-        <unit unitID="filemanager" mrp="" bldFile="&layer_real_source_path;/filemanager" name="filemanager" proFile="filemanager.pro" qmakeArgs="-r -config rom"/>
-      </module>
-    </layer>
-    <layer name="qt_unit_test_layer">
-      <module name="filemanager_tests">
-        <unit unitID="presdoe.filemanager_tests" mrp="" bldFile="&layer_real_source_path;/filemanager/tsrc" proFile="tsrc.pro" name="filemanager_tests" qmakeArgs="-r"/>
+      <module name="files">
+        <unit name="files" unitID="presdo.files" bldFile="&layer_real_source_path;/group" mrp="" />
       </module>
     </layer>
   </systemModel>

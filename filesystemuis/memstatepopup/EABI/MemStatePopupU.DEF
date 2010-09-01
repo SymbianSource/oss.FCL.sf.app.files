@@ -1,0 +1,9 @@
+EXPORTS
+	_ZN14CMemStatePopup5RunLDE12TDriveNumberR7TDesC16 @ 1 NONAME
+	_ZN14CMemStatePopup8GetUtilLERP8CMSPUtil @ 2 NONAME
+	_ZN8CMSPUtil16SolveUnitAndSizeERx @ 3 NONAME
+	_ZTI14CMemStatePopup @ 4 NONAME ; #<TI>#
+	_ZTI8CMSPUtil @ 5 NONAME ; #<TI>#
+	_ZTV14CMemStatePopup @ 6 NONAME ; #<VT>#
+	_ZTV8CMSPUtil @ 7 NONAME ; #<VT>#
+

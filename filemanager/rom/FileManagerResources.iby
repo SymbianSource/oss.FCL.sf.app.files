@@ -1,0 +1,29 @@
+/*
+* Copyright (c) 2002-2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Image description file for File Manager resources
+*
+*/
+
+
+#ifndef __FILEMANAGERRESOURCES_IBY__
+#define __FILEMANAGERRESOURCES_IBY__
+
+REM Filemanager Localized Data
+
+data=DATAZ_\RESOURCE_FILES_DIR\FILEMANAGERENGINE.rsc        RESOURCE_FILES_DIR\FILEMANAGERENGINE.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\FILEMANAGERVIEW.rsc          RESOURCE_FILES_DIR\FILEMANAGERVIEW.rsc
+data=DATAZ_\APP_RESOURCE_DIR\FILEMANAGER.rsc                APP_RESOURCE_DIR\FileManager.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\filemanagerbkupchecker.rsc 	RESOURCE_FILES_DIR\filemanagerbkupchecker.rsc
+
+#endif // __FILEMANAGERRESOURCES_IBY__

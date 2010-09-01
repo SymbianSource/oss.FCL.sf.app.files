@@ -1,0 +1,11 @@
+EXPORTS
+	??0RMemScanClient@@QAE@XZ @ 1 NONAME ; RMemScanClient::RMemScanClient(void)
+	?Close@RMemScanClient@@QAEXXZ @ 2 NONAME ; void RMemScanClient::Close(void)
+	?Connect@RMemScanClient@@QAEHXZ @ 3 NONAME ; int RMemScanClient::Connect(void)
+	?DataGroupsL@RMemScanClient@@QBEPAVCDesC16Array@@XZ @ 4 NONAME ; class CDesC16Array * RMemScanClient::DataGroupsL(void) const
+	?RequestScanEvents@RMemScanClient@@QAEXAAHAAVTRequestStatus@@@Z @ 5 NONAME ; void RMemScanClient::RequestScanEvents(int &, class TRequestStatus &)
+	?RequestScanEventsCancel@RMemScanClient@@QAEXXZ @ 6 NONAME ; void RMemScanClient::RequestScanEventsCancel(void)
+	?Scan@RMemScanClient@@QAEHW4TDriveNumber@@@Z @ 7 NONAME ; int RMemScanClient::Scan(enum TDriveNumber)
+	?ScanInProgress@RMemScanClient@@QBEHXZ @ 8 NONAME ; int RMemScanClient::ScanInProgress(void) const
+	?ScanResultL@RMemScanClient@@QBEPAV?$CArrayFix@_J@@XZ @ 9 NONAME ; class CArrayFix<long long> * RMemScanClient::ScanResultL(void) const
+

@@ -1,0 +1,2138 @@
+/*
+* Copyright (c) 2002-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localization strings for project FileManager
+*
+*/
+
+
+/*
+  The syntax of a logical name entry in this file is the following:
+
+  // d:context description (line 1)
+  // d:context description (line N)
+  // l:layout id
+  // w:
+  // r:release information
+  //
+  #define qtn_<?feature_or_application>_?freetext "?text"
+
+  where
+      "qtn_" starts a logical name.  Note: "text_" has been used in
+           old logical names, but is deprecated.
+      "?feature/application" is 2-5 lower-case characters and/or numbers
+           identifying the larger context of the display text.
+      "?freetext" is the free text portion of the logical name.
+           It may contain only lower-case letters ('a' to 'z'), numbers
+           ('0' to '9'), and the underscore ('_').  The total length of
+           the logical name does must not exceed 50 characters.
+      "d:" Starts a description line clarifying the entry's context with
+           information like:
+           - Is a word a verb in imperative or is it a noun?  (For instance,
+             what does "Set" mean?)
+           - What will replace %U (unicode text parameter) or %N (number
+             parameter) included in texts?  (For instance, is it a phone
+             number or an e-mail address?)
+      "l:" Starts a layout id information (one line).
+           "P" and "No" are symbols in LAF's information table
+                - "P" is parent pane or current pane
+                - "No" is reference number in table
+      "r:" Starts a release information: one line indicating in which
+           S60 release the text was used for the first time.
+
+  Refer to the S60 localization instructions for more information.
+
+  Examples:
+
+// d:Command in options list in short term memories.
+// d:Opens the call list view that is focused.
+// l:list_single_popup_menu_pane_1
+// r:3.1
+//
+#define text_logs_stm_cmd_open "Open"
+
+// d:Title pane text in converter main state.
+// l:title_pane_1
+// r:3.0
+//
+#define qtn_cnv_title "Converter"
+
+// d:Prompt text for currency data query in converter.
+// l:popup_query_data_window_1
+// r:4.0
+//
+#define qtn_cnv_edit_name_prompt "Currency name"
+
+// d:Active call is terminated and a held call becomes active.
+// d:Operation is confirmed with this info note.
+// d:%U stands for the call identification of the activated call.
+// l:popup_note_window_1
+// r:3.1
+//
+#define qtn_multc_unhold_done_note "%U active"
+
+*/
+
+// LOCALISATION STRINGS
+
+//d:Title pane text in File Manager main state.
+//d:Application name.
+//l:title_pane_t2/opt9
+//w:
+//r:3.0
+//
+#define qtn_fmgr_main_title				"File Manager"
+
+//d:Caption string for AIF file (short)
+//l:cell_app_pane_t1
+//w:
+//r:3.0
+//
+#define qtn_apps_fmgr_grid				"File Manager"
+
+//d:Caption string for AIF file (long)
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.0
+//
+#define qtn_apps_fmgr_list				"File Manager"
+
+//d:Command in options list
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_fmgr_options_find_file		"Find"
+
+//d:Command in options list
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_album_cmd_receive_via_ir	"Receive via infrared"
+
+//d:Title text for info popup (when focus is on file)
+//l:heading_pane_t1
+//w:
+//r:3.0
+//
+#define qtn_fmgr_info_heading_file		"File details:"
+
+//d:Title text for info popup (when focus is on folder)
+//l:heading_pane_t1
+//w:
+//r:3.0
+//
+#define qtn_fmgr_info_heading_fldr		"Folder details:"
+
+//d:Title text for info popup (when focus is on link)
+//l:heading_pane_t1
+//w:
+//r:3.0
+//
+#define qtn_fmgr_info_heading_link		"Link details:"
+
+//d:heading item text for the info popup listbox
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_fmgr_info_fldr_default		"Folder:"
+
+//d:heading item text for the info popup listbox
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_fmgr_info_contain_fldr		"Sub folders:"
+
+//d:heading item text for the info popup listbox
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_fmgr_info_contain_file		"Files:"
+
+//d:data item text for the info popup listbox when focus is on default folder.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_fmgr_info_def_fldr_text		"Default folder"
+
+//d:heading item text for the info popup listbox
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_swins_lsh2_apps_name		"Name:"
+
+//d:heading item text for the info popup listbox
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_swins_lsh2_apps_type		"Type:"
+
+//d:heading item text for the info popup listbox
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_album_datim_date			"Date:"
+
+//d:heading item text for the info popup listbox
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_album_datim_time			"Time:"
+
+//d:heading item text for the info popup listbox
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_album_litxt_size			"Size:"
+
+//d:Title text for memory state popup
+//l:heading_pane_t1
+//w:
+//r:3.0
+//
+#define qtn_fmgr_mstate_heading			"Memory state:"
+
+//d:Information note text
+//d:if focused file type is not supported, this text is shown
+//l:popup_note_window
+//w:
+//r:3.0
+//
+#define qtn_fmgr_error_unsupport		"File is unsupported and can't be opened"
+
+//d:Information note text
+//d:if focused file type is not supported, this text is shown
+//l:popup_note_window
+//w:
+//r:3.0
+//
+#define qtn_fmgr_error_cant_open		"File can't be opened"
+
+//d:Information note text
+//d:if user tries to delete default folder, this text is shown
+//l:popup_note_window
+//w:
+//r:3.0
+//
+#define qtn_fmgr_error_del_def_fldr		"The folder is used as default folder for some other application. You can't delete it."
+
+//d:Information note text
+//d:if user tries to delete a file that is currently in use, this text is shown
+//l:popup_note_window
+//w:
+//r:3.0
+//
+#define qtn_fmgr_error_delete_file_open	"The file is currently open. Can't be deleted"
+
+//d:Prompt text in common file dialog
+//d:shown when user is prompted to select memory to be searched
+//l:heading_pane_t1
+//w:
+//r:3.0
+//
+#define qtn_fmgr_find_prtx				"Look in:"
+
+//d:a prompt for entering text to be searched
+//l:popup_query_data_window_t3/opt2
+//w:
+//r:3.0
+//
+#define qtn_fmgr_find_dataq_prtx		"Searched text:"
+
+//d:text displayed in wait dialog when searching files
+//l:popup_note_wait_window
+//w:
+//r:3.0
+//
+#define qtn_fmgr_wnote_search			"Searching"
+
+//d:text displayed in search view if there are no results
+//l:main_list_empty_pane
+//w:
+//r:3.0
+//
+#define qtn_fmgr_search_not_found		"No found files or folders"
+
+//d: a progress note when connecting to other device before receiving a file
+//l: popup_note_wait_window
+//w:
+//r:3.0
+//
+#define qtn_ir_connecting 			"Connecting via infrared"
+
+//d:text displayed in progress dialog when receiving file
+//l:popup_note_wait_window
+//w:
+//r:3.0
+//
+#define qtn_fmgr_note_receive_ir		"Receiving file %N%"
+
+//d:Separates folder icons in navipane when subfolders are browsed.
+//d:only for __SERIES60_MMC
+//l:list_cale_time_pane_t2/opt10
+//w:
+//r:3.0
+//
+#define qtn_memc_main_separator                     "\\"
+
+//d:End character for navipane when subfolders are browsed beyond the maximum
+//d:navigation depth
+//l:list_cale_time_pane_t2/opt10
+//w:
+//r:3.0
+//
+#define qtn_memc_main_end                           "..."
+
+//d:Information note text
+//d: User is trying to delete a folder, one file is open in that folder so it cannot be deleted and this text is shown
+//l:popup_note_window
+//w:
+//r:3.0
+//
+#define qtn_fmgr_error_del_fldr_open_1			"The folder contains open file. Folder can't be deleted"
+
+//d:Information note text
+//d: User is trying to delete a folder, several files are open in that folder so it cannot be deleted
+//l:popup_note_window
+//w:
+//r:3.0
+//
+#define qtn_fmgr_error_del_fldr_open_se			"The folder contains several open files. Folder can't be deleted"
+
+///////////////////////////////////////////////////////////////
+// DRM view info, these are also introduced in Rights Manager.
+///////////////////////////////////////////////////////////////
+
+//d: This is displayed in view info popup
+//d: Type of rights, play
+//l: navi_navi_text_pane_srt_t1
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det2_play		"Play"
+
+//d: This is displayed in view info popup
+//d: Type of rights, display
+//l: navi_navi_text_pane_srt_t1
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det2_display	"Display"
+
+//d: This is displayed in view info popup
+//d: Type of rights, execute
+//l: navi_navi_text_pane_srt_t1
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det2_execute	"Execute"
+
+//d: This is displayed in view info popup
+//d: Type of rights, print
+//l: navi_navi_text_pane_srt_t1
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det2_print	"Print"
+
+//d: This is displayed in view info popup
+//d: Full Rights label. In parentheses there will be either play, display, execute or print word
+//l: list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_full_x	"Rights (%U)"
+
+//d: This is displayed in view info popup
+//d: Full Rights data, unlimited usage
+//l: list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_unlimited	"Unlimited"
+
+//d: This is displayed in view info popup
+//d: Count label. In parentheses there will be either play, display, execute or print word
+//l: list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_utl_x		"Times left (%U)"
+
+//d: This is displayed in view info popup
+//d: Count data. 1 count
+//l: list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_1_count	"1 count"
+
+//d: This is displayed in view info popup
+//d: Count data. more than 1 count
+//l: list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_n_counts	"%N counts"
+
+//d: This is displayed in view info popup
+//d: Interval label, which is not activated. In parentheses there will be either play, 
+//   display, execute or print word
+//l: list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_uts_x		"Times status (%U)"
+
+//d: This is displayed in view info popup
+//d: Interval data. Not activated 
+//l: list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_not_act	"Not activated"
+
+//d: This is displayed in view info popup
+//d: Interval time left label. In parentheses there will be either play, 
+//   display, execute or print word
+//l: list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_udl_x		"Time left (%U)"
+
+//d: This is displayed in view info popup
+//d: Interval data. One measurement
+//l: list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_inter		"%U"
+
+//d: This is displayed in view info popup
+//d: Interval data. Two measurement
+//l: list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_inter_two	"%0U, %1U"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:It reports that the time constraint for this type of object is 1 year. 
+//d:Other quantities of time may follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_years_one        "1 year"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of years of an interval
+//d:It is used for period of years ending with 1 from 21 (21, 31, 41,etc.)
+//d:It reports that the time constraint for this type of object is %N years.
+//d:Other quantities of time may follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_years_one_final  "%N years"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of years of an interval
+//d:It is used for period of years ending from 2 to 4, excluded 12-14 (2-4, 
+//d:22-24, 32-34, etc.)
+//d:It reports that the time constraint for this type of object is %N years.
+//d:Other quantities of time may follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_years_two_four   "%N years"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of years of an interval
+//d:It is used for period of years ending from 5 to 0 plus range between 11 and 
+//d:14 (5-20, 25-30, 35-40, etc.)
+//d:It reports that the time constraint for this type of object is %N years.
+//d:Other quantities of time may follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_years_five_zero  "%N years"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:It reports that the time constraint for this type of object is 1 month. 
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_months_one       "1 month"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of months of an interval
+//d:It is used for period from two to four months
+//d:It reports that the time constraint for this type of object is %N months. 
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_months_two_four  "%N months"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of months of an interval
+//d:It is used for period greater than four months
+//d:It reports that the time constraint for this type of object is %N months. 
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_months_five_zero "%N months"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:It reports that the time constraint for this type of object is 1 day. 
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_days_one         "1 day"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of days of an interval
+//d:It is used for a period of 21 days
+//d:It reports that the time constraint for this type of object is %N days. 
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_days_one_final   "%N days"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of days of an interval
+//d:It is used for period of days ending from 2 to 4, excluded 12-14 (2-4, 
+//d:22-24)
+//d:It reports that the time constraint for this type of object is %N days. 
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_days_two_four    "%N days"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of days of an interval
+//d:It is used for period of days ending from 5 to 0 plus range between 11 and 
+//d:14 (5-20, 25-30)
+//d:It reports that the time constraint for this type of object is %N days. 
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_days_five_zero   "%N days"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:It reports that the time constraint for this type of object is 1 hour. 
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_hours_one        "1 hour"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of hours of an interval
+//d:It is used for a period of 21 hours
+//d:It reports that the time constraint for this type of object is %N hours.
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_hours_one_final  "%N hours"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of hours of an interval
+//d:It is used for period of hours ending from 2 to 4, excluded 12-14 (2-4, 
+//d:22-23)
+//d:It reports that the time constraint for this type of object is %N hours.
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_hours_two_four   "%N hours"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of hours of an interval
+//d:It is used for a period included from 5 to 20 hours
+//d:It reports that the time constraint for this type of object is %N hours.
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_hours_five_zero  "%N hours"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:It reports that the time constraint for this type of object is 1 minute. 
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_mins_one         "1 minute"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of minutes of an interval
+//d:It is used for period of minutes ending with 1 from 21 (21, 31, 41, 51)
+//d:It reports that the time constraint for this type of object is %N minutes.
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_mins_one_final   "%N minutes"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of minutes of an interval
+//d:It is used for period of minutes ending from 2 to 4, excluded 12-14 (2-4,
+//d:22-24, 32-34, 42-44, 52-54)
+//d:It reports that the time constraint for this type of object is %N minutes.
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_mins_two_four    "%N minutes"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of minutes of an interval
+//d:It is used for period of minutes ending from 5 to 0 plus range between 11 
+//d:and 14 (5-20, 25-30, 35-40, 45-50, 53-59)
+//d:It reports that the time constraint for this type of object is %N minutes.
+//d:Other quantities of time may precede or follow.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_mins_five_zero   "%N minutes"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:It reports that the time constraint for this type of object is 1 second. 
+//d:Other quantities of time may precede.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_secs_one         "1 second"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of seconds of an interval
+//d:It is used for period of seconds ending with 1 from 21 (21, 31, 41, 51)
+//d:It reports that the time constraint for this type of object is %N seconds.
+//d:Other quantities of time may precede.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_secs_one_final   "%N seconds"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of seconds of an interval
+//d:It is used for period of seconds ending from 2 to 4, excluded 12-14 (2-4,
+//d:22-24, 32-34, 42-44, 52-54)
+//d:It reports that the time constraint for this type of object is %N seconds.
+//d:Other quantities of time may precede.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_secs_two_four    "%N seconds"
+
+//d:Possible second line for fourth entry of Details View listbox
+//d:%N number of seconds of an interval
+//d:It is used for period of minutes ending from 5 to 0 plus range between 11 
+//d:and 14 (5-20, 25-30, 35-40, 45-50, 53-59)
+//d:It reports that the time constraint for this type of object is %N seconds.
+//d:Other quantities of time may precede.
+//l:list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_nbr_of_secs_five_zero   "%N seconds"
+
+//d: This is displayed in view info popup
+//d: Date and time label. Beginning time. In parentheses there will be either play, 
+//   display, execute or print word
+//l: list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_rvf_x	"Valid from (%U)"
+
+//d: This is displayed in view info popup
+//d: Date and time label. Ending time. In parentheses there will be either play, 
+//   display, execute or print word
+//l: list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_rvt_x	"Valid until (%U)"
+
+//d: This is displayed in view info popup
+//d: Sending label. 
+//l: list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_cs		"Content sending"
+
+//d: This is displayed in view info popup
+//d: Sending data. Item sending is allowed
+//l: list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_allowed	"Allowed"
+
+//d: This is displayed in view info popup
+//d: Sending data. Item sending is forbidden
+//l: list_double_pane_t2_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_forbid	"Forbidden"
+
+//d:First line of first entry of Details View listbox
+//d:It indicates the current status of the selected Right Object
+//d:Second line is qtn_drm_mgr_det_valid or qtn_drm_mgr_det_exp
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_stat        "Status"
+
+//d:Possible first line for fourth entry of Details View listbox
+//d:Second line is qtn_drm_mgr_det_inter or qtn_drm_mgr_det_inter_two, meaning 
+//d:a quantity of time that specifies how long this object can be used.
+//l:list_double_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_det_accum_time_left "Usage time left"
+
+//d:Title pane text in main view
+//l:title_pane_t2/opt9
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_title_pane      "Activation Keys"
+
+//d:Menu item used in Group view to see the details of a Media Object.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.0
+//
+#define qtn_drm_mgr_group_mo_view_det   "View details"
+
+///////////////////////////////////////////////////////////////
+// End of DRM view info logical names
+///////////////////////////////////////////////////////////////
+
+//d:Warning note
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fm_warning_file_extension "If file extension is changed file may become unusable"
+
+//d:Phone memory name in main page, item data
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_main_phone "Phone memory"
+
+//d:Default memory card name in main page, item data
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_main_card_default "Memory card"
+
+//d:Caption string.
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_title_phone_mem "Phone memory"
+
+//d:Caption string.
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_title_mem_card "Memory card"
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_eject "Eject"
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2/opt3
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_organise "Organise"
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2/opt3
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_details "Details"
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2/opt3
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_card "Memory card"
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2/opt3
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_card_password "Memory card password"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_set_password "Set"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_change_passwd "Change"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_remove_passwd "Remove"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_card_name "Name"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_card_rename "Rename"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_card_format "Format"
+
+//d:Caption string for memory card details popup
+//l:heading_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_memcard_info_heading "Memory card details"
+
+//d:This is displayed in memory card details info popup
+//l:list_single_heading_pane_t2_cp2
+//w:
+//r:3.1
+//
+#define qtn_fmgr_card_info_name "Name"
+
+//d:This is displayed in memory card details info popup
+//l:list_single_heading_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_card_info_default_name "Memory card"
+
+//d:This is displayed in memory card details info popup
+//l:list_single_heading_pane_t2_cp2
+//w:
+//r:3.1
+//
+#define qtn_fmgr_card_info_size  "Capacity"
+
+//d:This is displayed in memory card details info popup
+//l:list_single_heading_pane_t2_cp2
+//w:
+//r:3.1
+//
+#define qtn_fmgr_card_info_used  "Used"
+
+//d:This is displayed in memory card details info popup
+//l:list_single_heading_pane_t2_cp2
+//w:
+//r:3.1
+//
+#define qtn_fmgr_card_info_free  "Free"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_card_details "Memory card"
+
+
+// OPTIONS MENU TEXTS
+
+//d:Options menu command.
+//d:Start backup.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_memc_options_backup "Backup to memory card"
+
+//d:Options menu command.
+//d:Start restore.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_memc_options_restore "Restore from memory card"
+
+//d:Options menu command.
+//d:Start format.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_memc_options_format "Format memory card"
+
+//d:Options menu command.
+//d:Unlock card.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_memc_options_unlock "Unlock memory card"
+
+
+// BACKUP TEXTS
+
+//d:Backup confirmation.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_backup_query1 "Do you want to make a backup to memory card?"
+
+//d:Backup confirmation, earlier backup exists.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_backup_query2 "Do you want to make a backup to memory card? Previous backup will be overwritten."
+
+//d:Confirmation for continuing, when there's little space.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_backup_query3 "There might not be enough space on memory card, do you want to continue?"
+
+//d:Not enough space error.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_backup_enoughspace "There isn’t enough space on the memory card! (Backup can’t be done)"
+
+//d:Progress note text.
+//l:popup_note_wait_window
+//w:
+//r:3.1
+//
+#define qtn_memc_backup_inprogress "Backup is in progress!"
+
+//d:Completion note.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_backup_completed "Backup is completed!"
+
+//d:Notify about files not backed up.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_backup_info1 "%N files could not be backed up!"
+
+//d:Notify about a file not backed up.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_backup_info2 "1 file could not be backed up!"
+
+
+
+// RESTORE TEXTS
+
+//d:Restore confirmation.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_restore_query1 "Do you want to restore backup files to phone memory?"
+
+//d:Not enough space error.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_restore_enoughspace "There isn’t enough space to restore the entire memory card! (Restore can’t be done)"
+
+//d:Progress note text.
+//l:popup_note_wait_window
+//w:
+//r:3.1
+//
+#define qtn_memc_restore_inprogress "Restore is in progress! Avoid using other applications during restore."
+
+//d:Completion note.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_restore_completed "Restore is completed!"
+
+//d:Notify about files not restored
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_restore_info1 "%N files could not be restored!"
+
+//d:Notify about a file not restored
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_restore_info2 "1 file could not be restored!"
+
+
+// FORMAT TEXTS
+
+//d:Format confirmation.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_format_query1 "Do you want to format the memory card? (Data will be erased)"
+
+//d:Progress note text.
+//l:popup_note_wait_window
+//w:
+//r:3.1
+//
+#define qtn_memc_format_inprogress "Format is in progress!"
+
+//d:Completion note.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_format_completed "Format is completed!"
+
+
+// MMC NAME TEXTS
+
+//d:Default memory card label to be written to MMC.
+//d:Limited by FAT to maximum of 11 ascii characters.
+//d:Limited by FAT to maximum of 5 characters in Chinese variant.
+//l:query_popup_data_pane_t1/opt4
+//w:
+//r:3.1
+//
+#define qtn_memc_mmc_default_label "Mcard"
+
+//d:Card name query.
+//l:popup_query_data_window_t3/opt2
+//w:
+//r:3.1
+//
+#define qtn_memc_name_prompt "Card name:"
+
+//d:Illegal characters note.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_name_note1 "Illegal characters! Use only letters and numbers."
+
+//d:Name changed note.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_name_note2 "The card name has been changed!"
+
+
+// SET PASSWORD TEXTS
+
+//d:Password query.
+//l:popup_query_data_window_t3/opt2
+//w:
+//r:3.1
+//
+#define qtn_memc_set_password_prompt1 "New password:"
+
+//d:Password confirmation query.
+//l:popup_query_data_window_t3/opt2
+//w:
+//r:3.1
+//
+#define qtn_memc_set_password_prompt2 "Confirm new password:"
+
+//d:The passwords don't match.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_set_password_error "The passwords don’t match, try again!"
+
+//d:Password set note.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_set_password_info "The password has been set!"
+
+
+// CHANGE PASSWORD TEXTS
+
+//d:Old password query.
+//l:popup_query_data_window_t3/opt2
+//w:
+//r:3.1
+//
+#define qtn_memc_change_pwd_prompt1 "Old password:"
+
+//d:Wrong password note, changing password.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_change_pwd_error1 "The password is incorrect, try again!"
+
+//d:Password changed note.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_change_pwd_info "The password has been changed!"
+
+//d:Wrong password note, unlocking.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_unlock_pwd_error "The password is incorrect, try again!"
+
+
+// REMOVE PASSWORD TEXTS
+
+//d:Remove password query.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_remove_pwd_query "Do you want to remove the password? Memory card becomes unlocked."
+
+//d:Password removed note.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_remove_pwd_info "The password has been removed!"
+
+
+// PASSWORD QUERY TEXTS
+
+//d:Password query.
+//l:popup_query_data_window_t3/opt2
+//w:
+//r:3.1
+//
+#define qtn_memc_remove_pwd_prompt "Password:"
+
+//d:Unlock password query.
+//l:popup_query_data_window_t3/opt2
+//w:
+//r:3.1
+//
+#define qtn_memc_unlock_pwd_prompt "Password:"
+
+
+// ERROR CASE TEXTS
+
+//d:Corrupt note.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_memorycard_error "Memory card is corrupted!"
+
+//d:General error.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_gen_error "Error occurred, operation cancelled!"
+
+//d:Format error. Memory card in use.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_memc_format_card_used "Formatting failed. Memory card used by other application."
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_rd_opt_connect "Connect"
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_rd_opt_disconnect "Disconnect"
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_fmgr_opt_remote_drives "Remote drives"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_opt_rd_settings "Settings"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_opt_rd_new_drive "Map new drive"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_opt_rd_delete_drive "Delete drive"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_file_details "File"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_folder_details "Folder"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_memory_details "Memory"
+
+// REMOTE DRIVE ERRORS
+
+//d:Text in confirmation query when deleting a drive
+//l:popup_note_window
+//w:
+//r:3.1
+#define qtn_rd_query_delete_drive "Delete configuration for %U?"
+
+//d:Error text when remote drive is not connected.
+//l:main_list_empty_pane
+//w:
+//r:3.1
+//
+#define qtn_fmgr_empty_remote_drive "(Not connected)"
+
+//d:This is displayed in memory card details info popup
+//l:list_single_heading_pane_t2_cp2
+//w:
+//r:3.1
+//
+#define qtn_fmgr_card_info_data "%N %U"
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_fmgr_rd_opt_refresh "Refresh"
+
+//d:Information note text
+//d:if focused file is not supported remotely, this text is shown
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_infonote_unable_open_remotely "Unable to open the file remotely. Copy file to phone and try opening it again."
+
+//d:Backup name in main page, item data
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_main_backup "Backup"
+
+//d:Backup caption string.
+//l:title_pane_t2/opt9
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_title "Backup"
+
+//d:Backup setting item title
+//l:list_setting_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_contents "Backup contents"
+
+//d:Backup setting item title
+//l:list_setting_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_scheduling "Backup scheduling"
+
+//d:Backup setting item title
+//l:list_setting_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_weekday "Weekday"
+
+//d:Backup setting item title
+//l:list_setting_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_time "Time"
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_backup_now "Backup now"
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.1
+//
+#define qtn_fmgr_options_restore "Restore"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_content_all "All"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_content_selected "%N selected"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_content_settings "Settings"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_content_messages "Messages"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_content_contacts "Contacts"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_content_calendar "Calendar"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_content_bookmarks "Bookmarks"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_content_userfiles "User files"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_no_scheduling "No scheduling"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_daily "Daily"
+
+//d:Backup setting item value
+//l:list_set_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_weekly "Weekly"
+
+//d:Backup confirmation.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_query "Create backup to %U?"
+
+//d:Backup confirmation.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_query_exists "Create backup to %U? Existing data will be overwritten."
+
+//d:Scheduled backup inprogress note.
+//l:popup_note_wait_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_scheduled_backup_progress "Scheduled backup. Do not remove %U"
+
+//d:Backup confirmation.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_tight_memory "%U may not contain enough space. Continue anyway?"
+
+//d:No space for backup note
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_destination_full "Not enough space in %U. Backup cancelled."
+
+//d:Scheduled backup error note
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_scheduled_backup_error "Backup was scheduled but destination memory store was unavailable."
+
+//d:Restore caption string.
+//l:title_pane_t2/opt9
+//w:
+//r:3.1
+//
+#define qtn_fmgr_restore_title "Restore"
+
+//d:Restore item name.
+//l:list_double_large_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_restore_settings "Settings"
+
+//d:Restore item name.
+//l:list_double_large_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_restore_messages "Messages"
+
+//d:Restore item name.
+//l:list_double_large_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_restore_contacts "Contacts"
+
+//d:Restore item name.
+//l:list_double_large_graphic_pane_t1
+//
+#define qtn_fmgr_restore_calendar "Calendar"
+
+//d:Restore item name.
+//l:list_double_large_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_restore_bookmarks "Bookmarks"
+
+//d:Restore item name.
+//l:list_double_large_graphic_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_restore_userfiles "User files"
+
+//d:Restore item name.
+//l:main_list_empty_pane
+//w:
+//r:3.1
+//
+#define qtn_fmgr_restore_no_backups "No backup items available"
+
+//d:Restore confirmation
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_restore_query "Restore selected backed up content to phone memory?"
+
+//d:Restore error
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_restore_space_error "Not enough space for restore"
+
+//d:Scheduled backup query.
+//l:popup_note_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_scheduled_backup_query "Scheduled backup is starting. Continue?"
+
+//d:Backup setting item title
+//l:list_setting_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_backup_destination "Backup destination"
+
+//d:Prompt text in common file dialog
+//d:shown when user is prompted to select memory to be backup target
+//l:heading_pane_t1
+//w:
+//r:3.1
+//
+#define qtn_fmgr_select_backup_destination "Select destination:"
+
+//d:Progress note text.
+//l:popup_note_wait_window
+//w:
+//r:3.1
+//
+#define qtn_fmgr_progress_preparing_backup "Preparing for backup."
+
+//d:Progress note text.
+//l:popup_note_wait_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_progress_preparing_restore "Preparing for restoring."
+
+//d:General error.
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_error_corrupted_backup_file "Backup file is corrupted. Operation cancelled."
+
+//d:Error note for unavailable backup destination
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_error_backup_memorycard_not_available "Backup destination is not available."
+
+//d:Application launch prevented during backup info text
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_backup_applaunch_prevented "Cannot start application during backup"
+
+//d:Application launch prevented during restore info text
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_restore_applaunch_prevented "Cannot start application during restore"
+
+//d:Format query when memory card in use.
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memc_format_query2 "Memory card in use by other application. Proceed anyway?"
+
+//d:error note; not able to add a new drive
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_rd_error_max_drives "Maximum number of remote drives configured. Remove old configurations to create new."
+
+//d:Device memory name in main page, item data
+//d:%U is the drive letter
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_main_device_memory "%U Device memory"
+
+//d:Mass storage name in main page, item data
+//d:%U is the drive letter
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_main_mass_storage "%U Mass storage"
+
+//d:Memory card in main page, item data
+//d:%U is the drive letter
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_main_memory_card_default "%U Memory card"
+
+//d:Named memory card in main page, item data
+//d:%0U is the drive letter and %1U is the name of the memory card
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_main_named_memory_card "%0U %1U"
+
+//d:Caption string.
+//d:%U is the drive letter
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_title_device_memory "%U Device memory"
+
+//d:Caption string.
+//d:%U is the drive letter
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_title_mass_storage "%U Mass storage"
+
+//d:Caption string.
+//d:%0U is the drive letter and %1U is the name of the memory card
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_title_named_memory_card "%0U %1U"
+
+//d:Caption string.
+//d:%U is the drive letter
+//l:list_single_large_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_title_memory_card_default "%U Memory card"
+
+//d:Error text when mass storage is in use
+//l:main_list_empty_pane
+//w:
+//r:3.2
+//
+#define qtn_memc_mass_storage_in_use "(Memory is in use)"
+
+//d:Error text when mass storage is corrupted
+//l:main_list_empty_pane
+//w:
+//r:3.2
+//
+#define qtn_memc_mass_storage_corrupted "(Memory is corrupted)"
+
+//d:Named memory card eject confirmation query.
+//d:%0U is the drive letter and %1U is the name of the memory card
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memc_conf_eject_multiple "Eject %0U %1U? Some applications will be closed."
+
+//d:Memory card eject confirmation query.
+//d:%U is the drive letter
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memc_conf_eject_multiple_defaultname "Eject %U memory card? Some applications will be closed."
+
+//d:Swap named memory card note.
+//d:%0U is the drive letter and %1U is the name of the memory card
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memc_info_eject_multiple "Remove %0U %1U and press OK."
+
+//d:Swap memory card note.
+//d:%U is the drive letter
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memc_info_eject_multiple_defaultname "Remove %U memory card and press OK."
+
+//d:Password query for named memory card.
+//d:%0U is the drive letter and %1U is the name of the memory card
+//l:popup_query_data_window_t3/opt2
+//w:
+//r:3.2
+//
+#define qtn_memc_unlock_password_multiple "Password for %0U %1U:"
+
+//d:Password query for memory card.
+//d:%U is the drive letter
+//l:popup_query_data_window_t3/opt2
+//w:
+//r:3.2
+//
+#define qtn_memc_unlock_password_multiple_defaultname "Password for %U memory card:"
+
+//d:Information note text
+//d:%U is the drive letter
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memc_multiple_memc_read_only "Unable to perform operation. %U memory card is read only."
+
+//d:Information note text
+//d:%U is the drive letter
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memc_memory_card_corrupted_multiple "%U memory card is corrupted."
+
+//d:Options menu command.
+//d:Start mass storage format.
+//l:list_single_pane_t1_cp2
+//w:
+//r:3.2
+//
+#define qtn_fmgr_options_format_mass "Format mass storage"
+
+//d:Mass storage format query
+//d:%U is the drive letter
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_format_mass_query1 "Format %U mass storage. Data will be deleted during formatting."
+
+//d:Progress note text
+//l:popup_note_wait_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_mass_format_inprogress "Formatting mass storage"
+
+//d:Completion note.
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_mass_format_completed "Formatting complete"
+
+//d:Format query when mass storage is in use
+//l:popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_format_mass_query2 "Mass storage in use by other application. Proceed anyway?"
+
+//d:Possible second line for first entry of Details View listbox
+//l:list_double_pane_t2_cp2
+//w:
+//r:5.0
+//
+#define qtn_drm_mgr_det_not_valid_yet "Activation key not valid yet"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1/opt1
+//w:
+//r:5.0
+//
+#define qtn_fmgr_options_sort_by_match "By match"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1/opt1
+//w:
+//r:5.0
+//
+#define qtn_fmgr_options_sort_by_name "By name"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1/opt1
+//w:
+//r:5.0
+//
+#define qtn_fmgr_options_sort_by_type "By type"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1/opt1
+//w:
+//r:5.0
+//
+#define qtn_fmgr_options_sort_recent_first "Most recent first"
+
+//d:Options menu command.
+//l:list_single_popup_submenu_pane_t1/opt1
+//w:
+//r:5.0
+//
+#define qtn_fmgr_options_sort_largest_first "Largest first"
+
+//d:Scheduled backup info note
+//l:popup_note_window
+//w:
+//r:5.0
+//
+#define qtn_fmgr_scheduled_backup_cancelled_ps "Power saving is active, scheduled backup is cancelled."
+
+//d:Options menu command.
+//l:list_single_pane_t1_cp2/opt3
+//w:
+//r:5.0
+//
+#define qtn_fmgr_options_sort_submenu "Sort"
+
+//d:Free memory amount in main page, item data
+//d:%0U is the size and %1U is the unit, for example 15.5 MB
+//l:list_double_large_graphic_pane_t2
+//w:
+//r:3.2
+//
+#define qtn_fmgr_free_memory_var_units "Free: %0U %1U"
+
+//d:Free memory unit in main page, item data
+//l:list_double_large_graphic_pane_t2
+//w:
+//r:3.2
+//
+#define qtn_fmgr_units_byte "B"
+
+//d:Free memory unit in main page, item data
+//l:list_double_large_graphic_pane_t2
+//w:
+//r:3.2
+//
+#define qtn_fmgr_units_kilobyte "kB"
+
+//d:Free memory unit in main page, item data
+//l:list_double_large_graphic_pane_t2
+//w:
+//r:3.2
+//
+#define qtn_fmgr_units_megabyte "MB"
+
+//d:Free memory unit in main page, item data
+//l:list_double_large_graphic_pane_t2
+//w:
+//r:3.2
+//
+#define qtn_fmgr_units_gigabyte "GB"
+
+//d: Note when there is not enough memory to execute operation on device memory.
+//d: %U is the drive letter of the drive.
+//l: popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memlo_not_enough_device_memory "Not enough memory to perform operation. Delete some data from %U Device memory."
+
+//d: Note when there is not enough memory to execute operation on memory card.
+//d:%0U is the drive letter and %1U is the name of the memory card
+//l: popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memlo_not_enough_memory_card_name "Not enough memory to perform operation. Delete some data from %0U %1U."
+
+//d: Note when there is not enough memory to execute operation on memory card.
+//d: %U is the drive letter of the drive.
+//l: popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memlo_not_enough_memory_card_defaultname "Not enough memory to perform operation. Delete some data from %U Memory card."
+
+//d: Note when there is not enough memory to execute operation on mass storage.
+//d: %U is the drive letter of the drive.
+//l: popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_memlo_not_enough_mass_memory "Not enough memory to perform operation. Delete some data from %U Mass storage."
+
+//d: Primary text for an unnamed USB memory storage.
+//d: %U is the drive letter of the drive.
+//l: list_double_large_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_main_usb_default "%U USB memory"
+
+//d: When the view is on the root of an unnamed USB memory.
+//d: %U is the drive letter of the drive.
+//l: list_single_large_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_title_usb_default "%U USB memory"
+
+//d: Main view Options menu item.
+//l: list_single_pane_t1_cp2/opt3
+//w:
+//r:3.2
+//
+#define qtn_fmgr_options_memory_sub "Memory storage"
+
+//d: Memory storage submenu items
+//l: list_single_popup_submenu_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_unlock_memory "Unlock memory"
+
+//d: Memory storage submenu items
+//l: list_single_popup_submenu_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_options_memory_storage_details "Details"
+
+//d: Memory storage submenu items
+//l: list_single_popup_submenu_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_options_set_memc_passwd "Set password"
+
+//d: Memory storage submenu items
+//l: list_single_popup_submenu_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_options_change_memc_passwd "Change password"
+
+//d: Memory storage submenu items
+//l: list_single_popup_submenu_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_options_remove_memc_passwd "Remove password"
+
+//d: Default name of the query when naming or renaming a memory store
+//l: query_popup_data_pane_t1/opt4
+//w:
+//r:3.2
+//
+#define qtn_fmgr_usb_memory_default_name "USB memory"
+
+//d: confirmation query text when want to format USB memory
+//d: %0U is the drive letter, %1U is the drive name.
+//l: popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_usb_memory_format_query "Format USB memory %0U %1U? All data will be deleted."
+
+//d: progress text when formatting memory storage
+//l: popup_note_wait_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_formatting_memory_progress "Formatting memory storage"
+
+//d: Prompt text of the query when naming or renaming a memory store
+//l: popup_query_data_window_t3/opt2
+//w:
+//r:3.2
+//
+#define qtn_fmgr_memory_name_prompt "Memory storage name"
+
+//d: After a successful operation of naming or renaming
+//l: popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_confirm_memory_name_changed "Memory storage name changed"
+
+//d: confirmation text if memory used when want to format the memory store
+//l: popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_memory_in_use_format "Memory storage is being used by another application. Proceed anyway?"
+
+//d: Backup view Options menu if backup exists
+//l: list_single_pane_t1_cp2
+//w:
+//r:3.2
+//
+#define qtn_fmgr_options_delete_backup "Delete backup"
+
+//d: Delete backup view title pane
+//l: title_pane_t2/opt9
+//w:
+//r:3.2
+//
+#define qtn_fmgr_delete_backup_title "Delete backup"
+
+//d: query text when want to delete backup content
+//l: popup_note_window
+//w:
+//r:3.2
+//
+#define qtn_fmgr_delete_backup_query "Delete selected backup content?"
+
+//d: backup content
+//d: %U is the drive letter of the drive.
+//l: list_set_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_backup_content_device_memory "Files from %U Device memory"
+
+//d: backup content
+//d: %U is the drive letter of the drive.
+//l: list_set_graphic_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_fmgr_backup_content_mass_storage "Files from %U Mass storage"
+
+//d: restore content
+//d: %U is the drive letter of the drive.
+//l: list_double_graphic_pane_t1_cp2
+//w:
+//r:3.2
+//
+#define qtn_fmgr_restore_device_memory "Files from %U Device memory"
+
+//d: restore content
+//d: %U is the drive letter of the drive.
+//l: list_double_graphic_pane_t1_cp2
+//w:
+//r:3.2
+//
+#define qtn_fmgr_restore_mass_storage "Files from %U Mass storage"
+
+//d:Error text when memory is not available
+//l:main_list_empty_pane
+//w:
+//r:3.2
+//
+#define qtn_memc_not_available "(Memory is not available)"
+
+//d: note text when the system is not ready for user to do backup&restore operation
+//l: popup_note_window
+//w:
+//r:5.2
+// 
+#define qtn_fmgr_system_not_ready "System is not ready. Please try again"
+
+// End of File

@@ -1,0 +1,50 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Contains information about binary files and their locations.
+*
+*/
+
+#ifndef __DEVENC0_IBY__
+#define __DEVENC0_IBY__
+#ifdef  FF_DEVICE_ENCRYPTION_FEATURE
+
+//---------------------------------------------------------------------------
+// Device Encryption UI
+//---------------------------------------------------------------------------
+
+S60_APP_EXE( DevEncUi )
+S60_APP_BITMAP( DevEncUi )
+SCALABLE_IMAGE(APP_BITMAP_DIR,APP_BITMAP_DIR,DevEncUi)
+S60_APP_AIF_ICONS( DevEncUi )
+S60_APP_AIF_RSC( DevEncUi )
+
+//---------------------------------------------------------------------------
+// Device Encryption OMA DM Adapter
+//---------------------------------------------------------------------------
+ECOM_PLUGIN(DevEncUiDmAdapter.dll,DevEncUiDmAdapter.rsc)
+
+//---------------------------------------------------------------------------
+// Device Encryption Notifier plugin
+//---------------------------------------------------------------------------
+ECOM_PLUGIN(devencnotifplugin.dll,devencnotifplugin.rsc)
+//---------------------------------------------------------------------------
+// Device Encryption GS Plugin
+//---------------------------------------------------------------------------
+ECOM_PLUGIN(devencgsplugin.dll,200255CF.rsc)
+data=DATAZ_\BITMAP_DIR\devencgsplugin.mif         BITMAP_DIR\devencgsplugin.mif
+
+#endif //  FF_DEVICE_ENCRYPTION_FEATURE
+#endif // __DEVENC0_IBY__
+
+// End of file

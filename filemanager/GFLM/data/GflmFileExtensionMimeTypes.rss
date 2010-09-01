@@ -1,0 +1,98 @@
+/*
+* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource definitions for GFLM extension MIME types
+*
+*/
+
+
+#include <eikon.rh>
+#include <bldvariant.hrh>
+
+#include "GflmFileExtensionMimeTypes.rh"
+
+//  RESOURCE IDENTIFIER
+NAME    FWMT
+
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE EXT_MIME_PAIR_LIST r_ext_mime_pairs
+{
+    pairs =
+    {
+
+    // Images
+    EXT_MIME_PAIR { extension = ".jpg";  mime_type = "image/jpeg"; },
+    EXT_MIME_PAIR { extension = ".jpeg"; mime_type = "image/jpeg"; },
+    EXT_MIME_PAIR { extension = ".gif";  mime_type = "image/gif"; },
+    EXT_MIME_PAIR { extension = ".png";  mime_type = "image/png"; },
+    EXT_MIME_PAIR { extension = ".ota";  mime_type = "image/x-ota-bitmap"; },
+    EXT_MIME_PAIR { extension = ".tif";  mime_type = "image/tiff"; },
+    EXT_MIME_PAIR { extension = ".mbm";  mime_type = "image/x-epoc-mbm"; },
+    EXT_MIME_PAIR { extension = ".bmp";  mime_type = "image/x-bmp"; },
+    EXT_MIME_PAIR { extension = ".wbmp"; mime_type = "image/vnd.wap.wbmp"; },
+    EXT_MIME_PAIR { extension = ".svg";  mime_type = "image/svg+xml"; },
+    EXT_MIME_PAIR { extension = ".wmf";  mime_type = "image/x-wmf"; },
+
+    // Audios
+    EXT_MIME_PAIR { extension = ".mid";  mime_type = "audio/midi"; },
+    EXT_MIME_PAIR { extension = ".au";   mime_type = "audio/au"; },
+    EXT_MIME_PAIR { extension = ".amr";  mime_type = "audio/amr"; },
+    EXT_MIME_PAIR { extension = ".awb";  mime_type = "audio/amr-wb"; },
+    EXT_MIME_PAIR { extension = ".rmf";  mime_type = "audio/x-beatnik-rmf"; },
+    EXT_MIME_PAIR { extension = ".aiff"; mime_type = "audio/aiff"; },
+    EXT_MIME_PAIR { extension = ".aif";  mime_type = "audio/aiff"; },
+    EXT_MIME_PAIR { extension = ".wav";  mime_type = "audio/wav"; },
+    EXT_MIME_PAIR { extension = ".rng";  mime_type = "application/vnd.nokia.ringing-tone"; },
+    EXT_MIME_PAIR { extension = ".nrt";  mime_type = "application/vnd.nokia.ringing-tone"; },
+    EXT_MIME_PAIR { extension = ".mp3";  mime_type = "audio/mp3"; },
+
+    // Videos
+    EXT_MIME_PAIR { extension = ".nim";  mime_type = "video/sdp"; },
+    EXT_MIME_PAIR { extension = ".sdp";  mime_type = "application/sdp"; }
+
+    };
+}
+
+// Remote drive specific file extension mime mappings for faster recognition.
+// Mime types are resolved from extension by remote storage framework anyway.
+RESOURCE EXT_MIME_PAIR_LIST r_remote_ext_mime_pairs
+{
+    pairs =
+    {
+
+    // Audios
+    EXT_MIME_PAIR { extension = ".m4a";  mime_type = "audio/mp4"; },
+    EXT_MIME_PAIR { extension = ".aac";  mime_type = "audio/aac"; },
+    EXT_MIME_PAIR { extension = ".3g2";  mime_type = "audio/3gpp2"; },
+    EXT_MIME_PAIR { extension = ".mxmf";  mime_type = "audio/vnd.nokia.mobile-xmf"; },
+    EXT_MIME_PAIR { extension = ".mid";  mime_type = "audio/midi"; },
+    EXT_MIME_PAIR { extension = ".wma";  mime_type = "audio/x-ms-wma"; },
+
+    // Videos
+    EXT_MIME_PAIR { extension = ".mp4";  mime_type = "video/mp4"; },
+    EXT_MIME_PAIR { extension = ".mpeg4";  mime_type = "video/mp4"; },
+    EXT_MIME_PAIR { extension = ".mpeg";  mime_type = "video/mp4"; },
+    EXT_MIME_PAIR { extension = ".3gp";  mime_type = "video/3gpp"; },
+
+    // Other
+    EXT_MIME_PAIR { extension = ".txt";  mime_type = "text/plain"; },
+    EXT_MIME_PAIR { extension = ".sis";  mime_type = "sis"; },
+    EXT_MIME_PAIR { extension = ".sisx";  mime_type = "sis"; },
+    EXT_MIME_PAIR { extension = ".jar";  mime_type = "java-archive"; },
+    EXT_MIME_PAIR { extension = ".jad";  mime_type = "java-archive"; }
+
+    };
+}
+
+// End of File

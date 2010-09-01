@@ -1,0 +1,80 @@
+/*
+* Copyright (c) 2002-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0""
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project specification of FileManagerView
+*
+*/
+
+
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+#include "FileManagerUID.h"
+MACRO _F32_STRICT_64_BIT_MIGRATION
+
+TARGET          filemanagerview.dll
+TARGETTYPE      dll
+UID             KEPOCStaticDllUID2 KFileManagerUID3 
+VENDORID        VID_DEFAULT
+CAPABILITY      CAP_GENERAL_DLL
+
+START RESOURCE ../View/data/FileManagerView.rss
+TARGETPATH      RESOURCE_FILES_DIR
+HEADER
+LANGUAGE_IDS
+END
+
+SOURCEPATH      ../View/src
+SOURCE          CFileManagerIconArray.cpp
+SOURCE          CFileManagerPopupBase.cpp
+SOURCE          CFileManagerInfoPopup.cpp
+SOURCE          Cfilemanagerfoldernavigationpane.cpp
+SOURCE          Cfilemanagerfoldernamequerydlg.cpp
+SOURCE          CFileManagerFileNameQueryDlg.cpp
+SOURCE          CFileManagerFullOmaDrmInfo.cpp
+SOURCE          FileManagerDlgUtils.cpp
+SOURCE          CFileManagerCheckBoxSettingPage.cpp
+SOURCE          CFileManagerMMCInfoPopup.cpp
+SOURCE          CFileManagerGlobalDlgFull.cpp
+SOURCE          CFileManagerGlobalQueryDlg.cpp
+
+USERINCLUDE     . ../View/inc
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE   . ../Engine/inc
+
+LIBRARY         euser.lib cone.lib
+LIBRARY         eikcore.lib eikcoctl.lib eikdlg.lib
+LIBRARY         avkon.lib
+LIBRARY         egul.lib 
+LIBRARY         bafl.lib
+LIBRARY         commonengine.lib
+LIBRARY         filemanagerengine.lib
+LIBRARY         aknskins.lib
+LIBRARY         drmhelper.lib
+LIBRARY         efsrv.lib 
+LIBRARY         cdlengine.lib
+LIBRARY         aknicon.lib
+LIBRARY         gdi.lib
+LIBRARY         aknlayout2scalable.lib
+LIBRARY         aknnotify.lib
+LIBRARY         memstatepopup.lib
+LIBRARY         drmrights.lib
+LIBRARY         drmuihandling.lib
+
+// ----------- Touch feedback additions start
+#ifdef RD_TACTILE_FEEDBACK
+LIBRARY         touchfeedback.lib
+#endif //RD_TACTILE_FEEDBACK
+// ----------- Touch feedback additions end
+
+// End of File

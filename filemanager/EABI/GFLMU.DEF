@@ -1,0 +1,68 @@
+EXPORTS
+	_ZN14CGflmDriveItem17SetLocalizedNameLERK7TDesC16 @ 1 NONAME
+	_ZN14CGflmDriveItem17SetRootDirectoryLERK7TDesC16 @ 2 NONAME
+	_ZN14CGflmGroupItem9GetIconIdERi @ 3 NONAME
+	_ZN14CGflmGroupItem9SetIconIdEi @ 4 NONAME
+	_ZN18CGflmFileListModel10ClearCacheEv @ 5 NONAME
+	_ZN18CGflmFileListModel10ResetModelEv @ 6 NONAME
+	_ZN18CGflmFileListModel12CreateGroupLEi @ 7 NONAME
+	_ZN18CGflmFileListModel12CreateGroupLEij @ 8 NONAME
+	_ZN18CGflmFileListModel12RefreshListLER14TRequestStatus16TGflmRefreshMode @ 9 NONAME
+	_ZN18CGflmFileListModel13CancelRefreshEv @ 10 NONAME
+	_ZN18CGflmFileListModel13FindGroupByIdEi @ 11 NONAME
+	_ZN18CGflmFileListModel13SetSortMethodE15TGflmSortMethod @ 12 NONAME
+	_ZN18CGflmFileListModel14ClearDriveInfoEv @ 13 NONAME
+	_ZN18CGflmFileListModel15SetCustomFilterEP15MGflmItemFilter @ 14 NONAME
+	_ZN18CGflmFileListModel16EnableSearchModeEi @ 15 NONAME
+	_ZN18CGflmFileListModel16ResolveMimeTypeLERK7TDesC16 @ 16 NONAME
+	_ZN18CGflmFileListModel16SetSearchFolderLERK7TDesC16 @ 17 NONAME
+	_ZN18CGflmFileListModel16SetSearchStringLERK7TDesC16 @ 18 NONAME
+	_ZN18CGflmFileListModel4NewLER3RFs @ 19 NONAME
+	_ZN19CGflmFileSystemItem17SetLocalizedNameLERK7TDesC16 @ 20 NONAME
+	_ZN19CGflmNavigatorModel14GoToDirectoryLERK7TDesC16S2_ @ 21 NONAME
+	_ZN19CGflmNavigatorModel14GoToDirectoryLERK7TDesC16i @ 22 NONAME
+	_ZN19CGflmNavigatorModel4NewLER3RFs @ 23 NONAME
+	_ZN19CGflmNavigatorModel9BackstepLEv @ 24 NONAME
+	_ZN9GflmUtils10FullPathLCERK7TDesC16RK6TEntry @ 25 NONAME
+	_ZN9GflmUtils11GetFullPathERK7TDesC16RK6TEntryR6TDes16 @ 26 NONAME
+	_ZN9GflmUtils17HasFinalBackslashERK7TDesC16 @ 27 NONAME
+	_ZN9GflmUtils19StripFinalBackslashERK7TDesC16 @ 28 NONAME
+	_ZN9GflmUtils20EnsureFinalBackslashER6TDes16 @ 29 NONAME
+	_ZN9GflmUtils9FullPathLERK7TDesC16RK6TEntry @ 30 NONAME
+	_ZNK14CGflmDriveItem10VolumeInfoEv @ 31 NONAME
+	_ZNK14CGflmDriveItem11DriveStatusEv @ 32 NONAME
+	_ZNK14CGflmDriveItem12VolumeStatusEv @ 33 NONAME
+	_ZNK14CGflmDriveItem13RootDirectoryEv @ 34 NONAME
+	_ZNK14CGflmDriveItem5DriveEv @ 35 NONAME
+	_ZNK18CGflmFileListModel10SortMethodEv @ 36 NONAME
+	_ZNK18CGflmFileListModel11DriveFromIdEi @ 37 NONAME
+	_ZNK18CGflmFileListModel13DriveFromPathERK7TDesC16 @ 38 NONAME
+	_ZNK18CGflmFileListModel13LocalizedNameERK7TDesC16 @ 39 NONAME
+	_ZNK18CGflmFileListModel4ItemEi @ 40 NONAME
+	_ZNK18CGflmFileListModel9IsCorruptEv @ 41 NONAME
+	_ZNK19CGflmFileSystemItem10FullPathLCEv @ 42 NONAME
+	_ZNK19CGflmFileSystemItem11GetFullPathER6TDes16 @ 43 NONAME
+	_ZNK19CGflmFileSystemItem5EntryEv @ 44 NONAME
+	_ZNK19CGflmFileSystemItem9FullPathLEv @ 45 NONAME
+	_ZNK19CGflmNavigatorModel12CurrentDriveEv @ 46 NONAME
+	_ZNK19CGflmNavigatorModel15NavigationLevelEv @ 47 NONAME
+	_ZNK19CGflmNavigatorModel16CurrentDirectoryEv @ 48 NONAME
+	_ZNK19CGflmNavigatorModel31LocalizedNameOfCurrentDirectoryEv @ 49 NONAME
+	_ZNK21CGflmGlobalActionItem2IdEv @ 50 NONAME
+	_ZTI14CGflmDriveItem @ 51 NONAME ; #<TI>#
+	_ZTI14CGflmGroupItem @ 52 NONAME ; #<TI>#
+	_ZTI18CGflmFileListModel @ 53 NONAME ; #<TI>#
+	_ZTI19CGflmFileFinderItem @ 54 NONAME ; #<TI>#
+	_ZTI19CGflmFileSystemItem @ 55 NONAME ; #<TI>#
+	_ZTI19CGflmNavigatorModel @ 56 NONAME ; #<TI>#
+	_ZTI21CGflmGlobalActionItem @ 57 NONAME ; #<TI>#
+	_ZTV14CGflmDriveItem @ 58 NONAME ; #<VT>#
+	_ZTV14CGflmGroupItem @ 59 NONAME ; #<VT>#
+	_ZTV18CGflmFileListModel @ 60 NONAME ; #<VT>#
+	_ZTV19CGflmFileFinderItem @ 61 NONAME ; #<VT>#
+	_ZTV19CGflmFileSystemItem @ 62 NONAME ; #<VT>#
+	_ZTV19CGflmNavigatorModel @ 63 NONAME ; #<VT>#
+	_ZTV21CGflmGlobalActionItem @ 64 NONAME ; #<VT>#
+	_ZN18CGflmFileListModel10FlushCacheEv @ 65 NONAME
+	_ZN18CGflmFileListModel10SearchModeEv @ 66 NONAME
+
