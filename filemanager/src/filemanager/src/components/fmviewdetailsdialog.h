@@ -45,6 +45,7 @@ public:
         EMemoryDocuments,
         EMemoryCalendar,
         EMemoryContacts,
+        EMemoryMessages,
         EMemoryOthers,
         EDriveDetailEntryEnd
     };
@@ -109,6 +110,7 @@ private:
     quint64 mSizeofDocument;
     quint64 mSizeofCalendar;
     quint64 mSizeofContacts;
+    quint64 mSizeofMessages;
 };
 
 #endif /* FMVIEWDETAILSDIALOG_H_ */

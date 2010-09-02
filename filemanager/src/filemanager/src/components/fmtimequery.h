@@ -25,7 +25,7 @@
 #include <QTime>
 
 class QGraphicsWidget;
-class HbDateTimeEdit;
+class HbDateTimePicker;
 class FmTimeQuery : public FmDialog
 {
 public:
@@ -46,7 +46,7 @@ public:
 
 private:
     QGraphicsWidget *mContentWidget;
-    HbDateTimeEdit  *mTimeWidget;
+    HbDateTimePicker *mTimeWidget;
 
 };
 

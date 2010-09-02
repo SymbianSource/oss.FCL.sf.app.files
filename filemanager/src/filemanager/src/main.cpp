@@ -23,22 +23,22 @@
 #include "fmmainwindow.h"
 
 #include <hbapplication.h>
-
+#include <hbstyleloader.h>
+#include <hbtranslator.h>
 #include <QTranslator>
 #include <QLocale>
 
 int main( int argc, char *argv[] )
 {
     FM_LOG( "main start" );
-    HbApplication app( argc, argv );
-
-    QTranslator translator;
-    QString lang = QLocale::system().name(); 
-    QString path = "z:/resource/qt/translations/"; 
-    translator.load( path + "filemanager_" + lang );
-    app.installTranslator(&translator);
-
+    HbApplication app( argc, argv );  
+    
+    HbTranslator translator("filemanager");
+    translator.loadCommon();    
     app.setApplicationName( hbTrId("txt_fmgr_title_file_manager") );
+    
+    HbStyleLoader::registerFilePath(":/resources/hblistviewitem.css");    
+    HbStyleLoader::registerFilePath(":/resources/hblistviewitem.widgetml");                                                
     
     FM_LOG( "main_createMainwindow start" );
     FmMainWindow mw;

@@ -17,6 +17,7 @@
  */
 
 #include "fmfindthread.h"
+#include "fmcommon.h"
 
 #include <QDir>
 
@@ -27,10 +28,10 @@
 #define ParentDir QString( ".." )
 
 // if got 5 result and have not send notify event, then send notify event
-#define notifyPerCount 5
+const int notifyPerCount = 5;
 
 // if got notifyPerElapsedTime milliseconds and have not send notify event, then send notify event.
-#define notifyPerElapsedTime 500
+const int notifyPerElapsedTime = 500;
 
 /*!
     \fn void found( const QStringList &dataList )
@@ -38,64 +39,81 @@
     Please connect this signal by Qt::BlockingQueuedConnection as dataList will be cleared immediately
 */
 
+/*!
+    Constructor, set thread LowPriority
+*/
 FmFindThread::FmFindThread( QObject *parent )
     : QThread( parent )
 {
     setPriority( LowPriority );
 }
 
+/*!
+    Destructor
+*/
 FmFindThread::~FmFindThread()
 {
+    FM_LOG("FmFindThread::~FmFindThread()");
 }
 
-QString FmFindThread::findPath() const
+/*!
+    Set find path list \a pathList
+*/
+void FmFindThread::setFindPathList( const QStringList &pathList )
 {
-    return mFindPath;
+    mFindPathList.clear();
+    mFindPathList = pathList;
 }
 
-void FmFindThread::setFindPath( const QString &path )
-{
-    mFindPath = path;
-}
-
-QRegExp FmFindThread::pattern() const
-{
-    return findPattern;
-}
-
+/*!
+    Set find pattern
+*/
 void FmFindThread::setPattern( const QRegExp &regExp )
 {
     findPattern = regExp;
 }
 
+/*!
+    Stop find
+*/
 void FmFindThread::stop()
 {
+    FM_LOG("FmFindThread::stop()");
     mStop = true;
 }
 
+/*
+    Thread function
+*/
 void FmFindThread::run()
 {
+    FM_LOG( "FmFindThread::run() started ");
     mStop = false;
-    tempResultList.clear();
-    if (findPattern.isEmpty() || !findPattern.isValid())
-        return;
-
-    QDir dir( mFindPath );
-    if (!dir.exists())
-        return;
-    
-    if( mFindPath.isEmpty() ){
-        findInResult();
+    if (findPattern.isEmpty() || !findPattern.isValid()) {
+        FM_LOG( "FmFindThread::run() canceled because error param ");
         return;
     }
-
+ 
     QList<QDir> findDirs;
-    findDirs.append( dir );
+    foreach( const QString &path, mFindPathList ) {
+        QDir dir( path );
+        findDirs.append( dir );
+    }
+
+    count = 0;
     time.restart();
     mStop = false;
     while (!findDirs.isEmpty()) {
+        if (mStop) {
+            FM_LOG("FmFindThread::run() stopped");
+            return;
+        }
         QFileInfoList infoList = findDirs.first().entryInfoList();
         for (QFileInfoList::Iterator it = infoList.begin(); it != infoList.end(); ++it) {
+            if (mStop) {
+                FM_LOG("FmFindThread::run() stopped");
+                return;
+            }
 			QString name = it->fileName();
 			QString absolutPath = it->absoluteFilePath();
             if (findPattern.exactMatch( it->fileName() )) {
@@ -105,14 +123,6 @@ void FmFindThread::run()
                 } else if (time.elapsed() > notifyPerElapsedTime && tempResultList.count() > 0) {
                     emitFound();
                 }
-            }
-
-            //We are stopped;
-            if (mStop) {
-                if( tempResultList.count() > 0 ) {
-                    emitFound();
-                }
-                return;
             }
 
             // exclude directory named ".." and "."
@@ -132,42 +142,13 @@ void FmFindThread::run()
 */
 void FmFindThread::emitFound()
 {
+    if (mStop) {
+        FM_LOG("FmFindThread::emitFound() return because stopped");
+        return;
+    }
     if( tempResultList.count() > 0 ) {
         emit found( tempResultList );
         tempResultList.clear();
         time.restart();
     }
-}
-
-void FmFindThread::setLastResult( QStringList r )
-{
-    mLastResult = r;
-}
-
-/*
-    Find keyword in last result
-    \sa setLastResult, this function must be called to set last result for findInResult
-*/
-void FmFindThread::findInResult()
-{
-    if( mFindPath.isEmpty() ){
-        for (QStringList::Iterator it = mLastResult.begin(); it != mLastResult.end(); ++it) { 
-            if (mStop){
-                return;
-            }
-            QString absolutPath = (*it);
-            QFileInfo fileInfo( absolutPath );
-            QString fileName = fileInfo.fileName();
-            
-            if (findPattern.exactMatch( fileName ) ) {
-                tempResultList.append( absolutPath );
-                if ( tempResultList.count() > notifyPerCount ) {
-                    emitFound();
-                } else if (time.elapsed() > notifyPerElapsedTime && tempResultList.count() > 0) {
-                    emitFound();
-                }
-            }
-        }    
-    }
-    emitFound();
 }

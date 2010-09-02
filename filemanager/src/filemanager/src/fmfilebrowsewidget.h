@@ -82,13 +82,12 @@ public slots:
     // triggered when drive is ejected/inserted
     void on_driveChanged();
     
-    void on_searchPanel_searchOptionsClicked();
     void on_searchPanel_criteriaChanged( const QString &criteria );
     void on_searchPanel_exitClicked();
 
 signals:
     void currentPathChanged( const QString& );
-    void startSearch( const QString &targetPath, const QString &criteria );
+    void startSearch( const QString &criteria );
     void setEmptyMenu( bool isMenuEmpty );
     void setTitle( const QString &title );
     void listActivated();

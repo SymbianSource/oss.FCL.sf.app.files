@@ -18,6 +18,9 @@
 #include "fmoperationbase.h"
 #include "fmoperationservice.h"
 #include "fmoperationformat.h"
+#include "fmbkupengine.h"
+#include "fmbackupsettings.h"
+#include "fmbackuprestorehandler.h"
 #include "fmoperationviewdetails.h"
 #include "fmviewdetailsdialog.h"
 #include "fmdlgutils.h"
@@ -314,25 +317,63 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
     {
         case FmErrCancel:
             cancelProgress();
-            FmDlgUtils::information( QString( hbTrId("Operation Canceled!") ) );
+            // Do not pop up general cancel note as it is not needed( according to TB9.2 ).
+            // If it should be added later, please do not use blocking note. 
+            // Blocking note will cause second backup operaion freeze after cancel previous backup operation
+            // as QEventLoop::exec will cause some problem when used for blocking dialog.
+			// HbDialog has already removed exec function which is implemented with QEventLoop::exec.
+			// If need use QEventLoop::exec to block code execute sequence, It should be invoked in a Qt::QueuedConnection slot.
             return;
         case FmErrAlreadyStarted:
             FmDlgUtils::information( QString( hbTrId("Operation already started!")) );
             return;
         case FmErrLocked:
-            FmDlgUtils::information( QString( hbTrId("Operation failed because drive is locked!")) );
-            return;
+            {
+                FmOperationBackup *operationBackup = qobject_cast<FmOperationBackup*>(operationBase);
+                if( operationBackup ) {
+                    // special error note for backup
+                    QString targetDrive( operationBackup->targetDrive() );
+                    QString defaultDriveVolume( FmUtils::getDefaultVolumeName( targetDrive ) );
+                    QString driveString( defaultDriveVolume.isEmpty()? targetDrive:defaultDriveVolume );
+                    FmDlgUtils::information( QString( hbTrId("txt_fmgr_info_backup_locked") ).arg( driveString ) );
+                } else {
+                    FmDlgUtils::information( QString( hbTrId("Operation failed because drive is locked!")) );
+                }
+                return;
+            }
         case FmErrPathNotFound:
             FmDlgUtils::information( QString( hbTrId("Operation failed because can not find target path or drive is not available!") ) );
             return;
         case FmErrCorrupt:
-            FmDlgUtils::information( QString( hbTrId("Operation failed because target media is corrupted!") ) );
-            return;
+            {
+                FmOperationBackup *operationBackup = qobject_cast<FmOperationBackup*>(operationBase);
+                if( operationBackup ) {
+                    // special error note for backup
+                    QString targetDrive( operationBackup->targetDrive() );
+                    QString defaultDriveVolume( FmUtils::getDefaultVolumeName( targetDrive ) );
+                    QString driveString( defaultDriveVolume.isEmpty()? targetDrive:defaultDriveVolume );
+                    FmDlgUtils::information( QString( hbTrId("txt_fmgr_info_backup_corrupted") ).arg( driveString ) );
+                } else {
+                    FmDlgUtils::information( QString( hbTrId("Operation failed because target media is corrupted!") ) );
+                }
+                return;
+            }
         case FmErrNotReady: // Caused when MMC & OTG is not inserted when start backup
-            FmDlgUtils::information( QString( hbTrId("Operation failed because device is not ready!") ) );
-            return;
-        case FmErrDisMounted: // Caused by eject MMC when preparing backup
-            FmDlgUtils::information( QString( hbTrId("Operation failed because device has been removed!") ) );
+            {
+                FmOperationBackup *operationBackup = qobject_cast<FmOperationBackup*>(operationBase);
+                if( operationBackup ) {
+                    // special error note for backup
+                    QString targetDrive( operationBackup->targetDrive() );
+                    QString defaultDriveVolume( FmUtils::getDefaultVolumeName( targetDrive ) );
+                    QString driveString( defaultDriveVolume.isEmpty()? targetDrive:defaultDriveVolume );
+                    FmDlgUtils::information( QString( hbTrId("txt_fmgr_info_backup_unavailable") ).arg( driveString ) );
+                } else {
+                    FmDlgUtils::information( QString( hbTrId("Operation failed because device is not ready!") ) );
+                }
+                return;
+            }
+        case FmErrDisMounted: // Caused by eject MMC when preparing backup, will be localized later
+            FmDlgUtils::information( QString( hbTrId("Operation failed because backup target drive has been removed!") ) );
             return;
         case FmErrDiskFull:
             FmDlgUtils::information( QString( hbTrId("Not enough space. Operation cancelled!")) );
@@ -414,6 +455,7 @@ void FmOperationResultProcesser::showWaiting( QString title, bool cancelable )
 //        mNote->setProgressDialogType( HbProgressDialog::WaitNote );
 //    }
     mNote->setText( title );
+    //KRAZY: ignore krazy warning because QAction must be used.
     QList<QAction *> actionList = mNote->actions();
     if (actionList.size() > 0) {        
         QAction *cancelAction = actionList.at(0);
@@ -453,6 +495,7 @@ void FmOperationResultProcesser::showPreparing( QString title, bool cancelable )
     mNote->setMaximum( 65535 );
     mNote->setProgressValue( 0 );
     mNote->setText( title );
+    //KRAZY: ignore krazy warning because QAction must be used.
     QList<QAction *> actionList = mNote->actions();
     if (actionList.size() > 0) {        
         QAction *cancelAction = actionList.at(0);
@@ -493,6 +536,7 @@ void FmOperationResultProcesser::showProgress( QString title, bool cancelable, i
     mNote->setMaximum( maxValue );
 
     mNote->setProgressValue( 0 );
+    //KRAZY: ignore krazy warning because QAction must be used.
     QList<QAction *> actionList = mNote->actions();
     if (actionList.size() > 0) {        
         QAction *cancelAction = actionList.at(0);

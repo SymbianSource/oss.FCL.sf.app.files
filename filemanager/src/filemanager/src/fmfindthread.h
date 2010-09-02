@@ -33,14 +33,9 @@ public:
     explicit FmFindThread( QObject *parent = 0 );
     ~FmFindThread();
 
-    QString findPath() const;
-    void setFindPath( const QString &path );
-
-    QRegExp pattern() const;
+    void setFindPathList( const QStringList &pathList );
     void setPattern( const QRegExp &regExp );
-    
-    void setLastResult( QStringList r );
-
+	
     void stop();
 
 signals:
@@ -51,14 +46,13 @@ protected:
 
 private:
     void emitFound();
-    void findInResult();
 
     volatile bool mStop;
     int count;
-    QString mFindPath;
+    QStringList mFindPathList;
     QTime time;
     QRegExp findPattern;
-    QStringList mLastResult;
+
     // Used to store temp search result. if emit found, the result will be cleared.
     QStringList tempResultList;
 };

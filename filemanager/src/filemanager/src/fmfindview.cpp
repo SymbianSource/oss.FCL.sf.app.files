@@ -26,20 +26,17 @@
 #include <hbmenu.h>
 
 FmFindView::FmFindView() : FmViewBase( EFindView ),
-                           mWaitNote( 0 ),
                            mMenu( 0 )
 {
     initMenu();
     initMainWidget();
     initToolBar();
-
+    setTitle( hbTrId("find") );
     QMetaObject::connectSlotsByName( this );
 }
 
 FmFindView::~FmFindView()
 {
-    delete mWaitNote;
-    mWaitNote = 0;
 }
 
 void FmFindView::activated( const QString& pathName )
@@ -48,33 +45,13 @@ void FmFindView::activated( const QString& pathName )
     FmViewManager::viewManager()->createFileView( pathName, true, true );
 }
 
-void FmFindView::find( const QString &keyword, const QString &path )
+void FmFindView::find( const QString &keyword, const QStringList &pathList )
 {
-    setTitle( keyword );
-    mFindWidget->find( keyword, path );
-    mWaitNote->open();
-}
-
-void FmFindView::stopFind()
-{
-    mFindWidget->stopFind();
-}
-
-void FmFindView::findFinished()
-{
-    if( mWaitNote ){
-        mWaitNote->close();
-    }
-//    mFindWidget->activeSearchPanel();
+    mFindWidget->find( keyword, pathList );
 }
 
 void FmFindView::initMenu()
 {
-    HbAction *findAction = new HbAction( this );
-    findAction->setObjectName( "findAction" );
-    findAction->setText( hbTrId( "Find" ) );
-    menu()->addAction( findAction ); 
-    
     HbMenu *subMenu = new HbMenu( hbTrId( "Sort" ) );
     
     HbAction *sortNameAction = new HbAction( subMenu );
@@ -99,8 +76,6 @@ void FmFindView::initMenu()
     
     menu()->addMenu( subMenu );
     
-    connect( findAction, SIGNAL( triggered() ),
-             this, SLOT( on_findAction_triggered() ) );
     connect( sortNameAction, SIGNAL( triggered() ),
              this, SLOT( on_sortNameAction_triggered() ) );
     connect( sortTimeAction, SIGNAL( triggered() ),
@@ -116,17 +91,9 @@ void FmFindView::initMenu()
 void FmFindView::initMainWidget()
 {
     mFindWidget = new FmFindWidget( this );
-    connect( mFindWidget, SIGNAL(finished()), this, SLOT(findFinished()) );
     setWidget( mFindWidget );
 
-    if( !mWaitNote ){
-        mWaitNote = new HbProgressDialog( HbProgressDialog::WaitDialog );
-        mWaitNote->setText( hbTrId( "Finding..." ) );
-    }
-    connect( mWaitNote, SIGNAL(cancelled()), this, SLOT(stopFind()) );
     connect( mFindWidget, SIGNAL(activated( const QString&)), this, SLOT( activated(const QString&)) );
-    connect( mFindWidget, SIGNAL( startSearch( const QString&,  const QString& ) ),
-             this, SLOT( startSearch( const QString&, const QString& ) ) );
     connect( mFindWidget, SIGNAL( setEmptyMenu( bool ) ),
              this, SLOT( on_findWidget_setEmptyMenu( bool ) ) );
 }
@@ -155,18 +122,6 @@ void FmFindView::on_sortTypeAction_triggered()
     mFindWidget->sortFiles( FmFindResultModel::Type  );
 }
 
-void FmFindView::startSearch( const QString &targetPath, const QString &criteria )
-{  
-    if ( !criteria.isEmpty( ) ) {
-        find( criteria, targetPath );  
-    }
-}
-
-void FmFindView::on_findAction_triggered()
-{
-    mFindWidget->activeSearchPanel();
-}
-
 void FmFindView::on_findWidget_setEmptyMenu( bool isMenuEmpty )
 {
     if( isMenuEmpty ){
@@ -180,4 +135,9 @@ void FmFindView::on_findWidget_setEmptyMenu( bool isMenuEmpty )
             mMenu = 0;
         }
     }
+}
+
+void FmFindView::aboutToClose()
+{
+    mFindWidget->stopFind();
 }

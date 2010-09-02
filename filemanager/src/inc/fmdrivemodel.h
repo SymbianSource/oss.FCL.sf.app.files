@@ -51,9 +51,11 @@ Q_OBJECT
 public:
     enum Option
     {
-        FillWithVolume        = 0x00000001, // add volume behind disname
-        FillWithDefaultVolume = 0x00000002, // add default diskname while enable FillWithVolume and volume is empty
-        HideUnAvailableDrive  = 0x00000004  // for example: drive F when no MMC card inserted.
+        FillWithVolume        = 0x00000001,  // add volume behind disname
+        FillWithDefaultVolume = 0x00000002,  // add default diskname while enable FillWithVolume and volume is empty
+        HideUnAvailableDrive  = 0x00000004,  // for example: drive F when no MMC card inserted.
+        FillWithTotalSize     = 0x00000008,  // show the drive's total size.
+        FillWithFreeSize      = 0x00000010   //show the drive's free size.
     };
     Q_DECLARE_FLAGS(Options, Option)
 
@@ -68,7 +70,7 @@ public:
     QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
     bool indexValid( const QModelIndex &index ) const;
     QString driveName( const QModelIndex &index ) const;
-    QString displayString( const QModelIndex &index ) const;
+    QVariant displayString( const QModelIndex &index ) const;
     
 private:
     QStringList         mFindResult;

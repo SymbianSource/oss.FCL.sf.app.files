@@ -34,21 +34,16 @@ public:
     FmFindView();
     virtual ~FmFindView();
 
-    void find( const QString &keyword, const QString &path );
+    void find( const QString &keyword, const QStringList &pathList );
 
 public slots:
     void activated( const QString &pathName );
-    void stopFind();
-
+    
 private slots:
-    void findFinished();
-    void on_findAction_triggered();
     void on_sortNameAction_triggered();
     void on_sortTimeAction_triggered();
     void on_sortSizeAction_triggered();
     void on_sortTypeAction_triggered();
-    
-    void startSearch( const QString &targetPath, const QString &criteria );
     
     void on_findWidget_setEmptyMenu( bool isMenuEmpty );
     
@@ -57,8 +52,10 @@ private:
     void initMainWidget();
     void initToolBar();
 
+    // from FmViewBase
+    virtual void aboutToClose();
+
     FmFindWidget *mFindWidget;
-    HbProgressDialog *mWaitNote;
     HbMenu *mMenu;
 };
 

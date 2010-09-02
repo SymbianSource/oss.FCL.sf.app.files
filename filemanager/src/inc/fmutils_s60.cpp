@@ -13,99 +13,56 @@
 *     Zhiqiang Yang <zhiqiang.yang@nokia.com>
 * 
 * Description:
-*     The source file of the file manager utilities
+*     The source file of the file manager utilities on Symbian
 */
 
 
 #include "fmutils.h"
-#include "fms60utils.h"
 #include "fmcommon.h"
+#include "fms60utils.h"
 
-#include <QRegExp>
-
+#include <apgcli.h>
+#include <sysutil.h>
+#include <f32file.h>
 #include <coemain.h>
+#include <pathinfo.h>
 #include <driveinfo.h>
 #include <e32property.h>
 #include <coreapplicationuisdomainpskeys.h>
-#include <f32file.h>
-#include <apgcli.h>
-#include <pathinfo.h>
-#include <CDirectoryLocalizer.h>
-#include <XQConversions>
-#include <QStringList>
-#include <QFileInfoList>
+
 #include <QDir>
 #include <QFile>
-#include <QIODevice>
-#include <XQConversions>
-#include <hbglobal.h>
+#include <QRegExp>
+#include <QStringList>
+#include <QFileInfoList>
 
-#include <xqaiwrequest.h>
 #include <xqappmgr.h>
+#include <XQConversions>
+#include <xqaiwrequest.h>
 
-#include <shareui.h>
+#include <hbglobal.h>
+#include <hbdirectorynamelocalizer.h>
 
 #define BURCONFIGFILE  "z:/private/2002BCC0/burconfig.xml"
 
-
 /*!
-    Used to get drive type for convenience.
+    query drive info and status for \a driveName
+    return \a FmDriverInfo
 */
-FmDriverInfo::DriveType FmDriverInfo::driveType()
+FmDriverInfo FmUtils::queryDriverInfo( const QString &driveName )
 {
-    FmDriverInfo::DriveType driveType;
-    if( mDriveState & FmDriverInfo::EDriveRemovable ) {
-        if( mDriveState & FmDriverInfo::EDriveMassStorage ) {
-            driveType = FmDriverInfo::EDriveTypeMassStorage;
-        } else if( mDriveState & FmDriverInfo::EDriveUsbMemory ) {
-            driveType = FmDriverInfo::EDriveTypeUsbMemory;
-        } else if( mDriveState & FmDriverInfo::EDriveRemote ){
-            driveType = FmDriverInfo::EDriveTypeRemote;
-        } else {
-            driveType = FmDriverInfo::EDriveTypeMemoryCard;
-        }
-    } else if( mDriveState & FmDriverInfo::EDriveRom ) {
-        driveType = FmDriverInfo::EDriveTypeRom;
-    } else if( mDriveState & FmDriverInfo::EDriveRam ) {
-        driveType = FmDriverInfo::EDriveTypeRam;
-    } else {
-        driveType = FmDriverInfo::EDriveTypePhoneMemory;
-    }
-    
-    return driveType;
-}
-
-QString FmUtils::getDriveNameFromPath( const QString &path )
-{
-    // fillPathWithSplash make sure path length will be at least 3 if it is not empty.
-    QString checkedPath( fillPathWithSplash( path ) );
-    if( checkedPath.length() < 3 ) {
-        return QString();
-    }
-    return checkedPath.left( 3 );
-}
-
-QString FmUtils::getDriveLetterFromPath( const QString &path )
-{
-	if( path.length() <2 ) {
-        return QString();
-    }
-    return path.left( 1 );
-}
-
-FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
-{
-    if( driverName.isEmpty() ) {
-        return FmDriverInfo( 0, 0, driverName, QString(), FmDriverInfo::EDriveNotPresent );
+    if( driveName.isEmpty() ) {
+        return FmDriverInfo( 0, 0, driveName, QString(), FmDriverInfo::EDriveNotPresent );
     }
     CCoeEnv *env = CCoeEnv::Static();
     RFs& fs = env->FsSession();
 
     TVolumeInfo volumeInfo;
     TInt drive = 0;
-    drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
+    drive = driveName[0].toUpper().toAscii() - 'A' + EDriveA;
 
     quint32 state( 0 );
+    
     int volumeInfoErr( KErrNone );
     int driveInfoErr( KErrNone );
     int errorCode( KErrNone );
@@ -133,7 +90,6 @@ FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
             if ( ( drvStatus & DriveInfo::EDriveInternal ) &&
                  ( drvStatus & DriveInfo::EDriveExternallyMountable ) ){
                 // Handle mass storage bits here
-        
                 state |= FmDriverInfo::EDriveMassStorage | FmDriverInfo::EDriveRemovable;
             }
         
@@ -224,34 +180,25 @@ FmDriverInfo FmUtils::queryDriverInfo( const QString &driverName )
         state |= FmDriverInfo::EDriveNotPresent;
         break;
     }
-    QString logString ( "FmUtils::queryDriverInfo_" + driverName + 
+    QString logString ( "FmUtils::queryDriverInfo_" + driveName + 
             "_volumeInfoErr:" + QString::number( volumeInfoErr ) +
             "_driveInfoErr:" + QString::number( driveInfoErr ) +
             "_errorCode:" + QString::number( errorCode ) + 
             "_driveSatus:" + QString::number( state ) );
     FM_LOG( logString );
-    return FmDriverInfo( volumeInfo.iSize, volumeInfo.iFree, driverName, volumeName, state );
+    return FmDriverInfo( volumeInfo.iSize, volumeInfo.iFree, driveName, volumeName, state );
 }
 
-QString FmUtils::formatStorageSize( quint64 size )
+/*!
+    remove drive password for \a driveName
+    \a Pwd is original password.
+*/
+int FmUtils::removeDrivePwd( const QString &driveName,  const QString &Pwd )
 {
-	if ( size < 1000 ) {
-		return QString::number( size ) + " B";
-	} else if ( size < 1000 * 1000 ) {
-		return QString::number( size / 1024.0, 'f', 2 ) + " KB";
-	} else if ( size < 1000 * 1000 * 1000 ) {
-		return QString::number( size / (1024.0 * 1024.0), 'f', 1 ) + " MB";
-	} else {
-	    return QString::number( size / ( 1024.0 * 1024.0 * 1024.0 ), 'f', 1 ) + " GB";	    
-	}
-}
-
-int FmUtils::removeDrivePwd( const QString &driverName,  const QString &Pwd )
-{
-    if( driverName.isEmpty() || Pwd.length() > FmMaxLengthofDrivePassword ) {
+    if( driveName.isEmpty() || Pwd.length() > FmMaxLengthofDrivePassword ) {
         return FmErrWrongParam;
     }
-    QString logString = "Drive name:" + driverName;
+    QString logString = "Drive name:" + driveName;
     FM_LOG( logString );
     logString = "Password:" + Pwd;
     FM_LOG( logString );
@@ -261,7 +208,7 @@ int FmUtils::removeDrivePwd( const QString &driverName,  const QString &Pwd )
 
     TInt drive = 0;
 
-    drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
+    drive = driveName[0].toUpper().toAscii() - 'A' + EDriveA;
 
     HBufC* password16 = XQConversions::qStringToS60Desc( Pwd );
     TMediaPassword password;   
@@ -289,12 +236,15 @@ int FmUtils::removeDrivePwd( const QString &driverName,  const QString &Pwd )
     }
 }
 
-int FmUtils::unlockDrive( const QString &driverName,  const QString &Pwd )
+/*!
+    Unlock drive \a driveName with provided password \a Pwd
+*/
+int FmUtils::unlockDrive( const QString &driveName,  const QString &Pwd )
 {
-    if( driverName.isEmpty() || Pwd.length() > FmMaxLengthofDrivePassword ) {
+    if( driveName.isEmpty() || Pwd.length() > FmMaxLengthofDrivePassword ) {
         return FmErrWrongParam;
     }
-    QString logString = "Drive name:" + driverName;
+    QString logString = "Drive name:" + driveName;
     FM_LOG( logString );
     logString = "Password:" + Pwd;
     FM_LOG( logString );
@@ -303,7 +253,7 @@ int FmUtils::unlockDrive( const QString &driverName,  const QString &Pwd )
 	RFs& fs = env->FsSession();
 
     TInt drive = 0;
-	drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
+	drive = driveName[0].toUpper().toAscii() - 'A' + EDriveA;
     
     HBufC* password16 = XQConversions::qStringToS60Desc( Pwd );
     TMediaPassword password;   
@@ -336,25 +286,31 @@ int FmUtils::unlockDrive( const QString &driverName,  const QString &Pwd )
     }
 }
 
-int FmUtils::checkDrivePwd( const QString &driverName, const QString &pwd )
+/*!
+    Check if \a pwd is the right password for drive \a driveName
+*/
+int FmUtils::checkDrivePwd( const QString &driveName, const QString &pwd )
 {
-    if( driverName.isEmpty() || pwd.length() > FmMaxLengthofDrivePassword ) {
+    if( driveName.isEmpty() || pwd.length() > FmMaxLengthofDrivePassword ) {
         return FmErrWrongParam;
     }
-    QString logString = "checkDrivePwd Drive name:" + driverName;
+    QString logString = "checkDrivePwd Drive name:" + driveName;
     logString += " password:" + pwd;
     FM_LOG( logString );
 
-    return setDrivePwd( driverName, pwd, pwd );
+    return setDrivePwd( driveName, pwd, pwd );
 }
 
-int FmUtils::setDrivePwd( const QString &driverName, const QString &oldPwd, const QString &newPwd)
+/*!
+    Set new password \a newPwd for drive \a driveName. \a oldPwd is old password
+*/
+int FmUtils::setDrivePwd( const QString &driveName, const QString &oldPwd, const QString &newPwd)
 {
-    if( driverName.isEmpty() || 
+    if( driveName.isEmpty() || 
         oldPwd.length() > FmMaxLengthofDrivePassword || newPwd.length() > FmMaxLengthofDrivePassword  ) {
         return FmErrWrongParam;
     }
-    QString logString = "setDrivePwd Drive name:" + driverName ;
+    QString logString = "setDrivePwd Drive name:" + driveName ;
     logString += " Old password:" + oldPwd;
     logString += " New password:" + newPwd;
     FM_LOG( logString );
@@ -363,7 +319,7 @@ int FmUtils::setDrivePwd( const QString &driverName, const QString &oldPwd, cons
 	RFs& fs = env->FsSession();
 
     TInt drive = 0;
-	drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
+	drive = driveName[0].toUpper().toAscii() - 'A' + EDriveA;
 	
     HBufC* newPassword16 = XQConversions::qStringToS60Desc( newPwd);
     HBufC* oldPassword16 = XQConversions::qStringToS60Desc( oldPwd );
@@ -397,6 +353,9 @@ int FmUtils::setDrivePwd( const QString &driverName, const QString &oldPwd, cons
     }
 }
 
+/*!
+    Set \a pwd as empty password
+*/
 void FmUtils::emptyPwd( QString &pwd )
 {
     TBuf< FmMaxLengthofDrivePassword > nullPwd;
@@ -405,9 +364,12 @@ void FmUtils::emptyPwd( QString &pwd )
     pwd = XQConversions::s60DescToQString( nullPwd );
 }
 
-int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeName)
+/*!
+    Set drive volume for drive \a driveName
+*/
+int FmUtils::renameDrive( const QString &driveName, const QString &newVolumeName)
 {
-    if( driverName.isEmpty() ) {
+    if( driveName.isEmpty() ) {
         return FmErrWrongParam;
     }
     foreach( const QChar &ch, newVolumeName )
@@ -425,7 +387,7 @@ int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeNam
 	RFs& fs = env->FsSession();
 
     TInt drive = 0;
-	drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
+	drive = driveName[0].toUpper().toAscii() - 'A' + EDriveA;
 
     TPtr newName ( ( XQConversions::qStringToS60Desc( newVolumeName ) )->Des() );
 
@@ -445,16 +407,19 @@ int FmUtils::renameDrive( const QString &driverName, const QString &newVolumeNam
     }
 }
 
-int FmUtils::ejectDrive( const QString &driverName )
+/*!
+    Eject drive \a driveName
+*/
+int FmUtils::ejectDrive( const QString &driveName )
 {
-    if( driverName.isEmpty() ) {
+    if( driveName.isEmpty() ) {
         return FmErrWrongParam;
     }
     QString logString = "FmUtils::ejectDrive start";
     FM_LOG( logString );
 
     TInt drive = 0;
-	drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
+	drive = driveName[0].toUpper().toAscii() - 'A' + EDriveA;
 
     const int KDriveShift = 16;
 
@@ -467,119 +432,166 @@ int FmUtils::ejectDrive( const QString &driverName )
     return FmErrNone;
 }
 
-QString FmUtils::getFileType( const QString &filePath  )
+/*!
+    Check if drive \a driveName is accessable for user
+*/
+bool FmUtils::checkDriveAccessFilter( const QString &driveName )
 {
-    RApaLsSession apaSession;
-    TDataType dataType;
-    TUid appUid;
-    
-    TBuf<128> mimeTypeBuf;
-        
-    int err = apaSession.Connect();
-    
-    if ( err == KErrNone ){   
-        err = apaSession.AppForDocument( XQConversions::qStringToS60Desc( filePath )->Des(), 
-                                         appUid, dataType );
-        
-        if( err == KErrNone ){
-            mimeTypeBuf.Copy(dataType.Des8());
-        }  
-    }
-    
-    apaSession.Close();
-    return XQConversions::s60DescToQString( mimeTypeBuf );
-}
-
-quint64 FmUtils::getDriveDetailsResult( const QString &folderPath, const QString &extension )
-{
-    int err;
-    
-    RFs fs;
-    err = fs.Connect();
-    
-    QString string( fillPathWithSplash( folderPath ) );
-
-    TPtrC desFolderPath( XQConversions::qStringToS60Desc( string )->Des() );
-    TPtrC ptrExtension( XQConversions::qStringToS60Desc( extension )->Des() );
-    
-    CDir* results = 0;
-    TParse parse;
-    
-    quint64 size = 0;
-    
-    const TInt pathlength = ptrExtension.Length() + desFolderPath.Length();
-    
-    if ( pathlength > KMaxFileName ){
-        err = KErrNotFound;   
-    }
-    else{
-        err = fs.Parse( ptrExtension, desFolderPath, parse );
-        err = fs.GetDir( parse.FullName(), KEntryAttMaskSupported|KEntryAttAllowUid, 
-            ESortNone, results );
-        
-        TDesC des = parse.FullName();
-        
-        if (err == KErrNotFound)
-            {
-            return 0;
-            }
-    }
-    
-    if ( results ){
-        CleanupStack::PushL(results);
-
-        // Go through all files in the list and tell subclass
-        TFileName file;
-        const TInt count = results->Count();
-        for( TInt i=0; i<count; ++i ){
-            const TEntry& entry = (*results)[i];
-            file = desFolderPath;
-            file += entry.iName;
-            size += entry.iSize;          
-        }
-        CleanupStack::PopAndDestroy(results);
-    }
-    
-    fs.Close();
-    
-    return size;  
-}
-
-bool FmUtils::isDriveC( const QString &driverName )
-{
-    if( driverName.isEmpty() ) {
+    if( driveName.isEmpty() ) {
         return false;
     }
-    TInt drive = 0;
-    drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
-    if( drive == EDriveC ){
+    FmDriverInfo driveInfo = queryDriverInfo( driveName );
+    if( ( driveInfo.driveState()& FmDriverInfo::EDriveRam ) ||
+        ( driveInfo.driveState()& FmDriverInfo::EDriveRom ) ) {
+        return false;
+    }
+    return true;
+}
+
+/*!
+    This function should be called to adjust path if user goto a drive.
+    data folder will be append to C:\ becuase user could only view C:\data instead C:\ 
+*/
+QString FmUtils::checkDriveToFolderFilter( const QString &path )
+{
+    QString checkedPath = fillPathWithSplash( path );
+    if( checkedPath.compare( Drive_C, Qt::CaseInsensitive ) == 0 ) {
+        checkedPath += QString( "data" ) + QDir::separator();
+        return checkedPath;
+    }
+    return path;
+
+}
+
+/*!
+    This function should be called to adjust path if user back to up level path.
+    If user is at C:\data then path level should be returned as C:\
+    Becuase C:\data is root path for C drive 
+*/
+QString FmUtils::checkFolderToDriveFilter( const QString &path )
+{
+    QString logString;
+    logString = QString( "checkFolderToDriveFilter: " ) + path;
+    FM_LOG( logString );
+    QString checkedPath = fillPathWithSplash( path );
+
+    logString = QString( "checkFolderToDriveFilter_fillPathWithSplash: " ) + checkedPath;
+    FM_LOG( logString );
+    
+    if( checkedPath.compare( Folder_C_Data, Qt::CaseInsensitive ) == 0 ) {
+        FM_LOG( QString( " change from c:/data/ to C:/" ) );
+        return Drive_C;
+    }
+    return path;
+
+}
+
+/*!
+    Check if \a path is accessable for user
+*/
+int FmUtils::isPathAccessabel( const QString &path )
+{
+    // Used to check if path is accessable, very important feature
+    // and will return filemanager error.
+    FM_LOG( QString( "isPathAccessabel:" ) + path );
+    if( path.isEmpty() ) {
+        return FmErrPathNotExist;
+    }
+
+    // used to filter locked/ejected/corrupted drive
+    // check if drive is available, no matter if it is a drive, a folder, or a file.
+    if( !isDriveAvailable( path ) ) {
+        FM_LOG( QString( "isPathAccessabel false: path is drive and not available" ) );
+        return FmErrDriveNotAvailable;
+    }
+
+    QFileInfo fileInfo( path );
+
+    if( fileInfo.absoluteFilePath().contains( Drive_C, Qt::CaseInsensitive ) &&
+        !fileInfo.absoluteFilePath().contains( Folder_C_Data, Qt::CaseInsensitive ) ) {
+        FM_LOG( QString( "isPathAccessabel false: path contain C and not in data folder" ) );
+        return FmErrPathDenied;
+    }
+    if( !checkDriveAccessFilter( FmUtils::getDriveNameFromPath( fileInfo.absoluteFilePath() ) ) ){
+        return FmErrDriveDenied;
+    }
+    if( !fileInfo.exists() ) {
+        FM_LOG( QString( "isPathAccessabel false: path not exist" ) );
+        return FmErrPathNotExist;
+    }
+    FM_LOG( QString( "isPathAccessabel FmErrNone" ) );
+    return FmErrNone;
+}
+
+/*!
+    Check if drive related to \a path is available.
+    This function should not check if path is available. Only responsible for checking drive  
+    When MMC is not inserted, also return false
+*/
+bool FmUtils::isDriveAvailable( const QString &path )
+{
+    FM_LOG( QString( "isDriveAvailable:" ) + path );
+    if( path.isEmpty() ) {
+        return false;
+    }
+    FmDriverInfo::DriveState driveState = queryDriverInfo( path ).driveState();
+    if( ( driveState & FmDriverInfo::EDriveAvailable ) ) {
+        FM_LOG( QString( "isDriveAvailable true" ) );
         return true;
     }
-    else{
-        return false;
+    FM_LOG( QString( "isDriveAvailable false" ) );
+    return false;
+}
+
+/*!
+    Check if \a folderPath is default folder for system
+*/
+bool FmUtils::isDefaultFolder( const QString &folderPath  )
+{
+    HBufC *path = XQConversions::qStringToS60Desc( folderPath );
+    TPtrC desFolderPath( path->Des() );
+    
+    bool ret( true );
+    TInt pathType( PathInfo::PathType( desFolderPath ) );
+    switch( pathType ){
+       case PathInfo::ENotSystemPath:{
+           QString locString( localize( folderPath ) );
+            if ( locString.isEmpty() ){
+                ret = false;
+                break;
+            }
+            ret = true;
+            break;
+            }
+        case PathInfo::EPhoneMemoryRootPath: // FALL THROUGH
+        case PathInfo::EMemoryCardRootPath: // FALL THROUGH
+        case PathInfo::ERomRootPath:{
+            ret = false;
+            break;
+        }
+        // Accept other folders
+        default:{
+            ret = true;
+            break;
+        }
     }
-   
+    delete path;
+    return ret;
 }
 
-bool FmUtils::isDrive( const QString &path )
+/*!
+    Create system default folders for drive \a driveName.
+    Default folders should be created after format a drive.
+*/
+void FmUtils::createDefaultFolders( const QString &driveName )
 {
-   bool ret( false );
-   if( path.length() <= 3 && path.length() >=2 ) {
-       ret = true;
-   }
-   
-   return ret;   
-}
-
-void FmUtils::createDefaultFolders( const QString &driverName )
-{
-    if( driverName.isEmpty() ) {
+    if( driveName.isEmpty() ) {
         return;
     }
     int err;
     
     TInt drive = 0;
-    drive = driverName[0].toUpper().toAscii() - 'A' + EDriveA;
+    drive = driveName[0].toUpper().toAscii() - 'A' + EDriveA;
     
     RFs fs;
     err = fs.Connect();
@@ -643,440 +655,17 @@ void FmUtils::createDefaultFolders( const QString &driverName )
 }
 
 /*!
-    fill splash in the end of \a filePath if the path is not a file
-    All "/" and "\" will be changed to QDir::separator
-    \sa formatPath only changed "/" and "\" to QDir::separator
+    In Symbian system, default folders will be localized.
+    So localize is used to check if a path is a default folder
+    \sa isDefaultFolder
 */
-QString FmUtils::fillPathWithSplash( const QString &filePath )
+QString FmUtils::localize( const QString &path )
 {
-	QString newFilePath;
-    if( filePath.isEmpty() ) {
-        return newFilePath;
-    }
-
-    newFilePath = formatPath( filePath );
+    // HbDirectoryNameLocalizer can not recognize path with \ in the end
+    QString locPath( removePathSplash( path ) );
     
-    if( newFilePath.right( 1 )!= QDir::separator() ){
-        newFilePath.append( QDir::separator() );
-    }
-    return newFilePath;
-}
-
-QString FmUtils::removePathSplash( const QString &filePath )
-{
-    QString newFilePath( filePath );
-    if( filePath.right( 1 ) == QChar( '/' ) || filePath.right(1) == QString( "\\" ) ) {
-        newFilePath = filePath.left( filePath.length() - 1 );
-    }
-    return newFilePath;
-}
-
-// filter un-accessable drive
-bool FmUtils::checkDriveAccessFilter( const QString &driveName )
-{
-    if( driveName.isEmpty() ) {
-        return false;
-    }
-    FmDriverInfo driveInfo = queryDriverInfo( driveName );
-    if( ( driveInfo.driveState()& FmDriverInfo::EDriveRam ) ||
-        ( driveInfo.driveState()& FmDriverInfo::EDriveRom ) ) {
-        return false;
-    }
-    return true;
-}
-
-QString FmUtils::checkDriveToFolderFilter( const QString &path )
-{
-    /*
-    QFileInfo fileInfo( path );
-    if( !fileInfo.exists() ) {
-            return QString();
-        }
-    */
-    QString checkedPath = fillPathWithSplash( path );
-    if( checkedPath.compare( Drive_C, Qt::CaseInsensitive ) == 0 ) {
-        checkedPath += QString( "data" ) + QDir::separator();
-        return checkedPath;
-    }
-    return path;
-
-}
-
-QString FmUtils::checkFolderToDriveFilter( const QString &path )
-{
-    QString logString;
-    logString = QString( "checkFolderToDriveFilter: " ) + path;
-    FM_LOG( logString );
-    QString checkedPath = fillPathWithSplash( path );
-
-    logString = QString( "checkFolderToDriveFilter_fillPathWithSplash: " ) + checkedPath;
-    FM_LOG( logString );
-    
-    if( checkedPath.compare( Folder_C_Data, Qt::CaseInsensitive ) == 0 ) {
-        FM_LOG( QString( " change from c:/data/ to C:/" ) );
-        return Drive_C;
-    }
-    return path;
-
-}
-
-int FmUtils::isPathAccessabel( const QString &path )
-{
-    // Used to check if path is accessable, very important feature
-    // and will return filemanager error.
-    FM_LOG( QString( "isPathAccessabel:" ) + path );
-    if( path.isEmpty() ) {
-        return FmErrPathNotExist;
-    }
-
-    // used to filter locked/ejected/corrupted drive
-    // check if drive is available, no matter if it is a drive, a folder, or a file.
-    if( !isDriveAvailable( path ) ) {
-        FM_LOG( QString( "isPathAccessabel false: path is drive and not available" ) );
-        return FmErrDriveNotAvailable;
-    }
-
-    QFileInfo fileInfo( path );
-    if( fileInfo.absoluteFilePath().contains( Drive_C, Qt::CaseInsensitive ) &&
-        !fileInfo.absoluteFilePath().contains( Folder_C_Data, Qt::CaseInsensitive ) ) {
-        FM_LOG( QString( "isPathAccessabel false: path contain C and not in data folder" ) );
-        return FmErrPathDenied;
-    }
-    if( !checkDriveAccessFilter( FmUtils::getDriveNameFromPath( fileInfo.absoluteFilePath() ) ) ){
-        return FmErrDriveDenied;
-    }
-    if( !fileInfo.exists() ) {
-        FM_LOG( QString( "isPathAccessabel false: path not exist" ) );
-        return FmErrPathNotExist;
-    }
-    FM_LOG( QString( "isPathAccessabel FmErrNone" ) );
-    return FmErrNone;
-}
-
-// only used to check drive, when MMC is not inserted, also return false
-bool FmUtils::isDriveAvailable( const QString &path )
-{
-    FM_LOG( QString( "isDriveAvailable:" ) + path );
-    if( path.isEmpty() ) {
-        return false;
-    }
-    FmDriverInfo::DriveState driveState = queryDriverInfo( path ).driveState();
-    if( ( driveState & FmDriverInfo::EDriveAvailable ) ) {
-        FM_LOG( QString( "isDriveAvailable true" ) );
-        return true;
-    }
-    FM_LOG( QString( "isDriveAvailable false" ) );
-    return false;
-}
-
-void FmUtils::getDriveList( QStringList &driveList, bool isHideUnAvailableDrive )
-{
-    if( isHideUnAvailableDrive ) {
-        FM_LOG( QString( "getDriveList HideUnAvailableDrive_true" ) );
-    } else {
-        FM_LOG( QString( "getDriveList HideUnAvailableDrive_false" ) );
-    }
-    QFileInfoList infoList = QDir::drives();
-
-    foreach( QFileInfo fileInfo, infoList ) {
-        QString driveName = fileInfo.absolutePath();
-        if( checkDriveAccessFilter( driveName ) ) {
-            if( !isHideUnAvailableDrive ) {
-                driveList.append( driveName );
-            }
-            else if ( isDriveAvailable( driveName ) ) {
-                driveList.append( driveName );
-            }
-        }
-    }
-    return;
-}
-
-/*!
-    fill volume name for \a driveName, with drive letter at the front, for example, C: Phone memory
-    if \a isFillWithDefaultVolume is true, default volume is provided for non-volume drive.
-*/
-QString FmUtils::fillDriveVolume( QString driveName, bool isFillWithDefaultVolume )
-{
-    QString ret;
-    if( driveName.isEmpty() ) {
-        return ret;
-    }
-    QString tempDriveName = fillPathWithSplash( driveName );
-
-    QString checkedDriveName( removePathSplash( driveName ) );
-    
-    FmDriverInfo driverInfo = FmUtils::queryDriverInfo( tempDriveName );
-    QString volumeName = driverInfo.volumeName();
-    
-    if( volumeName.isEmpty() && isFillWithDefaultVolume ){
-        switch ( driverInfo.driveType() )
-            {
-            case FmDriverInfo::EDriveTypeMassStorage:
-                ret = hbTrId( "txt_fmgr_dblist_1_mass_storage" ).arg( checkedDriveName );
-                break;
-            case FmDriverInfo::EDriveTypeUsbMemory:
-                ret = hbTrId( "txt_fmgr_dblist_1_usb_memory" ).arg( checkedDriveName );
-                break;
-            case FmDriverInfo::EDriveTypeMemoryCard:
-                ret = hbTrId( "txt_fmgr_dblist_1_memory_card" ).arg( checkedDriveName );
-                break;
-            case FmDriverInfo::EDriveTypePhoneMemory:
-                ret = hbTrId( "txt_fmgr_dblist_1_device_memory" ).arg( checkedDriveName );
-                break;
-            default:
-                Q_ASSERT_X( false, "FmUtils::fillDriveVolume", "please handle drive type");
-                break;
-            }    
-    }
-    
-    if( ret.isEmpty() ) {
-        // ret is not got. fill ret as default method
-        // txt_fmgr_dblist_1_2 is not correct, can not use.
-        ret = hbTrId( "%1 %2" ).arg( checkedDriveName ).arg( volumeName );
-    }
-    return ret;
-}
-
-
-/*!
-    return volume name for \a driveName. without drive letter at the front.
-    \a defaultName is set true if default volume name is return for volume name
-*/
-QString FmUtils::getVolumeNameWithDefaultNameIfNull( const QString &diskName, bool &defaultName )
-{
-    FmDriverInfo driverInfo = FmUtils::queryDriverInfo( diskName );
-          
-    QString volumeName = driverInfo.volumeName();    
-    //save the volume status, whether it is default name
-    defaultName = false;
-    //volume name may be null if not set, it will be set at least for one time in the following while cycling.
-    if ( volumeName.isEmpty() ) {
-        defaultName = true;
-        switch ( driverInfo.driveType() )
-            {
-            case FmDriverInfo::EDriveTypeMassStorage:
-                volumeName = hbTrId("Mass storage"); 
-                break;
-            case FmDriverInfo::EDriveTypeUsbMemory:
-                volumeName = hbTrId("USB memory"); 
-                break;
-            case FmDriverInfo::EDriveTypeMemoryCard:
-                volumeName = hbTrId("Memory card");
-                break;
-            case FmDriverInfo::EDriveTypePhoneMemory:
-                volumeName = hbTrId("Device memory");
-                break;
-            default:
-                Q_ASSERT_X( false, "FmUtils::getVolumeNameWithDefaultNameIfNull", "please handle drive type" );
-                break;
-            }   
-    }
-    return volumeName;
-}
-
-int FmUtils::launchFile( const QString &filePath )
-{
-    QFile file( filePath );
-    if( !file.exists() ) {
-        return false;
-    }
-        
-    XQApplicationManager mAiwMgr;
-    XQAiwRequest *request = mAiwMgr.create(file);
-    if ( request == 0 ) {
-        // No handlers for the URI
-        return FmErrUnKnown;
-    }
-    
-    // Set function parameters
-    QList<QVariant> args;
-    args << file.fileName();
-    request->setArguments(args);
-    
-    // Send the request
-    bool res = request->send();
-    if  (!res) 
-    {
-       // Request failed. 
-      int error = request->lastError();
-      
-      delete request;
-      return FmErrUnKnown;
-    }
-    
-    delete request;
-    return FmErrNone;
-}
-
-void FmUtils::sendFiles( QStringList &filePathList )
-{
-    ShareUi shareui;
-    shareui.send( filePathList, false );
-}
-
-QString FmUtils::getBurConfigPath( QString appPath )
-{
-    Q_UNUSED( appPath );
-    QString path( BURCONFIGFILE );
-    return path;
-}
-
-bool FmUtils::isPathEqual( const QString &pathFst, const QString &pathLast )
-{
-    QString fst( fillPathWithSplash( pathFst ) );
-    QString last( fillPathWithSplash( pathLast ) );
-    if( fst.compare( last, Qt::CaseInsensitive ) == 0 ) {
-        return true;
-    }
-    return false;
-}
-
-bool FmUtils::isDefaultFolder( const QString &folderPath  )
-{
-    TPtrC desFolderPath( XQConversions::qStringToS60Desc( folderPath )->Des() );
-    
-    TInt pathType( PathInfo::PathType( desFolderPath ) );
-    switch( pathType ){
-       case PathInfo::ENotSystemPath:{
-           QString locString( Localize( folderPath ) );
-            if ( locString.isEmpty() ){
-                return false;
-            }
-            return true;
-            }
-        case PathInfo::EPhoneMemoryRootPath: // FALL THROUGH
-        case PathInfo::EMemoryCardRootPath: // FALL THROUGH
-        case PathInfo::ERomRootPath:{
-            return false;
-        }
-        // Accept other folders
-        default:{
-            return true;
-        }
-    }
-}
-
-QString FmUtils::Localize( const QString &path )
-{
-    QString locPath = fillPathWithSplash( path );
-
-    TPtrC desPath( XQConversions::qStringToS60Desc( locPath )->Des() );
-    CDirectoryLocalizer *localizer = CDirectoryLocalizer::NewL();
-
-    localizer->SetFullPath( desPath );
-    if( localizer->IsLocalized() ){   
-        return XQConversions::s60DescToQString( localizer->LocalizedName() );
-    }
-    
-    return QString();
-}
-
-/*!
-    All "/" and "\" in \a path will be changed to QDir::separator
-    \sa fillPathWithSplash, fillPathWithSplash will append QDir::separator in the end if path is no a file
-*/
-QString FmUtils::formatPath( const QString &path  )
-{
-    QString formatPath;
-    if( path.isEmpty() ) {
-        return formatPath;
-    }
-    
-	foreach( QChar ch, path ) {
-		if( ch == QChar('\\') || ch == QChar('/') ) {
-			formatPath.append( QDir::separator() );
-		} else {
-			formatPath.append( ch );
-		}
-    }
-
-    return formatPath;
-}
-
-int FmUtils::getMaxFileNameLength()
-{
-    return KMaxFileName;
-}
-
-bool FmUtils::checkMaxPathLength( const QString& path )
-{
-    if( path.length() > KMaxPath ) {
-        return false;
-    }
-    return true;
-}
-
-bool FmUtils::checkFolderFileName( const QString& name )
-{
-    // trim space firest, because there may be some spaces after "." ,  it is also not valid
-    QString trimmedName( name.trimmed() );
-	if( trimmedName.isEmpty() ) {
-		return false;
-	}
-    if( trimmedName.endsWith( QChar('.'),  Qt::CaseInsensitive ) ) {
-        return false;
-    }
-    if( trimmedName.contains( QChar('\\'), Qt::CaseInsensitive ) ||
-        trimmedName.contains( QChar('/'),  Qt::CaseInsensitive ) ||
-        trimmedName.contains( QChar(':'),  Qt::CaseInsensitive ) ||
-        trimmedName.contains( QChar('*'),  Qt::CaseInsensitive ) ||
-        trimmedName.contains( QChar('?'),  Qt::CaseInsensitive ) ||
-        trimmedName.contains( QChar('\"'), Qt::CaseInsensitive ) ||
-        trimmedName.contains( QChar('<'),  Qt::CaseInsensitive ) ||
-        trimmedName.contains( QChar('>'),  Qt::CaseInsensitive ) ||
-        trimmedName.contains( QChar('|'),  Qt::CaseInsensitive ) ){
-        return false;
-    }
-    // use orignal name to exam max size of file name
-    if( name.length() > KMaxFileName ) {
-        return false;
-    }
-    return true;
-}
-
-bool FmUtils::checkNewFolderOrFile( const QString &fileName, const QString &path, QString &errString )
-{
-    // first check if fileName is valid, then check if path length is valid, and check if file/foler is existed at last
-    QFileInfo fileInfo( path );
-    bool ret( true );   
-    if (!FmUtils::checkFolderFileName( fileName ) ) {
-        errString = hbTrId( "Invalid file or folder name!" );
-        ret = false;
-    } else if( !FmUtils::checkMaxPathLength( path ) ) {
-        errString = hbTrId( "the path you specified is too long!" );
-        ret = false;
-    } else if (fileInfo.exists()) {
-        errString = hbTrId( "%1 already exist!" ).arg( fileInfo.fileName() );
-        ret = false;
-    }
-    return ret;
-}
-
-/*!
-    Check if \a dest is sub level path of \a src
-    Used to check True/False when copy a folder to itself or its subfolder
-    For example, c:\data\test is sub path of c:\data.
-    But c:\data123\test is not sub path of c:\data.
-    So after got right part of path, the first char must be \ or /
-*/
-bool FmUtils::isSubLevelPath( const QString &src, const QString &dest )
-{
-    FM_LOG("FmUtils::isSubFolder: src=" + src + " dest=" + dest);
-    QString checkedSrc( FmUtils::fillPathWithSplash( src ) );
-    QString checkedDest( FmUtils::fillPathWithSplash( dest ) );
-    
-    if( checkedDest.contains( checkedSrc, Qt::CaseInsensitive) &&
-            checkedDest.length() > checkedSrc.length() ) {
-        // for example c:\data\ vs c:\data\123\ 
-        FM_LOG("FmUtils::isSubFolder: true");
-        return true;
-    }
-    // for example c:\data\ vs c:\data\ 
-    // for example c:\data\ vs c:\data123\ 
-
-    FM_LOG("FmUtils::isSubFolder: false");
-    return false;
+    HbDirectoryNameLocalizer localizer;
+    return localizer.translate( locPath );
 }
 
 /*!
@@ -1110,4 +699,151 @@ int FmUtils::setFileAttributes( const QString &srcFile, const QString &desFile )
     fsSession.Close();
     CleanupStack::PopAndDestroy(); // fsSession
     return err;
+}
+
+/*!
+    judge whether there is enough space on \a targetDrive for \a size.
+    return true if has, false if not.
+*/
+bool FmUtils::hasEnoughSpace( const QString &targetDrive, qint64 size )
+{
+    RFs fsSession;
+    QT_TRAP_THROWING( fsSession.Connect() ); 
+    CleanupClosePushL( fsSession );
+    TInt dstDrv(0);
+    HBufC* hbuf = XQConversions::qStringToS60Desc( targetDrive );
+    QT_TRAP_THROWING( RFs::CharToDrive( hbuf->operator [](0), dstDrv ) );
+    bool ret = !SysUtil::DiskSpaceBelowCriticalLevelL( &fsSession,  size , dstDrv );
+    CleanupStack::PopAndDestroy(); // fsSession
+    return ret;
+    
+}
+
+/*!
+    move one file insice the same drive, from \a source to \a target.
+    return KErrNone if successful, otherwise one of the other system-wide error codes.
+*/
+int FmUtils::moveInsideDrive( const QString &source, const QString &target )
+{
+    RFs fsSession;
+    QT_TRAP_THROWING( fsSession.Connect() ); 
+    CleanupClosePushL( fsSession );
+    HBufC* oldName = XQConversions::qStringToS60Desc( source );
+    HBufC* newName = XQConversions::qStringToS60Desc( target );
+    int ret = fsSession.Rename( *oldName, *newName );
+    CleanupStack::PopAndDestroy(); // fsSession
+    return ret;    
+}
+
+/*!
+   Launch a file with associated application.
+*/
+int FmUtils::launchFile( const QString &filePath )
+
+{
+    QFile file( filePath );
+    if( !file.exists() ) {
+        return false;
+    }
+        
+    XQApplicationManager mAiwMgr;
+    XQAiwRequest *request = mAiwMgr.create(file);
+    if ( request == 0 ) {
+        // No handlers for the URI
+        return FmErrUnKnown;
+    }
+    
+    // Set function parameters
+    QList<QVariant> args;
+    args << file.fileName();
+    request->setArguments(args);
+    
+    // Send the request
+    bool res = request->send();
+    if  (!res) 
+    {
+       // Request failed. 
+      int error = request->lastError();
+      
+      delete request;
+      return FmErrUnKnown;
+    }
+    
+    delete request;
+    return FmErrNone;
+}
+
+/*!
+    return path for backup restore config file.
+    Currently \a appPath is not used.
+*/
+QString FmUtils::getBurConfigPath( QString appPath )
+{
+    Q_UNUSED( appPath );
+    QString path( BURCONFIGFILE );
+    return path;
+}
+
+/*!
+    return MetaData string for \a filePath
+*/
+QString FmUtils::getFileType( const QString &filePath  )
+{
+    RApaLsSession apaSession;
+    TDataType dataType;
+    TUid appUid;
+    
+    TBuf<128> mimeTypeBuf;
+        
+    int err = apaSession.Connect();
+    
+    if ( err == KErrNone ){   
+        err = apaSession.AppForDocument( XQConversions::qStringToS60Desc( filePath )->Des(), 
+                                         appUid, dataType );
+        
+        if( err == KErrNone ){
+            mimeTypeBuf.Copy(dataType.Des8());
+        }  
+    }
+    
+    apaSession.Close();
+    return XQConversions::s60DescToQString( mimeTypeBuf );
+}
+
+/*!
+    Check if drive \a driveName is drive C
+*/
+bool FmUtils::isDriveC( const QString &driveName )
+{
+    if( driveName.isEmpty() ) {
+        return false;
+    }
+    TInt drive = 0;
+    drive = driveName[0].toUpper().toAscii() - 'A' + EDriveA;
+    if( drive == EDriveC ){
+        return true;
+    }
+    else{
+        return false;
+    }
+   
+}
+
+/*!
+    return max file name length
+*/
+int FmUtils::getMaxFileNameLength()
+{
+    return KMaxFileName;
+}
+
+/*!
+    Check if length of \a path is exceed max path length. 
+*/
+bool FmUtils::checkMaxPathLength( const QString& path )
+{
+    if( path.length() > KMaxPath ) {
+        return false;
+    }
+    return true;
 }

@@ -32,9 +32,14 @@
 #include "fmdlgutils.h"
 
 #include <hbview.h>
+#include <hbmainwindow.h>
+#include <hbapplication.h>
+#include <hbactivitymanager.h>
 #include <QFileSystemWatcher>
 #include <QFileInfo>
+#include <QPixmap>
 
+#include <shareui.h>
 
 FmViewManager *FmViewManager::mViewManager = 0;
 
@@ -70,12 +75,9 @@ FmDialog *FmDlgCloseUnit::dialog()
 	return mDialog;
 }
 
-FmViewManager::FmViewManager( FmMainWindow* mainWindow )
+FmViewManager::FmViewManager( FmMainWindow* mainWindow ) : mOperationService( 0 ), mShareUi( 0 )
 {
     mMainWindow = mainWindow;
-    mOperationService = new FmOperationService( this );
-    mOperationService->setObjectName( "operationService" );
-
     mDriveWatcher = new FmDriveWatcher( this );
     mDriveWatcher->setObjectName( "driveWatcher" );
     mDriveWatcher->startWatch();
@@ -85,7 +87,6 @@ FmViewManager::FmViewManager( FmMainWindow* mainWindow )
 
 FmViewManager::~FmViewManager(void)
 {
-    
     FmViewBase *view = static_cast<FmViewBase *>( mMainWindow->currentView() );
     while( view ) {
         mMainWindow->removeView( view );
@@ -99,6 +100,9 @@ FmViewManager::~FmViewManager(void)
     mDriveWatcher->cancelWatch();
     delete mDriveWatcher;
     mDriveWatcher = 0;
+    
+    delete mShareUi;
+    mShareUi = 0;
 
 }
 
@@ -123,15 +127,39 @@ FmViewManager *FmViewManager::viewManager()
 
 FmOperationService *FmViewManager::operationService()
 {
+    if ( !mOperationService ) {
+        mOperationService = new FmOperationService( this );
+        mOperationService->setObjectName( "operationService" );
+    }    
     return mOperationService;
+}
+
+/*
+   return \a shareUi which is used to send files. 
+ */
+ShareUi *FmViewManager::shareUi()
+{
+    if( !mShareUi ) {
+        mShareUi = new ShareUi;
+    }
+    return mShareUi;
 }
 
 void FmViewManager::popViewAndShow()
 {
     FmViewBase *view = static_cast<FmViewBase *>( mMainWindow->currentView() );
     view->setNavigationAction( 0 );
-
-    mMainWindow->removeView( view );   
+    // grap the screen when only the drive view is in view stack.
+    if( viewCount() == 1 ) {
+        mScreenShot = QPixmap::grabWidget(mMainWindow, mMainWindow->rect());
+    }
+    mMainWindow->removeView( view );  
+	// If call QEventLoop in destructor of HbView, it will panic
+	// So add aboutToClose function to do some prepare when view will be closed
+	// for example, close find view while find is inprogress.
+    // stop find thread in destructor of FmFindView(called by delete container->model...)
+    // and use QEventLoop to wait till thread exit.
+    view->aboutToClose();
     delete view;
 
     if( viewCount() < 1 )
@@ -175,11 +203,17 @@ void FmViewManager::createDriverView()
 
     mMainWindow->addView( driverView );
     mMainWindow->setCurrentView( driverView );
+    HbActivityManager* activityManager = qobject_cast<HbApplication*>(qApp)->activityManager();        
+    bool ok = activityManager->removeActivity("FMMemoryStoragesList");
 
     connect( this, SIGNAL( driveSpaceChanged() ), 
         driverView, SLOT( refreshDrive() ) );
+    // Refresh drive view when gaining foreground
+    // ( switch back to filemanager from home screen or any other applications )
+    connect( mMainWindow, SIGNAL( revealed() ), 
+        driverView, SLOT( refreshDrive() ) );
     
-    // use Qt::QueuedConnection becuase synchronous refresh is not work well while
+    // use Qt::QueuedConnection because synchronous refresh is not work well while
     // connected with another OTG device which have more than one external drive in it.
     // File server only give driveChanged event once, but two drive is inserted.
     // Synchronous refresh will miss another drive.
@@ -224,14 +258,17 @@ void FmViewManager::createFileView( const QString &path,
         this, SLOT( popViewAndShow() ), Qt::QueuedConnection );
 }
 
-void FmViewManager::createFindView( const QString &keyword, const QString &path )
+/*
+    Create fild view and search \a keyword in \a pathList
+*/
+void FmViewManager::createFindView( const QString &keyword, const QStringList &pathList )
 {
     FmFindView *findView= new FmFindView();
     
     mMainWindow->addView( findView );
     mMainWindow->setCurrentView( findView );
 
-    findView->find( keyword, path );
+    findView->find( keyword, pathList );
  }
 
 void FmViewManager::createSplitView()
@@ -301,4 +338,30 @@ void FmViewManager::checkDlgCloseUnit()
 			}
 		}
 	}
+}
+
+void FmViewManager::saveActivity()
+{    
+    //grap the screen when current view is drive view.
+    FmDriverView *driveView = qobject_cast<FmDriverView *>(mMainWindow->currentView());
+    if ( ( driveView != 0 ) && ( driveView->viewType() == FmViewBase::EDriverView ) ) {
+        mScreenShot = QPixmap::grabWidget(mMainWindow, mMainWindow->rect());
+    }
+    QVariantHash metadata;
+    metadata.insert("screenshot", mScreenShot);
+    HbActivityManager* activityManager = qobject_cast<HbApplication*>(qApp)->activityManager();     
+    // add the activity to the activity manager
+    bool ok = activityManager->addActivity("FMMemoryStoragesList", QVariant(), metadata);
+    // do not need check return value
+
+}
+
+void FmViewManager::onAboutToChangeView(HbView * oldView, HbView *newView)
+{
+    Q_UNUSED(newView);
+    //grap the screen when oldView is drive view.
+    FmDriverView *driveView = qobject_cast<FmDriverView *>(oldView);
+    if ( ( driveView != 0 ) && ( driveView->viewType() == FmViewBase::EDriverView ) ) {        
+        mScreenShot = QPixmap::grabWidget(mMainWindow, mMainWindow->rect());
+    }
 }

@@ -52,18 +52,29 @@ private:
 
 class FmOperationBackup : public FmOperationBase
 {
+Q_OBJECT
 public:
-    explicit FmOperationBackup( QObject *parent );
+    explicit FmOperationBackup( QObject *parent, const QString &targetDrive, quint32 content );
     virtual ~FmOperationBackup();
+    
+    QString targetDrive() const;
+    quint32 content() const ;
+private:
+    // used to save backup target drive
+    QString mTargetDrive;
+    
+    // used to save FmBackupSettings::content()
+    quint32 mContent;
 };
 
 class FmOperationRestore : public FmOperationBase
 {
+Q_OBJECT
 public:
     explicit FmOperationRestore( QObject *parent, quint64 selection );
     virtual ~FmOperationRestore();
 
-    quint64 selection();
+    quint64 selection() const;
 private:
     quint64                 mSelection;
 };

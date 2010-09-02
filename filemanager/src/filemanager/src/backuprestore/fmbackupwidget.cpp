@@ -131,10 +131,12 @@ void FmBackupWidget::initModel()
     mContentsItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mContentsGroup );
     mContentsItem->setContentWidgetData( QString("readOnly"), QString("true") );
+    mContentsItem->setContentWidgetData( QString("objectName"), QString("backupContentItem") );
 
     mTargetItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mContentsGroup );
     mTargetItem->setContentWidgetData( QString("readOnly"), QString("true") );
+    mTargetItem->setContentWidgetData( QString("objectName"), QString("backupTargetItem") );
 
     mSchedulingGroup = mModel->appendDataFormGroup(
         QString( hbTrId( "Scheduling" ) ), mModel->invisibleRootItem());
@@ -142,19 +144,22 @@ void FmBackupWidget::initModel()
     mSchedulingItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mSchedulingGroup );
     mSchedulingItem->setContentWidgetData( QString("readOnly"), QString("true") );
+    mSchedulingItem->setContentWidgetData( QString("objectName"), QString("backupSchedulingItem") );
 
     mWeekdayItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mSchedulingGroup );
     mWeekdayItem->setContentWidgetData( QString("readOnly"), QString("true") );
+    mWeekdayItem->setContentWidgetData( QString("objectName"), QString("backupWeekdayItem") );
 
     mTimeItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( "" ), mSchedulingGroup );
     mTimeItem->setContentWidgetData( QString("readOnly"), QString("true") );
+    mTimeItem->setContentWidgetData( QString("objectName"), QString("backupTimeItem") );
     
     mLastBackupDateItem = mModel->appendDataFormItem(
         HbDataFormModelItem::TextItem, QString( ( "" )), mModel->invisibleRootItem() );
     mLastBackupDateItem->setContentWidgetData( QString("readOnly"), QString("true") );   
-    
+    mLastBackupDateItem->setContentWidgetData( QString("objectName"), QString("backupLastBackupDateItem") );
 }
 
 

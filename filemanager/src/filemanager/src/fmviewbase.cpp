@@ -44,3 +44,10 @@ void FmViewBase::on_backAction_triggered()
     FmViewManager::viewManager()->popViewAndShow();
 }
 
+/*!
+    called when about to close. used to close some resource before deleted.
+ */
+void FmViewBase::aboutToClose()
+{
+
+}

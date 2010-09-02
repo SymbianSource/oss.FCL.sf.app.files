@@ -6,6 +6,8 @@
         <file>image/qgn_prop_fmgr_mmc_no_sub.svg</file>
         <file>image/qgn_prop_phone_memc.svg</file>
         <file>image/qgn_prop_usb_memc.svg</file>
-        <file>image/qgn_prop_fmgr_ms.svg</file>
+        <file>image/qgn_prop_fmgr_ms.svg</file>        
+        <file>resources/hblistviewitem.css</file>        
+        <file>resources/hblistviewitem.widgetml</file>
     </qresource>    
 </RCC>

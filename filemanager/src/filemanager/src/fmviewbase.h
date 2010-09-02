@@ -47,7 +47,7 @@ public:
     {
         return mViewType;
     }
-     
+    virtual void aboutToClose();
 private slots:
     void on_backAction_triggered();
 	
@@ -56,6 +56,7 @@ signals:
     
 private:
     void init();
+
 private:
     TViewType mViewType;
     

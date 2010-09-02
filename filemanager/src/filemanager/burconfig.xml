@@ -54,7 +54,7 @@
             <exclude_uids>0x2001FE79</exclude_uids> <!--Messaging 101 (EBUCatMessages)-->   
             <exclude_uids>0x2002A542</exclude_uids> <!--CsServer.exe (EBUCatMessages)-->    
             <exclude_uids>0x10003a73</exclude_uids> <!--Contacts model (EBUCatContacts)-->  
-            <exclude_uids>0x101f4cce</exclude_uids> <!--Phonebook-app (EBUCatContacts)-->   
+            <exclude_uids>0x20022EF9</exclude_uids> <!--Phonebook-app (EBUCatContacts) changed from 0x101f4cce-->   
             <exclude_uids>0x10003a5b</exclude_uids> <!--Agenda model (EBUCatCalendar)-->    
             <exclude_uids>0x10005901</exclude_uids> <!--Calendar-app (EBUCatCalendar)-->    
             <exclude_uids>0x10008d38</exclude_uids> <!--Bookmarks (EBUCatBookmarks)-->      
@@ -86,7 +86,7 @@
             <special_flags>EBUCatSpecNone</special_flags>                                   
             <exclude_special_flags>EBUCatSpecNone</exclude_special_flags>                   
             <uids>0x10003a73</uids><!--Contacts model-->                                    
-            <uids>0x101f4cce</uids><!--Phonebook-app-->                                     
+            <uids>0x20022EF9</uids><!--Phonebook-app changed from 0x101f4cce-->                                     
             <exclude_uids></exclude_uids>                                                   
         </backupCategory>                                                                   
                                                                                             

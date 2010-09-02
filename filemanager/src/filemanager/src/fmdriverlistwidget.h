@@ -20,7 +20,6 @@
 #define FMDRIVERLISTWIDGET_H
 
 #include "fmcommon.h"
-#include "fmoperationservice.h"
 #include <hbwidget.h>
 
 class FmDriveModel;
@@ -46,7 +45,7 @@ public:
 
 signals:
 	void activated( const QString &path );
-	void startSearch( const QString &targetPath, const QString &criteria );
+	void startSearch( const QString &criteria );
     
 private slots:
 	void on_list_activated( const QModelIndex &index );
@@ -64,7 +63,6 @@ private slots:
     void on_ejectAction_triggered();
     void on_directoryChanged( const QString &path );
     
-    void on_searchPanel_searchOptionsClicked();
     void on_searchPanel_criteriaChanged( const QString &criteria );
     void on_searchPanel_exitClicked();
 private:
@@ -76,10 +74,8 @@ private:
     HbAbstractViewItem* mCurrentItem;
     HbSearchPanel* mSearchPanel;
     
-    FmOperationService *mOperationService;
     QFileSystemWatcher *mFileSystemWatcher;
     
-    QString mFindTargetPath;
     QGraphicsLinearLayout *mLayout;
 	HbMenu *mContextMenu;
     

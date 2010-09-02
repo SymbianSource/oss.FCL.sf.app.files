@@ -26,7 +26,6 @@
 #include <QDateTime>
 #include <QStandardItemModel>
 #include <QStringList>
-#include <QFileInfo>
 
 #include <hblabel.h>
 #include <hblistview.h>
@@ -44,7 +43,8 @@ FmViewDetailsDialog::FmViewDetailsDialog( QGraphicsItem *parent )
       mSizeofNativeFiles( 0 ),
       mSizeofDocument( 0 ),
       mSizeofCalendar( 0 ),
-      mSizeofContacts( 0 )
+      mSizeofContacts( 0 ),
+      mSizeofMessages( 0 )
 {
     init();
     
@@ -170,6 +170,13 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     sizeOfOthers -= mSizeofContacts;
     
     dataList.clear();
+    dataList << hbTrId ( "Messages:" );
+    dataList << FmUtils::formatStorageSize( mSizeofMessages );
+    mDataListModel->setData(  mDataListModel->index( EMemoryMessages, 0 ), dataList, Qt::DisplayRole );  
+    
+    sizeOfOthers -= mSizeofMessages;
+    
+    dataList.clear();
     dataList << hbTrId ( "Others:" );
     dataList << FmUtils::formatStorageSize( sizeOfOthers );
     mDataListModel->setData(  mDataListModel->index( EMemoryOthers, 0 ), dataList, Qt::DisplayRole );     
@@ -289,6 +296,7 @@ void FmViewDetailsDialog::setSizeofContent( QList<FmDriveDetailsSize*> detailsSi
     mSizeofDocument = 0;
     mSizeofCalendar = 0;
     mSizeofContacts = 0;
+    mSizeofMessages = 0;
     
     for( QList< FmDriveDetailsSize* >::const_iterator it = detailsSizeList.begin(); 
             it!= detailsSizeList.end(); ++it ){
@@ -334,6 +342,11 @@ void FmViewDetailsDialog::setSizeofContent( QList<FmDriveDetailsSize*> detailsSi
                 mSizeofContacts = ( *it )->size();
                 break;
             }
+            case FmDriveDetailsSize::ETypeMessages:
+            {
+                mSizeofMessages = ( *it )->size();
+                break;
+            } 
             default:
                 break;
         }

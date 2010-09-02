@@ -36,13 +36,21 @@ int FmDriveDetailsContent::querySizeofContent( const QString &driveName,
     
     QStringList dataPathList;
     dataPathList.append( QString( FmViewDetail_Contacts ) );    
-    FmDriveDetailsDataGroup driveDetailsDataGroup( FmDriveDetailsSize::ETypeContacts, dataPathList );
+    FmDriveDetailsDataGroup driveDetailsDataGroupForContacts( FmDriveDetailsSize::ETypeContacts, dataPathList );
     
-    err = getDataSizeByAbsolutePath(driveName, driveDetailsDataGroup, detailsSizeList, isStopped);
+    err = getDataSizeByAbsolutePath(driveName, driveDetailsDataGroupForContacts, detailsSizeList, isStopped);
     if( err != FmErrNone ) {
         return err;
     }
     
+    dataPathList.clear();
+    dataPathList.append( QString( FmViewDetail_Messages ) );    
+    FmDriveDetailsDataGroup driveDetailsDataGroupForMessage( FmDriveDetailsSize::ETypeMessages, dataPathList );
+    
+    err = getDataSizeByAbsolutePath(driveName, driveDetailsDataGroupForMessage, detailsSizeList, isStopped);
+    if( err != FmErrNone ) {
+        return err;
+    }
     return FmErrNone;
 }
 int FmDriveDetailsContent::getDataSizeByTraversePath( const QString &driveName,
@@ -134,7 +142,30 @@ int FmDriveDetailsContent::getDataSizeByAbsolutePath( const QString &driveName,
         QString driver(FmUtils::removePathSplash(FmUtils::getDriveNameFromPath(driveName)));
         QFileInfo fileInfo(QString(driver + (*it)));
         if (fileInfo.exists()) {
-            totalSize += fileInfo.size();
+            if (fileInfo.isFile()) {
+                totalSize += fileInfo.size();    
+            } else if (fileInfo.isDir()) {
+                QList<QDir> dirs;
+                dirs.append(QDir(fileInfo.absolutePath()));
+                // traverse the whole path
+                while (!dirs.isEmpty()) {
+                    QDir::Filters filter = QDir::NoDotAndDotDot | QDir::AllEntries;
+                    QFileInfoList infoList = dirs.first().entryInfoList( filter );
+                    for ( QFileInfoList::const_iterator it = infoList.begin(); it != infoList.end(); ++it ) {
+                        if ( *isStopped ){
+                            return FmErrCancel;
+                        }                        
+                        if ( it->isFile() ) {
+                            totalSize += it->size();  
+                        }
+                        else if ( it->isDir() ) {
+                            dirs.append( QDir( it->absoluteFilePath() ) );
+                        } 
+                    }
+                    dirs.removeFirst();
+                }
+            }
+            
         }
     }
  

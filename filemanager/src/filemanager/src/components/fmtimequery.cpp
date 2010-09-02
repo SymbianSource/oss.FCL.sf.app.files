@@ -21,7 +21,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsLinearLayout>
 
-#include <hbdatetimeedit.h>
+#include <hbdatetimepicker.h>
 
 
 FmTimeQuery::FmTimeQuery( QGraphicsItem *parent ) : FmDialog( parent )
@@ -33,7 +33,7 @@ FmTimeQuery::FmTimeQuery( QGraphicsItem *parent ) : FmDialog( parent )
 	QGraphicsLinearLayout *vLayout = new QGraphicsLinearLayout();
     vLayout->setOrientation( Qt::Vertical );
 
-    mTimeWidget = new HbDateTimeEdit();
+    mTimeWidget = new HbDateTimePicker();
     mTimeWidget->setObjectName( "timeQueryTimeWidget" );
 	vLayout->addItem( mTimeWidget );
 

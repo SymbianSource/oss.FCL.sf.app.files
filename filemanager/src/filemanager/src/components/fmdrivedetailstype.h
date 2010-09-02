@@ -148,7 +148,8 @@ private:
             QList<FmDriveDetailsSize*> &detailsSizeList, volatile bool *isStopped );
     
     /*!
-     Gets data size for single FmDriveDetailsDataGroup, the method is find file of absolute path
+     Gets data size for single FmDriveDetailsDataGroup
+     The method will find file or traverse all folders of absolute path
      \a driveName which drive is searching
      \a dataGroup which dataGroup is searching, for example, EGroupContacts...
      \a detailsSizeList if got result, new FmDriveDetailsSize will be appended to detailsSizeList

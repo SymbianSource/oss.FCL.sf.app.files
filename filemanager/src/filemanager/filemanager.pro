@@ -41,8 +41,8 @@ symbian {
             -lshareui \
             -lefsrv \
             -lapgrfx \
-	    -lcone \
-            -ldirectorylocalizer
+    	    -lcone \
+            -lsysutil
 
     TARGET.UID3 = 0x2002BCC0
     TARGET.EPOCHEAPSIZE = 0x020000 0x1000000

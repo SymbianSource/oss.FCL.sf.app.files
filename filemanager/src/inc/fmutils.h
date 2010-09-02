@@ -23,6 +23,10 @@
 
 #include <QString>
 
+/*!
+    \class FmDriverInfo
+    \brief The class FmDriverInfo provide drive info data
+ */
 class FmDriverInfo
 {
 public:
@@ -58,6 +62,7 @@ public:
     */
     enum DriveType
     {
+        EDriveTypeNotExist = -1, // specified drive is not existed in device
         EDriveTypeRom,
         EDriveTypeRam,
         EDriveTypePhoneMemory,
@@ -85,13 +90,36 @@ public:
         this->mDriveState = rhs.mDriveState;
         return *this;
     }
-
+    
+    /*!
+        Total size for drive
+    */
     quint64 size() const { return mSize; }
+    
+    /*!
+        Free size for drive
+    */
     quint64 freeSize() const { return mFreeSize; }
+    
+    /*!
+        path for drive
+    */
     QString name() const { return mName; }
+    
+    /*!
+        volume for drive
+    */
     QString volumeName() const { return mVolumeName; }
+    
+    /*!
+        status for drive
+    */
     DriveState driveState() const { return mDriveState; }
-    FmDriverInfo::DriveType driveType();
+    
+    /*!
+        drive type
+    */
+    DriveType driveType();
     
 private:
     quint64 mSize;
@@ -103,70 +131,79 @@ private:
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS( FmDriverInfo::DriveState )
 
+/*!
+    \class FmUtils
+    \brief The class FmUtils provide util functions
+    This class is implemented by three parts:
+    fmutils.cpp for Qt Based functions
+    fmutils_s60.cpp is symbian implement version for platform based functions
+    fmutils_win.cpp is win32 implement version for platform based functions( a simple wrapper )
+ */
 class FmUtils
 {
 public:
-    static QString getDriveNameFromPath( const QString &path );
-	static QString getDriveLetterFromPath( const QString &path );
+    //////////////////////////////////////////////////////////////////
+    // <QtBasedFunctions>
+    static QString  getDriveNameFromPath( const QString &path );
+    static QString  getDriveLetterFromPath( const QString &path );
+    static QString  formatStorageSize( quint64 size );
+    static bool     isDrive( const QString &path );
+    static QString  formatPath( const QString &path  );
+    static QString  fillPathWithSplash( const QString &filePath );
+    static QString  removePathSplash( const QString &filePath );
+    static void     getDriveList( QStringList &driveList, bool isHideUnAvailableDrive );
+    static QString  fillDriveVolume( QString driveName, bool isFillWithDefaultVolume );
+    static QString  getDefaultVolumeName( const QString &driveName );
+    static QString  getVolumeNameWithDefaultNameIfNull( const QString &diskName, bool &defaultName );
+    static bool     isPathEqual( const QString &pathFst, const QString &pathLast );
+    static bool     checkFolderFileName( const QString& name );
+    static bool     checkNewFolderOrFile( const QString& fileName, const QString &path, QString &errString );
+    static bool     isSubLevelPath( const QString &src, const QString &dest );
+    // </QtBasedFunctions>
+    //////////////////////////////////////////////////////////////////
+    
+    
+    //////////////////////////////////////////////////////////////////
+    // <platformBasedFunctions>
     static FmDriverInfo queryDriverInfo( const QString &driverName );
-    static QString formatStorageSize( quint64 size );
-    static int removeDrivePwd( const QString &driverName, const QString &Pwd );
-    static int unlockDrive( const QString &driverName, const QString &Pwd );
-    static int checkDrivePwd( const QString &driverName, const QString &pwd);
-    static int setDrivePwd( const QString &driverName, const QString &oldPwd, const QString &newPwd);
-    static void emptyPwd( QString &pwd );
-    static int renameDrive( const QString &driverName, const QString &newVolumeName);
-    static int ejectDrive( const QString &driverName );
-    static QString getFileType( const QString &filePath  );
-    static quint64 getDriveDetailsResult( const QString &folderPath, const QString &extension );
-    static bool isDriveC( const QString &driverName );
-    static bool isDrive( const QString &path );
-	static void createDefaultFolders( const QString &driverName );
-    static QString fillPathWithSplash( const QString &filePath );
-    static QString removePathSplash( const QString &filePath );
-    static QString formatPath( const QString &path  );
-    static bool checkDriveAccessFilter( const QString &driveName );
-    static QString checkDriveToFolderFilter( const QString &path );
-    static QString checkFolderToDriveFilter( const QString &path );
-    static int isPathAccessabel( const QString &path );
-    static bool isDriveAvailable( const QString &path );
-    static bool isPathEqual( const QString &pathFst, const QString &pathLast );
-
-    /// fill driveList of drives can be shown in driveListView
-    static void getDriveList( QStringList &driveList, bool isHideUnAvailableDrive );
-    static QString fillDriveVolume( QString driveName, bool isFillWithDefaultVolume );
-
-    static int launchFile( const QString &filePath );
-    static void sendFiles( QStringList &filePathList );
-    static QString getBurConfigPath( QString appPath );
-    static bool isDefaultFolder( const QString &folderPath  );
-    static QString Localize( const QString &path );
     
-    static int getMaxFileNameLength();
-    static bool checkMaxPathLength( const QString& path );
-    static bool checkFolderFileName( const QString& name );
+    // password related functions
+    static int      removeDrivePwd( const QString &driverName, const QString &Pwd );
+    static int      unlockDrive( const QString &driverName, const QString &Pwd );
+    static int      checkDrivePwd( const QString &driverName, const QString &pwd);
+    static int      setDrivePwd( const QString &driverName, const QString &oldPwd, const QString &newPwd);
+    static void     emptyPwd( QString &pwd );
     
-    /**
-     * check file or folder path is illegal or not.
-     *
-	 * @param  fileName file/folder name, used to check illegal characters
-     * @param  path file/folder path, used to check if path is available to use.
-     * @param  errString if return false, errString will be set for error note.
-     * @return true for not illegal and false for illegal path.
-     */
-    static bool checkNewFolderOrFile( const QString& fileName, const QString &path, QString &errString );
+    // external drive related functions
+    static int      renameDrive( const QString &driverName, const QString &newVolumeName);
+    static int      ejectDrive( const QString &driverName );
     
-    /*
-     * get the volume name of the disk, if it is null, then return the default name.
-     * @param diskName the driver letter.
-     * @param defaultName whether it is the default name.
-     * @return the volume name.
-     */
-    static QString getVolumeNameWithDefaultNameIfNull( const QString &diskName, bool &defaultName );
-
-    static bool isSubLevelPath( const QString &src, const QString &dest );
-
-	static int setFileAttributes( const QString &srcFile, const QString &desFile ); 
+    // drive security related functions
+    static bool     checkDriveAccessFilter( const QString &driveName );
+    static QString  checkDriveToFolderFilter( const QString &path );
+    static QString  checkFolderToDriveFilter( const QString &path );
+    static int      isPathAccessabel( const QString &path );
+    static bool     isDriveAvailable( const QString &path );
+    
+    // system default folder related functions
+    static bool     isDefaultFolder( const QString &folderPath  );
+    static void     createDefaultFolders( const QString &driverName );
+    static QString  localize( const QString &path );
+        
+    // copy move related functions
+    static int      setFileAttributes( const QString &srcFile, const QString &desFile );
+    static bool     hasEnoughSpace( const QString &targetDrive, qint64 size );
+    static int      moveInsideDrive( const QString &source, const QString &target );
+	
+    // other fucntions
+    static int      launchFile( const QString &filePath );
+    static QString  getBurConfigPath( QString appPath );
+    static QString  getFileType( const QString &filePath  );
+    static bool     isDriveC( const QString &driverName );
+    static int      getMaxFileNameLength();
+    static bool     checkMaxPathLength( const QString& path );
+    // </platformBasedFunctions>
+    //////////////////////////////////////////////////////////////////
 };
 
 #endif

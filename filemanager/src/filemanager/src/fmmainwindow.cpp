@@ -23,11 +23,14 @@
 
 FmMainWindow::FmMainWindow() : mViewManager( 0 ), mFirstViewLoaded( false )
 {
-    connect(this, SIGNAL(viewReady()), this, SLOT(delayedLoading()));
+   // connect(this, SIGNAL(viewReady()), this, SLOT(delayedLoading()));
+    init();
 }
 
 FmMainWindow::~FmMainWindow()
 {
+   //save file manager activity to activity manager.
+    mViewManager->saveActivity();   
     FmViewManager::RemoveViewManager();
 }
 
@@ -48,6 +51,8 @@ void FmMainWindow::init()
     FM_LOG("FmMainWindow::init start");
     mViewManager = FmViewManager::CreateViewManager( this );
     mViewManager->createDriverView();
+    connect(this, SIGNAL(aboutToChangeView(HbView *, HbView *)), 
+            mViewManager, SLOT(onAboutToChangeView(HbView *, HbView *)));
     connect( this, SIGNAL( orientationChanged( Qt::Orientation ) ),
              this, SLOT( onOrientationChanged( Qt::Orientation ) ) );
     

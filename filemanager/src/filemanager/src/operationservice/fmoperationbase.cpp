@@ -107,9 +107,12 @@ int FmOperationBase::prepare()
 /*
   Constructs a backup operation with
   \a parent parent
+  \a targetDrive backup target drive
+  backup \a content is mask for contents want to backup. Refer to mContent in FmBackupSettings
 */
-FmOperationBackup::FmOperationBackup( QObject *parent )
-    : FmOperationBase( parent, FmOperationService::EOperationTypeBackup )
+FmOperationBackup::FmOperationBackup( QObject *parent, const QString &targetDrive, quint32 content )
+    : FmOperationBase( parent, FmOperationService::EOperationTypeBackup ),
+      mTargetDrive( targetDrive ), mContent( content )
 {
 }
 
@@ -119,6 +122,22 @@ FmOperationBackup::FmOperationBackup( QObject *parent )
 */
 FmOperationBackup::~FmOperationBackup()
 {
+}
+
+/*
+  Get target backup drive
+*/
+QString FmOperationBackup::targetDrive() const 
+{
+    return mTargetDrive;
+}
+
+/*
+  Get backup content mask. Refer to mContent in FmBackupSettings
+*/
+quint32 FmOperationBackup::content() const
+{
+    return mContent;
 }
 
 /*
@@ -141,7 +160,7 @@ FmOperationRestore::~FmOperationRestore()
 /*
   Returns the backup items
 */
-quint64 FmOperationRestore::selection()
+quint64 FmOperationRestore::selection() const
 {
     return mSelection;
 }

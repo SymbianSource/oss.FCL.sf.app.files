@@ -72,8 +72,8 @@ bool FmBackupRestoreHandler::startBackup( FmOperationBackup *operationBackup )
     mCurrentProcess = ProcessBackup;
     bool ret = mBkupEngine->startBackup( backupConfigLoader()->driversAndOperationList(),
         backupConfigLoader()->backupCategoryList(), 
-        mBkupEngine->BackupSettingsL()->availableTargetDrive(),
-        mBkupEngine->BackupSettingsL()->content() );
+        operationBackup->targetDrive(), // targetDrive is stored in FmOperationBackup
+        operationBackup->content() );   // content     is stored in FmOperationBackup
 
     if( !ret ) {
         mCurrentProcess = ProcessNone;

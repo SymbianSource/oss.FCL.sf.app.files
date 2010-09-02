@@ -18,8 +18,8 @@
 
 
 // INCLUDE FILES
-#include <e32std.h>
 #include "fmdriveevent.h"
+#include <e32std.h>
 #include "fmcommon.h"
 
 #include <aknnotewrappers.h> 

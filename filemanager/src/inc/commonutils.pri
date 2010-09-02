@@ -23,7 +23,8 @@ INTERNAL_HEADERS += $$PWD/fmutils.h \
 INTERNAL_SOURCES += $$PWD/fmdrivemodel.cpp \
                     $$PWD/fmfileiconprovider.cpp \
                     $$PWD/fmdrivewatcher/fmdrivewatcher.cpp \
-                    $$PWD/fmfiletyperecognizer.cpp
+                    $$PWD/fmfiletyperecognizer.cpp \
+                    $$PWD/fmutils.cpp
 
 symbian {
     INTERNAL_HEADERS += $$PWD/fms60utils.h \

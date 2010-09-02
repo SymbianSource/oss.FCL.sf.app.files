@@ -199,12 +199,12 @@ void FmFileView::initMainWidget()
 
 	setLayout( vLayout );
 	
-    connect( mWidget, SIGNAL( startSearch( const QString&,  const QString& ) ),
-             this, SLOT( startSearch( const QString&, const QString& ) ) );
+    connect( mWidget, SIGNAL( startSearch( QString ) ),
+             this, SLOT( startSearch( QString ) ) );
     connect( mWidget, SIGNAL( setEmptyMenu( bool ) ),
              this, SLOT( on_mainWidget_setEmptyMenu( bool ) ) );
-    connect( mWidget, SIGNAL( setTitle( const QString & ) ),
-             this, SLOT( on_mainWidget_setTitle( const QString & ) ) );
+    connect( mWidget, SIGNAL( setTitle( QString ) ),
+             this, SLOT( on_mainWidget_setTitle( QString ) ) );
 }
 
 void FmFileView::initToolBar()
@@ -471,10 +471,11 @@ void FmFileView::on_sortTypeAction_triggered()
     mWidget->sortFiles( FmFileBrowseWidget::ESortByType );
 }
 
-void FmFileView::startSearch( const QString &targetPath, const QString &criteria )
+void FmFileView::startSearch( const QString &criteria )
 {    
-    if ( !criteria.isEmpty() && !targetPath.isEmpty() ) {
-        FmViewManager::viewManager()->createFindView( criteria, targetPath );
+    if ( !criteria.isEmpty() ) {
+        QString targetPath( mWidget->currentPath().filePath() );
+        FmViewManager::viewManager()->createFindView( criteria, QStringList()<<targetPath );
     }
 }
 

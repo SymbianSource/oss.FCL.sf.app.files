@@ -96,7 +96,7 @@ void FmFileWidget::on_listActivated()
 {
     FM_LOG("FmFileWidget::on_list_activated start" );
     if( mCurrentModel == mDriveModel ) {
-    //If currenty model is DriveModel, open drive and set path
+    //If current model is DriveModel, open drive and set path
         QString driveName = mDriveModel->driveName( mActivatedModelIndex );
         QString checkedPath = FmUtils::checkDriveToFolderFilter( driveName );
         if( checkedPath.isEmpty() ) {
@@ -113,7 +113,7 @@ void FmFileWidget::on_listActivated()
         FM_LOG("FmFileWidget::on_list_activated finish emit pathChanged" );
     }
     else if( mCurrentModel == mFileSystemModel ) {
-    //If currenty model is FileSystemModel, open path or emit file activate signal.
+    //If current model is FileSystemModel, open path or emit file activate signal.
         if ( mFileSystemModel->isDir( mActivatedModelIndex ) ) {
             FM_LOG("FmFileWidget::on_list_activated start changeRootIndex" );
             changeRootIndex( mActivatedModelIndex );
@@ -221,7 +221,7 @@ bool FmFileWidget::cdUp()
     QString path( FmUtils::checkFolderToDriveFilter( currentPath().absoluteFilePath() ) );
     QFileInfo fileInfo( path );
     QString cdUpPath;
-    // path length>3 means currenty path is a sub folder, then get up level path and navigate to it
+    // path length>3 means current path is a sub folder, then get up level path and navigate to it
     // Otherwise means current path is a top level drive path, Should navigate to drive view. So setRootPath with empty path string.
     if( path.length() > 3 ) {
         cdUpPath = fileInfo.dir().absolutePath();

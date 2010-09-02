@@ -16,8 +16,8 @@
  *      The header file of the file type recognizer
  */
 
-#ifndef FMFILERECOGNIZER_H
-#define FMFILERECOGNIZER_H
+#ifndef FMFILETYPERECOGNIZER_H
+#define FMFILETYPERECOGNIZER_H
 
 #include "fmcommon.h"
 #include <QString>
@@ -63,5 +63,5 @@ private:
     QMap<QString, FileType>     mFileExtensionMap;
 };
 
-#endif /* FMDRIVEDETAILSTYPE_H */
+#endif /* FMFILETYPERECOGNIZER_H */
 

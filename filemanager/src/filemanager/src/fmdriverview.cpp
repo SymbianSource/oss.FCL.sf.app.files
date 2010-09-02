@@ -20,7 +20,9 @@
 #include "fmdriverlistwidget.h"
 #include "fmviewmanager.h"
 #include "fmcommon.h"
+#include "fmutils.h"
 
+#include <QDir>
 #include <QApplication>
 
 #include <hbmenu.h>
@@ -80,11 +82,11 @@ void FmDriverView::initMenu()
 void FmDriverView::initDiskListWidget()
 {
     mDriverList = new FmDriverListWidget( this );
-    connect( mDriverList, SIGNAL( activated( const QString& ) ),
-             this, SLOT( activated( const QString& ) ), Qt::QueuedConnection );
+    connect( mDriverList, SIGNAL( activated( QString ) ),
+             this, SLOT( activated( QString ) ), Qt::QueuedConnection );
     
-    connect( mDriverList, SIGNAL( startSearch( const QString&,  const QString& ) ),
-             this, SLOT( startSearch( const QString&, const QString& ) ) );
+    connect( mDriverList, SIGNAL( startSearch( QString ) ),
+        this, SLOT( startSearch( QString ) ) );
     
     setWidget( mDriverList );
 }
@@ -158,10 +160,22 @@ void FmDriverView::on_findAction_triggered()
     mDriverList->activeSearchPanel();  
 }
 
-void FmDriverView::startSearch( const QString &targetPath, const QString &criteria )
+void FmDriverView::startSearch( const QString &criteria )
 {    
-    if ( !criteria.isEmpty() && !targetPath.isEmpty() ) {
-        FmViewManager::viewManager()->createFindView( criteria, targetPath );
+    // search all drives when start find in drive view
+    QStringList findTargetPathList;           
+    QStringList driveList;
+    FmUtils::getDriveList( driveList, true );
+    foreach( const QString &drive, driveList ) {
+        QString targetPath =  FmUtils::fillPathWithSplash( drive );
+        if( FmUtils::isDriveC( targetPath ) ) {
+            targetPath =  QString( Folder_C_Data );
+        }
+        findTargetPathList.append( targetPath );
+    }
+
+    if ( !criteria.isEmpty() ) {
+        FmViewManager::viewManager()->createFindView( criteria, findTargetPathList );
     }
 }
 

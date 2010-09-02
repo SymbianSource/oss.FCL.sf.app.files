@@ -20,6 +20,7 @@
 #include "fmoperationthread.h"
 #include "fmbackupconfigloader.h"
 #include "fmbkupengine.h"
+#include "fmbackupsettings.h"
 #include "fmviewdetailsdialog.h"
 #include "fmoperationresultprocesser.h"
 #include "fmoperationcopyormove.h"
@@ -65,13 +66,10 @@
  * Constructs one operation Service with \a parent.
  */
 FmOperationService::FmOperationService( QObject *parent ) : QObject( parent ),
-        mCurrentOperation( 0 )
+        mCurrentOperation( 0 ), mBackupRestoreHandler( 0 )
 {
     mThread = new FmOperationThread( this );
     mThread->setObjectName( "operationThread" );
-    mBackupRestoreHandler = new FmBackupRestoreHandler( this );
-    mBackupRestoreHandler->setObjectName( "backupRestore" ) ;
-
     mOperationResultProcesser = new FmOperationResultProcesser( this );
     
     QMetaObject::connectSlotsByName( this );
@@ -83,7 +81,9 @@ FmOperationService::FmOperationService( QObject *parent ) : QObject( parent ),
 FmOperationService::~FmOperationService()
 {
     delete mThread;    
+    mThread = 0;
     delete mBackupRestoreHandler;
+    mBackupRestoreHandler = 0;
 }
 
 /*
@@ -95,7 +95,7 @@ bool FmOperationService::isRunning()
 }
 
 /*
- * Copys the file or foler \a targetPath asynchronously. 
+ * Copies the file or foler \a targetPath asynchronously. 
  */
 int FmOperationService::asyncCopy( const QStringList &sourceList, const QString &targetPath )
 {    
@@ -204,7 +204,11 @@ int FmOperationService::asyncBackup()
         return FmErrAlreadyStarted;
     Q_ASSERT( !mCurrentOperation );
 
-    FmOperationBackup *operationBackup = new FmOperationBackup( mBackupRestoreHandler );
+    // BackupSettingsL will not leave, coding convention will be improvied in another task.
+    QString targetDrive( backupRestoreHandler()->bkupEngine()->BackupSettingsL()->availableTargetDrive() );
+    quint32 content( backupRestoreHandler()->bkupEngine()->BackupSettingsL()->content() );
+    FmOperationBackup *operationBackup = 
+            new FmOperationBackup( backupRestoreHandler(), targetDrive, content );
     mCurrentOperation = operationBackup;
     int ret = backupRestoreHandler()->startBackup( operationBackup );
     if( ret ){
@@ -242,7 +246,7 @@ int FmOperationService::asyncRestore( quint64 selection )
  */
 int FmOperationService::syncDeleteBackup( quint64 selection )
 {
-    return mBackupRestoreHandler->deleteBackup( selection );
+    return backupRestoreHandler()->deleteBackup( selection );
 }
 
 /*
@@ -325,7 +329,8 @@ int FmOperationService::syncLaunchFileOpen( const QString &filePath )
 FmBackupRestoreHandler *FmOperationService::backupRestoreHandler()
 {
     if( !mBackupRestoreHandler ) {
-        mBackupRestoreHandler = new FmBackupRestoreHandler( this );
+        mBackupRestoreHandler = new FmBackupRestoreHandler( this );        
+        mBackupRestoreHandler->setObjectName( "backupRestore" ) ;
         QMetaObject::connectSlotsByName( this );
     }
     return mBackupRestoreHandler;

@@ -54,13 +54,13 @@ QString FmOperationFormat::driverName()
  * Starts to format.
  * \a isStopped not used
  */
-void FmOperationFormat::start( volatile bool */*isStopped*/ );
+void FmOperationFormat::start( volatile bool */*isStopped*/ )
 { 
     QString logString = "FmOperationFormat::start";
     FM_LOG( logString );
     
     if( mDriverName.isEmpty() ) {
-        emit notifyError( FmErrWrongParam );
+        emit notifyError( FmErrWrongParam, QString() );
         return;
     }
     int totalCount( 100 );

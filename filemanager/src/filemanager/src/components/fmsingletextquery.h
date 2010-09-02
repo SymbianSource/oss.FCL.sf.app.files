@@ -29,7 +29,7 @@ class FmSingleTextQuery : public FmDialog
 Q_OBJECT
 public:
     
-    FmSingleTextQuery( HbLineEdit::EchoMode echoMode = HbLineEdit::Normal, QGraphicsItem *parent = 0 );
+    explicit FmSingleTextQuery( HbLineEdit::EchoMode echoMode = HbLineEdit::Normal, QGraphicsItem *parent = 0 );
     ~FmSingleTextQuery();
 
 public:
@@ -49,7 +49,7 @@ private:
     HbLineEdit  *mTextEdit;
     HbLineEdit::EchoMode mEchoMode;
 
-    // used to check if input text is vaild. Disable primary action when text is not vaild
+    // used to check if input text is valid. Disable primary action when text is not valid
     QStringList mRegExpStringList;
 };
 

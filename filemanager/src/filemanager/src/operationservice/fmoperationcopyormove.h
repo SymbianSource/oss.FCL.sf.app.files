@@ -46,6 +46,7 @@ private:
     void increaseProgress( quint64 size );
     void queryForRename( const QString &srcFile, QString *destFile );
     int copyOneFile( const QString &srcFile, const QString &desFile );
+    bool targetHasEnoughSpace();
 
 private:
     FmOperationService *mOperationService;

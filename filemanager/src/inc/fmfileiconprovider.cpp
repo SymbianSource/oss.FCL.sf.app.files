@@ -38,7 +38,7 @@
 #define usbMemoryIcon   "qtg_large_usb_memory"
 
 //TODO: UI_Update: mmcl locked icon have not provided in icon spec
-// Just use orignal custom-defined icon
+// Just use original custom-defined icon
 #define mmcLockedIcon   ":image/qgn_prop_mmc_locked.svg"
 
 
@@ -95,10 +95,10 @@ QIcon FmFileIconProvider::icon(const QFileInfo &info) const
                 case FmDriverInfo::EDriveTypePhoneMemory:
                     retIcon = HbIcon( phoneMemoryIcon ).qicon();
                     break;
-                default:
-                    Q_ASSERT_X( false, "FmFileIconProvider::icon", "please handle drive type");
+                case FmDriverInfo::EDriveTypeNotExist: // drive not exist, let QFileIconProvider to judge icon
+                default:  // filemanger do not provide icon for other drive types, let QFileIconProvider to judge icon
                     break;
-                }
+               }
             break;
             }
         case FmFileTypeRecognizer::FileTypeFolder:
@@ -167,8 +167,6 @@ QIcon FmFileIconProvider::icon(const QFileInfo &info) const
         }
     
     // if cannot get icon, return icon from QFileIconProvider
-    // this will be mostly used in win32 platform,
-    // because path for HbIcon only existed in hb theme of symbian 
     if( retIcon.isNull() ) {
         retIcon = QFileIconProvider::icon( info );
     }

@@ -67,6 +67,8 @@
 
 // define  contact data path for view details.
 #define FmViewDetail_Contacts ( "\\private\\10003a73\\SQLite__Contacts.cdb" )
+// define message data path for view details
+#define FmViewDetail_Messages ( "\\private\\1000484b\\Mail2" )
 
 #define FmMaxLengthofDriveName           11
 #define FmMaxLengthofDrivePassword       8
@@ -77,13 +79,13 @@
 // used to match un-empty string, and is not totally empty characters.
 #define Regex_ValidUnEmpty QString( "^.*[^\\s].*$" )
 
-// this is regexp for vaild file/folder name: no \/:*?"<>| and is not totally empty characters.
+// this is regexp for valid file/folder name: no \/:*?"<>| and is not totally empty characters.
 // file name can not end with "." , but it is not include in this RegExp. It should be checked in Regex_ValidNotEndWithDot
 // this expression is composed by two expressions:
 // ^.*[^\\s].*$  used to match un-empty string and is not totally empty characters.
 // [^\\\\/:*?\"<>|] used to math valid file/folder name
 // merge the two regex together:
-// vaild file/folder name and is not totally empty.
+// valid file/folder name and is not totally empty.
 #define Regex_ValidFileFolderName QString( "^[^\\\\/:*?\"<>|]*[^\\\\/:*?\"<>|\\s][^\\\\/:*?\"<>|]*$" )
 
 // is not end with dot( trim blank characters in the end first )

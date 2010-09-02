@@ -66,7 +66,7 @@ private slots:
 	void on_sortSizeAction_triggered();
 	void on_sortTypeAction_triggered();
 	
-    void startSearch( const QString &targetPath, const QString &criteria );
+    void startSearch( const QString &criteria );
     void on_mainWidget_setEmptyMenu( bool isMenuEmpty );
     void on_mainWidget_setTitle( const QString &title );
 

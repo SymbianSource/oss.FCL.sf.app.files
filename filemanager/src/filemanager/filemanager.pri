@@ -19,8 +19,7 @@ INCLUDEPATH += ./src/components
 INCLUDEPATH += ./src/backuprestore
 INCLUDEPATH += ./src/operationservice
 
-HEADERS += src/fmdriverlistwidget.h \
-           src/listviewitems.h \
+HEADERS += src/fmdriverlistwidget.h \           
            src/fmfileview.h \
            src/fmfilebrowsewidget.h \
            src/fmdriverview.h \
@@ -62,8 +61,7 @@ HEADERS += src/fmdriverlistwidget.h \
            src/components/fmdrivequery.h
 
 SOURCES += src/main.cpp \
-           src/fmdriverlistwidget.cpp \
-           src/listviewitems.cpp \
+           src/fmdriverlistwidget.cpp \           
            src/fmfileview.cpp \
            src/fmfilebrowsewidget.cpp \
            src/fmdriverview.cpp \

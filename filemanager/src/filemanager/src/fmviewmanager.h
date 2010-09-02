@@ -22,6 +22,7 @@
 #include <QObject>
 #include <QList>
 #include "fmcommon.h"
+#include <QPixmap>
 
 class FmMainWindow;
 class HbView;
@@ -31,10 +32,11 @@ class FmOperationBase;
 class QFileSystemWatcher;
 class FmDriveWatcher;
 class FmDialog;
+class ShareUi;
 
 /*
  * this class is used to record relationship between dialog and drive name 
- * FmViewManager will auto-close dialog which releated drive is not available again.
+ * FmViewManager will auto-close dialog which related drive is not available again.
  * for example. set name to MMC will pop a dialog, if add the dialog to FmViewManager::addDlgCloseUnit 
  * then after eject MMC, the dialog will be auto-closed by FmViewManager::checkDlgCloseUnit()
  */
@@ -64,19 +66,20 @@ public:
     static void RemoveViewManager();
     static FmViewManager *viewManager();
     FmOperationService *operationService();
+    ShareUi *shareUi();
     
     Qt::Orientation orientation(); 
 
     void createFileView( const QString &path,
-        bool enableBackPathCheck = true, bool disableFind = false );
-    void createFindView( const QString &keyword, const QString &path );
+    bool enableBackPathCheck = true, bool disableFind = false );
+    void createFindView( const QString &keyword, const QStringList &pathList );
     void createDriverView();
     void createSplitView();
 	void createBackupView();
 	void createRestoreView();
     void createDeleteBackupView();
-
-	// add a close unit. this is used to auto-close dialog which releated drive is not available again.
+    void saveActivity();    
+	// add a close unit. this is used to auto-close dialog which related drive is not available again.
 	void addDlgCloseUnit( FmDlgCloseUnit* unit )
 	{
 		FM_LOG( "FmViewManager::addDlgCloseUnit_" + unit->associatedDrives() );
@@ -110,6 +113,8 @@ public slots:
     // so this is the central controller function
     void on_operationService_notifyFinish( FmOperationBase *operationBase );
     
+    void onAboutToChangeView(HbView * oldView, HbView *newView);
+    
 signals:
     // emit when drive space is changed by some operation inside filemanager.
     void driveSpaceChanged();
@@ -124,7 +129,7 @@ private:
     // when drive is ejected, this function will be called and exam dialogs in mDlgCloseUnitList
     // it will colse dialogs if related drive is not available
 	void checkDlgCloseUnit();
-    
+	    
 private:
      static FmViewManager *mViewManager;
 
@@ -141,6 +146,11 @@ private:
     // used to record some dialogs that related to drive
     // the dialog should be closed in checkDlgCloseUnit if drive is not available 
 	QList<FmDlgCloseUnit*> mDlgCloseUnitList;
+	
+	QPixmap mScreenShot;
+	
+	// used to send files
+    ShareUi *mShareUi;
 };
 
 

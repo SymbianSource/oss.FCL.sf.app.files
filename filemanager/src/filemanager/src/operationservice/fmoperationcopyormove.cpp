@@ -100,12 +100,11 @@ void FmOperationCopyOrMove::start( volatile bool *isStopped )
     mCopiedOrMovedSize  = 0;
     mCurrentStep = 0;
 
-    if( mSourceList.empty() ) {
+    if ( mSourceList.empty() ) {
         emit notifyError( FmErrWrongParam, mErrString );    
         return ;
     }
-
-    emit notifyPreparing( true );
+	emit notifyPreparing( true );
 
     int numofFolders = 0;
     int numofFiles      = 0;
@@ -115,8 +114,11 @@ void FmOperationCopyOrMove::start( volatile bool *isStopped )
     if( ret != FmErrNone ) {
         emit notifyError( ret, mErrString );
         return;        
-    }
-
+    }    
+    if ( !targetHasEnoughSpace() ) {
+        emit notifyError( FmErrDiskFull, mErrString );
+        return;
+        }    
     emit notifyStart( true, mTotalSteps );
 
     foreach( const QString& source, mSourceList ) {
@@ -210,6 +212,13 @@ int FmOperationCopyOrMove::copyOrMove( const QString &source, const QString &tar
     int ret = FmErrNone;
     
     if ( fi.isFile() ) {
+        if ( FmUtils::getDriveLetterFromPath( source ) == 
+                FmUtils::getDriveLetterFromPath( targetPath ) && 
+                operationType() == FmOperationService::EOperationTypeMove ) 
+            {
+            return FmUtils::moveInsideDrive( source, newName );
+            
+            }
         quint64 fileSize = fi.size();
         ret = copyOneFile( source, newName );
         if (ret != FmErrNone) {
@@ -364,7 +373,7 @@ void FmOperationCopyOrMove::queryForRename( const QString &srcFile, QString *des
 }
 
 /*
- * Copys one file from \a srcFile to \a desFile
+ * Copies one file from \a srcFile to \a desFile
  */
 int FmOperationCopyOrMove::copyOneFile( const QString &srcFile, const QString &desFile )
 {
@@ -424,3 +433,14 @@ int FmOperationCopyOrMove::prepare()
     }
 }
 
+bool FmOperationCopyOrMove::targetHasEnoughSpace()
+{
+    QString sourceDrive = FmUtils::getDriveLetterFromPath( mSourceList.front() );
+    QString targetDrive = FmUtils::getDriveLetterFromPath( mTargetPath );
+    if ( sourceDrive == targetDrive &&
+            operationType() == FmOperationService::EOperationTypeMove ) {
+        return true;
+    } else {
+        return FmUtils::hasEnoughSpace( targetDrive, mTotalSize );
+    }
+}

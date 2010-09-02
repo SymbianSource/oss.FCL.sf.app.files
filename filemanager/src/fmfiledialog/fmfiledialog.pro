@@ -28,8 +28,8 @@ symbian {
             -lshareui \
             -lefsrv \
             -lapgrfx \
-	    -lcone \
-            -ldirectorylocalizer
+            -lcone \
+            -lsysutil
             
     TARGET.UID3 = 0x2002BCC3
 

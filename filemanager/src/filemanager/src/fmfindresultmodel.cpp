@@ -19,10 +19,20 @@
 #include "fmfindresultmodel.h"
 #include "fmfindthread.h"
 #include "fmfileiconprovider.h"
+#include "fmcommon.h"
 
 #include <QDateTime>
 
 #include <hbglobal.h>
+
+// wait \a circularWaitingTimeForStartFind microsecond to try to start find again
+// Since find can not be started while last find is not stopped.
+const int circularWaitingTimeForStartFind = 200;
+
+// wait \a firstWaitingTimeForStartFind microsecond to start find when accept find from caller.
+// Means user can continuously input words for search, so that find will not immediately start after accept each input event.
+// Search will be started after \a firstWaitingTimeForStartFind time of last user input
+const int firstWaitingTimeForStartFind = 750;
 
 /*!
     \fn void finished()
@@ -39,14 +49,92 @@
 FmFindResultModel::FmFindResultModel( QObject *parent )
     : QAbstractListModel( parent )
 {
+    FM_LOG("FmFindResultModel::FmFindResultModel");
     init();
-    connect( mFindThread, SIGNAL(finished()), this, SIGNAL(finished()) );
+    connect( mFindThread, SIGNAL( finished()), this, SLOT(onThreadFinished()) );
 	connect( mFindThread, SIGNAL(found(QStringList)), this, SLOT(on_findThread_found( QStringList) ), Qt::BlockingQueuedConnection ); 
+    connect( &mTimer, SIGNAL(timeout()), this, SLOT(startFind()));
 }
 
 FmFindResultModel::~FmFindResultModel()
 {
+    FM_LOG("FmFindResultModel::~FmFindResultModel START");
+    mFindThread->stop();
+    if( mFindThread->isRunning() ) {
+        mStopEventLoop.exec();
+    }
 	delete mIconProvider;
+    FM_LOG("FmFindResultModel::~FmFindResultModel END");
+}
+
+/*!
+    Send find \a regExp and \a pathList to find queue
+    last un-stopped find will be stopped and start new find in 0 - 2 seconeds.
+*/
+void FmFindResultModel::find( const QRegExp &regExp, const QStringList &pathList )
+{
+    mFindPath   = pathList;
+    mRegExp     = regExp;
+
+    mTimer.stop();
+
+	if (mFindThread->isRunning()) {
+        mFindThread->stop();
+    }
+    mTimer.start( firstWaitingTimeForStartFind );
+}
+
+/*!
+    Internal start entrance, will be triggered by timer
+    Wait till last find stopped and start new find.
+*/
+void FmFindResultModel::startFind()
+{
+    mTimer.stop();
+    if (mFindThread->isRunning()) {
+        mFindThread->stop();
+        mTimer.start( circularWaitingTimeForStartFind );
+		return;
+    }
+
+    // Find starting. Initialize context.
+    mFindThread->setFindPathList( mFindPath );
+    mFindThread->setPattern( mRegExp );
+	removeRows( 0, rowCount() );
+    emit findStarted();
+    mFindThread->start();
+}
+
+/*!
+    Return if find is inprogress
+*/
+bool FmFindResultModel::isFinding() const
+{
+    return mFindThread->isRunning();
+}
+
+/*!
+    Stop find
+*/
+void FmFindResultModel::stopFind()
+{
+    mFindThread->stop();
+    if( mFindThread->isRunning() ) {
+        mStopEventLoop.exec();
+    }
+}
+
+/*
+    Find finish slot.
+*/
+void FmFindResultModel::onThreadFinished()
+{
+    FM_LOG("FmFindResultModel::onThreadFinished");
+
+    // close event loop so that blocked destructor and stopFind() can be released.
+    mStopEventLoop.exit();
+
+    emit findFinished();
 }
 
 /*!
@@ -67,6 +155,9 @@ int FmFindResultModel::rowCount( const QModelIndex &parent ) const
     return 0;
 }
 
+/*!
+   Get model column count
+*/
 int FmFindResultModel::columnCount( const QModelIndex &parent ) const
 {
     if ( !parent.isValid() )
@@ -75,6 +166,9 @@ int FmFindResultModel::columnCount( const QModelIndex &parent ) const
     return 0;
 }
 
+/*!
+   Get model data
+*/
 QVariant FmFindResultModel::data( const QModelIndex &index, int role ) const
 {
     if (!indexValid( index ))
@@ -105,11 +199,17 @@ QVariant FmFindResultModel::data( const QModelIndex &index, int role ) const
     return QVariant();
 }
 
+/*!
+   Get filePath by \a index
+*/
 QString FmFindResultModel::filePath ( const QModelIndex & index ) const
 {
    return fileInfo( index ).filePath();
 }
 
+/*!
+   Get header data by column number \a section
+*/
 QVariant FmFindResultModel::headerData( int section, Qt::Orientation orientation, int role ) const
 {
     if (orientation == Qt::Horizontal) {
@@ -184,55 +284,15 @@ bool FmFindResultModel::removeRows( int row, int count, const QModelIndex &paren
 	return true;
 }
 
+/*!
+    Get QFileInfo by \a index
+*/
 QFileInfo FmFindResultModel::fileInfo( const QModelIndex &index ) const
 {
     if (index.row() >= 0 && index.row() < mFindResult.size())
         return QFileInfo( mFindResult[index.row()] );
     else
         return QFileInfo();
-}
-
-QString FmFindResultModel::findPath() const
-{
-    return mFindThread->findPath();
-}
-
-void FmFindResultModel::setFindPath( const QString &path )
-{
-    mFindThread->setFindPath( path );
-}
-
-QRegExp FmFindResultModel::pattern() const
-{
-    return mFindThread->pattern();
-}
-
-void FmFindResultModel::setPattern( const QRegExp &regExp )
-{
-    mFindThread->setPattern( regExp );
-}
-
-void FmFindResultModel::find()
-{
-	if(mFindThread->isRunning())
-		return;
-
-    if( findPath().isEmpty() ){
-        mFindThread->setLastResult( mFindResult );
-    }
-	removeRows( 0, rowCount() );
-    mFindThread->start();
-}
-
-void FmFindResultModel::stop()
-{
-    mFindThread->stop();
-    mFindThread->wait();
-}
-
-bool FmFindResultModel::isFinding() const
-{
-    return mFindThread->isRunning();
 }
 
 /*
@@ -247,12 +307,23 @@ void FmFindResultModel::on_findThread_found( const QStringList &dataList )
     insertRows( rowCount(), dataList );
 }
 
+/*
+    Get if \a index is valid
+*/
 bool FmFindResultModel::indexValid( const QModelIndex &index ) const
 {
-    Q_UNUSED( index );
-    return true;
+    if( ( index.row() < 0 ) || ( index.row() >= rowCount() ) ) {
+        return false;
+    } else if( ( index.column() < 0 ) || ( index.column() >= columnCount() ) ) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
+/*
+    Init model
+*/
 void FmFindResultModel::init()
 {
     mFindThread = new FmFindThread( this );
@@ -260,6 +331,9 @@ void FmFindResultModel::init()
     mIconProvider = new FmFileIconProvider();
 }
 
+/*
+    Sort by name
+*/
 bool FmFindResultModel::caseNameLessThan(const QPair<QString,int> &s1,
                                          const QPair<QString,int> &s2)
 {
@@ -269,6 +343,9 @@ bool FmFindResultModel::caseNameLessThan(const QPair<QString,int> &s1,
     return info1.fileName() < info2.fileName();
 }
 
+/*
+    Sort by time
+*/
 bool FmFindResultModel::caseTimeLessThan(const QPair<QString,int> &s1,
                                          const QPair<QString,int> &s2)
 {
@@ -278,6 +355,9 @@ bool FmFindResultModel::caseTimeLessThan(const QPair<QString,int> &s1,
     return info1.lastModified() < info2.lastModified();
 }
 
+/*
+    Sort by size
+*/
 bool FmFindResultModel::caseSizeLessThan(const QPair<QString,int> &s1,
                                          const QPair<QString,int> &s2)
 {
@@ -287,6 +367,9 @@ bool FmFindResultModel::caseSizeLessThan(const QPair<QString,int> &s1,
     return info1.size() < info2.size();
 }
 
+/*
+    Sort by type
+*/
 bool FmFindResultModel::caseTypeLessThan(const QPair<QString,int> &s1,
                                          const QPair<QString,int> &s2)
 {

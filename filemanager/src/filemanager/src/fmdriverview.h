@@ -44,7 +44,7 @@ private slots:
 
     void activated( const QString &pathName );
     void refreshDrive();
-    void startSearch( const QString &targetPath, const QString &criteria );
+    void startSearch( const QString &criteria );
 
 #ifdef FM_CHANGE_ORIENT_ENABLE
     void on_rotateAction_triggered();

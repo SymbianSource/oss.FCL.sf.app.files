@@ -84,10 +84,7 @@ QVariant FmDriveModel::data( const QModelIndex &index, int role ) const
 
     if (role == Qt::DisplayRole ) {
        return displayString( index );
-    } else if (role == Qt::UserRole ) {
-       return driveName( index );
-    }
-
+    } 
     if (index.column() == 0) {
         if (role == Qt::DecorationRole ) {
             QString path = driveName( index );
@@ -139,17 +136,39 @@ QString FmDriveModel::driveName( const QModelIndex &index ) const
     return data;
 }
 
-QString FmDriveModel::displayString( const QModelIndex &index ) const
+QVariant FmDriveModel::displayString( const QModelIndex &index ) const
 {
-    QString data;
+    QStringList data;
     if (index.row() >= 0 && index.row() < mDriveList.size()) {
         int row = index.row();
         QString diskName = mDriveList[ row ];
 
         if( mOptions & FillWithVolume ) {
-            data = FmUtils::fillDriveVolume( diskName, mOptions & FillWithDefaultVolume );
+            data << FmUtils::fillDriveVolume( diskName, mOptions & FillWithDefaultVolume );
         } else {
-            data = FmUtils::removePathSplash( diskName );
+            data << FmUtils::removePathSplash( diskName );
+        }
+        diskName = FmUtils::fillPathWithSplash( diskName );
+        FmDriverInfo driverInfo = FmUtils::queryDriverInfo( diskName );
+        if ( mOptions & FillWithTotalSize ) {                    
+            if( driverInfo.driveState() & FmDriverInfo::EDriveAvailable ) {
+                data << QString( hbTrId ( "Size: " ) + FmUtils::formatStorageSize( driverInfo.size() ) );                
+            } else if( driverInfo.driveState() & FmDriverInfo::EDriveLocked ) {
+                data << QString( hbTrId ( "Locked" ) );                
+            } else if( driverInfo.driveState() & FmDriverInfo::EDriveCorrupted ) {
+                data << QString( hbTrId ( "Corrupted" ) );                
+            } else if( driverInfo.driveState() & FmDriverInfo::EDriveNotPresent ) {
+                data << QString( hbTrId ( "Not Ready" ) );                
+            }            
+        }
+        if ( mOptions & FillWithFreeSize ) {        
+            if( driverInfo.driveState() & FmDriverInfo::EDriveAvailable ) {                
+                data << QString( hbTrId ( "Free: " ) + FmUtils::formatStorageSize( driverInfo.freeSize() ) );
+            } else if( ( driverInfo.driveState() & FmDriverInfo::EDriveLocked ) ||
+                    ( driverInfo.driveState() & FmDriverInfo::EDriveCorrupted ) ||
+                    ( driverInfo.driveState() & FmDriverInfo::EDriveNotPresent )) {                
+                data << QString( QString(" ") );
+            }            
         }
     }
     return data;

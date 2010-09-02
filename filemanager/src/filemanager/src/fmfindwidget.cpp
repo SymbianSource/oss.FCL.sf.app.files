@@ -29,15 +29,20 @@
 #include <hbsearchpanel.h>
 #include <hblabel.h>
 #include <hbwidget.h>
+#include <hbstackedwidget.h>
 
 FmFindWidget::FmFindWidget( QGraphicsItem *parent )
     : HbWidget( parent )
 {
+    FM_LOG("FmFindWidget::FmFindWidget()");
     init();
 }
 
 FmFindWidget::~FmFindWidget()
 {
+    FM_LOG("FmFindWidget::~FmFindWidget() START");
+    delete mModel;
+    FM_LOG("FmFindWidget::~FmFindWidget() END");
 }
 
 void FmFindWidget::itemActivated(const QModelIndex &index)
@@ -55,88 +60,59 @@ void FmFindWidget::itemActivated(const QModelIndex &index)
     }
 }
 
-void FmFindWidget::find( const QString &keyword, const QString &path )
+void FmFindWidget::find( const QString &keyword, const QStringList &pathList )
 {
-    mModel->setFindPath( path );
-    
-    QRegExp regExp( '*' + keyword + '*' );
-    regExp.setPatternSyntax( QRegExp::Wildcard );
-    regExp.setCaseSensitivity( Qt::CaseInsensitive );
-    mModel->setPattern( regExp );
-
-    mModel->find();
+    mPathList = pathList;
+    // find will auto-start after receive criteria change event.
+    mSearchPanel->setCriteria( keyword );
 }
 
 void FmFindWidget::stopFind()
 {
-    mModel->stop();
-}
-
-void FmFindWidget::on_resultModel_finished()
-{
-    emit finished();
+    mModel->stopFind();
 }
 
 void FmFindWidget::on_resultModel_modelCountChanged( int count )
 {
     if( count > 0 ) {
-        activateContentWidget( ResultListView );
+        mContentWidget->setCurrentWidget( mListView );
     } else {
-        activateContentWidget( EmptyTipWidget );
+        mContentWidget->setCurrentWidget( mEmptyTipWidget );
     }
 }
 
-void FmFindWidget::activateContentWidget( ContentWidgetType contentWidgetType )
+void FmFindWidget::on_resultModel_findStarted()
 {
-    switch( contentWidgetType )
-    {
-    case EmptyTipWidget:
-        {
-        if( mLayout->count() > 0 ) {
-            if( mLayout->itemAt( 0 ) == mListView ) {
-                mLayout->removeItem( mListView );
-                mLayout->addItem( mEmptyTipWidget );
-            } 
-        } else {
-            mLayout->addItem( mEmptyTipWidget );
-        }
-        mListView->hide();
-        mEmptyTipWidget->show();
-        deActiveSearchPanel();
-        emit setEmptyMenu( true );
-        }
-        break;
-    case ResultListView:
-        {
-        if( mLayout->count() > 0 ) {
-            if( mLayout->itemAt( 0 ) == mEmptyTipWidget ) {
-                mLayout->removeItem( mEmptyTipWidget );
-                mLayout->addItem( mListView );
-            } 
-        } else {
-            mLayout->addItem( mListView );
-        }
-        mEmptyTipWidget->hide();
-        mListView->show();
-        activeSearchPanel();
-        emit setEmptyMenu( false );
-        }
-        break;
-    }
+    emit setEmptyMenu( true );
+}
+
+void FmFindWidget::on_resultModel_findFinished()
+{
+    emit setEmptyMenu( false );
 }
 
 void FmFindWidget::init()
 {
     mLayout = new QGraphicsLinearLayout( this );
     mLayout->setOrientation( Qt::Vertical );
+ 
+    mContentWidget = new HbStackedWidget( this );
+    mLayout->addItem( mContentWidget );
+    initSearchPanel();
+    mLayout->addItem( mSearchPanel );
+    setLayout( mLayout );
 
     mModel = new FmFindResultModel( this );
     mModel->setObjectName( "resultModel" );
 
-    connect( mModel, SIGNAL(finished()), this, SLOT( on_resultModel_finished()) );
-
     connect( mModel, SIGNAL( modelCountChanged( int )),
-        this, SLOT( on_resultModel_modelCountChanged( int )) );
+        this, SLOT( on_resultModel_modelCountChanged( int )), Qt::QueuedConnection );
+
+    connect( mModel, SIGNAL( findStarteded()),
+        this, SLOT( on_resultModel_findStarted()) );
+
+    connect( mModel, SIGNAL( findFinished()),
+        this, SLOT( on_resultModel_findFinished()) );
     
     mListView = new HbListView( this );
     mListView->setModel( mModel );
@@ -146,11 +122,10 @@ void FmFindWidget::init()
     HbLabel *emptyTipLable = new HbLabel( hbTrId( "No found files or folders" ), mEmptyTipWidget );
     emptyTipLayout->addItem( emptyTipLable );
  
-    initSearchPanel();
-    activateContentWidget( EmptyTipWidget );
+    mContentWidget->addWidget( mListView );
+    mContentWidget->addWidget( mEmptyTipWidget );
     
-    setLayout( mLayout );
-
+    mContentWidget->setCurrentWidget( mEmptyTipWidget );
     connect( mListView, SIGNAL(activated(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
 }
 
@@ -158,15 +133,14 @@ void FmFindWidget::initSearchPanel()
 {
     mSearchPanel = new HbSearchPanel( this );
     mSearchPanel->setObjectName( "searchPanel" );
-//    mSearchPanel->setSearchOptionsEnabled( true );
-    mSearchPanel->setProgressive( false );
-    mSearchPanel->hide();
+    mSearchPanel->setSearchOptionsEnabled( false );
+    mSearchPanel->setProgressive( true );
     
     connect( mSearchPanel, SIGNAL( criteriaChanged( const QString & ) ),
-        this, SLOT( on_searchPanel_criteriaChanged( const QString & ) ) );
+        this, SLOT( on_searchPanel_criteriaChanged( const QString & ) ), Qt::QueuedConnection  );
     
     connect( mSearchPanel, SIGNAL( exitClicked() ),
-        this, SLOT( on_searchPanel_exitClicked() ) );
+        this, SLOT( on_searchPanel_exitClicked() ), Qt::QueuedConnection );
 }
 
 void FmFindWidget::sortFiles( FmFindResultModel::SortFlag sortFlag )
@@ -174,29 +148,23 @@ void FmFindWidget::sortFiles( FmFindResultModel::SortFlag sortFlag )
     mModel->sort( sortFlag );
 }
 
-void FmFindWidget::activeSearchPanel()
-{
-    mLayout->addItem( mSearchPanel );
-    mSearchPanel->show();
-}
-
 void FmFindWidget::on_searchPanel_criteriaChanged( const QString &criteria )
 {
-    mFindTargetPath.clear();
-    emit startSearch( mFindTargetPath, criteria );
+    QRegExp regExp;
+    if( !criteria.isEmpty() ) {
+        regExp.setPattern( '*' + criteria + '*' );
+    }
+    // if criteria is empty, then keep regExp empty. find thread will return empty result.
+    
+    regExp.setPatternSyntax( QRegExp::Wildcard );
+    regExp.setCaseSensitivity( Qt::CaseInsensitive );
+
+    mModel->find( regExp, mPathList );
 }
 
 void FmFindWidget::on_searchPanel_exitClicked()
 {
-    mSearchPanel->hide();
-    mLayout->removeItem( mSearchPanel );
-}
-
-void FmFindWidget::deActiveSearchPanel()
-{
-    mSearchPanel->hide();
-    mLayout->removeItem( mSearchPanel );
-
+    FmViewManager::viewManager()->popViewAndShow();
 }
 
 

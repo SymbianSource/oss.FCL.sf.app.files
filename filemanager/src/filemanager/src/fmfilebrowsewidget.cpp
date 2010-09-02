@@ -39,6 +39,8 @@
 #include <hbsearchpanel.h>
 #include <hblabel.h>
 
+#include <shareui.h>
+
 // These define comes from implementation of QFileSystemModel
 #define QFileSystemSortName 0
 #define QFileSystemSortSize 1 
@@ -335,16 +337,18 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         this, SLOT( on_renameAction_triggered() ), Qt::QueuedConnection );
     }
     
-//    if( fileInfo.isFile() ){
-//        HbAction *sendAction = new HbAction();
-//        sendAction->setObjectName( "sendAction" );
-//        sendAction->setText( hbTrId( "txt_fmgr_menu_send" ) );
-//        contextMenu->addAction( sendAction );
-//        
-//        connect( sendAction, SIGNAL( triggered() ),
-//        this, SLOT( on_sendAction_triggered() ) );
-//    }
+    if( fileInfo.isFile() ){
+        HbAction *sendAction = new HbAction();
+        sendAction->setObjectName( "sendAction" );
+        sendAction->setText( hbTrId( "txt_fmgr_menu_send" ) );
+        contextMenu->addAction( sendAction );
+        
+        connect( sendAction, SIGNAL( triggered() ),
+        this, SLOT( on_sendAction_triggered() ), Qt::QueuedConnection );
+    }
     
+    // delete itself when close
+    contextMenu->setAttribute(Qt::WA_DeleteOnClose);
     contextMenu->setPreferredPos( coords );
     contextMenu->open();
 }
@@ -427,15 +431,12 @@ void FmFileBrowseWidget::initSearchPanel()
 {
     mSearchPanel = new HbSearchPanel( this );
     mSearchPanel->setObjectName( "searchPanel" );
-    mSearchPanel->setSearchOptionsEnabled( true );
-    mSearchPanel->setProgressive( false );
+    mSearchPanel->setSearchOptionsEnabled( false );
+    mSearchPanel->setProgressive( true );
     mSearchPanel->hide();
     
-    connect( mSearchPanel, SIGNAL( searchOptionsClicked() ),
-        this, SLOT( on_searchPanel_searchOptionsClicked() ), Qt::QueuedConnection );
-    
-    connect( mSearchPanel, SIGNAL( criteriaChanged( const QString & ) ),
-        this, SLOT( on_searchPanel_criteriaChanged( const QString & ) ) );
+    connect( mSearchPanel, SIGNAL( criteriaChanged( QString ) ),
+        this, SLOT( on_searchPanel_criteriaChanged( QString ) ), Qt::QueuedConnection );
     
     connect( mSearchPanel, SIGNAL( exitClicked() ),
         this, SLOT( on_searchPanel_exitClicked() ) );
@@ -572,21 +573,16 @@ void FmFileBrowseWidget::activeSearchPanel()
     mSearchPanel->show();
 }
 
-void FmFileBrowseWidget::on_searchPanel_searchOptionsClicked()
-{
-    mFindTargetPath = FmUtils::fillPathWithSplash( FmFileDialog::getExistingDirectory( 0, hbTrId( "Look in:" ), QString(""),
-        QStringList() ) );
-}
-
 void FmFileBrowseWidget::on_searchPanel_criteriaChanged( const QString &criteria )
 {
-    if( mFindTargetPath.isEmpty() ){
-        mFindTargetPath = currentPath().filePath();
-    }
-    emit startSearch( mFindTargetPath, criteria );
-    
+    emit startSearch( criteria );
     mSearchPanel->hide();
     mLayout->removeItem( mSearchPanel );
+	
+    // clear keywords in searchpanel without signal criteriaChanged triggered again
+    mSearchPanel->setProgressive( false );
+    mSearchPanel->setCriteria( QString() );
+    mSearchPanel->setProgressive( true );
 }
 
 void FmFileBrowseWidget::on_searchPanel_exitClicked()
@@ -600,7 +596,7 @@ void FmFileBrowseWidget::on_sendAction_triggered()
     QString filePath = mModel->filePath( mCurrentItem->modelIndex() );
     QStringList list;
     list.append( filePath );
-    FmUtils::sendFiles( list );
+    FmViewManager::viewManager()->shareUi()->send( list, true );
 }
 
 void FmFileBrowseWidget::on_viewAction_triggered()

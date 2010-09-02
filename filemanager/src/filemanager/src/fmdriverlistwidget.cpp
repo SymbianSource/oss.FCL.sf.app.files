@@ -16,7 +16,6 @@
  *     The driver model file for file manager
  */
 #include "fmdriverlistwidget.h"
-#include "listviewitems.h"
 #include "fmutils.h"
 #include "fmdlgutils.h"
 #include "fmviewmanager.h"
@@ -24,7 +23,8 @@
 #include "fmoperationbase.h"
 #include "fmdrivemodel.h"
 #include "fmfiledialog.h"
-
+#include "fmoperationservice.h"
+#include <hbabstractviewitem.h>
 #include <QDir>
 #include <QGraphicsLinearLayout>
 #include <QFileSystemWatcher>
@@ -36,12 +36,10 @@
 
 FmDriverListWidget::FmDriverListWidget( QGraphicsItem *parent )
 : HbWidget( parent ), mListView(0), mModel(0),
-  mCurrentItem(0), mSearchPanel(0),  mOperationService(0),
+  mCurrentItem(0), mSearchPanel(0),
   mFileSystemWatcher(0), mLayout(0), mContextMenu(0), mListLongPressed( false )
 {
-	init();
-	mOperationService = FmViewManager::viewManager()->operationService();
-
+	init();	
     mFileSystemWatcher = new QFileSystemWatcher( this );
     connect( mFileSystemWatcher, SIGNAL( directoryChanged ( const QString & ) ), 
             this, SLOT( on_directoryChanged( const QString & ) ) ); 
@@ -72,23 +70,18 @@ void FmDriverListWidget::init()
 	mLayout = new QGraphicsLinearLayout( this );
 	mLayout->setOrientation( Qt::Vertical );
 
-	mListView = new HbListView( this );
-	mListView->setSelectionMode( HbAbstractItemView::SingleSelection );
-
+	mListView = new HbListView( this );	
+	mListView->setLayoutName( "drive" );
 	mModel = new FmDriveModel( this,
-         FmDriveModel::FillWithVolume | FmDriveModel::FillWithDefaultVolume );
+         FmDriveModel::FillWithVolume | FmDriveModel::FillWithDefaultVolume |
+         FmDriveModel::FillWithTotalSize | FmDriveModel::FillWithFreeSize );
 	mListView->setModel( mModel );
-
-	mLayout->addItem( mListView );
-	
+	mLayout->addItem( mListView );	
 	mSearchPanel = new HbSearchPanel( this );
 	mSearchPanel->setObjectName( "searchPanel" );
-	mSearchPanel->setSearchOptionsEnabled( true );
-	mSearchPanel->setProgressive( false );
+	mSearchPanel->setSearchOptionsEnabled( false );
+	mSearchPanel->setProgressive( true );
 	mSearchPanel->hide();
-//	mLayout->addItem( mSearchPanel );
-    
-	mListView->setItemPrototype( new DiskListViewItem(this) );
 	connect( mListView, SIGNAL( activated( const QModelIndex & ) ),
 		     this, SLOT( on_list_activated( const QModelIndex & ) ) );
 	connect( mListView, SIGNAL( pressed( const QModelIndex & ) ),
@@ -97,11 +90,8 @@ void FmDriverListWidget::init()
     connect( mListView, SIGNAL( longPressed( HbAbstractViewItem *, const QPointF & ) ),
         this, SLOT( on_list_longPressed( HbAbstractViewItem *, const QPointF & ) ) );
     
-    connect( mSearchPanel, SIGNAL( searchOptionsClicked() ),
-        this, SLOT( on_searchPanel_searchOptionsClicked() ), Qt::QueuedConnection );
-    
     connect( mSearchPanel, SIGNAL( criteriaChanged( const QString & ) ),
-        this, SLOT( on_searchPanel_criteriaChanged( const QString & ) ) );
+        this, SLOT( on_searchPanel_criteriaChanged( const QString & ) ), Qt::QueuedConnection );
        
     connect( mSearchPanel, SIGNAL( exitClicked() ),
         this, SLOT( on_searchPanel_exitClicked() ) );
@@ -188,19 +178,20 @@ void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
                          this, SLOT( on_setPwdAction_triggered() ), Qt::QueuedConnection );
                     }
                 }
-                
-                // Eject action
-                if( state & FmDriverInfo::EDriveEjectable ){
-                    HbAction *ejectAction = new HbAction();
-                    ejectAction->setObjectName( "ejectAction" );
-                    ejectAction->setText( hbTrId( "txt_fmgr_menu_eject" ) );
-                    mContextMenu->addAction( ejectAction );
-                    
-                    connect( ejectAction, SIGNAL( triggered() ),
-                    this, SLOT( on_ejectAction_triggered() ), Qt::QueuedConnection );
-                }  
-            }
-        }
+            } //if( driveType == FmDriverInfo::EDriveTypeMemoryCard || driveType == FmDriverInfo::EDriveTypeUsbMemory )
+        } //if( state & FmDriverInfo::EDriveAvailable )
+        
+        // Eject action
+        // put outside of EDriveAvailable so that removable drive which is corrupted or locked can be removed
+        if( state & FmDriverInfo::EDriveEjectable ){
+            HbAction *ejectAction = new HbAction();
+            ejectAction->setObjectName( "ejectAction" );
+            ejectAction->setText( hbTrId( "txt_fmgr_menu_eject" ) );
+            mContextMenu->addAction( ejectAction );
+            
+            connect( ejectAction, SIGNAL( triggered() ),
+            this, SLOT( on_ejectAction_triggered() ), Qt::QueuedConnection );
+        } 
         
         // Format action
         if ( ( state & FmDriverInfo::EDriveRemovable ) || ( state & FmDriverInfo::EDriveCorrupted )
@@ -213,10 +204,10 @@ void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
                 connect( formatAction, SIGNAL( triggered() ),
                     this, SLOT( on_formatAction_triggered() ), Qt::QueuedConnection );
         }
-    }
+    } //if( !( state & FmDriverInfo::EDriveNotPresent ) )
     
     // Unlock action
-    // put ouside of !EDriveNotPresent judgement so that
+    // put ouside of !EDriveNotPresent judgment so that
     // user could unlock drive if connected to PC with mass storage mode
     if( state & FmDriverInfo::EDriveLocked ){
         HbAction *unLockedAction = new HbAction();
@@ -239,13 +230,14 @@ void FmDriverListWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
 
 void FmDriverListWidget::on_list_pressed( const QModelIndex &  index )
 {
+    Q_UNUSED( index );
     mListLongPressed = false;
 }
 
 void FmDriverListWidget::on_viewAction_triggered()
 {
-    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
-    mOperationService->asyncViewDriveDetails( diskName );
+    QString diskName = mModel->driveName( mCurrentItem->modelIndex() );    
+    FmViewManager::viewManager()->operationService()->asyncViewDriveDetails( diskName );
 }
 
 void FmDriverListWidget::on_renameAction_triggered()
@@ -408,7 +400,7 @@ void FmDriverListWidget::on_formatAction_triggered()
     QString diskName = mModel->driveName( mCurrentItem->modelIndex() );
     
     if( FmDlgUtils::question( hbTrId( "Format? Data will be deleted during formatting." ) ) ){
-        if( FmErrNone != mOperationService->asyncFormat( diskName ) )
+        if( FmErrNone != FmViewManager::viewManager()->operationService()->asyncFormat( diskName ) )
             FmDlgUtils::information( hbTrId( "Formatting failed." ) );
         }
 }
@@ -430,31 +422,21 @@ void FmDriverListWidget::on_directoryChanged( const QString &path )
 
 void FmDriverListWidget::activeSearchPanel()
 {
-    QStringList driveList;
-    FmUtils::getDriveList( driveList, true );
-    if(driveList.count() > 0 ) {
-        mFindTargetPath =  driveList.first();
-        if( FmUtils::isDriveC( mFindTargetPath ) ) {
-            mFindTargetPath =  QString( Folder_C_Data );
-        }
-    } else {
-        mFindTargetPath.clear();
-    }
     mLayout->addItem( mSearchPanel );
     mSearchPanel->show();
 }
 
-void FmDriverListWidget::on_searchPanel_searchOptionsClicked()
-{
-    mFindTargetPath = FmUtils::fillPathWithSplash( FmFileDialog::getExistingDirectory( 0, hbTrId( "Look in:" ),
-        QString(""), QStringList() ) );
-}
-
 void FmDriverListWidget::on_searchPanel_criteriaChanged( const QString &criteria )
 {
-    emit startSearch( mFindTargetPath, criteria );
+    emit startSearch( criteria );
     mSearchPanel->hide();
     mLayout->removeItem( mSearchPanel );
+
+    // clear keywords in searchpanel without signal criteriaChanged triggered again
+    mSearchPanel->setProgressive( false );
+    mSearchPanel->setCriteria( QString() );
+    mSearchPanel->setProgressive( true );
+    
 }
 
 void FmDriverListWidget::on_searchPanel_exitClicked()
