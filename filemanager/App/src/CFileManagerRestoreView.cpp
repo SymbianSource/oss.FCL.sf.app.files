@@ -170,7 +170,6 @@ void CFileManagerRestoreView::HandleCommandL( TInt aCommand )
         case EAknSoftkeyMark: // FALLTHROUGH
         case EAknSoftkeyUnmark: // FALLTHROUGH
         case EFileManagerSelectionKey: // FALLTHROUGH
-        case EFileManagerToggleMark: // FALLTHROUGH
         case EFileManagerOpen:
             {
             CmdSelectL();
@@ -185,11 +184,6 @@ void CFileManagerRestoreView::HandleCommandL( TInt aCommand )
         case EAknSoftkeyBack:
             {
             CmdCancelL();
-            break;
-            }
-        case EFileManagerCheckMark:
-            {
-            CmdCheckMarkL();
             break;
             }
         default:
@@ -431,5 +425,5 @@ void CFileManagerRestoreView::UpdateCbaL()
     cba->MakeCommandVisible( EAknSoftkeyOk, hasSelecttionItem );
     cba->DrawDeferred();
     }
-    
+
 //  End of File  

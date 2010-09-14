@@ -90,17 +90,34 @@ CFileManagerSearchResultsView::~CFileManagerSearchResultsView()
 // -----------------------------------------------------------------------------
 // 
 void CFileManagerSearchResultsView::DirectoryChangedL()
-	{
+    {
     FUNC_LOG
 
     RefreshTitleL();
 
-    if ( iContainer )
+    if ( !iContainer )
         {
-        iContainer->RefreshListL( iIndex );
-        UpdateCbaL();
+        return;
         }
+    // Get current drive's drive info cache.
+    TFileManagerDriveInfo& drvInfo( DriveInfo() );
+    // Ensure drive info is updated. 
+    iEngine.GetDriveInfoL( drvInfo.iDrive, drvInfo );
+    // Manually deactivate marking mode if current drive 
+    // is not available.
+    if ( drvInfo.iState & TFileManagerDriveInfo::EDriveInUse || 
+         !( drvInfo.iState & TFileManagerDriveInfo::EDrivePresent ) )
+        {
+        if (iContainer->IsMarkingModeActivated() )
+            {
+            iContainer->SetMarkingMode( EFalse );
+            }
+        }
+
+    iContainer->RefreshListL( iIndex );
+    UpdateCbaL();
     }
+
 // -----------------------------------------------------------------------------
 // CFileManagerSearchResultsView::Id
 // 

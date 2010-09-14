@@ -276,21 +276,6 @@ class CFileManagerViewBase : public CAknView,
         void CmdDeleteL();
 
         /**
-         * Marks all markable items in list.
-         */
-        void CmdMarkAllL();
-
-        /**
-         * Unmarks all marked items in list.
-         */
-        void CmdUnmarkAllL();
-
-        /**
-         * Changes mark status of currently focused item.
-         */
-        void CmdToggleMarkL();
-
-        /**
          * Creates new folder to currently active directory.
          */
         void CmdNewFolderL();

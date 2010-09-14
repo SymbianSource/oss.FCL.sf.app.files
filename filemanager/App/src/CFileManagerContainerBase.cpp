@@ -59,6 +59,8 @@ void CFileManagerContainerBase::ConstructL(
         CEikScrollBarFrame::EOff, CEikScrollBarFrame::EAuto );
     iListBox->SetObserver( this );
     iListBox->SetListBoxObserver( this );
+    iListBox->SetMarkingModeObserver( this );
+
     SetIndex( aFocusedIndex );
     iListBox->SetFocus( ETrue );
     iListBox->AddSelectionObserverL( this );
@@ -358,22 +360,29 @@ void CFileManagerContainerBase::SetEmptyArrayL()
 // 
 // -----------------------------------------------------------------------------
 // 
-void CFileManagerContainerBase::ProcessCommandL( TInt aCommandId )
+void CFileManagerContainerBase::ProcessCommandL( TInt /* aCommandId */ )
     {
-    switch ( aCommandId )
-        {
-        case EAknSoftkeyShiftMSK:
-            {
-            static_cast< CAknAppUi* >( ControlEnv()->AppUi() )->
-                ProcessCommandL( EFileManagerToggleMark );
-            break;
-            }
-            
-        default:
-            {
-            break;
-            }
-        }
+    }
+
+// -----------------------------------------------------------------------------
+// CFileManagerContainerBase::MarkingModeStatusChanged()
+//
+// -----------------------------------------------------------------------------
+//
+void CFileManagerContainerBase::MarkingModeStatusChanged( TBool aActivated )
+    {
+    // Set flag to indicate marking model is activated or not
+    iMarkingModeActivated = aActivated;
+    }
+
+// -----------------------------------------------------------------------------
+// CFileManagerContainerBase::ExitMarkingMode()
+//
+// -----------------------------------------------------------------------------
+//
+TBool CFileManagerContainerBase::ExitMarkingMode() const
+    {
+    return iAllowMarkingModeExit;
     }
 
 // -----------------------------------------------------------------------------
@@ -406,6 +415,15 @@ TBool CFileManagerContainerBase::SelectionModeEnabled() const
     return iSelectionModeEnabled;
     }
 
+// -----------------------------------------------------------------------------
+// CFileManagerContainerBase::IsMarkingModeActivated
+// 
+// -----------------------------------------------------------------------------
+//
+TBool CFileManagerContainerBase::IsMarkingModeActivated() const
+    {
+    return iMarkingModeActivated;
+    }
 // -----------------------------------------------------------------------------
 // CFileManagerContainerBase::UpdateCba
 // 
@@ -588,4 +606,25 @@ TInt CFileManagerContainerBase::SearchFieldToListBoxIndex( TInt aIndex )
     {
     return 0;
     }
+
+// -----------------------------------------------------------------------------
+// CFileManagerContainerBase::AllowMarkingModeExit
+// 
+// -----------------------------------------------------------------------------
+//
+void CFileManagerContainerBase::AllowMarkingModeExit( TBool aAllowExit )
+    {
+    iAllowMarkingModeExit = aAllowExit;
+    }
+
+// -----------------------------------------------------------------------------
+// CFileManagerContainerBase::SetMarkingMode
+// 
+// -----------------------------------------------------------------------------
+//
+void CFileManagerContainerBase::SetMarkingMode( TBool aEnable )
+    {
+    iListBox->SetMarkingMode( aEnable );
+    }
+
 //  End of File  

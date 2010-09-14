@@ -265,23 +265,4 @@ TKeyResponse CFileManagerSettingListContainer::OfferKeyEventL(
     return response;
     }
 
-// -----------------------------------------------------------------------------
-// CFileManagerSettingListContainer::HandleControlEventL
-//
-// -----------------------------------------------------------------------------
-//
-void CFileManagerSettingListContainer::HandleControlEventL(
-        CCoeControl* aControl, TCoeEvent aEventType )
-    {
-    if ( iType == EListRestore &&
-        aEventType == EEventStateChanged )
-        {
-        static_cast< CAknAppUi* >( ControlEnv()->AppUi() )->
-            ProcessCommandL( EFileManagerCheckMark );
-        }
-
-    CFileManagerContainerBase::HandleControlEventL(
-        aControl, aEventType );
-    }
-
 //  End of File  

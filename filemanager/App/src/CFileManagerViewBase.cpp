@@ -353,6 +353,9 @@ void CFileManagerViewBase::HandleCommandL( TInt aCommand )
     {
     if ( !iContainer ) return;
 
+    // Initialization, do not allow marking mode exit as default.
+    iContainer->AllowMarkingModeExit( EFalse );
+
     TBool updateCba( !iContainer->SelectionModeEnabled() );
 
     switch( aCommand )
@@ -382,23 +385,6 @@ void CFileManagerViewBase::HandleCommandL( TInt aCommand )
             CmdNewFolderL();
             break;
             }
-        case EFileManagerMarkOne:   // FALLTHROUGH
-        case EFileManagerUnmarkOne: // FALLTHROUGH
-        case EFileManagerToggleMark:
-            {
-            CmdToggleMarkL();
-            break;
-            }
-        case EFileManagerMarkAll:
-            {
-            CmdMarkAllL();
-            break;
-            }
-        case EFileManagerUnmarkAll:
-            {
-            CmdUnmarkAllL();
-            break;
-            }
         case EFileManagerRename:
             {
             CmdRenameL();
@@ -424,10 +410,6 @@ void CFileManagerViewBase::HandleCommandL( TInt aCommand )
         case EFileManagerReceiveViaIR:
             {
             CmdReceiveViaIRL();
-            break;
-            }
-        case EFileManagerCheckMark: // Suppress
-            {
             break;
             }
         case EAknSoftkeyContextOptions: // FALLTHROUGH
@@ -539,8 +521,10 @@ void CFileManagerViewBase::HandleCommandL( TInt aCommand )
 // 
 void CFileManagerViewBase::SendUiQueryL()
     {
-    //iSendUiPopupOpened = ETrue;	
-    	
+    // Do not allow marking mode exit during send.
+    // No need to call iContainer->AllowMarkingModeExit( EFalse ).
+    // Already done in CFileManagerViewBase::HandleCommandL().
+    
     CSendUi& sendUi( static_cast< CFileManagerAppUi* >( AppUi() )->SendUiL() );
     CMessageData* msgData = CMessageData::NewL();
     CleanupStack::PushL( msgData );
@@ -593,26 +577,10 @@ void CFileManagerViewBase::SendUiQueryL()
 // 
 void CFileManagerViewBase::MarkMenuFilteringL( CEikMenuPane& aMenuPane )
     {
-    TInt index( iContainer->ListBoxCurrentItemIndex() );
-
-    if ( iEngine.IsFolder( index ) )
-        {
-        aMenuPane.SetItemDimmed( EFileManagerMarkOne, ETrue );
-        aMenuPane.SetItemDimmed( EFileManagerUnmarkOne, ETrue );
-        }
-    else
-        {
-        if ( iContainer->ListBoxIsItemSelected( index ) )
-            {
-            aMenuPane.SetItemDimmed( EFileManagerMarkOne, ETrue );
-            }
-        else
-            {
-            aMenuPane.SetItemDimmed( EFileManagerUnmarkOne, ETrue );
-            }
-        }
     TInt files( 0 );
-    if( iContainer->IsSearchFieldVisible() )
+    // Get file count in current view, first check whether there is a
+    // filter rule working.
+    if ( iContainer->IsSearchFieldVisible() )
         {
         files = FilesCountInSearchField();
         }
@@ -621,14 +589,22 @@ void CFileManagerViewBase::MarkMenuFilteringL( CEikMenuPane& aMenuPane )
         files = iEngine.FilesInFolderL();
         }  
     TInt count( iContainer->ListBoxSelectionIndexesCount() );
+    // if all the files are marked or no file eixists,
+    // dim MarkAll.
     if ( count == files )
         {
-        aMenuPane.SetItemDimmed( EFileManagerMarkAll, ETrue );
+        aMenuPane.SetItemDimmed( EAknCmdMarkingModeMarkAll, ETrue );
         }
-
-    if ( !count )
+    // if no file marked, dim UnmarkAll.
+    if ( count == 0 )
         {
-        aMenuPane.SetItemDimmed( EFileManagerUnmarkAll, ETrue );
+        aMenuPane.SetItemDimmed( EAknCmdMarkingModeUnmarkAll, ETrue );
+        }
+    // Dim MarkAll and UnMarkAll if the list is empty.
+    if ( iContainer->ListBoxNumberOfItems() == 0 )
+        {
+        aMenuPane.SetItemDimmed( EAknCmdMarkingModeMarkAll, ETrue );
+        aMenuPane.SetItemDimmed( EAknCmdMarkingModeUnmarkAll, ETrue );
         }
     }
 
@@ -725,6 +701,12 @@ void CFileManagerViewBase::CmdDeleteL()
     TRAPD( err, ret = FileManagerDlgUtils::ShowConfirmQueryWithYesNoL( *prompt ) );
     DenyDirectoryRefresh( EFalse );
     User::LeaveIfError( err );
+
+    // Set flag to indicate marking mode could exit or not.
+    // Do not allow Marking mode exit when leave occurs.
+    iContainer->AllowMarkingModeExit( ret );
+
+
     if ( ret )
         {
         if( IsDriveAvailable( DriveInfo().iDrive ) )
@@ -784,6 +766,9 @@ void CFileManagerViewBase::CmdMoveToFolderL()
     DenyDirectoryRefresh( EFalse );
     CleanupStack::PopAndDestroy( filter );
 
+    // Set flag to indicate marking mode could exit or not
+    iContainer->AllowMarkingModeExit( ret );
+
     if ( ret && ptrFileName.Length() )
         {
         if ( !DriveReadOnlyMmcL( ptrFileName ) )
@@ -831,6 +816,9 @@ void CFileManagerViewBase::CmdCopyToFolderL()
         filter ) );
     DenyDirectoryRefresh( EFalse );
     CleanupStack::PopAndDestroy( filter );
+
+    // Set flag to indicate marking mode could exit or not
+    iContainer->AllowMarkingModeExit( ret );
 
     if ( ret && ptrFileName.Length() )
         {
@@ -898,44 +886,6 @@ void CFileManagerViewBase::CmdNewFolderL()
             }
         }
     CleanupStack::PopAndDestroy( folderNameBuf );
-    }
-
-// -----------------------------------------------------------------------------
-// CFileManagerViewBase::CmdToggleMarkL
-// 
-// -----------------------------------------------------------------------------
-// 
-void CFileManagerViewBase::CmdToggleMarkL()
-    {
-    const TInt index( iContainer->ListBoxCurrentItemIndex() );
-    if ( iEngine.IsFolder( index ) )
-        {
-        iContainer->ListBoxDeselectItem( index );
-        }
-    else
-        {
-        iContainer->ListBoxToggleItemL( index );
-        }
-    }
-
-// -----------------------------------------------------------------------------
-// CFileManagerViewBase::CmdMarkAllL
-// 
-// -----------------------------------------------------------------------------
-// 
-void CFileManagerViewBase::CmdMarkAllL()
-    {
-    iContainer->ListBoxSelectAllL();
-    }
-
-// -----------------------------------------------------------------------------
-// CFileManagerViewBase::CmdUnmarkAllL
-// 
-// -----------------------------------------------------------------------------
-// 
-void CFileManagerViewBase::CmdUnmarkAllL()
-    {
-    iContainer->ListBoxClearSelection();
     }
 
 // -----------------------------------------------------------------------------
@@ -1184,8 +1134,8 @@ void CFileManagerViewBase::DynInitMenuPaneL( TInt aResourceId,
             MemoryStoreMenuFilteringL( *aMenuPane );
             break;
             }
-        case R_FILEMANAGER_MARK_UNMARK_MENU:
-        case R_FILEMANAGER_CONTEXT_SENSITIVE_MARK_UNMARK_MENU:
+        // Marking mode menu
+        case R_AVKON_MENUPANE_MARK_MULTIPLE:
             {
             MarkMenuFilteringL( *aMenuPane );
             break;
@@ -1458,7 +1408,14 @@ void CFileManagerViewBase::DoProcessFinishedL( TInt aError, const TDesC& aName )
 
     if ( iPeriodic && iProgressInfo && iTotalTransferredBytes )
         {
-        iProgressInfo->SetAndDraw( iTotalTransferredBytes );
+        if ( iActiveProcess == ECopyProcess || iActiveProcess == EMoveProcess )
+            {
+            iProgressInfo->SetAndDraw( iTotalTransferredBytes / KMinificationFactor );
+            }
+        else
+            {
+            iProgressInfo->SetAndDraw( iTotalTransferredBytes );
+            }
         }
     if ( IsSystemProcess( iActiveProcess ) )
         {
@@ -3215,10 +3172,18 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
 
     // Common remote drive filtering
     RemoteDriveCommonFilteringL( aMenuPane );
-    if( iContainer->IsSearchFieldVisible() && 
-            !FilesCountInSearchField() )
+    
+    // Used while checking EAknCmdMarkingModeEnter's existance
+    TInt pos ( 0 );
+    // No file exists after find pane filtering,
+    // disable enter marking mode
+    if ( iContainer->IsSearchFieldVisible() && 
+            FilesCountInSearchField() == 0 )
         {
-        aMenuPane.SetItemDimmed( EFileManagerMark, ETrue );
+        if ( aMenuPane.MenuItemExists( EAknCmdMarkingModeEnter, pos ) )
+            {
+            aMenuPane.SetItemDimmed( EAknCmdMarkingModeEnter, ETrue );
+            }
         }
     if ( iContainer->ListBoxNumberOfItems() )
         {
@@ -3239,7 +3204,11 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
         }
     TInt index(iContainer->ListBoxCurrentItemIndex());
     TUint32 fileType(iEngine.FileTypeL(index));
-    if (!(fileType & CFileManagerItemProperties::EFolder))
+    // Do not dim move to folder command in option menu and stylus popup
+    // menu while marking mode is activated.
+    // At least one item is marked.
+    if ( !(fileType & CFileManagerItemProperties::EFolder )
+            && iContainer->ListBoxSelectionIndexesCount() == 0 )
         {
         aMenuPane.SetItemDimmed(EFileManagerMoveToFolder, ETrue);
         }
@@ -3278,9 +3247,6 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
         aMenuPane.SetItemDimmed( EFileManagerRename, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerReceiveViaIR, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerOrganise, ETrue );
-//        aMenuPane.SetItemDimmed( EFileManagerMemoryCard, ETrue );
-//        aMenuPane.SetItemDimmed( EFileManagerMemoryCardPassword, ETrue );
-        //aMenuPane.SetItemDimmed( EFileManagerUnlockMemoryCard, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerRefreshRemoteDrive, ETrue );
 #ifdef RD_MULTIPLE_DRIVE
         aMenuPane.SetItemDimmed( EFileManagerFormatMassStorage, ETrue );
@@ -3299,8 +3265,6 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
         aMenuPane.SetItemDimmed( EFileManagerRename, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerDelete, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerReceiveViaIR, ETrue );
-//        aMenuPane.SetItemDimmed( EFileManagerMemoryCard, ETrue );
-//        aMenuPane.SetItemDimmed( EFileManagerMemoryCardPassword, ETrue );
 #ifdef RD_MULTIPLE_DRIVE
         aMenuPane.SetItemDimmed( EFileManagerFormatMassStorage, ETrue );
 #endif // RD_MULTIPLE_DRIVE
@@ -3310,8 +3274,6 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
     if ( drvInfo.iState & TFileManagerDriveInfo::EDriveMassStorage )
         {
         // Mass storage item dimming
-//        aMenuPane.SetItemDimmed( EFileManagerMemoryCard, ETrue );
-//        aMenuPane.SetItemDimmed( EFileManagerMemoryCardPassword, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerUnlockMemoryCard, ETrue );
 
         if ( !( drvInfo.iState & TFileManagerDriveInfo::EDrivePresent ) )
@@ -3328,7 +3290,6 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
              ( drvInfo.iState & ( TFileManagerDriveInfo::EDriveCorrupted |
                                   TFileManagerDriveInfo::EDriveLocked ) ) )
             {
-//            aMenuPane.SetItemDimmed( EFileManagerMemoryCardPassword, ETrue );
             aMenuPane.SetItemDimmed( EFileManagerDetails, ETrue );
             }
         if ( ( drvInfo.iState & TFileManagerDriveInfo::EDriveCorrupted ) ||
@@ -3336,13 +3297,8 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
             {
             aMenuPane.SetItemDimmed( EFileManagerUnlockMemoryCard, ETrue );
             }
-//        if ( !( drvInfo.iState & TFileManagerDriveInfo::EDriveLockable ) )
-//            {
-//            aMenuPane.SetItemDimmed( EFileManagerMemoryCardPassword, ETrue );
-//            }
         if ( !featureManager.IsMmcPassWdSupported() )
             {
-            //aMenuPane.SetItemDimmed( EFileManagerMemoryCardPassword, ETrue );
             aMenuPane.SetItemDimmed( EFileManagerUnlockMemoryCard, ETrue );
             }
 #ifdef RD_MULTIPLE_DRIVE
@@ -3352,15 +3308,12 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
     else
         {
         // No mass storage or memory card item dimming
-//        aMenuPane.SetItemDimmed( EFileManagerMemoryCard, ETrue );
-//        aMenuPane.SetItemDimmed( EFileManagerMemoryCardPassword, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerUnlockMemoryCard, ETrue );
 #ifdef RD_MULTIPLE_DRIVE
         aMenuPane.SetItemDimmed( EFileManagerFormatMassStorage, ETrue );
 #endif // RD_MULTIPLE_DRIVE
         }
-
-//    CEikListBox& listBox = iContainer->ListBox();
+    
     TBool dimSend( EFalse );
 
     if ( iContainer->ListBoxSelectionIndexesCount() )
@@ -3386,24 +3339,32 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
             }
         
         if ( !( drvInfo.iState & TFileManagerDriveInfo::EDrivePresent ) || 
-        	 ( ( drvInfo.iState & TFileManagerDriveInfo::EDriveRemote ) &&
+             ( drvInfo.iState & TFileManagerDriveInfo::EDriveInUse ) ||
+             ( ( drvInfo.iState & TFileManagerDriveInfo::EDriveRemote ) &&
              !( drvInfo.iState & TFileManagerDriveInfo::EDriveConnected ) ) )
            {
-           // Handle unavailable drive OR  disconnected remote drive
+           // Handle unavailable drive or disconnected remote drive
            dimSend = ETrue;
            aMenuPane.SetItemDimmed( EFileManagerSort, ETrue );
            aMenuPane.SetItemDimmed( EFileManagerOrganise, ETrue );
-           aMenuPane.SetItemDimmed( EFileManagerMark, ETrue );             
+           aMenuPane.SetItemDimmed( EFileManagerDelete, ETrue );
+           if ( aMenuPane.MenuItemExists( EAknCmdMarkingModeEnter, pos ) )
+               {
+               aMenuPane.SetItemDimmed( EAknCmdMarkingModeEnter, ETrue );
+               }
            }
         }
     else if ( iContainer->ListBoxNumberOfItems() )
         {
-        // Check if there is files on the list
+        // Check whether there is file on the list
         TInt files( iEngine.FilesInFolderL() );
-        if ( !files ) 
+        if ( files == 0 ) 
             {
             dimSend = ETrue;
-            aMenuPane.SetItemDimmed( EFileManagerMark, ETrue );
+            if ( aMenuPane.MenuItemExists( EAknCmdMarkingModeEnter, pos ) )
+                {
+                aMenuPane.SetItemDimmed( EAknCmdMarkingModeEnter, ETrue );
+                }
             }
         
         // There is items in list, check selection type
@@ -3443,7 +3404,10 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
         // List is empty
         aMenuPane.SetItemDimmed( EFileManagerOpen, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerDelete, ETrue );
-        aMenuPane.SetItemDimmed( EFileManagerMark, ETrue );
+        if ( aMenuPane.MenuItemExists( EAknCmdMarkingModeEnter, pos ) )
+            {
+            aMenuPane.SetItemDimmed( EAknCmdMarkingModeEnter, ETrue );
+            }
         aMenuPane.SetItemDimmed( EFileManagerRename, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerSort, ETrue );
         aMenuPane.SetItemDimmed( EFileManagerSearchSort, ETrue );
@@ -3467,7 +3431,6 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
             // Handle disconnected remote drive
             aMenuPane.SetItemDimmed( EFileManagerReceiveViaIR, ETrue );
             aMenuPane.SetItemDimmed( EFileManagerOrganise, ETrue );
-//            aMenuPane.SetItemDimmed( EFileManagerDetails, ETrue );
             }
         else if ( !( drvInfo.iState & TFileManagerDriveInfo::EDrivePresent ) ||  
                  ( drvInfo.iState & (
@@ -3475,10 +3438,8 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
                     TFileManagerDriveInfo::EDriveLocked ) ) )
             {
             // Handle unavailable drive
-//            aMenuPane.SetItemDimmed( EFileManagerDetails, ETrue );
             aMenuPane.SetItemDimmed( EFileManagerReceiveViaIR, ETrue );
             aMenuPane.SetItemDimmed( EFileManagerOrganise, ETrue );
-//            aMenuPane.SetItemDimmed( EFileManagerMemoryCardPassword, ETrue );
             
             if ( drvInfo.iState & TFileManagerDriveInfo::EDriveRemovable &&
                  !( drvInfo.iState & TFileManagerDriveInfo::EDriveLocked ) )
@@ -3495,10 +3456,7 @@ void CFileManagerViewBase::MemoryStoreMenuFilteringL(
                 {
                 aMenuPane.SetItemDimmed( EFileManagerReceiveViaIR, ETrue );
                 aMenuPane.SetItemDimmed( EFileManagerOrganise, ETrue );
-//                aMenuPane.SetItemDimmed( EFileManagerMemoryCardPassword, ETrue );
-//                aMenuPane.SetItemDimmed( EFileManagerMemoryCard, ETrue );
                 aMenuPane.SetItemDimmed( EFileManagerUnlockMemoryCard, ETrue );
-//                aMenuPane.SetItemDimmed( EFileManagerDetails, ETrue );
                 }
             else
                 {

@@ -249,6 +249,7 @@ void CMemStatePopupImpl::ConstructPopupL( )
     iListBox->Model( )->SetItemTextArray( iListModel );
     iListBox->Model( )->SetOwnershipType( ELbmDoesNotOwnItemArray );
     iListBox->ItemDrawer()->ColumnData()->EnableMarqueeL( ETrue );
+    iListBox->ItemDrawer()->ClearFlags( CListItemDrawer::ESingleClickDisabledHighlight );
     }
 
 // ---------------------------------------------------------------------------

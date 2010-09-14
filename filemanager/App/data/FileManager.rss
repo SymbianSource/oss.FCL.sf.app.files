@@ -163,6 +163,10 @@ RESOURCE MENU_BAR r_filemanager_memory_store_menubar
         MENU_TITLE
             {
             menu_pane = r_filemanager_memory_store_view_menu;
+            },
+        MENU_TITLE 
+            {
+            menu_pane = R_AVKON_MENUPANE_MARK_MULTIPLE;
             }
         };
     }
@@ -292,12 +296,6 @@ RESOURCE MENU_PANE r_filemanager_memory_store_view_menu
             command = EFileManagerCopyToFolder;
             txt = qtn_options_org_copy_to;
             flags = EEikMenuItemSpecific;
-            },
-        MENU_ITEM
-            {
-            command = EFileManagerMark;
-            cascade = r_filemanager_mark_unmark_menu;
-            txt = qtn_options_list;
             },
         MENU_ITEM
             {
@@ -644,12 +642,6 @@ RESOURCE MENU_PANE r_filemanager_context_sensitive_menu
             },
         MENU_ITEM
             {
-            command = EFileManagerMark;
-            cascade = r_filemanager_context_sensitive_mark_unmark_menu;
-            txt = qtn_options_list;
-            },
-        MENU_ITEM
-            {
             command = EFileManagerUnlockMemoryCard;
             txt = qtn_memc_options_unlock;
             },
@@ -774,61 +766,6 @@ RESOURCE ARRAY r_filemanager_backup_scheduling_texts
     }
 
 #endif // RD_FILE_MANAGER_BACKUP
-
-RESOURCE MENU_PANE r_filemanager_mark_unmark_menu
-    {
-    items =
-        {
-        MENU_ITEM
-            {
-            command = EFileManagerMarkOne;
-            txt = qtn_options_list_mark_one;
-            flags = EEikMenuItemSpecific;
-            },
-        MENU_ITEM
-            {
-            command = EFileManagerUnmarkOne;
-            txt = qtn_options_list_unmark_one;
-            flags = EEikMenuItemSpecific;
-            },
-        MENU_ITEM
-            {
-            command = EFileManagerMarkAll;
-            txt = qtn_options_list_mark_all;
-            },
-        MENU_ITEM
-            {
-            command = EFileManagerUnmarkAll;
-            txt = qtn_options_list_unmark_all;
-            }
-        };
-    }
-RESOURCE MENU_PANE r_filemanager_context_sensitive_mark_unmark_menu
-    {
-    items =
-        {
-        MENU_ITEM
-            {
-            command = EFileManagerMarkOne;
-            txt = qtn_options_list_mark_one;
-            },
-        MENU_ITEM
-            {
-            command = EFileManagerUnmarkOne;
-            txt = qtn_options_list_unmark_one;
-            },
-        MENU_ITEM
-            {
-            command = EFileManagerMarkAll;
-            txt = qtn_options_list_mark_all;
-            },
-        MENU_ITEM
-            {
-            command = EFileManagerUnmarkAll;
-            txt = qtn_options_list_unmark_all;
-            }
-        };
-    }
 
 RESOURCE MEMORYSELECTIONDIALOG r_filemanager_copy_memory_selectiondialog
     {

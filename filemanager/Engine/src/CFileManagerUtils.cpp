@@ -885,58 +885,62 @@ HBufC* CFileManagerUtils::GetFormattedDriveNameLC(
         const TInt aDrive,
         const TInt aTextIdForDefaultName,
         const TInt aTextIdForName ) const
-    {
+    {  
+    // get drive letter and drive name
     TUint driveStatus( 0 );
-    HBufC* ret = NULL;
     CDesCArray* array = GetDriveNameArrayLC( aDrive, driveStatus );
+    
+    // get the format string for drive name
+    HBufC* ret = NULL; 
     if ( aTextIdForName && array->MdcaCount() > 1 )
         {
-        ret = StringLoader::LoadL(
-            aTextIdForName,
-            *array );
+        // named resource is available
+        // resource needs two paraments
+        ret = StringLoader::LoadL( aTextIdForName,*array );
         }
+    // default resource is available
     else if ( aTextIdForDefaultName )
         {
-			if( driveStatus & DriveInfo::EDriveUsbMemory )
-				{
-				CDesCArray* usbLetterName = new ( ELeave ) CDesCArrayFlat( KDriveNameArrayLen );
-				CleanupStack::PushL( usbLetterName );
-				
-				TPtrC16 driveletter=array->MdcaPoint( KDriveLetterIndex );
-				usbLetterName->AppendL( driveletter );							
-				HBufC* usbDriveDefaultName = NULL;			
-				if(array->MdcaCount() > 1 )
-					{
-					TPtrC16 drivename=array->MdcaPoint( KDriveNameIndex );
-					usbLetterName->AppendL( drivename );
-					}
-				else
-					{
-				    usbDriveDefaultName = StringLoader::LoadLC( R_QTN_FMGR_USB_MEMORY_DEFAULT_NAME );
-				    TPtrC16 drivename = usbDriveDefaultName->Des();
-				    usbLetterName->AppendL( drivename );
-					}
-				
-				
-				ret = StringLoader::LoadL(
-				aTextIdForDefaultName,*usbLetterName );
-	
-				CleanupStack::PopAndDestroy( usbLetterName );
-				if ( usbDriveDefaultName )
-				    {
-				    CleanupStack::PopAndDestroy( usbDriveDefaultName );
-				    }
-			    }
-		    else
-			    {
-			    ret = StringLoader::LoadL(aTextIdForDefaultName, array->MdcaPoint(
-					KDriveLetterIndex));
-            	}
+        // USB memory 
+        if ( driveStatus & DriveInfo::EDriveUsbMemory )
+            {
+            // alloc array for usb letter name and drive name
+            CDesCArray* usbLetterAndName = new ( ELeave ) CDesCArrayFlat( KDriveNameArrayLen );
+            CleanupStack::PushL( usbLetterAndName );
+            
+            // append driver letter 
+            TPtrC16 driveLetter = array->MdcaPoint( KDriveLetterIndex );
+            usbLetterAndName->AppendL( driveLetter );
+            
+            // USB is already named, just append it 
+            if ( array->MdcaCount() > 1 )
+                {
+                TPtrC16 drivename=array->MdcaPoint( KDriveNameIndex );
+                usbLetterAndName->AppendL( drivename );
+                }
+            // USB is still not named,append default name
+            else
+                {
+                HBufC* usbDefaultName = StringLoader::LoadLC( R_QTN_FMGR_USB_MEMORY_DEFAULT_NAME );
+                usbLetterAndName->AppendL( *usbDefaultName );
+                CleanupStack::PopAndDestroy( usbDefaultName );
+                }
+            ret = StringLoader::LoadL( aTextIdForDefaultName,*usbLetterAndName );
+            // pop and destory the array for usb letter name and drive name
+            CleanupStack::PopAndDestroy( usbLetterAndName );
+            }
+        // other drives
+        else
+            {
+            ret = StringLoader::LoadL( aTextIdForDefaultName, array->MdcaPoint( KDriveLetterIndex ) );
+            }
         }
+    // drive name is available
     else if (  array->MdcaCount() > 1 )
         {
         ret = array->MdcaPoint( KDriveNameIndex ).AllocL();
         }
+    // others
     else
         {
         User::Leave( KErrNotFound );

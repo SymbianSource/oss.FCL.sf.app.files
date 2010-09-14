@@ -58,9 +58,6 @@ class CFileManagerFileListContainer : public CFileManagerContainerBase,
          */
         ~CFileManagerFileListContainer();
 
-    private: // MCoeControlObserver
-        void HandleControlEventL(CCoeControl* aControl, TCoeEvent aEventType);
-
     private: // From CCoeControl
         TKeyResponse OfferKeyEventL( const TKeyEvent& aKeyEvent,TEventCode aType );
 
