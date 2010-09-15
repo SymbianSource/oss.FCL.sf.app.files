@@ -2609,16 +2609,8 @@ TBool CFileManagerViewBase::DriveReadOnlyMmcL( const TInt aDrive ) const
         }
     if ( ret )
         {
-#ifdef RD_MULTIPLE_DRIVE
-        HBufC* text = iEngine.GetFormattedDriveNameLC(
-            aDrive,
-            R_QTN_MEMC_MULTIPLE_MEMC_READ_ONLY );
-        FileManagerDlgUtils::ShowErrorNoteL( *text );
-        CleanupStack::PopAndDestroy( text );
-#else // RD_MULTIPLE_DRIVE
         FileManagerDlgUtils::ShowErrorNoteL(
             R_QTN_MEMC_MEMORYCARD_READ_ONLY );
-#endif // RD_MULTIPLE_DRIVE
         }
 
     return ret;
@@ -2687,8 +2679,15 @@ void CFileManagerViewBase::AddSendOptionL(
     CleanupStack::PopAndDestroy( indexArray );
     TSendingCapabilities caps(
         0, msgSize, TSendingCapabilities::ESupportsAttachments );
-    sendUi.AddSendMenuItemL( aMenuPane, pos, EFileManagerSend, caps );
-    aMenuPane.SetItemSpecific(EFileManagerSend, ETrue);
+    TBool addMenuResult = EFalse;
+    sendUi.AddSendMenuItemToMenuPaneL( addMenuResult, aMenuPane, pos, EFileManagerSend, caps );
+    // EFileManagerSend is added by CSendUI, existence checking
+    // should be taken before setting the properties of command.
+    // Try to set properties of a none-existing command will cause panic. 
+    if ( addMenuResult )
+        {
+        aMenuPane.SetItemSpecific( EFileManagerSend, ETrue );
+        }
     }
 
 // ------------------------------------------------------------------------------
