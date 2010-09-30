@@ -99,13 +99,13 @@ void FmRestoreView::on_leftAction_triggered()
     case FmErrNone:
         break;
     case FmErrWrongParam:
-        FmDlgUtils::information( QString( hbTrId("Operation canceled with wrong param!") ) );
+        FmDlgUtils::warning( QString( hbTrId("Operation canceled with wrong param!") ) );
         break;
     case FmErrAlreadyStarted:
-        FmDlgUtils::information( QString( hbTrId("Operation canceled because already started!") ) );
+        FmDlgUtils::warning( QString( hbTrId("Operation canceled because already started!") ) );
         break;
     default:
-        FmDlgUtils::information(hbTrId("restore failed"));
+        FmDlgUtils::warning(hbTrId("restore failed"));
         break;
     }
 }

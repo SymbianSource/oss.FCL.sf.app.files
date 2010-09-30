@@ -43,3 +43,5 @@ unix {
         }
 }
 QMAKE_EXTRA_TARGETS += test autotest
+
+symbian:MMP_RULES += SMPSAFE

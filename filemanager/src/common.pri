@@ -58,7 +58,7 @@ symbian {
 INCLUDEPATH += $$PWD/inc
 win32 {
     # add platfrom API for windows
-    INCLUDEPATH += $$PWD/../filemanager_plat/inc
+    INCLUDEPATH += $$PWD/../../files_plat/filemanager_api/inc
 }
 
 

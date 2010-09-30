@@ -29,6 +29,7 @@ class HbLineEdit;
 class HbPushButton;
 class HbMenu;
 class FmOperationService;
+class HbToolBarExtension;
 
 class FmFileView : public FmViewBase
 {
@@ -58,9 +59,7 @@ private slots:
     void on_copy_triggered();
     void on_move_triggered();
     void on_newFolder_triggered();
-	void on_upAction_triggered();
-	void on_leftAction_triggered();
-	void on_rightAction_triggered();
+	void on_leftAction_triggered();	
 	void on_sortNameAction_triggered();
 	void on_sortTimeAction_triggered();
 	void on_sortSizeAction_triggered();
@@ -93,21 +92,27 @@ private:
 	QString createDefaultFolderName( const QString &path );
 	
 private:
+    // from FmViewBase:
+    virtual FmEventResponse offerBackEvent();
+    
+private:
     FmFileBrowseWidget *mWidget;
-    HbPushButton *mUpButton;
-    //HbLineEdit *mLineEdit;
 	HbAction *mStyleAction;
 	HbAction *mSelectableAction;
     HbAction *mFindAction;
-    QString  rootLevelPath;
+    HbToolBarExtension* mSortExtension;
 
     FmOperationService  *mOperationService;
-    
-    HbAction *mToolBarRightAction;
+   
     HbMenu *mMenu;
 
     // store the disable state of find action. true for disabled
     bool      mIsFindDisabled;
+    
+    HbAction *mSortNameAction;
+    HbAction *mSortTimeAction;
+    HbAction *mSortSizeAction;
+    HbAction *mSortTypeAction;
 };
 
 #endif

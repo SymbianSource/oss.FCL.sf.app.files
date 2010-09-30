@@ -30,19 +30,17 @@
 #include "fmdrivewatcher.h"
 #include "fmdialog.h"
 #include "fmdlgutils.h"
+#include "fmserviceutils.h"
 
 #include <hbview.h>
 #include <hbmainwindow.h>
 #include <hbapplication.h>
-#include <hbactivitymanager.h>
 #include <QFileSystemWatcher>
 #include <QFileInfo>
 #include <QPixmap>
 
-#include <shareui.h>
-
 FmViewManager *FmViewManager::mViewManager = 0;
-
+const QString FM_MAIN_VIEW = "FMMemoryStoragesList";
 
 FmDlgCloseUnit::FmDlgCloseUnit( FmDialog *dialog ) : mDialog( dialog )
 {
@@ -75,13 +73,14 @@ FmDialog *FmDlgCloseUnit::dialog()
 	return mDialog;
 }
 
-FmViewManager::FmViewManager( FmMainWindow* mainWindow ) : mOperationService( 0 ), mShareUi( 0 )
+FmViewManager::FmViewManager( FmMainWindow* mainWindow ) 
+    : mOperationService( 0 ), mServiceUtils( 0 )
 {
     mMainWindow = mainWindow;
     mDriveWatcher = new FmDriveWatcher( this );
     mDriveWatcher->setObjectName( "driveWatcher" );
     mDriveWatcher->startWatch();
-
+    
     QMetaObject::connectSlotsByName( this );
 }
 
@@ -101,9 +100,8 @@ FmViewManager::~FmViewManager(void)
     delete mDriveWatcher;
     mDriveWatcher = 0;
     
-    delete mShareUi;
-    mShareUi = 0;
-
+    delete mServiceUtils;
+    mServiceUtils = 0;
 }
 
 FmViewManager *FmViewManager::CreateViewManager( FmMainWindow* mainWindow )
@@ -130,19 +128,20 @@ FmOperationService *FmViewManager::operationService()
     if ( !mOperationService ) {
         mOperationService = new FmOperationService( this );
         mOperationService->setObjectName( "operationService" );
+        QMetaObject::connectSlotsByName( this );
     }    
     return mOperationService;
 }
 
 /*
-   return \a shareUi which is used to send files. 
+   return \a FmServiceUtils. 
  */
-ShareUi *FmViewManager::shareUi()
+FmServiceUtils *FmViewManager::serviceUtils()
 {
-    if( !mShareUi ) {
-        mShareUi = new ShareUi;
+    if( !mServiceUtils ) {
+        mServiceUtils = new FmServiceUtils;
     }
-    return mShareUi;
+    return mServiceUtils;
 }
 
 void FmViewManager::popViewAndShow()
@@ -203,8 +202,8 @@ void FmViewManager::createDriverView()
 
     mMainWindow->addView( driverView );
     mMainWindow->setCurrentView( driverView );
-    HbActivityManager* activityManager = qobject_cast<HbApplication*>(qApp)->activityManager();        
-    bool ok = activityManager->removeActivity("FMMemoryStoragesList");
+    bool ok = serviceUtils()->removeActivity(FM_MAIN_VIEW);
+    Q_UNUSED( ok );
 
     connect( this, SIGNAL( driveSpaceChanged() ), 
         driverView, SLOT( refreshDrive() ) );
@@ -236,7 +235,7 @@ void FmViewManager::createFileView( const QString &path,
     }
    
     if( checkedPath.isEmpty() ) {
-        FmDlgUtils::information( QString( hbTrId("Path: %1 is unavailable!").arg( path )) );
+        FmDlgUtils::warning( QString( hbTrId("Path: %1 is unavailable!").arg( path )) );
         return;
     }
 
@@ -348,12 +347,11 @@ void FmViewManager::saveActivity()
         mScreenShot = QPixmap::grabWidget(mMainWindow, mMainWindow->rect());
     }
     QVariantHash metadata;
-    metadata.insert("screenshot", mScreenShot);
-    HbActivityManager* activityManager = qobject_cast<HbApplication*>(qApp)->activityManager();     
-    // add the activity to the activity manager
-    bool ok = activityManager->addActivity("FMMemoryStoragesList", QVariant(), metadata);
+    metadata.insert("screenshot", mScreenShot);         
+    // save the activity
+    bool ok = serviceUtils()->saveActivity(FM_MAIN_VIEW, QVariant(), metadata);
     // do not need check return value
-
+    Q_UNUSED( ok );
 }
 
 void FmViewManager::onAboutToChangeView(HbView * oldView, HbView *newView)

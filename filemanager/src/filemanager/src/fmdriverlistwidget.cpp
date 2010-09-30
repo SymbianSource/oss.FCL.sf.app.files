@@ -248,7 +248,7 @@ void FmDriverListWidget::on_renameAction_triggered()
     FmDriverInfo driverInfo = FmUtils::queryDriverInfo( diskName );
 
     if ( state & FmDriverInfo::EDriveWriteProtected ){
-        FmDlgUtils::information( hbTrId( "Unable to perform operation. Memory card is read only." ) );
+        FmDlgUtils::warning( hbTrId( "Unable to perform operation. Memory card is read only." ) );
         return;
         }
 
@@ -267,13 +267,13 @@ void FmDriverListWidget::on_renameAction_triggered()
         }
         int err = FmUtils::renameDrive( diskName, volumeName );
         if ( err == FmErrNone ) {
-            FmDlgUtils::information( hbTrId( "The name has been changed!" ) );
+            FmDlgUtils::information( hbTrId( "The name has been changed!" ), HbMessageBox::Ok, true );
             mModel->refresh();
             break;
         } else if( err == FmErrBadName ) {
-            FmDlgUtils::information( hbTrId( "Illegal characters! Use only letters and numbers." ) );
+            FmDlgUtils::warning( hbTrId( "Illegal characters! Use only letters and numbers." ), HbMessageBox::Ok, true );
         } else{
-            FmDlgUtils::information( hbTrId( "Error occurred, operation cancelled!" ) );
+            FmDlgUtils::warning( hbTrId( "Error occurred, operation cancelled!" ) );
             break;
         }                
     }
@@ -299,10 +299,10 @@ void FmDriverListWidget::on_setPwdAction_triggered()
     QString associatedDrives( FmUtils::getDriveLetterFromPath( diskName ) );
     if( FmDlgUtils::showMultiPasswordQuery( firstLabel, secondLabel, newPwd, FmMaxLengthofDrivePassword, associatedDrives ) ) {
        if ( FmUtils::setDrivePwd( diskName, oldPwd, newPwd ) == 0 ){
-            FmDlgUtils::information( hbTrId( "The password has been set!" ) );
+            FmDlgUtils::information( hbTrId( "The password has been set!" ), HbMessageBox::Ok, true );
         }
         else{
-            FmDlgUtils::information( hbTrId( "Error occurred, operation cancelled!" ) );
+            FmDlgUtils::warning( hbTrId( "Error occurred, operation cancelled!" ) );
         }
     }
 }
@@ -325,7 +325,7 @@ void FmDriverListWidget::on_changePwdAction_triggered()
                 if ( FmUtils::setDrivePwd( diskName, oldPwd, newPwd ) == 0 ){
                     FmDlgUtils::information( hbTrId( "The password has been changed!" ) );
                 } else {
-                    FmDlgUtils::information( hbTrId( "Error occurred, operation cancelled!" ) );
+                    FmDlgUtils::warning( hbTrId( "Error occurred, operation cancelled!" ) );
                 }
                 break;
             } else {  
@@ -333,7 +333,7 @@ void FmDriverListWidget::on_changePwdAction_triggered()
                 break;
             }
        } else {
-            FmDlgUtils::information( hbTrId( "The password is incorrect, try again!" ) );
+           FmDlgUtils::warning( hbTrId( "The password is incorrect, try again!" ), HbMessageBox::Ok, true );
        }
          
     }
@@ -354,12 +354,12 @@ void FmDriverListWidget::on_removePwdAction_triggered()
                     FmDlgUtils::information( hbTrId( "The password has been removed!" ) );
                 }
                 else{
-                    FmDlgUtils::information( hbTrId( "Error occurred, operation cancelled!" ) );
+                    FmDlgUtils::warning( hbTrId( "Error occurred, operation cancelled!" ) );
                 }
                 break;
             }
             else {
-                FmDlgUtils::information( hbTrId( "The password is incorrect, try again!" ) );
+                FmDlgUtils::warning( hbTrId( "The password is incorrect, try again!" ), HbMessageBox::Ok, true );
             }
             
         }
@@ -378,18 +378,18 @@ void FmDriverListWidget::on_unLockedAction_triggered()
     while( FmDlgUtils::showSinglePasswordQuery( title, oldPwd, FmMaxLengthofDrivePassword ) ) {
         int err = FmUtils::unlockDrive( diskName, oldPwd );
         if( err == FmErrNone ) {
-            FmDlgUtils::information( hbTrId( "The memory is unlocked!" ) );
+            FmDlgUtils::warning( hbTrId( "The memory is unlocked!" ) );
             break;
         } else if ( err == FmErrAccessDenied ) {
-            FmDlgUtils::information( hbTrId( "The password is incorrect, try again!" ) );
+            FmDlgUtils::warning( hbTrId( "The password is incorrect, try again!" ), HbMessageBox::Ok, true );
         } else if (err == FmErrAlreadyExists ) {
             FmDlgUtils::information( hbTrId( "The disk has already been unlocked!" ) );
             break;
         } else if( err == FmErrNotSupported ) {
-            FmDlgUtils::information( hbTrId( "The media does not support password locking!" ) );
+            FmDlgUtils::warning( hbTrId( "The media does not support password locking!" ) );
             break;
         } else {
-            FmDlgUtils::information( hbTrId( "Error occurred, operation cancelled!" ) );
+            FmDlgUtils::warning( hbTrId( "Error occurred, operation cancelled!" ) );
             break;
         }
     }

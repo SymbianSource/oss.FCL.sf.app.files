@@ -14,7 +14,22 @@
 # Description: 
 #
 
-PLATFORM_HEADERS += $$PWD/fmglobal.h \
-                    $$PWD/fmfiledialog.h
-                    
-HEADERS += $$PLATFORM_HEADERS
+QT += testlib
+CONFIG += hb qtestlib
+CONFIG += symbian_test
+TEMPLATE = app
+TARGET = ut_fmfiletyperecognizer
+
+include ( ../../../src/common.pri )
+include ( ../../../src/inc/commoninc.pri )
+include ( ../../../src/inc/commonutils.pri )
+include ( ../ut_common.pri )
+
+DEPENDPATH += .
+INCLUDEPATH += .
+
+TARGET.CAPABILITY = ALL -TCB
+
+symbian:MMP_RULES += SMPSAFE
+
+SOURCES += src/ut_fmfiletyperecognizer.cpp  

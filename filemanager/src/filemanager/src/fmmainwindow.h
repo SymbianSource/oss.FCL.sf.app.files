@@ -23,7 +23,7 @@
 #include "fmviewmanager.h"
 
 #include <hbmainwindow.h>
-
+#include <QTimer>
 class HbAction;
 
 class FmMainWindow : public HbMainWindow
@@ -33,14 +33,21 @@ public:
     FmMainWindow();
     ~FmMainWindow();
 
+signals:
+    void applicationReady();
+
 private slots:
     void onOrientationChanged( Qt::Orientation orientation );
     void delayedLoading();
+    void onApplicationReady();
 private:
     void init();
 
     FmViewManager *mViewManager;
     bool mFirstViewLoaded;
+
+    // timer used to get opportunity for emit applicationReady signal.
+    QTimer mShowTimer;
 };
 
 #endif

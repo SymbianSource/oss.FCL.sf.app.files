@@ -89,7 +89,7 @@ void TestMainWindow::init()
     listWidget->addItem( "placeHolderY" );
     listWidget->addItem( "placeHolderZ" );
 
-    connect(listWidget, SIGNAL(activated(HbListWidgetItem*)), this,SLOT(activatedListItem(HbListWidgetItem*)) );
+    connect(listWidget, SIGNAL(activated(HbListWidgetItem*)), this,SLOT(activatedListItem(HbListWidgetItem*)), Qt::QueuedConnection );
 }
 
 void TestMainWindow::activatedListItem(HbListWidgetItem *item)

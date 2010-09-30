@@ -24,13 +24,15 @@
 #include <QDir>
 #include <QString>
 
-class QFileSystemModel;
 class FmDriveModel;
 class FmDriveWatcher;
-class HbListView;
+class FmFileIconProvider;
+class FmFileSystemProxyModel;
+
+class QFileSystemModel;
 class QGraphicsLinearLayout;
 
-class FmFileIconProvider;
+class HbListView;
 
 class FmFileWidget : public HbWidget
 {
@@ -69,9 +71,10 @@ private:
 
 private:
     HbListView *mListView;
-    QGraphicsLinearLayout *mLayout;
-    QFileSystemModel	*mFileSystemModel;
-    FmDriveModel		*mDriveModel;
+    QGraphicsLinearLayout   *mLayout;
+    QFileSystemModel        *mFileSystemSourceModel;
+    FmFileSystemProxyModel  *mFileModel;
+    FmDriveModel		    *mDriveModel;
 
     QAbstractItemModel *mCurrentModel;
     FmDriveWatcher  *mDriveWatcher;

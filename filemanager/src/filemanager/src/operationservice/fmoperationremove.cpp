@@ -95,16 +95,16 @@ void FmOperationRemove::start( volatile bool *isStopped )
     foreach( const QString& srcPath, mPathList ) {
         int ret = remove( srcPath );
         if( ret != FmErrNone ) {
-            emit notifyError( ret, mErrString );
             // refresh drive space no care if cancel, error or finished.
             // as filemanger cannot notify drive space changed
             // do not refresh path as QFileSystemModel will do auto-refresh
             emit driveSpaceChanged();
+            emit notifyError( ret, mErrString );
             return;
         }
-    }
-    emit notifyFinish();
+    }    
     emit driveSpaceChanged();
+    emit notifyFinish();
 }
 
 /*

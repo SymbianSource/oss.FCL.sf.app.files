@@ -72,7 +72,7 @@ void FmOperationResultProcesser::onAskForRename(
         QString errString;
         // check if name/path is available for use.
         if( !FmUtils::checkNewFolderOrFile( value, newTargetPath, errString ) ) {
-            FmDlgUtils::information( errString );
+            FmDlgUtils::warning( errString, HbMessageBox::Ok, true );
             ret = FmDlgUtils::showTextQuery( questionText, value, regExpList, maxFileNameLength, QString(), false );
             continue;
         } else {
@@ -86,7 +86,7 @@ void FmOperationResultProcesser::onAskForRename(
         if ( ( srcFileInfo.suffix().compare( destFileInfo.suffix(), Qt::CaseInsensitive ) != 0 )
             && srcFileInfo.isFile() ) {
             // popup warning when the suffix of file is changed.
-            FmDlgUtils::information( hbTrId( "File may become unusable when file name extension is changed" ) );        
+            FmDlgUtils::warning( hbTrId( "File may become unusable when file name extension is changed" ) );        
         }   
 	}
 }
@@ -117,7 +117,7 @@ void FmOperationResultProcesser::onAskForReplace(
 void FmOperationResultProcesser::onShowNote( FmOperationBase* operationBase, const char *noteString )
 {
     Q_UNUSED( operationBase );
-    FmDlgUtils::information(hbTrId(noteString));
+    FmDlgUtils::information(hbTrId(noteString), HbMessageBox::Ok, true );
 }
 
 /*
@@ -175,6 +175,7 @@ void FmOperationResultProcesser::onNotifyPreparing( FmOperationBase* operationBa
         break;
     case FmOperationService::EOperationTypeFormat:
         title = hbTrId("format preparing");
+        FmUtils::setSystem( true );
         break;
     default:
         break;
@@ -257,7 +258,8 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
         }
     case FmOperationService::EOperationTypeFormat:
         {
-            FmDlgUtils::information( QString( hbTrId("Format succeed!")) );
+            FmUtils::setSystem( false );
+            FmDlgUtils::information( QString( hbTrId("Format succeed!")), HbMessageBox::Ok, true );
             FmOperationFormat *paramFormat = static_cast<FmOperationFormat*>( operationBase );
             QString title( hbTrId( "Drive name ") );  
             QString driveName( paramFormat->driverName() );
@@ -280,9 +282,9 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
                         mOperationService->on_operation_driveSpaceChanged();
                         break;
                     } else if( err == FmErrBadName ) {
-                        FmDlgUtils::information( hbTrId( "Illegal characters! Use only letters and numbers." ) );
+                        FmDlgUtils::warning( hbTrId( "Illegal characters! Use only letters and numbers." ), HbMessageBox::Ok, true );
                     } else{
-                        FmDlgUtils::information( hbTrId( "Error occurred, operation cancelled!" ) );
+                        FmDlgUtils::warning( hbTrId( "Error occurred, operation cancelled!" ) );
                         break;
                     }                
                 }
@@ -313,6 +315,9 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
 {
     Q_UNUSED( errString );
     failAndCloseProgress();
+    if( operationBase->operationType() == FmOperationService::EOperationTypeFormat ) {
+        FmUtils::setSystem( false );
+    }
     switch( error )
     {
         case FmErrCancel:
@@ -325,7 +330,7 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
 			// If need use QEventLoop::exec to block code execute sequence, It should be invoked in a Qt::QueuedConnection slot.
             return;
         case FmErrAlreadyStarted:
-            FmDlgUtils::information( QString( hbTrId("Operation already started!")) );
+            FmDlgUtils::warning( QString( hbTrId("Operation already started!")) );
             return;
         case FmErrLocked:
             {
@@ -335,14 +340,14 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
                     QString targetDrive( operationBackup->targetDrive() );
                     QString defaultDriveVolume( FmUtils::getDefaultVolumeName( targetDrive ) );
                     QString driveString( defaultDriveVolume.isEmpty()? targetDrive:defaultDriveVolume );
-                    FmDlgUtils::information( QString( hbTrId("txt_fmgr_info_backup_locked") ).arg( driveString ) );
+                    FmDlgUtils::warning( QString( hbTrId("txt_fmgr_info_backup_locked") ).arg( driveString ) );
                 } else {
-                    FmDlgUtils::information( QString( hbTrId("Operation failed because drive is locked!")) );
+                    FmDlgUtils::warning( QString( hbTrId("Operation failed because drive is locked!")) );
                 }
                 return;
             }
         case FmErrPathNotFound:
-            FmDlgUtils::information( QString( hbTrId("Operation failed because can not find target path or drive is not available!") ) );
+            FmDlgUtils::warning( QString( hbTrId("Operation failed because can not find target path or drive is not available!") ) );
             return;
         case FmErrCorrupt:
             {
@@ -352,9 +357,9 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
                     QString targetDrive( operationBackup->targetDrive() );
                     QString defaultDriveVolume( FmUtils::getDefaultVolumeName( targetDrive ) );
                     QString driveString( defaultDriveVolume.isEmpty()? targetDrive:defaultDriveVolume );
-                    FmDlgUtils::information( QString( hbTrId("txt_fmgr_info_backup_corrupted") ).arg( driveString ) );
+                    FmDlgUtils::warning( QString( hbTrId("txt_fmgr_info_backup_corrupted") ).arg( driveString ) );
                 } else {
-                    FmDlgUtils::information( QString( hbTrId("Operation failed because target media is corrupted!") ) );
+                    FmDlgUtils::warning( QString( hbTrId("Operation failed because target media is corrupted!") ) );
                 }
                 return;
             }
@@ -366,48 +371,48 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
                     QString targetDrive( operationBackup->targetDrive() );
                     QString defaultDriveVolume( FmUtils::getDefaultVolumeName( targetDrive ) );
                     QString driveString( defaultDriveVolume.isEmpty()? targetDrive:defaultDriveVolume );
-                    FmDlgUtils::information( QString( hbTrId("txt_fmgr_info_backup_unavailable") ).arg( driveString ) );
+                    FmDlgUtils::warning( QString( hbTrId("txt_fmgr_info_backup_unavailable") ).arg( driveString ) );
                 } else {
-                    FmDlgUtils::information( QString( hbTrId("Operation failed because device is not ready!") ) );
+                    FmDlgUtils::warning( QString( hbTrId("Operation failed because device is not ready!") ) );
                 }
                 return;
             }
         case FmErrDisMounted: // Caused by eject MMC when preparing backup, will be localized later
-            FmDlgUtils::information( QString( hbTrId("Operation failed because backup target drive has been removed!") ) );
+            FmDlgUtils::warning( QString( hbTrId("Operation failed because backup target drive has been removed!") ) );
             return;
         case FmErrDiskFull:
-            FmDlgUtils::information( QString( hbTrId("Not enough space. Operation cancelled!")) );
+            FmDlgUtils::warning( QString( hbTrId("Not enough space. Operation cancelled!")) );
             return;
         case FmErrCopyDestToSubFolderInSrc:
-            FmDlgUtils::information( QString( hbTrId("Can not copy to sub folder!")) );
+            FmDlgUtils::warning( QString( hbTrId("Can not copy to sub folder!")) );
             return;
         case FmErrMoveDestToSubFolderInSrc:
-            FmDlgUtils::information( QString( hbTrId("Can not move to sub folder!")) );
+            FmDlgUtils::warning( QString( hbTrId("Can not move to sub folder!")) );
             return;
         case FmErrCannotRemove:{
             if( operationBase->operationType() == FmOperationService::EOperationTypeCopy ) {
                 // when copy a file/dir to same name destination, and delete dest fail, this error will occur
-                FmDlgUtils::information( QString( hbTrId( "Can not copy because %1 can not be deleted!" ).arg( errString ) ) );
+                FmDlgUtils::warning( QString( hbTrId( "Can not copy because %1 can not be deleted!" ).arg( errString ) ) );
                 return;
             }
             else if( operationBase->operationType() == FmOperationService::EOperationTypeMove ) {
                 // when move a file/dir to same name destination, and delete dest fail, this error will occur
-                FmDlgUtils::information( QString( hbTrId( "Can not move because %1 can not be deleted!" ).arg( errString ) ) );
+                FmDlgUtils::warning( QString( hbTrId( "Can not move because %1 can not be deleted!" ).arg( errString ) ) );
                 return;
             }
             // when delete file/dir fail, this error will occur
-            FmDlgUtils::information( QString( hbTrId( "Can not delete %1!" ).arg( errString ) ) );
+            FmDlgUtils::warning( QString( hbTrId( "Can not delete %1!" ).arg( errString ) ) );
             return; 
         }      
         case FmErrRemoveDefaultFolder:{
             if( operationBase->operationType() == FmOperationService::EOperationTypeMove ) {
                 // when move a default folder
-                FmDlgUtils::information( QString( hbTrId( "Could not move because the default folder %1 can not be deleted!" ).arg( errString ) ) );
+                FmDlgUtils::warning( QString( hbTrId( "Could not move because the default folder %1 can not be deleted!" ).arg( errString ) ) );
                 return;
             }
             else {
                // when delete the default folder
-               FmDlgUtils::information( QString( hbTrId( "Could not remove the default folder %1 " ).arg( errString ) ) );
+               FmDlgUtils::warning( QString( hbTrId( "Could not remove the default folder %1 " ).arg( errString ) ) );
                return;
             }
         }
@@ -416,10 +421,10 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
     switch( operationBase->operationType() )
     {
     case FmOperationService::EOperationTypeFormat:
-        FmDlgUtils::information( QString( hbTrId("Format failed!")) );
+        FmDlgUtils::warning( QString( hbTrId("Format failed!")) );
         break;
     default:
-        FmDlgUtils::information( QString( hbTrId("Operation failed")) );
+        FmDlgUtils::warning( QString( hbTrId("Operation failed")) );
     }
 
 }

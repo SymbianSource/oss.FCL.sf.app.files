@@ -19,8 +19,11 @@
 #include "fmcommon.h"
 #include "fmoperationbase.h"
 #include "fmutils.h"
+#include "fmviewmanager.h"
+#include "fmserviceutils.h"
 
 #include <QString>
+#include <QSettings>
 
 #include <f32file.h>
 #include <e32property.h>
@@ -71,6 +74,8 @@ void FmOperationFormat::start( volatile bool */*isStopped*/ )
         emit notifyError( FmErrWrongParam, QString() );
         return;
     }
+    FmViewManager::viewManager()->serviceUtils()->closeApps();
+    
     
     RFormat format;
     
@@ -84,7 +89,9 @@ void FmOperationFormat::start( volatile bool */*isStopped*/ )
 
     TInt drive = 0;
     drive = mDriverName[0].toUpper().toAscii() - 'A' + EDriveA;
-
+    // save volume name for MassStorage
+    storeVolumeName( drive );
+    
     TDriveName formatDriveName( TDriveUnit( drive ).Name() );
 
     int finalValue = 0;
@@ -196,18 +203,60 @@ void FmOperationFormat::start( volatile bool */*isStopped*/ )
         format.Close();        
         fs.Close();
         
+        // restore volume name for MassStorage
+        restoreVolumeName( drive );
         FmUtils::createDefaultFolders( mDriverName );
     }
 
+    FmViewManager::viewManager()->serviceUtils()->restartApps();
+    
+    // refresh drive space no care if cancel, error or finished.
+    // as filemanger cannot notify drive space changed
+    // do not refresh path as QFileSystemModel will do auto-refresh
+    emit driveSpaceChanged();   
     if( err == KErrNone ){
         emit notifyFinish();        
     }
     else{
         emit notifyError( FmErrTypeFormatFailed, QString() );
     }
-    // refresh drive space no care if cancel, error or finished.
-    // as filemanger cannot notify drive space changed
-    // do not refresh path as QFileSystemModel will do auto-refresh
-    emit driveSpaceChanged();    
+}
+
+void FmOperationFormat::storeVolumeName( int drive )
+{
+    FmDriverInfo driverInfo = FmUtils::queryDriverInfo( FmUtils::numberToDriveName( drive ) );
+    if ( driverInfo.driveType() == FmDriverInfo::EDriveTypeMassStorage )
+    {
+        QString volumeName( driverInfo.volumeName() );
+        QSettings settings( "Nokia", "FileManager" );
+        settings.beginGroup( "Settings" );
+        settings.setValue( "MassStorageDriveNumber", drive );
+        settings.setValue( "MassStorageVolumeName", volumeName );
+        settings.endGroup();
+    }
+}
+
+// -----------------------------------------------------------------------------
+// CFileManagerEngine::RestoreVolumeNameL()
+//
+// -----------------------------------------------------------------------------
+//  
+void FmOperationFormat::restoreVolumeName( int drive )
+{
+
+    FmDriverInfo driveInfo = FmUtils::queryDriverInfo( FmUtils::numberToDriveName( drive ));
+    if ( driveInfo.driveType() == FmDriverInfo::EDriveTypeMassStorage )
+    {
+        QSettings settings("Nokia", "FileManager");
+        settings.beginGroup("Settings");
+        int massStorageDriveNumber    = settings.value( "MassStorageDriveNumber", -1 ).toInt();
+        QString massStorageVolumeName = settings.value( "MassStorageVolumeName", QString() ).toString();
+        settings.endGroup();
     
+        if ( ( !massStorageVolumeName.isEmpty() ) &&
+                ( massStorageDriveNumber == drive ) )
+        {
+            FmUtils::renameDrive( FmUtils::numberToDriveName( drive ), massStorageVolumeName );
+        }
+    }
 }

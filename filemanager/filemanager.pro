@@ -20,5 +20,7 @@ symbian {
     include(rom/rom.pri)
 }
 
+SUBDIRS += ../files_plat/filemanager_api
+SUBDIRS += src/fmfiledialog
 SUBDIRS += src/fmbkupenginewrapper
 SUBDIRS += src/filemanager

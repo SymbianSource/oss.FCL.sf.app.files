@@ -34,14 +34,16 @@ FmViewBase::~FmViewBase(void)
 
 void FmViewBase::init()
 {
-    mBackAction = new HbAction( Hb::BackNaviAction, this );
-    mBackAction->setObjectName( "backAction" );
+    mBackAction = new HbAction( Hb::BackNaviAction, this );    
     setNavigationAction( mBackAction );
+    connect( mBackAction, SIGNAL( triggered() ), this, SLOT( onBackActionTriggered() ) );
 }
 
-void FmViewBase::on_backAction_triggered()
+void FmViewBase::onBackActionTriggered()
 {
-    FmViewManager::viewManager()->popViewAndShow();
+    if( offerBackEvent() == BackWasNotConsumed ) {
+        FmViewManager::viewManager()->popViewAndShow();
+    }
 }
 
 /*!
@@ -51,3 +53,12 @@ void FmViewBase::aboutToClose()
 {
 
 }
+
+/*!
+    respond to back action.
+*/
+FmEventResponse FmViewBase::offerBackEvent()
+{
+    return BackWasNotConsumed;
+}
+

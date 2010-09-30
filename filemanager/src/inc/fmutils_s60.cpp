@@ -21,6 +21,8 @@
 #include "fmcommon.h"
 #include "fms60utils.h"
 
+#include <COEMAIN.H>
+#include <eikenv.H> 
 #include <apgcli.h>
 #include <sysutil.h>
 #include <f32file.h>
@@ -54,8 +56,11 @@ FmDriverInfo FmUtils::queryDriverInfo( const QString &driveName )
     if( driveName.isEmpty() ) {
         return FmDriverInfo( 0, 0, driveName, QString(), FmDriverInfo::EDriveNotPresent );
     }
-    CCoeEnv *env = CCoeEnv::Static();
-    RFs& fs = env->FsSession();
+    //    CCoeEnv *env = CCoeEnv::Static();
+    //    RFs& fs = env->FsSession();
+    // make new fs so that this function can be called in thread
+    RFs fs;
+    fs.Connect();
 
     TVolumeInfo volumeInfo;
     TInt drive = 0;
@@ -186,6 +191,7 @@ FmDriverInfo FmUtils::queryDriverInfo( const QString &driveName )
             "_errorCode:" + QString::number( errorCode ) + 
             "_driveSatus:" + QString::number( state ) );
     FM_LOG( logString );
+    fs.Close();
     return FmDriverInfo( volumeInfo.iSize, volumeInfo.iFree, driveName, volumeName, state );
 }
 
@@ -383,8 +389,11 @@ int FmUtils::renameDrive( const QString &driveName, const QString &newVolumeName
         }   
     }
         
-    CCoeEnv *env = CCoeEnv::Static();
-	RFs& fs = env->FsSession();
+    //  CCoeEnv *env = CCoeEnv::Static();
+    //	RFs& fs = env->FsSession();
+    // make new fs so that this function can be called in thread
+    RFs fs;
+    fs.Connect();
 
     TInt drive = 0;
 	drive = driveName[0].toUpper().toAscii() - 'A' + EDriveA;
@@ -396,6 +405,7 @@ int FmUtils::renameDrive( const QString &driveName, const QString &newVolumeName
     QString logString = "Rename error:" + QString::number( err );
     FM_LOG( logString );
 
+    fs.Close();
     if( err == KErrNone ){
         return FmErrNone;   
     }
@@ -512,6 +522,12 @@ int FmUtils::isPathAccessabel( const QString &path )
         FM_LOG( QString( "isPathAccessabel false: path contain C and not in data folder" ) );
         return FmErrPathDenied;
     }
+    
+    if( isSystemFolder( fileInfo.absoluteFilePath() ) ) {
+        FM_LOG( QString( "isPathAccessabel false: path is system path that not accessable" ) );
+        return FmErrPathDenied;
+    }
+
     if( !checkDriveAccessFilter( FmUtils::getDriveNameFromPath( fileInfo.absoluteFilePath() ) ) ){
         return FmErrDriveDenied;
     }
@@ -655,8 +671,9 @@ void FmUtils::createDefaultFolders( const QString &driveName )
 }
 
 /*!
+    return localized file name by \a path, empty string returned for non-localized path.
     In Symbian system, default folders will be localized.
-    So localize is used to check if a path is a default folder
+    So localize also can be used to check if a path is a default folder
     \sa isDefaultFolder
 */
 QString FmUtils::localize( const QString &path )
@@ -846,4 +863,29 @@ bool FmUtils::checkMaxPathLength( const QString& path )
         return false;
     }
     return true;
+}
+
+/*!
+    Set appliation as system mode if \a isSystem is true.
+    Otherwise set application as non-system mode
+*/
+void FmUtils::setSystem( bool isSystem )
+{
+    CCoeEnv* coeEnv = CCoeEnv::Static();
+    CEikonEnv* eikonEnv = (STATIC_CAST(CEikonEnv*,coeEnv));
+    if( isSystem ) {
+        eikonEnv->SetSystem(ETrue);
+    } else {
+        eikonEnv->SetSystem(EFalse);
+    }
+}
+
+/*!
+    return drive name by \a drive
+*/
+QString FmUtils::numberToDriveName( int drive )
+{
+    QChar driveChar( drive - EDriveA + 'A' );
+    QString driveName = QString( driveChar ) + ':';
+    return driveName;
 }

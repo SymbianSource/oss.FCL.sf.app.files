@@ -49,6 +49,8 @@ FmFileTypeRecognizer::FmFileTypeRecognizer()
     mFileExtensionMap.insert( QString( "3g2" ), FileTypeVideo );
     mFileExtensionMap.insert( QString( "rmvb" ),FileTypeVideo );
     mFileExtensionMap.insert( QString( "mkv" ), FileTypeVideo );
+    mFileExtensionMap.insert( QString( "3gpp" ),FileTypeVideo );
+    mFileExtensionMap.insert( QString( "mpeg4"),FileTypeVideo );
     
 
     mFileExtensionMap.insert( QString( "aac" ), FileTypeTone );

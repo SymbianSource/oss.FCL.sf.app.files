@@ -15,7 +15,12 @@
 #
 
 TEMPLATE = subdirs
-SUBDIRS = unit/unit_backuprestoresettings
+SUBDIRS = unit/unit_backuprestoresettings \
+          unit/ut_fminternaldrivermodel \
+          unit/ut_fminternalfmutils \
+          unit/ut_fmfiletypeprovider \
+          unit/ut_fmfiletyperecognizer \
+          unit/ut_fmoprationserviceapi
 
 CONFIG += ordered
 #CONFIG += symbian_test

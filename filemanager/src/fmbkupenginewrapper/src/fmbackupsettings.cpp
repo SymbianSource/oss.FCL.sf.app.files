@@ -346,8 +346,11 @@ void FmBackupSettings::load()
 {
    
     QStringList driveList;
+    QString defaultDrive;
     mBkupEngine->getBackupDriveList( driveList );
-    QString defaultDrive( driveList.first() );
+    if( !driveList.isEmpty() ) {
+        defaultDrive = driveList.first();
+    }
    
     QDate date;
     QSettings settings("Nokia", "FileManager");
@@ -358,7 +361,7 @@ void FmBackupSettings::load()
     mScheduling = (TFileManagerBackupSchedule)(settings.value("scheduling", EFileManagerBackupScheduleNever ).toInt()); // Never schedule for default value
     mWeekday = (TFileManagerBackupWeekday)(settings.value("weekday", EFileManagerBackupWeekdayMonday ).toInt()); // monday for default value
     mTime = (settings.value("time", QTime::currentTime() ).toTime()); // empty for default
-    mTargetDrive = (settings.value("targetDrive", defaultDrive ) ).toString();  // C for default
+    mTargetDrive = (settings.value("targetDrive", defaultDrive ) ).toString();  // empty or first backup-able drive for default value
     mDate = (settings.value("backupDate", date)).toDate();
     settings.endGroup();
     refreshList();

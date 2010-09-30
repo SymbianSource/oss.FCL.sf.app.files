@@ -66,7 +66,7 @@
  * Constructs one operation Service with \a parent.
  */
 FmOperationService::FmOperationService( QObject *parent ) : QObject( parent ),
-        mCurrentOperation( 0 ), mBackupRestoreHandler( 0 )
+        mBackupRestoreHandler( 0 ), mCurrentOperation( 0 )
 {
     mThread = new FmOperationThread( this );
     mThread->setObjectName( "operationThread" );
@@ -353,19 +353,20 @@ void FmOperationService::resetOperation()
 void FmOperationService::connectSignalsAndSlots( FmOperationBase *operation )
 {
     
-    connect( operation, SIGNAL( showNote( QString ) ),
-            this, SLOT( on_operation_showNote( QString )), Qt::BlockingQueuedConnection );
-    connect( operation, SIGNAL( notifyError( int, QString ) ),
-            this, SLOT( on_operation_notifyError( int, QString ) ) );
-    connect( operation, SIGNAL( notifyStart( bool, int ) ),
-            this, SLOT( on_operation_notifyStart( bool, int ) ) );
-    connect( operation, SIGNAL( notifyProgress( int ) ),
-            this, SLOT( on_operation_notifyProgress( int ) ) );
+    connect( operation, SIGNAL( showNote( QString ) ),           // blocking because need wait for show note
+            this, SLOT( on_operation_showNote( QString )),       Qt::BlockingQueuedConnection );
+    connect( operation, SIGNAL( notifyPreparing( bool ) ),       // blocking to show waiting note immediately
+            this, SLOT( on_operation_notifyPreparing( bool )),   Qt::BlockingQueuedConnection );
+    connect( operation, SIGNAL( notifyProgress( int ) ),         // blocking to make progress more accurate
+            this, SLOT( on_operation_notifyProgress( int ) ),    Qt::BlockingQueuedConnection );
+    connect( operation, SIGNAL( notifyStart( bool, int ) ),      // blocking to show waiting note immediately
+            this, SLOT( on_operation_notifyStart( bool, int ) ), Qt::BlockingQueuedConnection );    
+    connect( operation, SIGNAL( notifyWaiting( bool ) ),         // blocking to show waiting note immediately
+            this, SLOT( on_operation_notifyWaiting( bool )),     Qt::BlockingQueuedConnection );    
     connect( operation, SIGNAL( notifyFinish() ),
             this, SLOT( on_operation_notifyFinish()) );
-    connect( operation, SIGNAL( notifyWaiting( bool ) ),
-            this, SLOT( on_operation_notifyWaiting( bool )) );   
-    
+    connect( operation, SIGNAL( notifyError( int, QString ) ),
+            this, SLOT( on_operation_notifyError( int, QString ) ) );
 }
 
 /*

@@ -35,7 +35,9 @@ public:
     
 signals:
     void driveSpaceChanged();
-    
+private:
+    void storeVolumeName( int drive );
+    void restoreVolumeName( int drive );
 private:
     QString mDriverName;
     

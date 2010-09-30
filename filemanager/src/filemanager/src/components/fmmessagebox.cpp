@@ -23,11 +23,14 @@
     This is a convenience function for showing an information dialog with \a informationText
 */
 void FmMessageBox::information( const QString &informationText,
-    HbMessageBox::StandardButtons buttons )
-{
-    HbMessageBox::information ( informationText,
+    HbMessageBox::StandardButtons buttons, bool isBlocking  )
+{    
+    HbMessageBox::information( informationText,
          this, SLOT(dialogClosed(HbAction*)), buttons );
-    mEventLoop.exec();
+    if ( isBlocking ) {
+        mEventLoop.exec();
+    }
+    
 }
 
 /*!
@@ -36,10 +39,23 @@ void FmMessageBox::information( const QString &informationText,
 bool FmMessageBox::question( const QString &questionText,
     HbMessageBox::StandardButtons buttons )
 {
-    HbMessageBox::question ( questionText,
+    HbMessageBox::question( questionText,
             this, SLOT(dialogClosed(HbAction*)), buttons  );
     mEventLoop.exec();
     return mRet;
+}
+
+/*!
+    This is a convenience function for showing a warning dialog with \a warningText
+*/
+void FmMessageBox::warning( const QString &warningText,
+        HbMessageBox::StandardButtons buttons, bool isBlocking )
+{
+    HbMessageBox::warning( warningText,
+         this, SLOT(dialogClosed(HbAction*)), buttons );
+    if ( isBlocking ) {
+        mEventLoop.exec();
+    }
 }
 
 void FmMessageBox::dialogClosed(HbAction *action)

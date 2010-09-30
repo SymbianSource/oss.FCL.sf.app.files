@@ -17,6 +17,7 @@
  */
 
 #include "fmfindthread.h"
+#include "fmutils.h"
 #include "fmcommon.h"
 
 #include <QDir>
@@ -117,17 +118,21 @@ void FmFindThread::run()
 			QString name = it->fileName();
 			QString absolutPath = it->absoluteFilePath();
             if (findPattern.exactMatch( it->fileName() )) {
-                tempResultList.append( it->absoluteFilePath() );
-                if (tempResultList.count() > notifyPerCount) {
-                    emitFound();
-                } else if (time.elapsed() > notifyPerElapsedTime && tempResultList.count() > 0) {
-                    emitFound();
+                if( !FmUtils::isSystemFolder( it->absoluteFilePath()) ) {
+                    tempResultList.append( it->absoluteFilePath() );
+                    if (tempResultList.count() > notifyPerCount) {
+                        emitFound();
+                    } else if (time.elapsed() > notifyPerElapsedTime && tempResultList.count() > 0) {
+                        emitFound();
+                    }
                 }
             }
 
             // exclude directory named ".." and "."
             if (it->isDir() && it->fileName() != ParentDir && it->fileName() != CurrentDir ) {
-                findDirs.append( QDir( it->absoluteFilePath() ) );
+                if( !FmUtils::isSystemFolder( it->absoluteFilePath()) ) {
+                    findDirs.append( QDir( it->absoluteFilePath() ) );
+                }
             }
         }
 

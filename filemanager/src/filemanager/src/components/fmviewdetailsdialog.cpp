@@ -100,7 +100,7 @@ void FmViewDetailsDialog::setDriveDetails( const QString &driverName )
     mDataListModel->setData(  mDataListModel->index( EMemoryName, 0 ), dataList, Qt::DisplayRole );  
     
     dataList.clear();
-    dataList << hbTrId ( "txt_fmgr_dblist_size_memory" ); 
+    dataList << hbTrId ( "txt_fmgr_dblist_size" ); 
     dataList << FmUtils::formatStorageSize( driverInfo.size() ) ;
     mDataListModel->setData(  mDataListModel->index( EMemorySize, 0 ), dataList, Qt::DisplayRole );  
 
@@ -193,7 +193,7 @@ void FmViewDetailsDialog::setFolderDetails( const QString &folderPath )
     mDataListModel->removeRows( 0, mDataListModel->rowCount() );
     mDataListModel->insertRows( 0, EFolderDetailEntryEnd );
     
-    dataList << hbTrId ( "txt_fmgr_dblist_name_folder" );
+    dataList << hbTrId ( "txt_fmgr_dblist_name" );
     dataList << fileInfo.fileName();
     mDataListModel->setData(  mDataListModel->index( EFolderName, 0 ), dataList, Qt::DisplayRole );  
     
@@ -202,17 +202,17 @@ void FmViewDetailsDialog::setFolderDetails( const QString &folderPath )
     QTime modifiedTime = modifiedDateTime.time();
     
     dataList.clear();
-    dataList << hbTrId ( "txt_fmgr_dblist_date_folder" );
+    dataList << hbTrId ( "txt_fmgr_dblist_date" );
     dataList << modifiedDate.toString();
     mDataListModel->setData(  mDataListModel->index( EModifiedDate, 0 ), dataList, Qt::DisplayRole );  
 
     dataList.clear();
-    dataList << hbTrId ( "txt_fmgr_dblist_time_folder" );
+    dataList << hbTrId ( "txt_fmgr_dblist_time" );
     dataList << modifiedTime.toString();
     mDataListModel->setData(  mDataListModel->index( EModifiedTime, 0 ), dataList, Qt::DisplayRole );  
     
     dataList.clear();
-    dataList << hbTrId ( "txt_fmgr_dblist_size_folder" );
+    dataList << hbTrId ( "txt_fmgr_dblist_size" );
     dataList << FmUtils::formatStorageSize( mSizeofFolder );
     mDataListModel->setData(  mDataListModel->index( EFolderSize, 0 ), dataList, Qt::DisplayRole );  
 
@@ -239,8 +239,8 @@ void FmViewDetailsDialog::setFileDetails( const QString &filePath )
     mDataListModel->removeRows( 0, mDataListModel->rowCount() );
     mDataListModel->insertRows( 0, EFileDetailEntryEnd );
     
-    dataList << hbTrId ( "txt_fmgr_dblist_name_file" );
-    dataList << fileInfo.fileName();
+    dataList << hbTrId ( "txt_fmgr_dblist_name" );
+    dataList << fileInfo.baseName();
     mDataListModel->setData(  mDataListModel->index( EFileName, 0 ), dataList, Qt::DisplayRole );  
     
     dataList.clear();
@@ -248,9 +248,12 @@ void FmViewDetailsDialog::setFileDetails( const QString &filePath )
     
     
     
-    QString fileType = FmUtils::getFileType( filePath );
+    QString fileType( fileInfo.completeSuffix() );
     if( fileType.isEmpty() ){
-        fileType.append( fileInfo.suffix() );
+        fileType.append( FmUtils::getFileType( filePath ) );
+    } else {
+        //file type need to include the dot(.)
+        fileType.insert( 0, Pre_Suffix_Dot );
     }
     dataList << fileType;
     mDataListModel->setData(  mDataListModel->index( EFileType, 0 ), dataList, Qt::DisplayRole );  
@@ -260,17 +263,17 @@ void FmViewDetailsDialog::setFileDetails( const QString &filePath )
     QTime modifiedTime = modifiedDateTime.time();
     
     dataList.clear();
-    dataList << hbTrId ( "txt_fmgr_dblist_date_file" );
+    dataList << hbTrId ( "txt_fmgr_dblist_date" );
     dataList << modifiedDate.toString();
     mDataListModel->setData(  mDataListModel->index( EFileModifiedDate, 0 ), dataList, Qt::DisplayRole );  
 
     dataList.clear();
-    dataList << hbTrId ( "txt_fmgr_dblist_time_file" );
+    dataList << hbTrId ( "txt_fmgr_dblist_time" );
     dataList << modifiedTime.toString();
     mDataListModel->setData(  mDataListModel->index( EFileModifiedTime, 0 ), dataList, Qt::DisplayRole );  
 
     dataList.clear();
-    dataList << hbTrId ( "txt_fmgr_dblist_size_file" );
+    dataList << hbTrId ( "txt_fmgr_dblist_size" );
     dataList << FmUtils::formatStorageSize( fileInfo.size() );
     mDataListModel->setData(  mDataListModel->index( EFileSize, 0 ), dataList, Qt::DisplayRole );  
 }

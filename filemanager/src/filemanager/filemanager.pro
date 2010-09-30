@@ -24,6 +24,10 @@ INCLUDEPATH += ../fmbkupenginewrapper/inc
 # remove this path when export plat header to app layer path
 # INCLUDEPATH += ../../filemanager_plat/inc
 
+symbian {
+    include(../../rom/rom.pri)
+}
+
 include ( ../common.pri )
 include ( ../inc/commoninc.pri )
 include ( ../inc/commonutils.pri )
@@ -42,7 +46,10 @@ symbian {
             -lefsrv \
             -lapgrfx \
     	    -lcone \
-            -lsysutil
+            -lsysutil \
+            -lbafl \
+            -leikcore \
+            -lafservice
 
     TARGET.UID3 = 0x2002BCC0
     TARGET.EPOCHEAPSIZE = 0x020000 0x1000000
@@ -51,5 +58,7 @@ symbian {
     BLD_INF_RULES.prj_exports += "./backup_registration.xml z:/private/2002BCC0/backup_registration.xml"
     BLD_INF_RULES.prj_exports += "./burconfig.xml z:/private/2002BCC0/burconfig.xml"	
 }
+
+symbian:MMP_RULES += SMPSAFE
 
 TRANSLATIONS = filemanager.ts

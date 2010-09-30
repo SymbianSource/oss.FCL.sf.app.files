@@ -33,13 +33,15 @@
 #include <hbmenu.h>
 #include <hbaction.h>
 #include <hbtoolbar.h>
+#include <hbtoolbarextension.h>
 #include <hblineedit.h>
 #include <hbpushbutton.h>
 #include <hbmainwindow.h>
 
 FmFileView::FmFileView() : FmViewBase( EFileView ), mWidget( 0 ),
-    mUpButton( 0 ), mStyleAction( 0 ), mSelectableAction( 0 ),
-    mFindAction( 0 ), mOperationService( 0 ), mMenu( 0 ), mIsFindDisabled( false )
+    mStyleAction( 0 ), mSelectableAction( 0 ),
+    mFindAction( 0 ), mSortExtension( 0 ), 
+    mOperationService( 0 ), mMenu( 0 ), mIsFindDisabled( false )
 {
     mOperationService = FmViewManager::viewManager()->operationService();
 	initMenu();
@@ -88,7 +90,7 @@ void FmFileView::setRootPath( const QString &pathName )
 
 void FmFileView::setRootLevelPath( const QString &pathName )
 {
-    rootLevelPath = FmUtils::fillPathWithSplash( pathName );
+    mWidget->setRootLevelPath( FmUtils::fillPathWithSplash( pathName ) );
 }
 
 void FmFileView::setFindDisabled( bool disable )
@@ -122,21 +124,21 @@ void FmFileView::initMenu()
 
 	action = new HbAction();
 	action->setObjectName( "delete" );
-	action->setText( hbTrId( "txt_fmgr_menu_delete" ) );
+	action->setText( hbTrId( "txt_common_opt_delete" ) );
 	menu()->addAction( action );
     connect( action, SIGNAL( triggered() ),
         this, SLOT( on_delete_triggered() ), Qt::QueuedConnection );
 
     action = new HbAction();
     action->setObjectName( "copy" );
-    action->setText( hbTrId( "txt_fmgr_menu_copy" ) );
+    action->setText( hbTrId( "txt_common_opt_copy_to_folder" ) );
     menu()->addAction( action );
     connect( action, SIGNAL( triggered() ),
         this, SLOT( on_copy_triggered() ), Qt::QueuedConnection );
 
     action = new HbAction();
     action->setObjectName( "move" );
-    action->setText( hbTrId( "txt_fmgr_menu_move" ) );
+    action->setText( hbTrId( "txt_common_opt_move_to_folder" ) );
     menu()->addAction( action );
     connect( action, SIGNAL( triggered() ),
         this, SLOT( on_move_triggered() ), Qt::QueuedConnection );
@@ -215,20 +217,39 @@ void FmFileView::initToolBar()
     mFindAction->setText( hbTrId("txt_fmgr_opt_find") );
     mFindAction->setDisabled( mIsFindDisabled );
     toolBar()->addAction( mFindAction );
-
-    mToolBarRightAction = new HbAction( this );
-    mToolBarRightAction->setObjectName( "rightAction" );
-    mToolBarRightAction->setText( hbTrId( "up" ) );
-    toolBar()->addAction( mToolBarRightAction );
-    
     toolBar()->setOrientation( Qt::Horizontal );
     
-    //mToolBar = takeToolBar();
-    connect( mFindAction, SIGNAL( triggered() ),
-                 this, SLOT( on_leftAction_triggered() ) );
-    connect( mToolBarRightAction, SIGNAL( triggered() ),
-             this, SLOT( on_rightAction_triggered() ), Qt::QueuedConnection );
+    mSortNameAction = new HbAction( this );    
+    mSortNameAction->setText( hbTrId( "txt_fmgr_setlabel_sort_by_name" ) );
     
+    mSortTimeAction = new HbAction( this );   
+    mSortTimeAction->setText( hbTrId( "txt_fmgr_setlabel_sort_by_time" ) );
+    
+    mSortSizeAction = new HbAction( this );   
+    mSortSizeAction->setText( hbTrId( "txt_fmgr_setlabel_sort_by_size" ) );
+    
+    mSortTypeAction = new HbAction( this );   
+    mSortTypeAction->setText( hbTrId( "txt_fmgr_setlabel_sort_by_type" ) );
+    
+    mSortExtension = new HbToolBarExtension();    
+    mSortExtension->addAction( mSortNameAction );
+    mSortExtension->addAction( mSortTimeAction );
+    mSortExtension->addAction( mSortSizeAction );
+    mSortExtension->addAction( mSortTypeAction );
+    
+    HbAction* extensionAction = toolBar()->addExtension( mSortExtension );
+    extensionAction->setText( hbTrId("txt_fmgr_opt_sort"));
+   
+    connect( mFindAction, SIGNAL( triggered() ),
+            this, SLOT( on_leftAction_triggered() ) );
+    connect( mSortNameAction, SIGNAL( triggered() ),
+            this, SLOT( on_sortNameAction_triggered() ), Qt::QueuedConnection );
+    connect( mSortTimeAction, SIGNAL( triggered() ),
+            this, SLOT( on_sortTimeAction_triggered() ), Qt::QueuedConnection );
+    connect( mSortSizeAction, SIGNAL( triggered() ),
+            this, SLOT( on_sortSizeAction_triggered() ), Qt::QueuedConnection );
+    connect( mSortTypeAction, SIGNAL( triggered() ),
+            this, SLOT( on_sortTypeAction_triggered() ), Qt::QueuedConnection );
 }
 
 void FmFileView::setStyle( FmFileBrowseWidget::Style style )
@@ -256,7 +277,7 @@ void FmFileView::setSelectable( bool enable )
 
 void FmFileView::infoNoFileSelected()
 {
-	FmDlgUtils::information( hbTrId("No File/Folder selected" ) );
+	FmDlgUtils::warning( hbTrId("No File/Folder selected" ) );
 }
 
 #ifdef FM_CHANGE_ORIENT_ENABLE
@@ -303,13 +324,13 @@ void FmFileView::on_delete_triggered()
                     break;
                 case FmErrAlreadyStarted:
                     // last operation have not finished
-                    FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
+                    FmDlgUtils::warning( hbTrId( "Operatin already started!" ) );
                     break;
                 case FmErrWrongParam:
-                    FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
+                    FmDlgUtils::warning( hbTrId( "Wrong parameters!" ) );
                     break;
                 default:
-                    FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
+                    FmDlgUtils::warning( hbTrId( "Operation fail to start!" ) );
             }
             setSelectable( false );
         }
@@ -341,13 +362,13 @@ void FmFileView::on_copy_triggered()
                     break;
                 case FmErrAlreadyStarted:
                     // last operation have not finished
-                    FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
+                    FmDlgUtils::warning( hbTrId( "Operatin already started!" ) );
                     break;
                 case FmErrWrongParam:
-                    FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
+                    FmDlgUtils::warning( hbTrId( "Wrong parameters!" ) );
                     break;
                 default:
-                    FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
+                    FmDlgUtils::warning( hbTrId( "Operation fail to start!" ) );
             }
             setSelectable( false );
         }
@@ -379,13 +400,13 @@ void FmFileView::on_move_triggered()
                     break;
                 case FmErrAlreadyStarted:
                     // last operation have not finished
-                    FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
+                    FmDlgUtils::warning( hbTrId( "Operatin already started!" ) );
                     break;
                 case FmErrWrongParam:
-                    FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
+                    FmDlgUtils::warning( hbTrId( "Wrong parameters!" ) );
                     break;
                 default:
-                    FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
+                    FmDlgUtils::warning( hbTrId( "Operation fail to start!" ) );
             }
             setSelectable( false );
         }
@@ -411,11 +432,11 @@ void FmFileView::on_newFolder_triggered()
             QString errString;
             // check if name/path is available for use
             if( !FmUtils::checkNewFolderOrFile( dirName, newTargetPath, errString ) ) {
-                FmDlgUtils::information( errString );
+                FmDlgUtils::warning( errString, HbMessageBox::Ok, true );
                 continue;
             }
             if( !dir.mkdir( dirName ) ) {
-                FmDlgUtils::information( hbTrId("Operation failed!") );
+                FmDlgUtils::warning( hbTrId("Operation failed!") );
             }
             break;
         }
@@ -423,27 +444,9 @@ void FmFileView::on_newFolder_triggered()
     }
 }
 
-void FmFileView::on_upAction_triggered()
-{
-	mWidget->cdUp();
-}
-
 void FmFileView::on_leftAction_triggered()
 {
     mWidget->activeSearchPanel();
-}
-
-void FmFileView::on_rightAction_triggered()
-{
-    QString currentPath( 
-        FmUtils::fillPathWithSplash( mWidget->currentPath().filePath() ) );
-    if( rootLevelPath.length() != 0 &&
-        rootLevelPath.compare( currentPath, Qt::CaseInsensitive ) == 0  ) {
-        emit popViewAndShow();
-    } else if ( !mWidget->cdUp() ) {
-		//hbInstance->allMainWindows()[0]->softKeyAction(Hb::SecondarySoftKey)->trigger();
-        emit popViewAndShow();
-	}
 }
 
 void FmFileView::on_driveChanged()
@@ -482,6 +485,10 @@ void FmFileView::startSearch( const QString &criteria )
 void FmFileView::removeToolBarAction()
 {
     toolBar()->clearActions();
+    if ( mSortExtension ) {
+        delete mSortExtension;
+        mSortExtension = 0;
+    }
 }
 
 void FmFileView::on_mainWidget_setEmptyMenu( bool isMenuEmpty )
@@ -530,3 +537,9 @@ QString FmFileView::createDefaultFolderName( const QString &path )
     }
     return dirName;
 }
+
+FmEventResponse FmFileView::offerBackEvent()
+{
+    return mWidget->offerBackEvent();
+}
+

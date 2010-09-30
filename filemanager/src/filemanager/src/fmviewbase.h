@@ -20,7 +20,7 @@
 #define FMVIEWBASE_H
 
 #include <HbView>
-
+#include <fmcommon.h>
 class HbAction;
 
 class FmViewBase : public HbView
@@ -49,10 +49,13 @@ public:
     }
     virtual void aboutToClose();
 private slots:
-    void on_backAction_triggered();
+    void onBackActionTriggered();
 	
 signals:
-    void tryToExit();   
+    void tryToExit();
+    
+protected:
+    virtual FmEventResponse offerBackEvent();
     
 private:
     void init();

@@ -435,13 +435,24 @@ bool FmDlgUtils::question( const QString &questionText,
 
 /*!
     This is a convenience function for showing an information dialog with \a informationText
-    Default button is OK.
+    Default button is OK, default behavior is not blocking ui..
 */
 void FmDlgUtils::information( const QString &informationText,
-    HbMessageBox::StandardButtons buttons )
+    HbMessageBox::StandardButtons buttons, bool isBlocking )
 {
     FmMessageBox msgBox;
-    return msgBox.information( informationText, buttons );
+    return msgBox.information( informationText, buttons, isBlocking );
+}
+
+/*!
+    This is a convenience function for showing an warning dialog with \a warningText
+    Default button is OK, default behavior is blocking ui.
+*/
+void FmDlgUtils::warning( const QString &warningText,
+    HbMessageBox::StandardButtons buttons, bool isBlocking )
+{
+    FmMessageBox msgBox;
+    return msgBox.warning( warningText, buttons, isBlocking );
 }
 
 /*!

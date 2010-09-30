@@ -18,10 +18,11 @@
 
 #include "fmutils.h"
 
-#include <QDir>
+#include <QRegExp>
 #include <QFileInfo>
 
 #include <hbglobal.h>
+
 
 /*!
     Used to get drive type for convenience.
@@ -117,10 +118,11 @@ bool FmUtils::isDrive( const QString &path )
 }
 
 /*!
-    All "/" and "\" in \a path will be changed to QDir::separator
+    All "/" and "\" in \a path will be changed to \a splitter
+    QDir::separator is default value for splitter
     \sa fillPathWithSplash, fillPathWithSplash will append QDir::separator in the end
 */
-QString FmUtils::formatPath( const QString &path  )
+QString FmUtils::formatPath( const QString &path, const QChar &splitter )
 {
     QString formatPath;
     if( path.isEmpty() ) {
@@ -129,7 +131,7 @@ QString FmUtils::formatPath( const QString &path  )
     
     foreach( const QChar &ch, path ) {
         if( ch == QChar('\\') || ch == QChar('/') ) {
-            formatPath.append( QDir::separator() );
+            formatPath.append( splitter );
         } else {
             formatPath.append( ch );
         }
@@ -139,22 +141,23 @@ QString FmUtils::formatPath( const QString &path  )
 }
 
 /*!
-    Fill splash in the end of \a filePath. And all "/" and "\" will be changed to QDir::separator
+    Fill splash in the end of \a filePath. And all "/" and "\" will be changed to \a splitter
+    QDir::separator is default value for splitter
     Please do not call this function if path is a file.
     Use \a formatPath instead, \a formatPath will not append QDir::separator in the end.
     \sa formatPath only changed "/" and "\" to QDir::separator
 */
-QString FmUtils::fillPathWithSplash( const QString &filePath )
+QString FmUtils::fillPathWithSplash( const QString &filePath, const QChar &splitter )
 {
     QString newFilePath;
     if( filePath.isEmpty() ) {
         return newFilePath;
     }
 
-    newFilePath = formatPath( filePath );
+    newFilePath = formatPath( filePath, splitter );
     
-    if( newFilePath.right( 1 )!= QDir::separator() ){
-        newFilePath.append( QDir::separator() );
+    if( newFilePath.right( 1 )!= splitter ){
+        newFilePath.append( splitter );
     }
     return newFilePath;
 }
@@ -408,5 +411,29 @@ bool FmUtils::isSubLevelPath( const QString &src, const QString &dest )
     // for example c:\data\ vs c:\data123\ 
 
     FM_LOG("FmUtils::isSubFolder: false");
+    return false;
+}
+
+/*!
+    Check if \a path is system path.
+*/
+bool FmUtils::isSystemFolder( const QString &path )
+{
+    QFileInfo fileInfo( path );
+    if( fileInfo.isDir() ) {
+        QString checkedPath( fillPathWithSplash( path, Char_Slash ) );
+
+        QRegExp systemFolder  ( RegexWidecard_SystemFolder,   Qt::CaseInsensitive, QRegExp::Wildcard );
+        QRegExp sysFolder     ( RegexWidecard_SysFolder,      Qt::CaseInsensitive, QRegExp::Wildcard );
+        QRegExp privateFolder ( RegexWidecard_PrivateFolder,  Qt::CaseInsensitive, QRegExp::Wildcard );
+        QRegExp resourceFolder( RegexWidecard_ResourceFolder, Qt::CaseInsensitive, QRegExp::Wildcard );
+
+        if( systemFolder.exactMatch( checkedPath ) ||
+            sysFolder.exactMatch( checkedPath ) ||
+            privateFolder.exactMatch( checkedPath ) ||
+            resourceFolder.exactMatch( checkedPath ) ) {
+            return true;
+        }
+    }
     return false;
 }

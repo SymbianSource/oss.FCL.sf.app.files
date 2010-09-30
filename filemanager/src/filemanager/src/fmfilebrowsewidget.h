@@ -37,6 +37,7 @@ class HbSearchPanel;
 class HbLabel;
 
 class FmFileIconProvider;
+class FmFileSystemProxyModel;
 
 class FmFileBrowseWidget : public HbWidget
 {
@@ -74,7 +75,8 @@ public:
     int checkPathAndSetStyle( const QString& path );
     void sortFiles( TSortType sortType );
     void activeSearchPanel();
-
+    FmEventResponse offerBackEvent();
+    void setRootLevelPath(const QString &rootPath);
 public slots:
     bool cdUp();
     void setRootPath( const QString &pathName );
@@ -122,7 +124,8 @@ private:
 	HbTreeView *mTreeView;
     HbListView *mListView;
     QGraphicsLinearLayout *mLayout;
-    QFileSystemModel *mModel;
+    QFileSystemModel *mSourceModel;
+    FmFileSystemProxyModel *mModel;
     
     bool mSelectable;
     
@@ -146,6 +149,8 @@ private:
     
     // provide icon from filemanger
     FmFileIconProvider *mFileIconProvider;
+    //root path level to contain back action
+    QString mRootLevelPath;
 };
 
 #endif

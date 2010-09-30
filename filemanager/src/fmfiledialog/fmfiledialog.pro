@@ -18,8 +18,8 @@ RESOURCES += fmfiledialog.qrc
 include ( ../common.pri )
 include ( ../inc/commoninc.pri )
 include ( ../inc/commonutils.pri )
-include ( ../../filemanager_plat/inc/filemanager_plat.pri )
 include ( fmfiledialog.pri )
+
 symbian { 
     LIBS += -lplatformenv \
             -lapmime \
@@ -29,15 +29,13 @@ symbian {
             -lefsrv \
             -lapgrfx \
             -lcone \
-            -lsysutil
+            -lsysutil \
+            -lbafl \
+            -leikcore \
+            -lafservice
             
     TARGET.UID3 = 0x2002BCC3
-
-    # export headers to app
-    EXPORT_PLATFORM_HEADERS += \
-                             ../../filemanager_plat/inc/fmglobal.h \
-                             ../../filemanager_plat/inc/fmfiledialog.h
-    
-    headers.sources = $$EXPORT_PLATFORM_HEADERS
-    for(header, headers.sources):BLD_INF_RULES.prj_exports += "./$$header $$APP_LAYER_PLATFORM_EXPORT_PATH($$basename(header))"
 }
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -32,7 +32,7 @@ class FmOperationBase;
 class QFileSystemWatcher;
 class FmDriveWatcher;
 class FmDialog;
-class ShareUi;
+class FmServiceUtils;
 
 /*
  * this class is used to record relationship between dialog and drive name 
@@ -66,7 +66,7 @@ public:
     static void RemoveViewManager();
     static FmViewManager *viewManager();
     FmOperationService *operationService();
-    ShareUi *shareUi();
+    FmServiceUtils *serviceUtils();
     
     Qt::Orientation orientation(); 
 
@@ -148,9 +148,9 @@ private:
 	QList<FmDlgCloseUnit*> mDlgCloseUnitList;
 	
 	QPixmap mScreenShot;
-	
-	// used to send files
-    ShareUi *mShareUi;
+
+    // non-static service utils
+    FmServiceUtils *mServiceUtils;
 };
 
 

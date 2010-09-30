@@ -72,7 +72,10 @@ public:
         HbMessageBox::StandardButtons buttons = HbMessageBox::Yes | HbMessageBox::No );
 
     static void information( const QString &informationText,
-        HbMessageBox::StandardButtons buttons = HbMessageBox::Ok );
+        HbMessageBox::StandardButtons buttons = HbMessageBox::Ok,  bool isBlocking = false );
+    
+    static void warning( const QString &warningText,
+        HbMessageBox::StandardButtons buttons = HbMessageBox::Ok, bool isBlocking = false );
 
     static QString showBackupDriveQuery( const QString& title );
 

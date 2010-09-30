@@ -28,7 +28,7 @@
 #include <hblineedit.h>
 #include <QGraphicsLinearLayout>
 
-#define backButtonIcon  ":image/qtg_indi_status_back.svg"
+#define backButtonIcon  "qtg_mono_app_exit"
 
 /*!
     constructor

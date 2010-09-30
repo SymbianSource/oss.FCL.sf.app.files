@@ -25,12 +25,13 @@
 #include "fmdrivemodel.h"
 #include "fmcommon.h"
 
-#include "hbwidget.h"
-#include "hblabel.h"
-#include "hbaction.h"
-#include "hbpushbutton.h"
-#include "hblineedit.h"
-
+#include <hbwidget.h>
+#include <hblabel.h>
+#include <hbaction.h>
+#include <hbpushbutton.h>
+#include <hblineedit.h>
+#include <hbtranslator.h>
+    
 #include <QGraphicsLinearLayout>
 #include <QEventLoop>
 
@@ -50,7 +51,9 @@ QString FmFileDialog::getExistingDirectory( HbWidget *parent,
                                     const QStringList &nameFilters,
                                     Options options )
 {
-
+    HbTranslator translator("filemanager");
+    translator.loadCommon();
+    
     QString ret;
 
     FmFileDialogPrivate::FmFileDialogArgs args;
@@ -68,7 +71,7 @@ QString FmFileDialog::getExistingDirectory( HbWidget *parent,
     FmFileDialog dialog( parent );
     dialog.d_ptr->init( args );
     if( dialog.exec() ) {
-        ret = FmUtils::formatPath( dialog.d_ptr->currentPath() );
+        ret = FmUtils::fillPathWithSplash( dialog.d_ptr->currentPath() );
     }
     return ret;
 }
@@ -79,7 +82,9 @@ QString FmFileDialog::getOpenFileName( HbWidget *parent,
                                const QStringList &nameFilters,
                                Options options )
 {
-
+    HbTranslator translator("filemanager");
+    translator.loadCommon();
+    
     QString ret;
 
     FmFileDialogPrivate::FmFileDialogArgs args;
@@ -97,7 +102,7 @@ QString FmFileDialog::getOpenFileName( HbWidget *parent,
     FmFileDialog dialog( parent );
     dialog.d_ptr->init( args );
     if( dialog.exec() ) {
-        ret = FmUtils::formatPath( dialog.d_ptr->currentPath() )
+        ret = FmUtils::fillPathWithSplash( dialog.d_ptr->currentPath() )
             + dialog.d_ptr->selectedFile();
     }
     return ret;
@@ -110,6 +115,9 @@ QString FmFileDialog::getSaveFileName( HbWidget * parent,
                                const QStringList &nameFilters,
                                Options options )
 {
+    HbTranslator translator("filemanager");
+    translator.loadCommon();
+    
     QString ret;
 
     FmFileDialogPrivate::FmFileDialogArgs args;
@@ -127,7 +135,7 @@ QString FmFileDialog::getSaveFileName( HbWidget * parent,
     FmFileDialog dialog( parent );
     dialog.d_ptr->init( args );
     if( dialog.exec() ) {
-        ret = FmUtils::formatPath( dialog.d_ptr->currentPath() )
+        ret = FmUtils::fillPathWithSplash( dialog.d_ptr->currentPath() )
             + dialog.d_ptr->selectedFile();
     }
     return ret;

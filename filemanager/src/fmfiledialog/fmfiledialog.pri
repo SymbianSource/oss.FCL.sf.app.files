@@ -14,6 +14,12 @@
 # Description: FmFileDialog project - source files
 #
 
+
+# API headers
+HEADERS += ../../../files_plat/filemanager_api/inc/fmfiledialog.h
+HEADERS += ../../../files_plat/filemanager_api/inc/fmglobal.h
+
+# normal headers and sources
 HEADERS +=  ./src/fmfiledialog_p.h \
             ./src/fmfilewidget.h
 

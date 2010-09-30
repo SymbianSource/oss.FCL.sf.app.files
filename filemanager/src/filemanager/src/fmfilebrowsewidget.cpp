@@ -24,7 +24,9 @@
 #include "fmviewmanager.h"
 #include "fmfiledialog.h"
 #include "fmdlgutils.h"
+#include "fmserviceutils.h"
 #include "fmfileiconprovider.h"
+#include "fmfilesystemproxymodel.h"
 
 #include <QFile>
 #include <QFileSystemModel>
@@ -38,8 +40,6 @@
 #include <hbaction.h>
 #include <hbsearchpanel.h>
 #include <hblabel.h>
-
-#include <shareui.h>
 
 // These define comes from implementation of QFileSystemModel
 #define QFileSystemSortName 0
@@ -81,6 +81,7 @@ FmFileBrowseWidget::~FmFileBrowseWidget()
 
     mTreeView->setModel( 0 );
     mListView->setModel( 0 );
+	delete mSourceModel;
     delete mModel;
     
     delete mFileIconProvider;
@@ -135,7 +136,7 @@ void FmFileBrowseWidget::setRootPath( const QString &pathName )
             }
         case FmErrPathNotExist:
             {
-            FmDlgUtils::information( hbTrId( "Path is not exist" ) );
+            FmDlgUtils::warning( hbTrId( "Path is not exist" ) );
             break;
             }
         case FmErrDriveNotAvailable:
@@ -146,7 +147,7 @@ void FmFileBrowseWidget::setRootPath( const QString &pathName )
         case FmErrDriveDenied:
         case FmErrPathDenied:
             {
-            FmDlgUtils::information( hbTrId( "Can not access" ) );
+            FmDlgUtils::warning( hbTrId( "Can not access" ) );
             break;
             }
         default:
@@ -288,7 +289,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
     
     HbAction *viewAction = new HbAction();
     viewAction->setObjectName( "viewAction" );
-    viewAction->setText( hbTrId( "txt_fmgr_menu_view_details_file" ) );
+    viewAction->setText( hbTrId( "txt_fmgr_menu_view_details_memory" ) );
     contextMenu->addAction( viewAction );
 
     connect( viewAction, SIGNAL( triggered() ),
@@ -297,7 +298,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
     //copy
     HbAction *copyAction = new HbAction();
     copyAction->setObjectName( "copyAction" );
-    copyAction->setText( hbTrId( "txt_fmgr_menu_copy" ) );
+    copyAction->setText( hbTrId( "txt_common_menu_copy_to_folder" ) );
     contextMenu->addAction( copyAction );
 
     connect( copyAction, SIGNAL( triggered() ),
@@ -312,7 +313,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         //Move
         HbAction *moveAction = new HbAction();
         moveAction->setObjectName( "moveAction" );
-        moveAction->setText( hbTrId( "txt_fmgr_menu_move" ) );
+        moveAction->setText( hbTrId( "txt_common_menu_move_to_folder" ) );
         contextMenu->addAction( moveAction );
     
         connect( moveAction, SIGNAL( triggered() ),
@@ -321,7 +322,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         //Delete
         HbAction *deleteAction = new HbAction();
         deleteAction->setObjectName( "deleteAction" );
-        deleteAction->setText( hbTrId( "txt_fmgr_menu_delete" ) );
+        deleteAction->setText( hbTrId( "txt_common_menu_delete" ) );
         contextMenu->addAction( deleteAction );
     
         connect( deleteAction, SIGNAL( triggered() ),
@@ -330,7 +331,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
         //rename
         HbAction *renameAction = new HbAction();
         renameAction->setObjectName( "renameAction" );
-        renameAction->setText( hbTrId( "txt_fmgr_menu_rename" ) );
+        renameAction->setText( hbTrId( "txt_common_menu_rename_item" ) );
         contextMenu->addAction( renameAction );
     
         connect( renameAction, SIGNAL( triggered() ),
@@ -340,7 +341,7 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
     if( fileInfo.isFile() ){
         HbAction *sendAction = new HbAction();
         sendAction->setObjectName( "sendAction" );
-        sendAction->setText( hbTrId( "txt_fmgr_menu_send" ) );
+        sendAction->setText( hbTrId( "txt_common_menu_send_item" ) );
         contextMenu->addAction( sendAction );
         
         connect( sendAction, SIGNAL( triggered() ),
@@ -353,8 +354,9 @@ void FmFileBrowseWidget::on_list_longPressed( HbAbstractViewItem *item, const QP
     contextMenu->open();
 }
 
-void FmFileBrowseWidget::on_list_pressed( const QModelIndex &  index )
+void FmFileBrowseWidget::on_list_pressed( const QModelIndex &index )
 {
+    Q_UNUSED( index );
     mListLongPressed = false;
 }
 
@@ -412,11 +414,15 @@ void FmFileBrowseWidget::initTreeView()
 
 void FmFileBrowseWidget::initFileModel()
 {
-    mModel = new QFileSystemModel( this );
-    mModel->setReadOnly( false );
+    mSourceModel = new QFileSystemModel( this );
+    mSourceModel->setReadOnly( false );
     
     mFileIconProvider = new FmFileIconProvider();
-    mModel->setIconProvider( mFileIconProvider );
+    mSourceModel->setIconProvider( mFileIconProvider );
+
+    mModel = new FmFileSystemProxyModel( this );
+    mModel->setSourceModel( mSourceModel );
+
 }
 
 void FmFileBrowseWidget::initLayout()
@@ -596,7 +602,7 @@ void FmFileBrowseWidget::on_sendAction_triggered()
     QString filePath = mModel->filePath( mCurrentItem->modelIndex() );
     QStringList list;
     list.append( filePath );
-    FmViewManager::viewManager()->shareUi()->send( list, true );
+    FmViewManager::viewManager()->serviceUtils()->sendFile( list );
 }
 
 void FmFileBrowseWidget::on_viewAction_triggered()
@@ -624,13 +630,13 @@ void FmFileBrowseWidget::on_deleteAction_triggered()
                 break;
             case FmErrAlreadyStarted:
                 // last operation have not finished
-                FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
+                FmDlgUtils::warning( hbTrId( "Operatin already started!" ) );
                 break;
             case FmErrWrongParam:
-                FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
+                FmDlgUtils::warning( hbTrId( "Wrong parameters!" ) );
                 break;
             default:
-                FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
+                FmDlgUtils::warning( hbTrId( "Operation fail to start!" ) );
         }
     }
 }
@@ -653,13 +659,13 @@ void FmFileBrowseWidget::on_copyAction_triggered()
                 break;
             case FmErrAlreadyStarted:
                 // last operation have not finished
-                FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
+                FmDlgUtils::warning( hbTrId( "Operatin already started!" ) );
                 break;
             case FmErrWrongParam:
-                FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
+                FmDlgUtils::warning( hbTrId( "Wrong parameters!" ) );
                 break;
             default:
-                FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
+                FmDlgUtils::warning( hbTrId( "Operation fail to start!" ) );
         }
     }
 
@@ -683,13 +689,13 @@ void FmFileBrowseWidget::on_moveAction_triggered()
                 break;
             case FmErrAlreadyStarted:
                 // last operation have not finished
-                FmDlgUtils::information( hbTrId( "Operatin already started!" ) );
+                FmDlgUtils::warning( hbTrId( "Operatin already started!" ) );
                 break;
             case FmErrWrongParam:
-                FmDlgUtils::information( hbTrId( "Wrong parameters!" ) );
+                FmDlgUtils::warning( hbTrId( "Wrong parameters!" ) );
                 break;
             default:
-                FmDlgUtils::information( hbTrId( "Operation fail to start!" ) );
+                FmDlgUtils::warning( hbTrId( "Operation fail to start!" ) );
         }
     }
 }
@@ -716,11 +722,11 @@ void FmFileBrowseWidget::on_renameAction_triggered()
         // check if name/path is available for use
         // add new Name to check, in order to avoid problem of newName is empty
         if( !FmUtils::checkNewFolderOrFile( newName, newTargetPath, errString ) ) {
-            FmDlgUtils::information( errString );
+            FmDlgUtils::warning( errString, HbMessageBox::Ok, true );
             continue;
         }
         if( !rename( fileInfo.absoluteFilePath(), newTargetPath ) ) {
-            FmDlgUtils::information( hbTrId("Rename failed!") );
+            FmDlgUtils::warning( hbTrId("Rename failed!") );
         }
         else {
             // Rename succeed
@@ -734,3 +740,30 @@ void FmFileBrowseWidget::on_renameAction_triggered()
     }
 }
 
+/*!
+    return BackWasNotConsumed if this view should be closed.
+	return BackWasConsumed if change to up level folder( back to up level folder )
+*/
+FmEventResponse FmFileBrowseWidget::offerBackEvent()
+{
+    QString currentPath(
+        FmUtils::fillPathWithSplash( this->currentPath().filePath() ) );
+    // return BackWasNotConsumed to close current view if match root level path
+    if( mRootLevelPath.length() != 0 &&
+        mRootLevelPath.compare( currentPath, Qt::CaseInsensitive ) == 0  ) {
+        return BackWasNotConsumed;
+    } else if ( cdUp() ) {
+        return BackWasConsumed;
+    } else {
+        return BackWasNotConsumed;
+    }
+}
+
+/*!
+    \a rootPath used to lock root level path.
+    Root level path is the top leve path that user can view.
+*/
+void FmFileBrowseWidget::setRootLevelPath(const QString &rootPath)
+{
+    mRootLevelPath = rootPath;
+}

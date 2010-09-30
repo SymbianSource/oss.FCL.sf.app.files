@@ -7,6 +7,7 @@
   <systemModel>
     <layer name="bldfirst_app_layer">
       <module name="filemanager_components">
+        <unit name="filemanager_api" unitID="presdo.filemanager_api" mrp="" bldFile="&layer_real_source_path;/files_plat/filemanager_api" proFile="filemanager_api.pro" qmakeArgs="-r -config rom"/>
         <unit name="fmbkupengine" unitID="presdo.fmbkupengine" bldFile="&layer_real_source_path;/filemanager/src/fmbkupengine/group" mrp="" />
         <unit name="fmfiledialog" unitID="presdo.fmfiledialog" mrp="" bldFile="&layer_real_source_path;/filemanager/src/fmfiledialog" proFile="fmfiledialog.pro" qmakeArgs="-r -config rom"/>
       </module>

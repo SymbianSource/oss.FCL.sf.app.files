@@ -32,6 +32,9 @@
 const int KMaxFileName=0x100;
 const int KMaxPath=0x100;
 
+// EDriveA means number of A drive
+const int EDriveA = 0;
+
 FmDriverInfo FmUtils::queryDriverInfo( const QString &driveName )
 {
     quint64 size = 0;
@@ -168,6 +171,19 @@ void FmUtils::createDefaultFolders( const QString &driveName )
 }
 
 /*!
+    return localized file name by \a path, empty string returned for non-localized path.
+    In Symbian system, default folders will be localized.
+    So localize also can be used to check if a path is a default folder
+    Do not need localize on windows.
+    \sa isDefaultFolder
+*/
+QString FmUtils::localize( const QString &path )
+{
+    Q_UNUSED( path );
+    return QString();
+}
+
+/*!
     set the \a desFile attributes as the same with \a srcFile
 */
 int FmUtils::setFileAttributes( const QString &srcFile, const QString &desFile )
@@ -245,4 +261,16 @@ bool FmUtils::checkMaxPathLength( const QString& path )
         return false;
     }
     return true;
+}
+
+void FmUtils::setSystem( bool isSystem )
+{
+    Q_UNUSED( isSystem );
+}
+
+QString FmUtils::numberToDriveName( int drive )
+{
+    QChar driveChar( drive - EDriveA + 'A' );
+    QString driveName = QString( driveChar ) + ':';
+    return driveName;
 }

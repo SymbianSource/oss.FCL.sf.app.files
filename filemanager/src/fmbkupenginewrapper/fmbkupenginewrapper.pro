@@ -36,6 +36,10 @@ symbian {
     LIBS += -leikcore
     LIBS += -lcone
     LIBS += -lsysutil
-    LIBS +=	-lplatformenv
+    LIBS += -lplatformenv
+    LIBS += -lbafl
 }
 
+
+
+symbian:MMP_RULES += SMPSAFE

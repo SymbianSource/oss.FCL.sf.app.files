@@ -21,6 +21,7 @@
 
 #include "fmcommon.h"
 
+#include <QDir>
 #include <QString>
 
 /*!
@@ -148,8 +149,8 @@ public:
     static QString  getDriveLetterFromPath( const QString &path );
     static QString  formatStorageSize( quint64 size );
     static bool     isDrive( const QString &path );
-    static QString  formatPath( const QString &path  );
-    static QString  fillPathWithSplash( const QString &filePath );
+    static QString  formatPath( const QString &path, const QChar &splitter = QDir::separator() );
+    static QString  fillPathWithSplash( const QString &filePath, const QChar &splitter = QDir::separator() );
     static QString  removePathSplash( const QString &filePath );
     static void     getDriveList( QStringList &driveList, bool isHideUnAvailableDrive );
     static QString  fillDriveVolume( QString driveName, bool isFillWithDefaultVolume );
@@ -159,6 +160,7 @@ public:
     static bool     checkFolderFileName( const QString& name );
     static bool     checkNewFolderOrFile( const QString& fileName, const QString &path, QString &errString );
     static bool     isSubLevelPath( const QString &src, const QString &dest );
+    static bool     isSystemFolder( const QString &path );
     // </QtBasedFunctions>
     //////////////////////////////////////////////////////////////////
     
@@ -202,6 +204,8 @@ public:
     static bool     isDriveC( const QString &driverName );
     static int      getMaxFileNameLength();
     static bool     checkMaxPathLength( const QString& path );
+    static void     setSystem( bool isSystem );
+    static QString  numberToDriveName( int drive );
     // </platformBasedFunctions>
     //////////////////////////////////////////////////////////////////
 };

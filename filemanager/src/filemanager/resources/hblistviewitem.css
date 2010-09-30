@@ -22,6 +22,7 @@ HbListViewItem::text-3[layoutName="drive"]:portrait{
  	bottom: var(hb-param-margin-gene-middle-vertical);
 	font-variant: secondary-small;
 	text-align: left;
+	size-policy-horizontal: ignored;
 }
 HbListViewItem::icon-1[layoutName="drive"]:portrait{
  	top: -var(hb-param-margin-gene-top);
@@ -46,6 +47,7 @@ HbListViewItem::text-3[layoutName="drive"]:landscape{
  	bottom: var(hb-param-margin-gene-top);
 	font-variant: secondary-small;
 	text-align: left;
+	size-policy-horizontal: ignored;
 }
 HbListViewItem::icon-1[layoutName="drive"]:landscape{
     top: -var(hb-param-margin-gene-top);

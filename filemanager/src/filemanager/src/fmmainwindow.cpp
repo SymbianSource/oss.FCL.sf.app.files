@@ -20,10 +20,21 @@
 #include "fmcommon.h"
 
 #include <hbaction.h>
+#include <QTimer>
 
+/*!
+    \fn void applicationReady()
+    This signal is emitted when application is launched and ready to use
+*/
+
+
+/*!
+    constructor
+*/
 FmMainWindow::FmMainWindow() : mViewManager( 0 ), mFirstViewLoaded( false )
 {
-   // connect(this, SIGNAL(viewReady()), this, SLOT(delayedLoading()));
+    // delayedLoading is not used currently but reserved for future
+    // connect(this, SIGNAL(viewReady()), this, SLOT(delayedLoading()));
     init();
 }
 
@@ -34,21 +45,21 @@ FmMainWindow::~FmMainWindow()
     FmViewManager::RemoveViewManager();
 }
 
+/*
+    handle orientation change event. not used yet as views can handle such event by themself
+*/
 void FmMainWindow::onOrientationChanged( Qt::Orientation orientation )
 {
 	Q_UNUSED( orientation );
-	/*
-    if ( orientation == Qt::Vertical ) {
-        activateDriverView();
-    } else {
-        activateSplitView();
-    }
-	*/
 }
 
+/*
+    init main window
+*/
 void FmMainWindow::init()
 {
     FM_LOG("FmMainWindow::init start");
+
     mViewManager = FmViewManager::CreateViewManager( this );
     mViewManager->createDriverView();
     connect(this, SIGNAL(aboutToChangeView(HbView *, HbView *)), 
@@ -56,14 +67,17 @@ void FmMainWindow::init()
     connect( this, SIGNAL( orientationChanged( Qt::Orientation ) ),
              this, SLOT( onOrientationChanged( Qt::Orientation ) ) );
     
+
+    connect(&mShowTimer, SIGNAL(timeout()), this, SLOT(onApplicationReady()));
+    mShowTimer.start();
+
     FM_LOG("FmMainWindow::init end");
-//    if ( orientation() == Qt::Vertical ) {
-//        createDriverView();
-//    } else {
-//        createSplitView();
-//    }
 }
 
+
+/*
+    delayedLoading is not used currently but reserved for future
+*/
 void FmMainWindow::delayedLoading()
 {
     FM_LOG("FmMainWindow::delayedLoading start");
@@ -75,3 +89,11 @@ void FmMainWindow::delayedLoading()
     FM_LOG("FmMainWindow::delayedLoading end");
 }
 
+/*
+    Slot to receive timer event after application started and emit applicationReady signal
+*/
+void FmMainWindow::onApplicationReady()
+{
+    mShowTimer.stop();
+    emit applicationReady();
+}

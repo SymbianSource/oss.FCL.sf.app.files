@@ -29,3 +29,12 @@ HEADERS += mainwindow.h
 SOURCES += main.cpp mainwindow.cpp
 
 LIBS += -lfmfiledialog
+
+symbian {
+    INCLUDEPATH += $$MW_LAYER_SYSTEMINCLUDE
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+    INCLUDEPATH += $$MOC_DIR
+    TARGET.CAPABILITY = ALL -TCB
+    TARGET.EPOCALLOWDLLDATA = 1
+    MMP_RULES += SMPSAFE
+}

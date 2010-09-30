@@ -37,7 +37,6 @@ public:
 private slots:
     void on_leftAction_triggered();
     void on_rightAction_triggered();
-    void on_exitAction_triggered();
     void on_backupAction_triggered();
     void on_restoreAction_triggered();
     void on_findAction_triggered();

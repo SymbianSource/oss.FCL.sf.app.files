@@ -88,7 +88,11 @@ void FmFindWidget::on_resultModel_findStarted()
 
 void FmFindWidget::on_resultModel_findFinished()
 {
-    emit setEmptyMenu( false );
+    if ( mModel->rowCount() > 0 ) {
+        emit setEmptyMenu( false );
+    } else {
+        emit setEmptyMenu( true );
+    }
 }
 
 void FmFindWidget::init()
@@ -121,6 +125,8 @@ void FmFindWidget::init()
     QGraphicsLinearLayout *emptyTipLayout = new QGraphicsLinearLayout( mEmptyTipWidget );
     HbLabel *emptyTipLable = new HbLabel( hbTrId( "No found files or folders" ), mEmptyTipWidget );
     emptyTipLayout->addItem( emptyTipLable );
+    emptyTipLayout->setAlignment( emptyTipLable, Qt::AlignCenter );
+    emptyTipLable->setAlignment( Qt::AlignCenter );
  
     mContentWidget->addWidget( mListView );
     mContentWidget->addWidget( mEmptyTipWidget );

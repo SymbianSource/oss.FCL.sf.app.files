@@ -127,7 +127,8 @@ void FmOperationCopyOrMove::start( volatile bool *isStopped )
         QString checkedSource( FmUtils::formatPath( source ) );
         QFileInfo fi( checkedSource );
         if( !fi.exists() ) {
-            mErrString = checkedSource;            
+            mErrString = checkedSource;   
+            emit driveSpaceChanged();
             emit notifyError( FmErrSrcPathDoNotExist, mErrString );
             return;
         }
@@ -168,22 +169,22 @@ void FmOperationCopyOrMove::start( volatile bool *isStopped )
             }
         }
         if( ret != FmErrNone ) {
-            emit notifyError( ret, mErrString );
             // refresh drive space no care if cancel, error or finished.
             // as filemanger cannot notify drive space changed
             // do not refresh path as QFileSystemModel will do auto-refresh
             emit driveSpaceChanged();
+            emit notifyError( ret, mErrString );
             return;
         }
         ret = copyOrMove( checkedSource, mTargetPath, newName );
         if( ret != FmErrNone ) {
-            emit notifyError( ret, mErrString );            
             emit driveSpaceChanged();
+            emit notifyError( ret, mErrString );            
             return;
         }
-    }
-    emit notifyFinish();
+    }    
     emit driveSpaceChanged();
+    emit notifyFinish();
 }
 
 /*

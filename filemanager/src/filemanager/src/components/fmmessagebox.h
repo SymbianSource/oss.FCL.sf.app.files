@@ -34,10 +34,13 @@ public:
     {
     }
     void information( const QString &informationText,
-        HbMessageBox::StandardButtons buttons );
+        HbMessageBox::StandardButtons buttons, bool isBlocking = false );
 
     bool question( const QString &questionText,
         HbMessageBox::StandardButtons buttons );
+    
+    void warning( const QString &warningText,
+        HbMessageBox::StandardButtons buttons, bool isBlocking = false );
     
 public slots:
     void dialogClosed(HbAction *action);

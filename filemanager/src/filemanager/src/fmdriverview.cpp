@@ -71,12 +71,6 @@ void FmDriverView::initMenu()
     action->setObjectName( "restoreAction" );
     action->setText( hbTrId( "txt_fmgr_opt_restore" )  );
     menu()->addAction( action );
-   
-    action = new HbAction( this );
-    action->setObjectName( "exitAction" );
-    action->setText( hbTrId( "Exit" ) );
-    menu()->addAction( action );
-
 }
 
 void FmDriverView::initDiskListWidget()
@@ -139,11 +133,6 @@ void FmDriverView::on_rotateAction_triggered()
 	}
 }
 #endif
-
-void FmDriverView::on_exitAction_triggered()
-{
-    qApp->quit();
-}
 
 void FmDriverView::on_backupAction_triggered()
 {

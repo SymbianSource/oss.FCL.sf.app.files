@@ -18,10 +18,11 @@
 */
 #include "fmfilewidget.h"
 #include "fmutils.h"
+#include "fmcommon.h"
 #include "fmdrivemodel.h"
 #include "fmdrivewatcher.h"
-#include "fmcommon.h"
 #include "fmfileiconprovider.h"
+#include "fmfilesystemproxymodel.h"
 
 #include "hbstyle.h"
 #include "hbabstractitemview.h"
@@ -44,7 +45,8 @@ FmFileWidget::FmFileWidget( HbWidget *parent ) :
 FmFileWidget::~FmFileWidget()
 {
     setModel( 0 );
-    delete mFileSystemModel;
+    delete mFileSystemSourceModel;
+    delete mFileModel;
     delete mFileIconProvider;
     delete mDriveModel;
     
@@ -59,8 +61,8 @@ QFileInfo FmFileWidget::currentPath() const
     if( !index.isValid() ) {
         return QFileInfo();
     }
-    if( mCurrentModel == mFileSystemModel ) {
-        return mFileSystemModel->fileInfo( index );
+    if( mCurrentModel == mFileModel ) {
+        return mFileModel->fileInfo( index );
     } else {
         return QFileInfo();
     }
@@ -78,9 +80,9 @@ void FmFileWidget::setRootPath( const QString &pathName )
         emit pathChanged( QString() );
     } else {
         FM_LOG( "FmFileWidget::setRootPath set dir model end" );
-        setModel( mFileSystemModel );
+        setModel( mFileModel );
         FM_LOG( "FmFileWidget::setRootPath set dir model end" );
-		mListView->setRootIndex( mFileSystemModel->setRootPath( pathName ) );
+		mListView->setRootIndex( mFileModel->setRootPath( pathName ) );
         FM_LOG( "FmFileWidget::setRootPath set rootIndex" );
         emit pathChanged( pathName );
     }    
@@ -105,21 +107,21 @@ void FmFileWidget::on_listActivated()
         }
 
         FM_LOG("FmFileWidget::on_list_activated setModel dir start" );
-        setModel( mFileSystemModel );
+        setModel( mFileModel );
         FM_LOG("FmFileWidget::on_list_activated setModel dir end" );
         setRootPath( checkedPath );
         FM_LOG("FmFileWidget::on_list_activated setRootIndex" );
         emit pathChanged( checkedPath );
         FM_LOG("FmFileWidget::on_list_activated finish emit pathChanged" );
     }
-    else if( mCurrentModel == mFileSystemModel ) {
+    else if( mCurrentModel == mFileModel ) {
     //If current model is FileSystemModel, open path or emit file activate signal.
-        if ( mFileSystemModel->isDir( mActivatedModelIndex ) ) {
+        if ( mFileModel->isDir( mActivatedModelIndex ) ) {
             FM_LOG("FmFileWidget::on_list_activated start changeRootIndex" );
             changeRootIndex( mActivatedModelIndex );
             FM_LOG("FmFileWidget::on_list_activated finish changeRootIndex" );
         } else {
-            QFileInfo fileInfo( mFileSystemModel->filePath( mActivatedModelIndex ) );
+            QFileInfo fileInfo( mFileModel->filePath( mActivatedModelIndex ) );
             if( fileInfo.isFile() ) {
                 emit fileActivated( fileInfo.fileName() );
                 FM_LOG("FmFileWidget::on_list_activated finish emit fileActivated" );
@@ -133,24 +135,24 @@ void FmFileWidget::on_listActivated()
 
 void FmFileWidget::setModelFilter( QDir::Filters filters )
 {
-    mFileSystemModel->setFilter( filters );
+    mFileModel->setFilter( filters );
 }
 
 void FmFileWidget::setNameFilters( const QStringList &nameFilters )
 {
-    mFileSystemModel->setNameFilters( nameFilters );
+    mFileModel->setNameFilters( nameFilters );
 }
 
 void FmFileWidget::changeRootIndex( const QModelIndex &index )
 {
     FM_LOG("FmFileWidget::changeRootIndex start" );
-    if( mCurrentModel != mFileSystemModel ) {
-        FM_LOG("FmFileWidget::changeRootIndex end because model not equal mFileSystemModel" );
+    if( mCurrentModel != mFileModel ) {
+        FM_LOG("FmFileWidget::changeRootIndex end because model not equal mFileModel" );
         return;
     }
 
-    mFileSystemModel->fetchMore(index);
-	QString filePath = mFileSystemModel->fileInfo( index ).absoluteFilePath();
+    mFileModel->fetchMore(index);
+	QString filePath = mFileModel->fileInfo( index ).absoluteFilePath();
     // pathChanged signal will be emitted in setRootPath
 	setRootPath( filePath );
     FM_LOG("FmFileWidget::changeRootIndex end" );
@@ -170,10 +172,15 @@ void FmFileWidget::init()
         FmDriveModel::FillWithVolume | FmDriveModel::FillWithDefaultVolume | FmDriveModel::HideUnAvailableDrive );
     
     qDebug( QTime::currentTime().toString().toUtf8().data() );
-    mFileSystemModel = new QFileSystemModel( this );
+    mFileSystemSourceModel = new QFileSystemModel( this );
     mFileIconProvider = new FmFileIconProvider();
-    mFileSystemModel->setIconProvider( mFileIconProvider );
-    qDebug("constructed mFileSystemModel");
+    mFileSystemSourceModel->setIconProvider( mFileIconProvider );
+    qDebug("constructed mFileSystemSourceModel");
+
+    
+    mFileModel = new FmFileSystemProxyModel( this );
+    mFileModel->setSourceModel( mFileSystemSourceModel );
+
     
     qDebug( QTime::currentTime().toString().toUtf8().data() );
     setModel( mDriveModel );
@@ -207,7 +214,7 @@ FmFileWidget::ViewType FmFileWidget::currentViewType()
     ViewType viewType = DriveView;
     if( mCurrentModel == mDriveModel ) {
         viewType = DriveView;
-    } else if( mCurrentModel == mFileSystemModel ) {
+    } else if( mCurrentModel == mFileModel ) {
         viewType = DirView;
     } else {
         Q_ASSERT( false );

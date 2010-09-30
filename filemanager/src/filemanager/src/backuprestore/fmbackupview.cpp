@@ -97,19 +97,19 @@ void FmBackupView::on_leftAction_triggered()
     case FmErrNone:
         break;
     case FmErrWrongParam:
-        FmDlgUtils::information( QString( hbTrId("Operation canceled with wrong param!") ) );
+        FmDlgUtils::warning( QString( hbTrId("Operation canceled with wrong param!") ) );
         break;
     case FmErrAlreadyStarted:
-        FmDlgUtils::information( QString( hbTrId("Operation canceled because already started!") ) );
+        FmDlgUtils::warning( QString( hbTrId("Operation canceled because already started!") ) );
         break;
     case FmErrPathNotFound:
-        FmDlgUtils::information( QString( hbTrId("Operation canceled because can not find target path or drive is not available!") ) );
+        FmDlgUtils::warning( QString( hbTrId("Operation canceled because can not find target path or drive is not available!") ) );
         break;
     case FmErrAlreadyExists:
-        FmDlgUtils::information( QString( hbTrId("backup canceled") ) );
+        FmDlgUtils::warning( QString( hbTrId("backup canceled") ) );
         break;
     default:
-        FmDlgUtils::information( QString( hbTrId("backup failed") ) );
+        FmDlgUtils::warning( QString( hbTrId("backup failed") ) );
         break;
     }
 }

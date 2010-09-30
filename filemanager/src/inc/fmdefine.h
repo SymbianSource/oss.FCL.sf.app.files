@@ -91,4 +91,22 @@
 // is not end with dot( trim blank characters in the end first )
 #define Regex_ValidNotEndWithDot QString( "^.*[^\\.\\s][\\s]*$" )
 
+// use slash(/) not backslash(\) or QDir::separator() because QRegExp can not recognize BackSlash(\)
+#define RegexWidecard_SystemFolder      QString( "?:/system/*" )
+#define RegexWidecard_SysFolder         QString( "?:/sys/*" )
+#define RegexWidecard_PrivateFolder     QString( "?:/private/*" )
+#define RegexWidecard_ResourceFolder    QString( "?:/resource/*" )
+
+#define Char_Slash       QChar( '/' )
+#define Char_BackSlash   QChar( '\\' )
+
+#define Pre_Suffix_Dot   QChar('.')
+
+// used for handle back event
+enum FmEventResponse
+{
+    BackWasNotConsumed  = 0,
+    BackWasConsumed     = 1
+};
+
 #endif 
