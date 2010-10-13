@@ -25,7 +25,7 @@
 #include <e32base.h>
 
 // USER INCLUDES
-#include "msputil.h"
+#include "MSPUtil.h"
 
 //  CONSTANTS
 const TText KRightToLeftMark = 0x200F;

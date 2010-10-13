@@ -58,6 +58,9 @@ class CFileManagerSettingListContainer : public CFileManagerContainerBase
         TKeyResponse OfferKeyEventL(
             const TKeyEvent& aKeyEvent, TEventCode aType );
 
+        void HandleControlEventL(
+            CCoeControl* aControl, TCoeEvent aEventType );
+
     private:
         /**
         * C++ default constructor.

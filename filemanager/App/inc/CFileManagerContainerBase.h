@@ -25,7 +25,6 @@
 #include <badesca.h>
 #include <eiklbo.h>
 #include <eikcmobs.h>
-#include <aknmarkingmodeobserver.h>
 
 
 // FORWARD DECLARATIONS
@@ -40,9 +39,7 @@ class CFileManagerContainerBase : public CCoeControl,
                                   public MEikListBoxObserver, 
                                   public MCoeControlObserver,
                                   public MEikCommandObserver,
-                                  public MListBoxSelectionObserver,
-                                  public MAknMarkingModeObserver
-
+                                  public MListBoxSelectionObserver
     {
     public:  // destructor
         /**
@@ -93,25 +90,6 @@ class CFileManagerContainerBase : public CCoeControl,
 		 */
         void ProcessCommandL( TInt aCommandId );
 
-    public: // From MAknMarkingModeObserver 
-        /**
-        * This method is called when marking mode is activated or deactivated.
-        *
-        * @since 5.2
-        * @param aActivated ETrue if marking mode is activated, EFalse
-        * if marking mode is deactivated.
-        */
-        void MarkingModeStatusChanged( TBool aActivated );
-
-        /**
-        * This method is called just before marking mode is closed. Client can 
-        * either accept or decline closing.
-        *
-        * @since 5.2
-        * @return ETrue if marking mode should be closed, otherwise EFalse.
-        */
-        TBool ExitMarkingMode() const;
-
     public: // New functions
         /**
          * Sets list empty and removes empty text until refreshed.
@@ -152,14 +130,6 @@ class CFileManagerContainerBase : public CCoeControl,
          * Gets selection mode status
          */
         TBool SelectionModeEnabled() const;
-
-        /**
-        * Gets marking mode status.
-        *
-        * @since 5.2 
-        * @return ETrue if marking mode is activated, otherwise EFalse.
-        */
-        TBool IsMarkingModeActivated() const;
 
         /**
          * Updates cba
@@ -263,24 +233,6 @@ class CFileManagerContainerBase : public CCoeControl,
          * @return index in listbox
          */
         virtual TInt SearchFieldToListBoxIndex( TInt aIndex );
-
-        /**
-        * Sets flag to indicate marking mode could exit or not 
-        * 
-        * @since 5.2 
-        * @param aAllowExit ETrue if allow marking mode exit, EFalse if not
-        */
-        virtual void AllowMarkingModeExit( TBool aAllowExit );
-        
-        /**
-        * Turns the marking mode on / off.
-        *
-        * @since 5.2
-        * @param aEnable ETrue to turn marking mode on,
-        *                EFalse to turn marking mode off.
-        */
-        virtual void SetMarkingMode( TBool aEnable );
-
     protected:
         /**
          * Standard C++ constructor.
@@ -315,10 +267,6 @@ class CFileManagerContainerBase : public CCoeControl,
         MDesCArray* iArray;
         // Own: Stores selection mode status
         TBool iSelectionModeEnabled;
-        // Own: Indicates marking mode is activated or not
-        TBool iMarkingModeActivated;
-        // Own: Indicates marking mode is allowed to exit or not
-        TBool iAllowMarkingModeExit;
 
     };
 

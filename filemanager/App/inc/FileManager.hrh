@@ -24,77 +24,85 @@
  *
  */
 enum TFileManagerViewIds
-    {
-    EFileManagerMainViewId = 1,
-    EFileManagerMemoryStoreViewId,
-    EFileManagerFoldersViewId,
-    EFileManagerSearchResultsViewId,
-    EFileManagerBackupViewId,
-    EFileManagerRestoreViewId
-    };
+	{
+	EFileManagerMainViewId = 1,
+	EFileManagerMemoryStoreViewId,
+	EFileManagerFoldersViewId,
+	EFileManagerSearchResultsViewId,
+	EFileManagerBackupViewId,
+	EFileManagerRestoreViewId
+	};
 
 /**
  * Command IDs of FileManager
  */
 enum TFileManagerCommands
-    {
-    EFileManagerOpen = 1,
-    EFileManagerSend,
-    EFileManagerDelete,
-    EFileManagerMoveToFolder,
-    EFileManagerCopyToFolder,
-    EFileManagerNewFolder,
-    EFileManagerRename,
-    EFileManagerFindFile,
-    EFileManagerReceiveViaIR,
-    EFileManagerViewInfo,
-    EFileManagerMemoryState,
-    EFileManagerFileDetails,
-    EFileManagerFolderDetails,
-    // Selection key
-    EFileManagerSelectionKey,
-    EFileManagerMoreInfoOnline,
-    EFileManagerBackup,
-    EFileManagerRestore,
-    EFileManagerEject,
-    EFileManagerDetails,
-    EFileManagerMemoryCardDetails,
-    EFileManagerOrganise,
-    EFileManagerConnectRemoveDrive,
-    EFileManagerDisconnectRemoveDrive,
-    EFileManagerRefreshRemoteDrive,
-    EFileManagerRemoveDrives, // Remove drives subcommands
-    EFileManagerRemoveDrivesSettings,
-    EFileManagerRemoveDrivesMapDrive,
-    EFileManagerRemoveDrivesDelete,
-    EFileManagerMemoryCard, // Memory card subcommands
-    EFileManagerMemoryCardName,
-    EFileManagerMemoryCardRename,
-    EFileManagerMemoryCardFormat,
-    EFileManagerMemoryCardPassword, // Memory card password subcommands
-    EFileManagerMemoryCardPasswordSet,
-    EFileManagerMemoryCardPasswordChange,
-    EFileManagerMemoryCardPasswordRemove,
-    EFileManagerUnlockMemoryCard,
-    EFileManagerFormatMassStorage,
-    EFileManagerSort,
-    EFileManagerSortByName,
-    EFileManagerSortByType,
-    EFileManagerSortMostRecentFirst,
-    EFileManagerSortLargestFirst,
-    EFileManagerSortByMatch,
-    EFileManagerSearchSort,
-    EFileManagerMemoryStorage, // Memory storage subcommands
-    EFileManagerMemoryStorageDetails,
-    EFileManagerMemoryStorageName,
-    EFileManagerMemoryStorageRename,
-    EFileManagerMemoryStorageSetPassword,
-    EFileManagerMemoryStorageChangePassword,
-    EFileManagerMemoryStorageRemovePassword,
-    EFileManagerMemoryStorageFormat,
-    EFileManagerMemoryStorageUnlock,
-    EFileManagerDeleteBackup
-    };
+	{
+	EFileManagerOpen = 1,
+	EFileManagerSend,
+	EFileManagerDelete,
+	EFileManagerMoveToFolder,
+	EFileManagerCopyToFolder,
+	EFileManagerNewFolder,
+	EFileManagerMark,
+	EFileManagerRename,
+	EFileManagerFindFile,
+	EFileManagerReceiveViaIR,
+	EFileManagerViewInfo,
+	EFileManagerMemoryState,
+	EFileManagerFileDetails,
+	EFileManagerFolderDetails,
+	// Mark / Unmark subcommands
+	EFileManagerMarkOne,
+	EFileManagerUnmarkOne,
+	EFileManagerToggleMark,
+	EFileManagerMarkAll,
+	EFileManagerUnmarkAll,
+	EFileManagerCheckMark,
+	// Selection key
+	EFileManagerSelectionKey,
+	EFileManagerMoreInfoOnline,
+	EFileManagerBackup,
+	EFileManagerRestore,
+	EFileManagerEject,
+	EFileManagerDetails,
+	EFileManagerMemoryCardDetails,
+	EFileManagerOrganise,
+	EFileManagerConnectRemoveDrive,
+	EFileManagerDisconnectRemoveDrive,
+	EFileManagerRefreshRemoteDrive,
+	EFileManagerRemoveDrives, // Remove drives subcommands
+	EFileManagerRemoveDrivesSettings,
+	EFileManagerRemoveDrivesMapDrive,
+	EFileManagerRemoveDrivesDelete,
+	EFileManagerMemoryCard, // Memory card subcommands
+	EFileManagerMemoryCardName,
+	EFileManagerMemoryCardRename,
+	EFileManagerMemoryCardFormat,
+	EFileManagerMemoryCardPassword, // Memory card password subcommands
+	EFileManagerMemoryCardPasswordSet,
+	EFileManagerMemoryCardPasswordChange,
+	EFileManagerMemoryCardPasswordRemove,
+	EFileManagerUnlockMemoryCard,
+	EFileManagerFormatMassStorage,
+	EFileManagerSort,
+	EFileManagerSortByName,
+	EFileManagerSortByType,
+	EFileManagerSortMostRecentFirst,
+	EFileManagerSortLargestFirst,
+	EFileManagerSortByMatch,
+	EFileManagerSearchSort,
+	EFileManagerMemoryStorage, // Memory storage subcommands
+	EFileManagerMemoryStorageDetails,
+	EFileManagerMemoryStorageName,
+	EFileManagerMemoryStorageRename,
+	EFileManagerMemoryStorageSetPassword,
+	EFileManagerMemoryStorageChangePassword,
+	EFileManagerMemoryStorageRemovePassword,
+	EFileManagerMemoryStorageFormat,
+	EFileManagerMemoryStorageUnlock,
+	EFileManagerDeleteBackup
+	};
 
 #endif // FILEMANAGER_HRH
 

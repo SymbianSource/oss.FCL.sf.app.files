@@ -218,46 +218,22 @@ TKeyResponse CFileManagerFileListContainer::OfferKeyEventL(
         }
     switch( aKeyEvent.iCode )
         {
+        case EKeyEnter: // FALLTHROUH
+        case EKeyOK:
+            {
+            if ( ( menuBar != NULL ) && menuBar->ItemSpecificCommandsEnabled() )
+                {
+                iAppUi->ProcessCommandL( EFileManagerSelectionKey );
+                response = EKeyWasConsumed;
+                }
+            break;
+            }
         case EKeyDelete:    // FALLTHROUGH
         case EKeyBackspace:
             {
-            TBool allowDelete ( ETrue );
-
-            // If there are some items marked, 
-            // delete will be executed on the marked items.
-            if ( ListBoxSelectionIndexesCount() <= 0 )
-                {
-                // If no item is marked,
-                // first check whether there is any highlighted item.
-                if ( menuBar && menuBar->ItemSpecificCommandsEnabled() )
-                    {
-                    TInt index = SearchFieldToListIndex( ListBoxCurrentItemIndex() );
-                    // Do not allow deleting folder while marking mode is activated.
-                    if ( IsMarkingModeActivated() &&
-                        iDocument->Engine().IsFolder( index ) ) 
-                        {
-                        allowDelete = EFalse;
-                        } 
-                    }
-                else
-                    {
-                    // Do not allow deleting any item without highlight if no item is marked
-                    allowDelete = EFalse;
-                    }
-                }
-            
-            if ( allowDelete )
+            if ( ( menuBar != NULL ) && menuBar->ItemSpecificCommandsEnabled() )
                 {
                 iAppUi->ProcessCommandL( EFileManagerDelete );
-                // Marking mode is exited automatically only when command has
-                // been selected from the options menu or stylus popup menu.
-                // Therefore, deactivate marking mode manually in case exiting marking 
-                // mode is required after a key event is processed.
-
-                if ( IsMarkingModeActivated() && ExitMarkingMode() )
-                    {
-                    SetMarkingMode( EFalse );
-                    }
                 response = EKeyWasConsumed;
                 }
             break;
@@ -337,6 +313,20 @@ void CFileManagerFileListContainer::RefreshListL( TInt aFocusedIndex )
     if ( err == KErrNoMemory )
         {
         ControlEnv()->HandleError( KErrNoMemory );
+        }
+    }
+
+// -----------------------------------------------------------------------------
+// CFileManagerFileListContainer::HandleControlEventL
+// From MCoeControlObserver, called by current listbox
+// -----------------------------------------------------------------------------
+// 
+void CFileManagerFileListContainer::HandleControlEventL(
+        CCoeControl* /* aControl*/, TCoeEvent aEventType )
+    {
+    if ( aEventType == EEventStateChanged )
+        {
+        iAppUi->ProcessCommandL( EFileManagerCheckMark ); // Inform change
         }
     }
 
@@ -818,12 +808,9 @@ TKeyResponse CFileManagerFileListContainer::OfferSearchKeyEventL(
         }
     // Open search field on alpha digit        
     TBool isVisible( iSearchField->IsVisible() );
-    // Do not allow activate find pane while marking model is already
-    // activated
     if ( !isVisible &&
          aType == EEventKeyDown &&
-         aKeyEvent.iScanCode != 0 &&
-         !IsMarkingModeActivated() )
+         aKeyEvent.iScanCode )
         {
         TChar ch( aKeyEvent.iScanCode );
         if ( ch.IsAlphaDigit() )
@@ -902,5 +889,4 @@ TInt CFileManagerFileListContainer::SearchFieldToListBoxIndex( TInt aIndex )
        }
     return SearchFieldToListIndex( aIndex );
     }
-
-//  End of File
+//  End of File  

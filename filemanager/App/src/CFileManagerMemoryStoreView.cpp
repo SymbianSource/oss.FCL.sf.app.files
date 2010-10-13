@@ -146,12 +146,6 @@ void CFileManagerMemoryStoreView::DirectoryChangedL()
         else
             {
             iIndex = 0;
-            // Manually deactivate marking mode if current drive
-            // is not available.
-            if ( iContainer->IsMarkingModeActivated() )
-                {
-                iContainer->SetMarkingMode( EFalse );
-                }
             }
         RefreshTitleL();
         }

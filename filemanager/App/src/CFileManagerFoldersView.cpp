@@ -260,13 +260,7 @@ void CFileManagerFoldersView::DirectoryChangedL()
             TFileManagerDriveInfo& drvInfo( DriveInfo() );
             if ( !( drvInfo.iState & TFileManagerDriveInfo::EDrivePresent ) )
                 {
-                // Manually deactivate marking mode if folder path
-                // does not exist.
-                if ( iContainer->IsMarkingModeActivated() )
-                    {
-                    iContainer->SetMarkingMode( EFalse );
-                    }
-                User::Leave( KErrPathNotFound );
+                User::Leave(KErrPathNotFound);
                 }
             else
                 {
