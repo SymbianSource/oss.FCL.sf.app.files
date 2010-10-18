@@ -68,15 +68,14 @@ void FmOperationFormat::start( volatile bool */*isStopped*/ )
     QString logString = "FmOperationFormat::start";
     FM_LOG( logString );
     
-    emit notifyPreparing( false );
-    
     if( mDriverName.isEmpty() ) {
         emit notifyError( FmErrWrongParam, QString() );
         return;
     }
-    FmViewManager::viewManager()->serviceUtils()->closeApps();
-    
-    
+
+    // FmServiceUtils::closeApps will be called in FmOperationResultProcessor
+    // after receive notifyPreparing
+    emit notifyPreparing( false );      
     RFormat format;
     
     RFs fs;
@@ -207,13 +206,14 @@ void FmOperationFormat::start( volatile bool */*isStopped*/ )
         restoreVolumeName( drive );
         FmUtils::createDefaultFolders( mDriverName );
     }
-
-    FmViewManager::viewManager()->serviceUtils()->restartApps();
     
     // refresh drive space no care if cancel, error or finished.
     // as filemanger cannot notify drive space changed
     // do not refresh path as QFileSystemModel will do auto-refresh
-    emit driveSpaceChanged();   
+    emit driveSpaceChanged();
+
+    // FmServiceUtils::restartApps will be called in FmOperationResultProcessor
+    // after receive notifyFinish or notifyError
     if( err == KErrNone ){
         emit notifyFinish();        
     }

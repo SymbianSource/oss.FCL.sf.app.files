@@ -25,6 +25,9 @@
 #include "fmviewdetailsdialog.h"
 #include "fmdlgutils.h"
 #include "fmutils.h"
+#include "fmviewmanager.h"
+#include "fmserviceutils.h"
+
 #include <hbaction.h>
 #include <hbprogressdialog.h>
 #include <hbaction.h>
@@ -86,7 +89,7 @@ void FmOperationResultProcesser::onAskForRename(
         if ( ( srcFileInfo.suffix().compare( destFileInfo.suffix(), Qt::CaseInsensitive ) != 0 )
             && srcFileInfo.isFile() ) {
             // popup warning when the suffix of file is changed.
-            FmDlgUtils::warning( hbTrId( "File may become unusable when file name extension is changed" ) );        
+            FmDlgUtils::warning( hbTrId( "File may become unusable when file name extension is changed" ), HbMessageBox::Ok, true );        
         }   
 	}
 }
@@ -175,13 +178,17 @@ void FmOperationResultProcesser::onNotifyPreparing( FmOperationBase* operationBa
         break;
     case FmOperationService::EOperationTypeFormat:
         title = hbTrId("format preparing");
-        FmUtils::setSystem( true );
         break;
     default:
         break;
     }
-
     showPreparing( title, cancelable );
+	
+	// closeApps before format
+    if( operationBase->operationType() == FmOperationService::EOperationTypeFormat ) {
+        FmUtils::setSystem( true );
+        FmViewManager::viewManager()->serviceUtils()->closeApps();
+    }
 }
 
 /*
@@ -259,6 +266,8 @@ void FmOperationResultProcesser::onNotifyFinish( FmOperationBase* operationBase 
     case FmOperationService::EOperationTypeFormat:
         {
             FmUtils::setSystem( false );
+            // restart apps after format finished.
+            FmViewManager::viewManager()->serviceUtils()->restartApps();
             FmDlgUtils::information( QString( hbTrId("Format succeed!")), HbMessageBox::Ok, true );
             FmOperationFormat *paramFormat = static_cast<FmOperationFormat*>( operationBase );
             QString title( hbTrId( "Drive name ") );  
@@ -421,6 +430,8 @@ void FmOperationResultProcesser::onNotifyError( FmOperationBase* operationBase, 
     switch( operationBase->operationType() )
     {
     case FmOperationService::EOperationTypeFormat:
+        // restart apps after format failed.
+        FmViewManager::viewManager()->serviceUtils()->restartApps();
         FmDlgUtils::warning( QString( hbTrId("Format failed!")) );
         break;
     default:

@@ -56,7 +56,9 @@ symbian {
     TARGET.CAPABILITY = CAP_APPLICATION DiskAdmin AllFiles PowerMgmt
 
     BLD_INF_RULES.prj_exports += "./backup_registration.xml z:/private/2002BCC0/backup_registration.xml"
-    BLD_INF_RULES.prj_exports += "./burconfig.xml z:/private/2002BCC0/burconfig.xml"	
+    BLD_INF_RULES.prj_exports += "./burconfig.xml z:/private/2002BCC0/burconfig.xml"
+    BLD_INF_RULES.prj_exports += "../../sis/filemngr_stub.sis z:/system/install/filemngr_stub.sis"
+
 }
 
 symbian:MMP_RULES += SMPSAFE

@@ -184,6 +184,8 @@ void FmFileBrowseWidget::setStyle( FmFileBrowseWidget::Style style )
         mFileBrowseStyle = TreeStyle;
     } else if ( style == LabelStyle ){
         mLayout->addItem( mEmptyTipLabel );
+        mLayout->setAlignment( mEmptyTipLabel, Qt::AlignCenter );
+        mEmptyTipLabel->setAlignment( Qt::AlignCenter );
         mEmptyTipLabel->show();
     }
     

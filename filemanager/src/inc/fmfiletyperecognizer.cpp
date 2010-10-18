@@ -49,6 +49,7 @@ FmFileTypeRecognizer::FmFileTypeRecognizer()
     mFileExtensionMap.insert( QString( "3g2" ), FileTypeVideo );
     mFileExtensionMap.insert( QString( "rmvb" ),FileTypeVideo );
     mFileExtensionMap.insert( QString( "mkv" ), FileTypeVideo );
+    mFileExtensionMap.insert( QString( "avi" ), FileTypeVideo );
     mFileExtensionMap.insert( QString( "3gpp" ),FileTypeVideo );
     mFileExtensionMap.insert( QString( "mpeg4"),FileTypeVideo );
     
@@ -69,6 +70,7 @@ FmFileTypeRecognizer::FmFileTypeRecognizer()
     mFileExtensionMap.insert( QString( "m4a" ), FileTypeTone );
     mFileExtensionMap.insert( QString( "ott" ), FileTypeTone );
     mFileExtensionMap.insert( QString( "mxmf" ),FileTypeTone );
+    mFileExtensionMap.insert( QString( "mka" ), FileTypeTone );
     
     mFileExtensionMap.insert( QString( "doc" ), FileTypeText );
     mFileExtensionMap.insert( QString( "pdf" ), FileTypeText );

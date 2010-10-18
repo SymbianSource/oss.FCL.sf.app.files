@@ -569,16 +569,16 @@ void TestFmInternalFmUtils::testGetDefaultVolumeName()
             switch ( driverInfo.driveType() )
                         {
                         case FmDriverInfo::EDriveTypeMassStorage:
-                            QVERIFY(retDriveVolume == hbTrId("Mass storage")); 
+                            QVERIFY(retDriveVolume == hbTrId("txt_fmgr_mass_memory_default")); 
                             break;
                         case FmDriverInfo::EDriveTypeUsbMemory:
-                            QVERIFY(retDriveVolume == hbTrId("USB memory")); 
+                            QVERIFY(retDriveVolume == hbTrId("txt_fmgr_usb_memory_default")); 
                             break;
                         case FmDriverInfo::EDriveTypeMemoryCard:
-                            QVERIFY(retDriveVolume == hbTrId("Memory card"));
+                            QVERIFY(retDriveVolume == hbTrId("txt_fmgr_memory_card_default"));
                             break;
                         case FmDriverInfo::EDriveTypePhoneMemory:
-                            QVERIFY(retDriveVolume == hbTrId("Device memory"));
+                            QVERIFY(retDriveVolume == hbTrId("txt_fmgr_device_memory_default"));
                             break;
                         case FmDriverInfo::EDriveTypeNotExist:
                         default:
@@ -610,16 +610,16 @@ void TestFmInternalFmUtils::testGetVolumeNameWithDefaultNameIfNull()
                 switch ( driverInfo.driveType() )
                         {
                         case FmDriverInfo::EDriveTypeMassStorage:
-                            QVERIFY(retDriveVolume == hbTrId("Mass storage")); 
+                            QVERIFY(retDriveVolume == hbTrId("txt_fmgr_mass_memory_default")); 
                             break;
                         case FmDriverInfo::EDriveTypeUsbMemory:
-                            QVERIFY(retDriveVolume == hbTrId("USB memory")); 
+                            QVERIFY(retDriveVolume == hbTrId("txt_fmgr_usb_memory_default")); 
                             break;
                         case FmDriverInfo::EDriveTypeMemoryCard:
-                            QVERIFY(retDriveVolume == hbTrId("Memory card"));
+                            QVERIFY(retDriveVolume == hbTrId("txt_fmgr_memory_card_default"));
                             break;
                         case FmDriverInfo::EDriveTypePhoneMemory:
-                            QVERIFY(retDriveVolume == hbTrId("Device memory"));
+                            QVERIFY(retDriveVolume == hbTrId("txt_fmgr_device_memory_default"));
                             break;
                         case FmDriverInfo::EDriveTypeNotExist:
                         default:

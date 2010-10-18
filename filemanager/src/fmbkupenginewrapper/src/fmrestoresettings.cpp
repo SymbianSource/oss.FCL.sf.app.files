@@ -60,7 +60,7 @@ void FmRestoreSettings::refreshList( QList<FmBkupDrivesAndOperation* > &drivesAn
 
     QList< FmRestoreInfo > restoreInfoList;
     
-    QString targetDrive = mEngine.BackupSettingsL()->availableTargetDrive();
+    QString targetDrive = mEngine.BackupSettings()->availableTargetDrive();
     mEngine.GetRestoreInfoArray( drivesAndOperationList, restoreInfoList, targetDrive );
     
 
@@ -98,7 +98,7 @@ void FmRestoreSettings::SetSelection(
     iSelection = aSelection;
     }
 
-void FmRestoreSettings::GetSelectionL(
+void FmRestoreSettings::GetSelection(
         QList< FmRestoreInfo >& infoArray ) const
 {
     infoArray.clear();

@@ -204,9 +204,8 @@ int FmOperationService::asyncBackup()
         return FmErrAlreadyStarted;
     Q_ASSERT( !mCurrentOperation );
 
-    // BackupSettingsL will not leave, coding convention will be improvied in another task.
-    QString targetDrive( backupRestoreHandler()->bkupEngine()->BackupSettingsL()->availableTargetDrive() );
-    quint32 content( backupRestoreHandler()->bkupEngine()->BackupSettingsL()->content() );
+    QString targetDrive( backupRestoreHandler()->bkupEngine()->BackupSettings()->availableTargetDrive() );
+    quint32 content( backupRestoreHandler()->bkupEngine()->BackupSettings()->content() );
     FmOperationBackup *operationBackup = 
             new FmOperationBackup( backupRestoreHandler(), targetDrive, content );
     mCurrentOperation = operationBackup;

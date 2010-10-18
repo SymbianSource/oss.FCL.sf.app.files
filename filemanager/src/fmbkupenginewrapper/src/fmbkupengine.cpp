@@ -53,22 +53,23 @@ bool FmBkupEngine::startBackup( QList<FmBkupDrivesAndOperation* > drivesAndOpera
 {
     return d->startBackup( drivesAndOperationList, backupCategoryList, drive, content );
 }
+
 void FmBkupEngine::cancelBackup()
 {
 	d->cancelBackup();
 }
-bool FmBkupEngine::startRestore( QList<FmBkupDrivesAndOperation* > drivesAndOperationList )
-{
-   return d->StartRestoreL( drivesAndOperationList );
-}
 
+bool FmBkupEngine::startRestore( QList<FmBkupDrivesAndOperation* > drivesAndOperationList )
+{    
+    return d->startRestore( drivesAndOperationList );
+}
 
 int FmBkupEngine::error() const
 {
     return d->error();
 }
 
-FmBackupSettings *FmBkupEngine::BackupSettingsL()
+FmBackupSettings *FmBkupEngine::BackupSettings()
 {
     if ( !iBackupSettings )
         {
@@ -77,7 +78,7 @@ FmBackupSettings *FmBkupEngine::BackupSettingsL()
     return iBackupSettings;
 }
 
-FmRestoreSettings *FmBkupEngine::RestoreSettingsL()
+FmRestoreSettings *FmBkupEngine::RestoreSettings()
 {
     if ( !iRestoreSettings )
         {

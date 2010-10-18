@@ -94,7 +94,19 @@ TUint32 FmBkupEnginePrivate::FmgrToBkupMask(
     return ret;
     }
 
-bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
+/*
+ * wrap up startBackupL as a unleave function
+ */
+bool FmBkupEnginePrivate::startBackup( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
+    QList<FmBkupBackupCategory*> backupCategoryList,
+    QString drive, quint32 content)
+{
+    TBool ret( EFalse );
+    TRAP_IGNORE( ret = startBackupL( drivesAndOperationList, backupCategoryList, drive, content ) );
+    return ret;
+}
+
+bool FmBkupEnginePrivate::startBackupL(QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
 	    QList<FmBkupBackupCategory*> backupCategoryList,
 	    QString drive, quint32 content)
 {
@@ -137,8 +149,7 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
 	for( QList<FmBkupBackupCategory* >::iterator it = backupCategoryList.begin();
 		    it != backupCategoryList.end(); ++it ) {
         FmBkupBackupCategory* fmbkupCategory = *it;
-        CBkupCategory* category = CBkupCategory::NewL();
-        
+        CBkupCategory* category = CBkupCategory::NewLC();        
         category->setCategory( fmbkupCategory->category() );
         
         HBufC *archiveName = HBufC::NewL( fmbkupCategory->archive_name().length() );
@@ -164,6 +175,7 @@ bool FmBkupEnginePrivate::startBackup(QList<FmBkupDrivesAndOperation* > drivesAn
         
         
         iBkupCategoryList->AppendL( category );
+        CleanupStack::Pop();//category
         }
 	
 	TUint32 bkupContent( FmgrToBkupMask( content ) );
@@ -442,17 +454,23 @@ int FmBkupEnginePrivate::error()
     }    
 }
 
-
-
-
-
+/*
+ * wrap up leave function deleteBackupL.
+ */
 int FmBkupEnginePrivate::deleteBackup( QList<FmBkupDrivesAndOperation* > drivesAndOperationList )
+{
+    TInt err( KErrNone );
+    TRAP_IGNORE( err = deleteBackupL( drivesAndOperationList) );
+    return err;
+}
+
+int FmBkupEnginePrivate::deleteBackupL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList )
 {
     iError = FmErrNone;
 
     QList< FmRestoreInfo > selection;
-    FmRestoreSettings& rstSettings( *( q->RestoreSettingsL() ) );
-    rstSettings.GetSelectionL( selection );
+    FmRestoreSettings& rstSettings( *( q->RestoreSettings() ) );
+    rstSettings.GetSelection( selection );
 
     iBkupCategoryList->ResetAndDestroy();
     for( QList<FmBkupDrivesAndOperation* >::iterator it = drivesAndOperationList.begin();
@@ -526,8 +544,17 @@ int FmBkupEnginePrivate::deleteBackup( QList<FmBkupDrivesAndOperation* > drivesA
     return iError;
 }
 
+/*
+ * wrap up startRestoreL as a unleave function
+ */
+bool FmBkupEnginePrivate::startRestore( QList<FmBkupDrivesAndOperation* > drivesAndOperationList )
+{
+    TBool ret( EFalse );
+    TRAP_IGNORE( ret = startRestoreL( drivesAndOperationList ) );
+    return ret;
+}
 
-bool FmBkupEnginePrivate::StartRestoreL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList )
+bool FmBkupEnginePrivate::startRestoreL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList )
     {
     TBool diskFull( SysUtil::DiskSpaceBelowCriticalLevelL(
         &iFs, 0, KFmgrSystemDrive ) );
@@ -579,8 +606,8 @@ bool FmBkupEnginePrivate::StartRestoreL( QList<FmBkupDrivesAndOperation* > drive
     // Get user set restore selection
     QList< FmRestoreInfo > selection;
 //    CleanupClosePushL( selection );
-    FmRestoreSettings& rstSettings( *( q->RestoreSettingsL() ) );
-    rstSettings.GetSelectionL( selection );
+    FmRestoreSettings& rstSettings( *( q->RestoreSettings() ) );
+    rstSettings.GetSelection( selection );
 
     // Remove non user selected archives
     TInt i( 0 );
@@ -632,7 +659,7 @@ bool FmBkupEnginePrivate::StartRestoreL( QList<FmBkupDrivesAndOperation* > drive
         CMMCScBkupOpParamsRestoreFull::NewL( driveReader, EBUCatAllInOne );
     CleanupStack::PopAndDestroy(); // driveReader
 
-    FmBackupSettings& bkupSettings( *( q->BackupSettingsL() ) );
+    FmBackupSettings& bkupSettings( *( q->BackupSettings() ) );
     // Get list of all archives
     RPointerArray< CMMCScBkupArchiveInfo > archives;
     TCleanupItem cleanupItem( ResetAndDestroyArchives, &archives );

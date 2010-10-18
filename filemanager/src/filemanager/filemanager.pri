@@ -23,6 +23,7 @@ HEADERS += src/fmdriverlistwidget.h \
            src/fmfileview.h \
            src/fmfilebrowsewidget.h \
            src/fmdriverview.h \
+           src/fmapplication.h \
            src/fmmainwindow.h \
            src/fmsplitview.h \
            src/fmfindthread.h \
@@ -65,6 +66,7 @@ SOURCES += src/main.cpp \
            src/fmfileview.cpp \
            src/fmfilebrowsewidget.cpp \
            src/fmdriverview.cpp \
+           src/fmapplication.cpp \
            src/fmmainwindow.cpp \
            src/fmsplitview.cpp \
            src/fmfindthread.cpp \

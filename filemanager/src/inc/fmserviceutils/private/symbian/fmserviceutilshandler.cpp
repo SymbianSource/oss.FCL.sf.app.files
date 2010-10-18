@@ -37,14 +37,11 @@
 #include <QSettings>
 #include <XQConversions>
 
-// CONSTANTS
-const TInt KAppCloseTimeout = 1000000;
-
 /*!
     constructor.
 */
 CFmServiceUtilsHandler::CFmServiceUtilsHandler() :
-    CActive( CActive::EPriorityStandard )
+    CActive( CActive::EPriorityStandard ), iObserver( 0 )
 {
 }
 
@@ -95,21 +92,25 @@ void CFmServiceUtilsHandler::DoCancel()
     \sa CActive
 */ 
 void CFmServiceUtilsHandler::RunL()
-    {
-    iWait.AsyncStop();
+{
     TInt err( iStatus.Int() );
+    if( iObserver ) {
+        TRAP_IGNORE( iObserver->handleCloseAppCompleteL( err ) );
     }
+}
 
 /*
     \sa CActive
 */
-TInt CFmServiceUtilsHandler::RunError( TInt /*aError*/ )
+TInt CFmServiceUtilsHandler::RunError( TInt aError )
 {
-    iWait.AsyncStop();
+    if( iObserver ) {
+        TRAP_IGNORE( iObserver->handleCloseAppCompleteL( aError ) );
+        }
     return KErrNone;
 }
 
-/*
+/*!
     Call CBaBackupSessionWrapper to close apps
     this is synchronous which will take a while, please call this function in thread
 */
@@ -128,17 +129,9 @@ void CFmServiceUtilsHandler::CloseAppsL()
     iBSWrapper->NotifyBackupOperationL( atts );
     iBSWrapper->CloseAll( MBackupObserver::EReleaseLockNoAccess, iStatus );
     SetActive();
-
-    // Memory card formatting cannot be executed if there are open files on it.
-    // It has been detected, that in some cases memory card using applications 
-    // have no time to close file handles before formatting is tried to be executed. 
-    // To address this issue, we need to add a delay here after client-notification 
-    // about pending format and real formatting procedure.
-    User::After( KAppCloseTimeout );
-    StartWait();
 }
 
-/*
+/*!
     Call CBaBackupSessionWrapper to restart closed apps
     this is synchronous which will return quickly.
 */
@@ -159,15 +152,12 @@ void CFmServiceUtilsHandler::RestartAppsL()
     iBSWrapper = 0;
 }
 
-/*
-    wait till request returned in RunL
+/*!
+    set observer so that observer can be notified when operation is finished
 */
-void CFmServiceUtilsHandler::StartWait()
+void CFmServiceUtilsHandler::setObserver( MServiceUtilsObserver *observer )
 {
-    if ( iWait.IsStarted() != (TInt)ETrue )
-    {
-        iWait.Start();
-    }
+    iObserver = observer;
 }
 
 //  End of File  

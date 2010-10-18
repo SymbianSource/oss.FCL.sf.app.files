@@ -69,7 +69,7 @@ public:
     ~FmBkupEngine();
  
     
-    bool startBackup(    QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
+    bool startBackup( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
     QList<FmBkupBackupCategory*> backupCategoryList,
     QString drive, quint32 content);
     
@@ -79,8 +79,8 @@ public:
     int deleteBackup( QList<FmBkupDrivesAndOperation* > drivesAndOperationList );
     int error() const;
 
-    FmBackupSettings* BackupSettingsL();
-    FmRestoreSettings* RestoreSettingsL();
+    FmBackupSettings* BackupSettings();
+    FmRestoreSettings* RestoreSettings();
     
     void GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > &drivesAndOperationList,
             QList< FmRestoreInfo > &restoreInfoList,

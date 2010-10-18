@@ -260,16 +260,16 @@ QString FmUtils::getDefaultVolumeName( const QString &driveName )
     switch ( driverInfo.driveType() )
         {
         case FmDriverInfo::EDriveTypeMassStorage:
-            defaultVolumeName = hbTrId("Mass storage"); 
+            defaultVolumeName = hbTrId("txt_fmgr_mass_memory_default"); 
             break;
         case FmDriverInfo::EDriveTypeUsbMemory:
-            defaultVolumeName = hbTrId("USB memory"); 
+            defaultVolumeName = hbTrId("txt_fmgr_usb_memory_default"); 
             break;
         case FmDriverInfo::EDriveTypeMemoryCard:
-            defaultVolumeName = hbTrId("Memory card");
+            defaultVolumeName = hbTrId("txt_fmgr_memory_card_default");
             break;
         case FmDriverInfo::EDriveTypePhoneMemory:
-            defaultVolumeName = hbTrId("Device memory");
+            defaultVolumeName = hbTrId("txt_fmgr_device_memory_default");
             break;
         case FmDriverInfo::EDriveTypeNotExist:// no such drive, break and return empty string
         default:// do not have default volume for other drive types, e.g. Ram, Rom
@@ -297,16 +297,16 @@ QString FmUtils::getVolumeNameWithDefaultNameIfNull( const QString &driveName, b
         switch ( driverInfo.driveType() )
             {
             case FmDriverInfo::EDriveTypeMassStorage:
-                volumeName = hbTrId("Mass storage"); 
+                volumeName = hbTrId("txt_fmgr_mass_memory_default"); 
                 break;
             case FmDriverInfo::EDriveTypeUsbMemory:
-                volumeName = hbTrId("USB memory"); 
+                volumeName = hbTrId("txt_fmgr_usb_memory_default"); 
                 break;
             case FmDriverInfo::EDriveTypeMemoryCard:
-                volumeName = hbTrId("Memory card");
+                volumeName = hbTrId("txt_fmgr_memory_card_default");
                 break;
             case FmDriverInfo::EDriveTypePhoneMemory:
-                volumeName = hbTrId("Device memory");
+                volumeName = hbTrId("txt_fmgr_device_memory_default");
                 break;
             case FmDriverInfo::EDriveTypeNotExist:// no such drive
             default:// do not need get volume for other drive types, e.g. Ram, Rom

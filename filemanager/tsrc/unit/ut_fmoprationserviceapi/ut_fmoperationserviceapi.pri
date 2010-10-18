@@ -38,7 +38,7 @@ symbian {
 HEADERS += src/ut_fmoprationserviceapi.h \
            src/testviewmanager.h \
            ../../../src/filemanager/src/fmdriverlistwidget.h \
-#           ../../../src/filemanager/src/listviewitems.h \
+           ../../../src/filemanager/src/fmapplication.h \
            ../../../src/filemanager/src/fmfileview.h \
            ../../../src/filemanager/src/fmfilebrowsewidget.h \
            ../../../src/filemanager/src/fmdriverview.h \
@@ -83,7 +83,7 @@ HEADERS += src/ut_fmoprationserviceapi.h \
 SOURCES += src/ut_fmoprationserviceapi.cpp \
            src/testviewmanager.cpp \
            ../../../src/filemanager/src/fmdriverlistwidget.cpp \
-#           ../../../src/filemanager/src/listviewitems.cpp \
+           ../../../src/filemanager/src/fmapplication.cpp \
            ../../../src/filemanager/src/fmfileview.cpp \
            ../../../src/filemanager/src/fmfilebrowsewidget.cpp \
            ../../../src/filemanager/src/fmdriverview.cpp \

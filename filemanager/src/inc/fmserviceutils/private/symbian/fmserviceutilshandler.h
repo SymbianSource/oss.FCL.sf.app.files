@@ -29,6 +29,16 @@
 #include <e32base.h>
 #include <f32file.h>
 
+/*!
+    \class MServiceUtilsObserver 
+    \brief The class MServiceUtilsObserver provide event to notify CloseApp complete
+*/
+class MServiceUtilsObserver
+{
+public:
+    // called when CloseAppsL operation complete
+    virtual void handleCloseAppCompleteL( TInt err ) = 0;
+};
 
 // FORWARD DECLARATIONS
 class CBaBackupSessionWrapper;
@@ -48,7 +58,8 @@ public:
 public: // New methods
     void CloseAppsL();
     void RestartAppsL();
-
+    void setObserver( MServiceUtilsObserver *observer );
+    
 private: // From CActive
     void DoCancel();
     void RunL();
@@ -58,7 +69,6 @@ private:
 
     CFmServiceUtilsHandler();
     void ConstructL();
-    void StartWait();
     
 private:    // Data
     /**
@@ -80,6 +90,8 @@ private:    // Data
      * Wait is used to change asynchronous function to synchronous function
      */
     CActiveSchedulerWait iWait;
+    
+    MServiceUtilsObserver *iObserver;
     };
 
 #endif

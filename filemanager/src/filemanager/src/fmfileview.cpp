@@ -33,6 +33,8 @@
 #include <hbmenu.h>
 #include <hbaction.h>
 #include <hbtoolbar.h>
+#include <hblistwidget.h>
+#include <hblistwidgetitem.h>
 #include <hbtoolbarextension.h>
 #include <hblineedit.h>
 #include <hbpushbutton.h>
@@ -218,38 +220,47 @@ void FmFileView::initToolBar()
     mFindAction->setDisabled( mIsFindDisabled );
     toolBar()->addAction( mFindAction );
     toolBar()->setOrientation( Qt::Horizontal );
-    
-    mSortNameAction = new HbAction( this );    
-    mSortNameAction->setText( hbTrId( "txt_fmgr_setlabel_sort_by_name" ) );
-    
-    mSortTimeAction = new HbAction( this );   
-    mSortTimeAction->setText( hbTrId( "txt_fmgr_setlabel_sort_by_time" ) );
-    
-    mSortSizeAction = new HbAction( this );   
-    mSortSizeAction->setText( hbTrId( "txt_fmgr_setlabel_sort_by_size" ) );
-    
-    mSortTypeAction = new HbAction( this );   
-    mSortTypeAction->setText( hbTrId( "txt_fmgr_setlabel_sort_by_type" ) );
-    
-    mSortExtension = new HbToolBarExtension();    
-    mSortExtension->addAction( mSortNameAction );
-    mSortExtension->addAction( mSortTimeAction );
-    mSortExtension->addAction( mSortSizeAction );
-    mSortExtension->addAction( mSortTypeAction );
-    
-    HbAction* extensionAction = toolBar()->addExtension( mSortExtension );
-    extensionAction->setText( hbTrId("txt_fmgr_opt_sort"));
-   
+  
+    // Add the action that will open the toolbar extension.
+    HbAction *sortExtensionAction = toolBar()->addAction( hbTrId("txt_fmgr_opt_sort") );
+
+    // Create the toolbar extension.
+    mSortExtension = new HbToolBarExtension();
+
+    // Create a list widget.
+    HbListWidget *sortExtensionList = new HbListWidget();
+    sortExtensionList->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    // Make the list single selection.
+    sortExtensionList->setSelectionMode(HbAbstractItemView::SingleSelection);
+
+    // Add list items.
+    mSortItemName = new HbListWidgetItem;
+    mSortItemName->setText( hbTrId( "txt_fmgr_setlabel_sort_by_name" ) );
+
+    mSortItemTime = new HbListWidgetItem;
+    mSortItemTime->setText( hbTrId( "txt_fmgr_setlabel_sort_by_time" ) );
+
+    mSortItemSize = new HbListWidgetItem;
+    mSortItemSize->setText( hbTrId( "txt_fmgr_setlabel_sort_by_size" ) );
+
+    mSortItemType = new HbListWidgetItem;
+    mSortItemType->setText( hbTrId( "txt_fmgr_setlabel_sort_by_type" ) );
+
+    sortExtensionList->addItem( mSortItemName );
+    sortExtensionList->addItem( mSortItemTime );
+    sortExtensionList->addItem( mSortItemSize );
+    sortExtensionList->addItem( mSortItemType );
+    // Add the list widget to the toolbar extension object.
+    mSortExtension->setContentWidget(sortExtensionList);
+
+    // Add the toolbar extension to the toolbar action that will open it.
+    sortExtensionAction->setToolBarExtension(mSortExtension);
+
+    connect(sortExtensionList, SIGNAL(activated(HbListWidgetItem*)),
+            this,SLOT(on_sortToolBarList_Activated(HbListWidgetItem*)), Qt::QueuedConnection );
     connect( mFindAction, SIGNAL( triggered() ),
             this, SLOT( on_leftAction_triggered() ) );
-    connect( mSortNameAction, SIGNAL( triggered() ),
-            this, SLOT( on_sortNameAction_triggered() ), Qt::QueuedConnection );
-    connect( mSortTimeAction, SIGNAL( triggered() ),
-            this, SLOT( on_sortTimeAction_triggered() ), Qt::QueuedConnection );
-    connect( mSortSizeAction, SIGNAL( triggered() ),
-            this, SLOT( on_sortSizeAction_triggered() ), Qt::QueuedConnection );
-    connect( mSortTypeAction, SIGNAL( triggered() ),
-            this, SLOT( on_sortTypeAction_triggered() ), Qt::QueuedConnection );
 }
 
 void FmFileView::setStyle( FmFileBrowseWidget::Style style )
@@ -452,6 +463,21 @@ void FmFileView::on_leftAction_triggered()
 void FmFileView::on_driveChanged()
 {
     mWidget->on_driveChanged();  
+}
+
+void FmFileView::on_sortToolBarList_Activated(HbListWidgetItem* item )
+{
+    mSortExtension->close();
+	if( item == mSortItemName ){
+        on_sortNameAction_triggered();
+    } else if( item == mSortItemTime ){
+        on_sortTimeAction_triggered();
+    } else if( item == mSortItemSize ){
+        on_sortSizeAction_triggered();
+    } else if( item == mSortItemType ){
+        on_sortTypeAction_triggered();
+    }
+
 }
 
 void FmFileView::on_sortNameAction_triggered()

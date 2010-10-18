@@ -74,11 +74,11 @@ void FmRestoreWigdet::init()
 
     mModel = new QStringListModel();
     mListView->setModel( mModel );    
-    mRestoreSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->RestoreSettingsL();
+    mRestoreSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->RestoreSettings();
     mBackupConfigLoader = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->backupConfigLoader();
     
     // load backup settings to refresh default target drive
-    FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->BackupSettingsL()->load();
+    FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->BackupSettings()->load();
     mRestoreSettings->load( mBackupConfigLoader->driversAndOperationList() );
 
     int index = 0;
@@ -126,7 +126,7 @@ void FmRestoreWigdet::refresh()
         }
     mModel->removeRows( 0, mModel->rowCount() );
 
-    mRestoreSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->RestoreSettingsL();
+    mRestoreSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->RestoreSettings();
     mBackupConfigLoader = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->backupConfigLoader();
     mRestoreSettings->load( mBackupConfigLoader->driversAndOperationList() );
 

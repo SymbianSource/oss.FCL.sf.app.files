@@ -91,7 +91,7 @@ void FmBackupWidget::init()
     connect( this, SIGNAL(changeTargetDrive()), this, SLOT(on_changeTargetDrive()), Qt::QueuedConnection);
     
     //mBackupSettings = new FmBackupSettings();
-    mBackupSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->BackupSettingsL();
+    mBackupSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->BackupSettings();
     mBackupSettings->load();
 
     emit doModelRefresh();

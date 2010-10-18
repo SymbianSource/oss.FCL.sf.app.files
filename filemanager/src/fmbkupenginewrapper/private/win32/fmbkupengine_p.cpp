@@ -81,8 +81,8 @@ int FmBkupEnginePrivate::deleteBackup( QList<FmBkupDrivesAndOperation* > drivesA
     mError = FmErrNone;
 
     selection.clear();
-    FmRestoreSettings& rstSettings( *( q->RestoreSettingsL() ) );
-    rstSettings.GetSelectionL( selection );
+    FmRestoreSettings& rstSettings( *( q->RestoreSettings() ) );
+    rstSettings.GetSelection( selection );
     QSettings settings("Nokia", "FileManager");
     foreach( FmRestoreInfo restoreInfo, selection ) {
         switch( restoreInfo.content() )
@@ -135,11 +135,11 @@ int FmBkupEnginePrivate::error()
 }
 
 //
-bool FmBkupEnginePrivate::StartRestoreL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList )
+bool FmBkupEnginePrivate::startRestore( QList<FmBkupDrivesAndOperation* > drivesAndOperationList )
 {
     selection.clear();
-    FmRestoreSettings& rstSettings( *( q->RestoreSettingsL() ) );
-    rstSettings.GetSelectionL( selection );
+    FmRestoreSettings& rstSettings( *( q->RestoreSettings() ) );
+    rstSettings.GetSelection( selection );
 
     mError = mBkupThread->asyncRestore( drivesAndOperationList,selection );
     return ( mError == FmErrNone );

@@ -87,7 +87,7 @@ void FmBackupRestoreHandler::cancelBackup()
 bool FmBackupRestoreHandler::startRestore( FmOperationRestore *operationRestore )
 {
     mCurrentProcess = ProcessRestore;
-    mBkupEngine->RestoreSettingsL()->SetSelection( operationRestore->selection() );
+    mBkupEngine->RestoreSettings()->SetSelection( operationRestore->selection() );
     bool ret = mBkupEngine->startRestore( backupConfigLoader()->driversAndOperationList() );
     if( !ret ) {
         mCurrentProcess = ProcessNone;
@@ -97,7 +97,7 @@ bool FmBackupRestoreHandler::startRestore( FmOperationRestore *operationRestore 
 
 int FmBackupRestoreHandler::deleteBackup( quint64 selection )
 {
-    mBkupEngine->RestoreSettingsL()->SetSelection( selection );
+    mBkupEngine->RestoreSettings()->SetSelection( selection );
     mBkupEngine->deleteBackup( backupConfigLoader()->driversAndOperationList() );
     return FmErrNone;
 }

@@ -32,10 +32,6 @@ class FmMainWindow : public HbMainWindow
 public:
     FmMainWindow();
     ~FmMainWindow();
-
-signals:
-    void applicationReady();
-
 private slots:
     void onOrientationChanged( Qt::Orientation orientation );
     void delayedLoading();

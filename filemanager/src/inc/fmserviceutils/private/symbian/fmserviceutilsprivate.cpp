@@ -22,10 +22,14 @@
 #include <shareui.h>
 #include <afactivitystorage.h>
 
-FmServiceUtilsPrivate::FmServiceUtilsPrivate()
-    :mShareUi( 0 ), mServiceUtilsHandler( 0 ), mActivityStorage( 0 )
+// CONSTANTS
+const int KAppCloseMiniSecTimeout = 1000;
+
+FmServiceUtilsPrivate::FmServiceUtilsPrivate( QObject *parent ) : QObject( parent ),
+    mShareUi( 0 ), mServiceUtilsHandler( 0 ), mActivityStorage( 0 ),
+    mIsCloseAppsFinished( false ), mIsCloseAppsTimeup( false )
 {
-    
+    connect(&mCloseAppTimer, SIGNAL(timeout()), this, SLOT(onCloseAppTimeup()));
 }
 
 FmServiceUtilsPrivate::~FmServiceUtilsPrivate()
@@ -75,7 +79,9 @@ CFmServiceUtilsHandler *FmServiceUtilsPrivate::serviceUtilsHandler()
 {
     if( !mServiceUtilsHandler ) {
         TRAPD(err, mServiceUtilsHandler = CFmServiceUtilsHandler::NewL());
-        if( err != KErrNone ) {
+        if( err == KErrNone ) {
+            mServiceUtilsHandler->setObserver( this );
+        } else {
             mServiceUtilsHandler = 0;
         }
     }
@@ -98,8 +104,46 @@ void FmServiceUtilsPrivate::sendFile( const QStringList &filePathList )
 void FmServiceUtilsPrivate::closeApps()
 {
     CFmServiceUtilsHandler *utilsHandler = serviceUtilsHandler();
+    mIsCloseAppsFinished = false;
+    mIsCloseAppsTimeup = false;
     if( utilsHandler ) {
         TRAP_IGNORE( utilsHandler->CloseAppsL() );
+    }
+    
+    // Memory card formatting cannot be executed if there are open files on it.
+    // It has been detected, that in some cases memory card using applications 
+    // have no time to close file handles before formatting is tried to be executed. 
+    // To address this issue, we need to add a delay here after client-notification 
+    // about pending format and real formatting procedure.
+    mCloseAppTimer.start( KAppCloseMiniSecTimeout );
+    
+    //loop will be closed on both mIsCloseAppsFinished and mIsCloseAppsTimeup turned to true
+    mCloseAppLoop.exec();
+}
+
+/*
+    This is observer function inherit from MServiceUtilsObserver
+    So end with L letter no matter if it will leave
+    handle close apps complete, exit loop if mIsCloseAppsTimeup is true
+*/
+void FmServiceUtilsPrivate::handleCloseAppCompleteL( TInt err )
+{
+    Q_UNUSED( err );
+    mIsCloseAppsFinished = true;
+    if( mIsCloseAppsTimeup ) {
+        mCloseAppLoop.exit();
+    }
+}
+
+/*
+    handle close apps time up. exit loop if mIsCloseAppsFinished is true
+*/
+void FmServiceUtilsPrivate::onCloseAppTimeup()
+{
+    mCloseAppTimer.stop();
+    mIsCloseAppsTimeup = true;
+    if( mIsCloseAppsFinished ) {
+        mCloseAppLoop.exit();
     }
 }
 
@@ -131,4 +175,3 @@ bool FmServiceUtilsPrivate::removeActivity(const QString &activityId)
 {
     return activityStorage()->removeActivity( activityId );
 }
-

@@ -11,8 +11,24 @@
 *
 * Contributors:
 *
-* Description:This is the test data for unit test cases.
-* 
+* Description:  
+*
 */
 
-this is the data for copy muliti-files.
+#ifndef FMAPPLICATION_H
+#define FMAPPLICATION_H
+
+#include <hbapplication.h>
+
+class FmApplication: public HbApplication
+{
+    Q_OBJECT
+public:
+    FmApplication(int &argc, char *argv[]);
+    virtual ~FmApplication();
+    void handleAppReady();    
+signals:
+    void applicationReady();
+};
+
+#endif /* FMAPPLICATION_H */

@@ -30,6 +30,7 @@ class HbPushButton;
 class HbMenu;
 class FmOperationService;
 class HbToolBarExtension;
+class HbListWidgetItem;
 
 class FmFileView : public FmViewBase
 {
@@ -64,6 +65,7 @@ private slots:
 	void on_sortTimeAction_triggered();
 	void on_sortSizeAction_triggered();
 	void on_sortTypeAction_triggered();
+    void on_sortToolBarList_Activated( HbListWidgetItem* item );
 	
     void startSearch( const QString &criteria );
     void on_mainWidget_setEmptyMenu( bool isMenuEmpty );
@@ -108,11 +110,12 @@ private:
 
     // store the disable state of find action. true for disabled
     bool      mIsFindDisabled;
-    
-    HbAction *mSortNameAction;
-    HbAction *mSortTimeAction;
-    HbAction *mSortSizeAction;
-    HbAction *mSortTypeAction;
+
+    HbListWidgetItem *mSortItemName;
+    HbListWidgetItem *mSortItemTime;
+    HbListWidgetItem *mSortItemSize;
+    HbListWidgetItem *mSortItemType;
+
 };
 
 #endif

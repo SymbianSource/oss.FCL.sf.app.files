@@ -19,10 +19,9 @@
 *
 */
 
-
+#include "fmapplication.h"
 #include "fmmainwindow.h"
 
-#include <hbapplication.h>
 #include <hbstyleloader.h>
 #include <hbtranslator.h>
 #include <QTranslator>
@@ -31,7 +30,7 @@
 int main( int argc, char *argv[] )
 {
     FM_LOG( "main start" );
-    HbApplication app( argc, argv );  
+    FmApplication app( argc, argv );  
     
     HbTranslator translator("filemanager");
     translator.loadCommon();    

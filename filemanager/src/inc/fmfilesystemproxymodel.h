@@ -24,6 +24,8 @@
 #include <QModelIndex>
 #include <QSortFilterProxyModel>
 
+class HbDirectoryNameLocalizer;
+
 /*!
     \class FmFileSystemProxyModel 
     \brief The class FmFileSystemProxyModel provide file system model
@@ -48,6 +50,10 @@ public:
 
 private:
     virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+	
+private:
+    // used to get localized directory name
+    HbDirectoryNameLocalizer *localizer;
 };
 
 

@@ -22,11 +22,14 @@
 #include <QStringList>
 #include <QVariant>
 #include <QVariantHash>
+#include <QEventLoop>
+#include <QTimer>
 
-class FmServiceUtilsPrivate
+class FmServiceUtilsPrivate : public QObject
 {
+Q_OBJECT
 public:
-    FmServiceUtilsPrivate();
+    FmServiceUtilsPrivate( QObject *parent = 0 );
     virtual ~FmServiceUtilsPrivate();
 
     void sendFile( const QStringList &filePathList );
@@ -36,6 +39,14 @@ public:
     // activity implement
     bool saveActivity(const QString &activityId, const QVariant &activityData, const QVariantHash &metadata);
     bool removeActivity(const QString &activityId);
+private slots:
+    void onCloseAppTimeup();
+    
+private:
+    QEventLoop          mCloseAppLoop;
+    QTimer              mCloseAppTimer;
+
+    bool                mIsCloseAppsTimeup;
 };
 
 #endif

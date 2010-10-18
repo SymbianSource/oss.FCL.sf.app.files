@@ -8,10 +8,10 @@ EXPORTS
 	_ZN12FmBkupEngine12notifyFinishEi @ 7 NONAME
 	_ZN12FmBkupEngine12notifyUpdateEi @ 8 NONAME
 	_ZN12FmBkupEngine12startRestoreE5QListIP24FmBkupDrivesAndOperationE @ 9 NONAME
-	_ZN12FmBkupEngine15BackupSettingsLEv @ 10 NONAME
-	_ZN12FmBkupEngine15notifyMemoryLowEiRi @ 11 NONAME
-	_ZN12FmBkupEngine15notifyPreparingEb @ 12 NONAME
-	_ZN12FmBkupEngine16RestoreSettingsLEv @ 13 NONAME
+	_ZN12FmBkupEngine14BackupSettingsEv @ 10 NONAME
+	_ZN12FmBkupEngine15RestoreSettingsEv @ 11 NONAME
+	_ZN12FmBkupEngine15notifyMemoryLowEiRi @ 12 NONAME
+	_ZN12FmBkupEngine15notifyPreparingEb @ 13 NONAME
 	_ZN12FmBkupEngine16staticMetaObjectE @ 14 NONAME DATA 16
 	_ZN12FmBkupEngine18getBackupDriveListER11QStringList @ 15 NONAME
 	_ZN12FmBkupEngine19GetRestoreInfoArrayER5QListIP24FmBkupDrivesAndOperationERS0_I13FmRestoreInfoERK7QString @ 16 NONAME
@@ -67,7 +67,7 @@ EXPORTS
 	_ZNK16FmBackupSettings4timeEv @ 66 NONAME
 	_ZNK16FmBackupSettings7contentEv @ 67 NONAME
 	_ZNK16FmBackupSettings7weekdayEv @ 68 NONAME
-	_ZNK17FmRestoreSettings13GetSelectionLER5QListI13FmRestoreInfoE @ 69 NONAME
+	_ZNK17FmRestoreSettings12GetSelectionER5QListI13FmRestoreInfoE @ 69 NONAME
 	_ZTI12FmBkupEngine @ 70 NONAME
 	_ZTV12FmBkupEngine @ 71 NONAME
 

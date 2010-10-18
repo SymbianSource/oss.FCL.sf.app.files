@@ -53,7 +53,7 @@ public:
     int error();
     
     //
-    bool StartRestoreL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList );
+    bool startRestore( QList<FmBkupDrivesAndOperation* > drivesAndOperationList );
     void GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
             QList< FmRestoreInfo > &restoreInfoList,
             const QString& aDrive );

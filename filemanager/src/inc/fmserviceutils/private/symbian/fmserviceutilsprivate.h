@@ -19,24 +19,30 @@
 #ifndef FMSERVICEUTILSPRIVATE_H
 #define FMSERVICEUTILSPRIVATE_H
 
+#include <QTimer>
 #include <QObject>
 #include <QVariant>
+#include <QEventLoop>
 #include <QStringList>
 #include <QVariantHash>
 
+#include "fmserviceutilshandler.h"
+
+
 class ShareUi;
 class AfActivityStorage;
-class CFmServiceUtilsHandler;
+
 
 
 /*!
     \class FmServiceUtilsPrivate
     \brief The class FmServiceUtilsPrivate provide service utils APIs private wrapper
 */
-class FmServiceUtilsPrivate
+class FmServiceUtilsPrivate : public QObject, public MServiceUtilsObserver
 {
+Q_OBJECT
 public:
-    FmServiceUtilsPrivate();
+    explicit FmServiceUtilsPrivate( QObject *parent=0 );
     virtual ~FmServiceUtilsPrivate();
 
     void sendFile( const QStringList &filePath );
@@ -46,11 +52,16 @@ public:
     // activity implement
     bool saveActivity(const QString &activityId, const QVariant &activityData, const QVariantHash &metadata);
     bool removeActivity(const QString &activityId);
+private slots:
+    void onCloseAppTimeup();
     
 private:
     ShareUi *shareUi();
     AfActivityStorage *activityStorage();
     CFmServiceUtilsHandler *serviceUtilsHandler();
+    
+    virtual void handleCloseAppCompleteL( TInt err );
+    
     
 private:
     // used to send files
@@ -60,7 +71,13 @@ private:
     CFmServiceUtilsHandler *mServiceUtilsHandler;
 
     //own used to save activity.
-    AfActivityStorage *mActivityStorage;
+    AfActivityStorage   *mActivityStorage;
+    QEventLoop          mCloseAppLoop;
+    QTimer              mCloseAppTimer;
+    
+    bool                mIsCloseAppsFinished;
+    bool                mIsCloseAppsTimeup;
+
 };
 
 #endif

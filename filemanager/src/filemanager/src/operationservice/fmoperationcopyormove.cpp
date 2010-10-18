@@ -232,13 +232,7 @@ int FmOperationCopyOrMove::copyOrMove( const QString &source, const QString &tar
             return FmErrCannotRemove;           
         }
     } else if ( fi.isDir() ) {
-        if( operationType() == FmOperationService::EOperationTypeMove 
-                && FmUtils::isDefaultFolder( source ) ){
-            ret = FmErrRemoveDefaultFolder;
-        }
-        else{
-            ret = copyOrMoveDirInsideContent( source, newName );
-        }        
+        ret = copyOrMoveDirInsideContent( source, newName );
         if( ret!= FmErrNone ) {
             return ret;
         }

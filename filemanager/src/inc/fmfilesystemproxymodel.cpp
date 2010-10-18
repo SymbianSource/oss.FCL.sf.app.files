@@ -20,6 +20,7 @@
 #include <QFileSystemModel>
 
 #include <hbglobal.h>
+#include <hbdirectorynamelocalizer.h>
 
 // name column number, this define comes from implementation of QFileSystemModel
 const int NameColumn = 0;
@@ -28,9 +29,9 @@ const int NameColumn = 0;
     Constructor
 */
 FmFileSystemProxyModel::FmFileSystemProxyModel( QObject *parent ) :
-    QSortFilterProxyModel( parent )
+    QSortFilterProxyModel( parent ), localizer( 0 )
 {
- 
+    localizer = new HbDirectoryNameLocalizer;
 }
 
 /*!
@@ -38,7 +39,7 @@ FmFileSystemProxyModel::FmFileSystemProxyModel( QObject *parent ) :
 */
 FmFileSystemProxyModel::~FmFileSystemProxyModel()
 {
-
+    delete localizer;
 }
                                                                                    
 /*!
@@ -50,11 +51,15 @@ QVariant FmFileSystemProxyModel::data ( const QModelIndex & index, int role ) co
     QAbstractItemModel *itemModel = sourceModel();
     QFileSystemModel *sourceModel = qobject_cast<QFileSystemModel*>( itemModel );
     if( sourceModel && ( role == Qt::DisplayRole ) ) {
-        QString name( FmUtils::localize(sourceModel->fileInfo( mapToSource( index ) ).absoluteFilePath()) );
-        if( name.isEmpty() ) {
+        // get absolute path
+        QString path( sourceModel->fileInfo( mapToSource( index ) ).absoluteFilePath() );
+        // get localized name
+        QString localizedName( localizer->translate( path ) );
+		
+        if( localizedName.isEmpty() ) {
             return sourceModel->data( mapToSource( index ), role );
         } else {
-            return name;
+            return localizedName;
         }
     }
     if( sourceModel )

@@ -77,7 +77,7 @@ void FmDeleteBackupWidget::loadData()
     }
     mModel->removeRows( 0, mModel->rowCount() );
 
-    mRestoreSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->RestoreSettingsL();
+    mRestoreSettings = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->bkupEngine()->RestoreSettings();
     mBackupConfigLoader = FmViewManager::viewManager()->operationService()->backupRestoreHandler()->backupConfigLoader();
     mRestoreSettings->load( mBackupConfigLoader->driversAndOperationList() );
 

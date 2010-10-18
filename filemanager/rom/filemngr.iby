@@ -33,6 +33,7 @@ file=ABI_DIR\BUILD_DIR\fmbkupenginewrapper.dll        SHARED_LIB_DIR\fmbkupengin
 
 data=DATAZ_\private\2002BCC0\backup_registration.xml  private\2002BCC0\backup_registration.xml
 data=DATAZ_\private\2002BCC0\burconfig.xml            private\2002BCC0\burconfig.xml
+data=DATAZ_\system\install\filemngr_stub.sis          system\install\filemngr_stub.sis
 
 #endif
 

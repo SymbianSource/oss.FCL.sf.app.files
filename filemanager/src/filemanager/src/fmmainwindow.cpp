@@ -16,6 +16,7 @@
  *     The source file of File Manager main window
  */
 
+#include "fmapplication.h"
 #include "fmmainwindow.h"
 #include "fmcommon.h"
 
@@ -90,10 +91,13 @@ void FmMainWindow::delayedLoading()
 }
 
 /*
-    Slot to receive timer event after application started and emit applicationReady signal
+    Slot to receive timer event after application started and 
+    call FmApplication's handleAppReady() to emit applicationReady signal
 */
 void FmMainWindow::onApplicationReady()
-{
-    mShowTimer.stop();
-    emit applicationReady();
+{    
+    if ( FmApplication *app = qobject_cast<FmApplication *>( qApp ) ) {
+        app->handleAppReady();
+    }   
+    mShowTimer.stop();    
 }

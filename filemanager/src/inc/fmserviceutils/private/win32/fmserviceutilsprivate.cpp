@@ -18,11 +18,15 @@
 
 #include "fmserviceutilsprivate.h"
 
+// CONSTANTS
+const int KAppCloseMiniSecTimeout = 1000;
+
 /*!
     constructor
 */
-FmServiceUtilsPrivate::FmServiceUtilsPrivate()
+FmServiceUtilsPrivate::FmServiceUtilsPrivate( QObject *parent ) : QObject( parent )
 {
+    connect(&mCloseAppTimer, SIGNAL(timeout()), this, SLOT(onCloseAppTimeup()));
 }
 
 /*!
@@ -45,7 +49,8 @@ void FmServiceUtilsPrivate::sendFile( const QStringList &filePathList )
 */
 void FmServiceUtilsPrivate::closeApps()
 {
-
+    mCloseAppTimer.start( KAppCloseMiniSecTimeout );
+    mCloseAppLoop.exec();
 }
 
 /*!
@@ -54,6 +59,11 @@ void FmServiceUtilsPrivate::closeApps()
 void FmServiceUtilsPrivate::restartApps()
 {
 
+}
+
+void FmServiceUtilsPrivate::onCloseAppTimeup()
+{
+    mCloseAppLoop.exit();
 }
 
 /*!

@@ -150,7 +150,7 @@ public:
      */
     QList< FmRestoreEntry* > restoreEntryList();
 
-    void GetSelectionL( QList< FmRestoreInfo >& infoArray ) const;
+    void GetSelection( QList< FmRestoreInfo >& infoArray ) const;
     void SetSelection( const quint64& aSelection );
     
 private:

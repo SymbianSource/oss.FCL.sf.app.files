@@ -240,7 +240,7 @@ void FmViewDetailsDialog::setFileDetails( const QString &filePath )
     mDataListModel->insertRows( 0, EFileDetailEntryEnd );
     
     dataList << hbTrId ( "txt_fmgr_dblist_name" );
-    dataList << fileInfo.baseName();
+    dataList << fileInfo.completeBaseName();
     mDataListModel->setData(  mDataListModel->index( EFileName, 0 ), dataList, Qt::DisplayRole );  
     
     dataList.clear();
@@ -248,7 +248,7 @@ void FmViewDetailsDialog::setFileDetails( const QString &filePath )
     
     
     
-    QString fileType( fileInfo.completeSuffix() );
+    QString fileType( fileInfo.suffix() );
     if( fileType.isEmpty() ){
         fileType.append( FmUtils::getFileType( filePath ) );
     } else {

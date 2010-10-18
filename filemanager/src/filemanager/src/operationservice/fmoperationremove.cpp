@@ -125,14 +125,7 @@ int FmOperationRemove::remove( const QString &fileName )
         }
         IncreaseProgressOnce();
     } else if (fi.isDir()) {
-       if( FmUtils::isDefaultFolder( fileName ) ){
-           ret = FmErrRemoveDefaultFolder;
-       }
-       else{
-           ret = recursiveRemoveDir( fileName );
-       }
-
-
+        ret = recursiveRemoveDir( fileName );
     } else {
         qWarning( "Things other than file and directory are not copied" );
         ret = FmErrIsNotFileOrFolder;

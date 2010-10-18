@@ -64,7 +64,7 @@ public:
     
     bool startBackup( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
     QList<FmBkupBackupCategory*> backupCategoryList,
-    QString drive, quint32 content);
+    QString drive, quint32 content);  
     
     void cancelBackup();
     int deleteBackup( QList<FmBkupDrivesAndOperation* > drivesAndOperationList );
@@ -74,7 +74,7 @@ public:
     int error();
     
     //
-    bool StartRestoreL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList );
+    bool startRestore( QList<FmBkupDrivesAndOperation* > drivesAndOperationList );
     void GetRestoreInfoArray( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
             QList< FmRestoreInfo > &restoreInfoList,
             const QString& aDrive );
@@ -89,6 +89,11 @@ signals:
 	void notifyMemoryLow( int memoryValue, int &userError );
 	void notifyBackupFilesExist( bool &isContinue );
 private:
+	bool startBackupL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList,
+	    QList<FmBkupBackupCategory*> backupCategoryList,
+	    QString drive, quint32 content);
+	bool startRestoreL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList );
+	int deleteBackupL( QList<FmBkupDrivesAndOperation* > drivesAndOperationList );
     void notifyPreparingInternal();
 	void notifyStartInternal( int aTotalCount );
 	void notifyUpdateInternal( int aCount );
