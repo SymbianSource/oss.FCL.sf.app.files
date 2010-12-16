@@ -59,6 +59,18 @@ EXPORT_C void TFileManagerDriveInfo::Reset()
 void TFileManagerDriveInfo::GetInfoL(
         const CFileManagerEngine& aEngine, const TInt aDrive )
     {
+    // Default behavior is to check whether the remote drive is connected 
+    GetInfoL( aEngine, aDrive, ETrue );
+    }
+
+
+// -----------------------------------------------------------------------------
+// TFileManagerDriveInfo::GetInfoL
+// -----------------------------------------------------------------------------
+//
+void TFileManagerDriveInfo::GetInfoL(
+        const CFileManagerEngine& aEngine, const TInt aDrive,TBool aCheckRemoteDriveConnected )
+    {
     FUNC_LOG
 
     INFO_LOG1( "TFileManagerDriveInfo::GetInfoL - aDrive %d", aDrive )
@@ -84,7 +96,8 @@ void TFileManagerDriveInfo::GetInfoL(
         }
     else if ( err == KErrNone )
         {
-        if ( iState & EDriveRemote )
+        // If the drive is remote drive, and need to check whether remote drive is connected
+        if ( iState & EDriveRemote && aCheckRemoteDriveConnected )
             {
             if ( aEngine.IsRemoteDriveConnected( aDrive ) )
                 {

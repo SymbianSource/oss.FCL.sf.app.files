@@ -93,6 +93,15 @@ class TFileManagerDriveInfo
          * @param aDrive Drive that info is required
          */
         void GetInfoL( const CFileManagerEngine& aEngine, const TInt aDrive );
+        
+        /**
+         * Gets drive info
+         * @since 5.2
+         * @param aEngine Reference to engine
+         * @param aDrive Drive that info is required
+         * @param aCheckRemoteDriveConnected Indicates whether to check Remote Drive is connected
+         */
+        void GetInfoL(const CFileManagerEngine& aEngine, const TInt aDrive, TBool aCheckRemoteDriveConnected );
 
     private:
         void CheckMountL( RFs& aFs, const TInt aDrive ) const;

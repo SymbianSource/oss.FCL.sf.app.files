@@ -24,6 +24,7 @@
 #include <e32base.h>
 #include <f32file.h>
 #include "MGflmItemFilter.h"
+#include "TFileManagerDriveInfo.h"
 
 
 // FORWARD DECLARATIONS
@@ -69,6 +70,14 @@ private:
     * By default Symbian 2nd phase constructor is private.
     */
     void ConstructL();
+
+    /**
+     * Distinguish whether there is any ejectable drive existing 
+     * 
+     * @since 5.2
+     * @return ETrue if some ejectable drive exists, otherwise EFalse.
+     */
+    TBool IsAnyEjectableDriveExistL();
 
 private:    // Data
     /**

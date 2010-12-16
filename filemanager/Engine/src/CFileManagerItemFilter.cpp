@@ -110,7 +110,9 @@ TBool CFileManagerItemFilter::FilterItemL(
                     {
                     // Disable backup in embedded mode, because it messes up 
                     // backup and restore operations since embedded apps are closed.
-                    if ( iEngine.FeatureManager().IsEmbedded() )
+                    // Disable backup also if there is no ejectable drive existing. 
+                    if ( iEngine.FeatureManager().IsEmbedded()
+                        || !IsAnyEjectableDriveExistL() )
                         {
                         return EFalse;
                         }
@@ -123,14 +125,14 @@ TBool CFileManagerItemFilter::FilterItemL(
                     }
                 }
             break;
-			}
+            }
         case CGflmGroupItem::EDirectory:
             {
             CGflmFileSystemItem* fsItem =
                 static_cast< CGflmFileSystemItem* >( aItem );
             fsItem->GetFullPath( iFileNameBuffer );
             return !iEngine.IsSystemFolder( iFileNameBuffer );
-			}
+            }
         case CGflmGroupItem::EDrive:
             {
             CGflmDriveItem* drvItem = static_cast< CGflmDriveItem* >( aItem );
@@ -287,6 +289,27 @@ TBool CFileManagerItemFilter::FilterItemL(
             }
         }
     return ETrue;
+    }
+
+// ----------------------------------------------------------------------------
+// CFileManagerItemFilter::IsAnyEjectableDriveExistL
+// ----------------------------------------------------------------------------
+//
+TBool CFileManagerItemFilter::IsAnyEjectableDriveExistL()
+    {
+    //Check whether there is any ejectable drive existing 
+    TFileManagerDriveInfo drvInfo; 
+    for ( TInt i( EDriveA ); i <= EDriveZ; ++i )
+        {
+        // do not check whether the remote drive is connected 
+        drvInfo.GetInfoL( iEngine, i, EFalse );
+        if ( drvInfo.iState & TFileManagerDriveInfo::EDriveEjectable )
+            {
+            return ETrue;
+            }
+        }
+    //no ejectable drive is found
+    return EFalse;
     }
 
 //  End of File  
